@@ -1277,6 +1277,131 @@ async def get_products(
     products = await db.products.find(query).sort(sort_by, sort_direction).skip(skip).limit(limit).to_list(limit)
     return [Product(**prod) for prod in products]
 
+@api_router.get("/products/template-tags")
+async def get_product_template_tags():
+    """Get all available product template tags for theme development"""
+    return {
+        "basic_info": {
+            "title": "Basic Information",
+            "tags": [
+                {"field": "name", "tag": "[@product_name@]", "description": "Product name/title"},
+                {"field": "subtitle", "tag": "[@product_subtitle@]", "description": "Product subtitle or tagline"},
+                {"field": "description", "tag": "[@product_description@]", "description": "Full product description (HTML supported)"},
+                {"field": "short_description", "tag": "[@product_short_description@]", "description": "Brief product summary"},
+                {"field": "id", "tag": "[@product_id@]", "description": "Unique product identifier"},
+            ]
+        },
+        "pricing": {
+            "title": "Pricing",
+            "tags": [
+                {"field": "price", "tag": "[@product_price@]", "description": "Current selling price (number)"},
+                {"field": "price", "tag": "[@product_price_formatted@]", "description": "Price with currency symbol (e.g., $99.99)"},
+                {"field": "compare_price", "tag": "[@product_compare_price@]", "description": "Original/RRP price (number)"},
+                {"field": "compare_price", "tag": "[@product_compare_price_formatted@]", "description": "RRP with currency symbol"},
+                {"field": "compare_price", "tag": "[@product_rrp@]", "description": "Alias for compare price"},
+                {"field": "cost_price", "tag": "[@product_cost@]", "description": "Cost/wholesale price"},
+                {"field": "on_sale", "tag": "[@product_sale@]", "description": "Returns 'y' if on sale, 'n' otherwise"},
+                {"field": "tax_class", "tag": "[@product_tax_class@]", "description": "Tax classification"},
+            ]
+        },
+        "identification": {
+            "title": "Identification & SKU",
+            "tags": [
+                {"field": "sku", "tag": "[@product_sku@]", "description": "Stock Keeping Unit"},
+                {"field": "barcode", "tag": "[@product_barcode@]", "description": "Product barcode/UPC"},
+                {"field": "barcode", "tag": "[@product_upc@]", "description": "Alias for barcode"},
+                {"field": "mpn", "tag": "[@product_mpn@]", "description": "Manufacturer Part Number"},
+            ]
+        },
+        "categorization": {
+            "title": "Categorization",
+            "tags": [
+                {"field": "category_id", "tag": "[@product_category@]", "description": "Category name"},
+                {"field": "category_id", "tag": "[@product_category_id@]", "description": "Category ID"},
+                {"field": "brand", "tag": "[@product_brand@]", "description": "Brand name"},
+                {"field": "manufacturer", "tag": "[@product_manufacturer@]", "description": "Manufacturer name"},
+                {"field": "tags", "tag": "[@product_tags@]", "description": "Comma-separated tags"},
+            ]
+        },
+        "images": {
+            "title": "Images",
+            "tags": [
+                {"field": "images", "tag": "[@product_image@]", "description": "Primary product image URL"},
+                {"field": "images", "tag": "[@product_images@]", "description": "All product images (use in loop)"},
+                {"field": "thumbnail", "tag": "[@product_thumbnail@]", "description": "Thumbnail image URL"},
+            ]
+        },
+        "inventory": {
+            "title": "Inventory & Stock",
+            "tags": [
+                {"field": "stock", "tag": "[@product_stock@]", "description": "Current stock quantity"},
+                {"field": "stock", "tag": "[@product_qty@]", "description": "Alias for stock quantity"},
+                {"field": "in_stock", "tag": "[@product_in_stock@]", "description": "Returns 'y' if in stock"},
+                {"field": "low_stock_threshold", "tag": "[@product_low_stock@]", "description": "Low stock warning threshold"},
+                {"field": "allow_backorder", "tag": "[@product_backorder@]", "description": "Returns 'y' if backorders allowed"},
+            ]
+        },
+        "shipping": {
+            "title": "Shipping & Dimensions",
+            "tags": [
+                {"field": "weight", "tag": "[@product_weight@]", "description": "Product weight (kg)"},
+                {"field": "length", "tag": "[@product_length@]", "description": "Product length (cm)"},
+                {"field": "width", "tag": "[@product_width@]", "description": "Product width (cm)"},
+                {"field": "height", "tag": "[@product_height@]", "description": "Product height (cm)"},
+                {"field": "shipping_class", "tag": "[@product_shipping_class@]", "description": "Shipping class/rate group"},
+            ]
+        },
+        "seo": {
+            "title": "SEO & URL",
+            "tags": [
+                {"field": "meta_title", "tag": "[@product_meta_title@]", "description": "SEO page title"},
+                {"field": "meta_description", "tag": "[@product_meta_description@]", "description": "SEO meta description"},
+                {"field": "url_slug", "tag": "[@product_url@]", "description": "Product URL/permalink"},
+                {"field": "url_slug", "tag": "[@product_slug@]", "description": "URL slug only"},
+            ]
+        },
+        "visibility": {
+            "title": "Visibility & Status",
+            "tags": [
+                {"field": "is_active", "tag": "[@product_active@]", "description": "Returns 'y' if active"},
+                {"field": "is_featured", "tag": "[@product_featured@]", "description": "Returns 'y' if featured"},
+                {"field": "visibility", "tag": "[@product_visibility@]", "description": "visible, hidden, or search_only"},
+            ]
+        },
+        "reviews": {
+            "title": "Reviews & Ratings",
+            "tags": [
+                {"field": "rating", "tag": "[@product_rating@]", "description": "Average rating (0-5)"},
+                {"field": "reviews_count", "tag": "[@product_reviews_count@]", "description": "Number of reviews"},
+            ]
+        },
+        "stats": {
+            "title": "Statistics",
+            "tags": [
+                {"field": "sales_count", "tag": "[@product_sales@]", "description": "Total units sold"},
+                {"field": "views_count", "tag": "[@product_views@]", "description": "Product page views"},
+                {"field": "created_at", "tag": "[@product_created@]", "description": "Date product was created"},
+                {"field": "updated_at", "tag": "[@product_updated@]", "description": "Date last modified"},
+            ]
+        },
+        "loops": {
+            "title": "Product List Loops",
+            "tags": [
+                {"field": "product_list", "tag": "[%product_list limit:'8'%]...[%/product_list%]", "description": "Loop through products"},
+                {"field": "featured", "tag": "[%featured_products limit:'4'%]...[%/featured_products%]", "description": "Featured products loop"},
+                {"field": "related", "tag": "[%related_products limit:'4'%]...[%/related_products%]", "description": "Related products"},
+            ]
+        },
+        "conditionals": {
+            "title": "Conditional Tags",
+            "tags": [
+                {"field": "if_sale", "tag": "[%if [@product_sale@] == 'y'%]...[%/if%]", "description": "Show if product is on sale"},
+                {"field": "if_stock", "tag": "[%if [@product_in_stock@] == 'y'%]...[%/if%]", "description": "Show if in stock"},
+                {"field": "if_featured", "tag": "[%if [@product_featured@] == 'y'%]...[%/if%]", "description": "Show if featured"},
+            ]
+        }
+    }
+
 @api_router.get("/products/featured", response_model=List[Product])
 async def get_featured_products(limit: int = 8):
     products = await db.products.find({"is_active": True}).sort("rating", -1).limit(limit).to_list(limit)
