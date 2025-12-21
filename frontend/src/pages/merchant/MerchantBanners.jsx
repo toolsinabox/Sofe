@@ -1,9 +1,9 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { useDropzone } from 'react-dropzone';
 import { 
   Plus, Edit, Trash2, Image, Upload, X, Eye, EyeOff, GripVertical,
-  Monitor, Tablet, Smartphone, Check
+  Monitor, Tablet, Smartphone, Check, Type, AlignLeft, AlignCenter, AlignRight
 } from 'lucide-react';
 import { Button } from '../../components/ui/button';
 import { Input } from '../../components/ui/input';
@@ -19,6 +19,7 @@ const MerchantBanners = () => {
   const [showModal, setShowModal] = useState(false);
   const [editingBanner, setEditingBanner] = useState(null);
   const [formData, setFormData] = useState({
+    name: '',
     title: '',
     subtitle: '',
     image_desktop: '',
@@ -28,14 +29,21 @@ const MerchantBanners = () => {
     show_on_tablet: true,
     show_on_mobile: true,
     link: '',
-    button_text: 'Shop Now',
+    button_text: '',
+    button_style: 'primary',
+    show_button: false,
+    show_title: true,
+    show_subtitle: true,
     text_color: '#FFFFFF',
+    text_position: 'left',
     overlay_color: 'rgba(0,0,0,0.3)',
+    overlay_enabled: true,
     is_active: true,
     sort_order: 0
   });
   const [uploading, setUploading] = useState({ desktop: false, tablet: false, mobile: false });
   const [activeTab, setActiveTab] = useState('desktop');
+  const [activeSection, setActiveSection] = useState('images');
 
   useEffect(() => {
     fetchBanners();
@@ -55,7 +63,6 @@ const MerchantBanners = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      // Use desktop image as fallback for legacy 'image' field
       const submitData = {
         ...formData,
         image: formData.image_desktop || formData.image_tablet || formData.image_mobile
@@ -98,7 +105,8 @@ const MerchantBanners = () => {
     if (banner) {
       setEditingBanner(banner);
       setFormData({
-        title: banner.title,
+        name: banner.name || banner.title || '',
+        title: banner.title || '',
         subtitle: banner.subtitle || '',
         image_desktop: banner.image_desktop || banner.image || '',
         image_tablet: banner.image_tablet || '',
@@ -107,15 +115,22 @@ const MerchantBanners = () => {
         show_on_tablet: banner.show_on_tablet ?? true,
         show_on_mobile: banner.show_on_mobile ?? true,
         link: banner.link || '',
-        button_text: banner.button_text || 'Shop Now',
+        button_text: banner.button_text || '',
+        button_style: banner.button_style || 'primary',
+        show_button: banner.show_button ?? false,
+        show_title: banner.show_title ?? true,
+        show_subtitle: banner.show_subtitle ?? true,
         text_color: banner.text_color || '#FFFFFF',
+        text_position: banner.text_position || 'left',
         overlay_color: banner.overlay_color || 'rgba(0,0,0,0.3)',
+        overlay_enabled: banner.overlay_enabled ?? true,
         is_active: banner.is_active,
         sort_order: banner.sort_order
       });
     } else {
       setEditingBanner(null);
       setFormData({
+        name: '',
         title: '',
         subtitle: '',
         image_desktop: '',
@@ -125,14 +140,21 @@ const MerchantBanners = () => {
         show_on_tablet: true,
         show_on_mobile: true,
         link: '',
-        button_text: 'Shop Now',
+        button_text: '',
+        button_style: 'primary',
+        show_button: false,
+        show_title: true,
+        show_subtitle: true,
         text_color: '#FFFFFF',
+        text_position: 'left',
         overlay_color: 'rgba(0,0,0,0.3)',
+        overlay_enabled: true,
         is_active: true,
         sort_order: banners.length
       });
     }
     setActiveTab('desktop');
+    setActiveSection('images');
     setShowModal(true);
   };
 
@@ -160,12 +182,9 @@ const MerchantBanners = () => {
     }
   };
 
-  // Create dropzone hooks at component level
   const desktopDropzone = useDropzone({
     onDrop: (acceptedFiles) => {
-      if (acceptedFiles.length > 0) {
-        uploadImage(acceptedFiles[0], 'desktop');
-      }
+      if (acceptedFiles.length > 0) uploadImage(acceptedFiles[0], 'desktop');
     },
     accept: { 'image/*': ['.png', '.jpg', '.jpeg', '.webp'] },
     maxFiles: 1
@@ -173,9 +192,7 @@ const MerchantBanners = () => {
 
   const tabletDropzone = useDropzone({
     onDrop: (acceptedFiles) => {
-      if (acceptedFiles.length > 0) {
-        uploadImage(acceptedFiles[0], 'tablet');
-      }
+      if (acceptedFiles.length > 0) uploadImage(acceptedFiles[0], 'tablet');
     },
     accept: { 'image/*': ['.png', '.jpg', '.jpeg', '.webp'] },
     maxFiles: 1
@@ -183,22 +200,11 @@ const MerchantBanners = () => {
 
   const mobileDropzone = useDropzone({
     onDrop: (acceptedFiles) => {
-      if (acceptedFiles.length > 0) {
-        uploadImage(acceptedFiles[0], 'mobile');
-      }
+      if (acceptedFiles.length > 0) uploadImage(acceptedFiles[0], 'mobile');
     },
     accept: { 'image/*': ['.png', '.jpg', '.jpeg', '.webp'] },
     maxFiles: 1
   });
-
-  const getDeviceIcon = (device) => {
-    switch (device) {
-      case 'desktop': return Monitor;
-      case 'tablet': return Tablet;
-      case 'mobile': return Smartphone;
-      default: return Monitor;
-    }
-  };
 
   const getRecommendedSize = (device) => {
     switch (device) {
@@ -211,17 +217,17 @@ const MerchantBanners = () => {
 
   const DeviceVisibilityBadges = ({ banner }) => (
     <div className="flex gap-1">
-      {banner.show_on_desktop && (
+      {banner.show_on_desktop !== false && (
         <span className="p-1 bg-blue-500/20 rounded" title="Desktop">
           <Monitor className="w-3 h-3 text-blue-400" />
         </span>
       )}
-      {banner.show_on_tablet && (
+      {banner.show_on_tablet !== false && (
         <span className="p-1 bg-purple-500/20 rounded" title="Tablet">
           <Tablet className="w-3 h-3 text-purple-400" />
         </span>
       )}
-      {banner.show_on_mobile && (
+      {banner.show_on_mobile !== false && (
         <span className="p-1 bg-green-500/20 rounded" title="Mobile">
           <Smartphone className="w-3 h-3 text-green-400" />
         </span>
@@ -265,7 +271,7 @@ const MerchantBanners = () => {
                 {(banner.image_desktop || banner.image) ? (
                   <img
                     src={banner.image_desktop || banner.image}
-                    alt={banner.title}
+                    alt={banner.name}
                     className="w-full h-full object-cover"
                   />
                 ) : (
@@ -273,34 +279,46 @@ const MerchantBanners = () => {
                     <Image className="w-8 h-8 text-gray-500" />
                   </div>
                 )}
-                <div 
-                  className="absolute inset-0 flex items-center justify-center"
-                  style={{ backgroundColor: banner.overlay_color }}
-                >
-                  <div className="text-center p-2">
-                    <h4 className="font-bold text-sm" style={{ color: banner.text_color }}>{banner.title}</h4>
-                    {banner.subtitle && (
-                      <p className="text-xs" style={{ color: banner.text_color }}>{banner.subtitle}</p>
-                    )}
+                {banner.overlay_enabled !== false && (
+                  <div 
+                    className="absolute inset-0 flex items-center justify-center"
+                    style={{ backgroundColor: banner.overlay_color || 'rgba(0,0,0,0.3)' }}
+                  >
+                    <div className={`text-center p-2 ${
+                      banner.text_position === 'center' ? 'text-center' : 
+                      banner.text_position === 'right' ? 'text-right' : 'text-left'
+                    }`}>
+                      {banner.show_title !== false && banner.title && (
+                        <h4 className="font-bold text-sm" style={{ color: banner.text_color }}>{banner.title}</h4>
+                      )}
+                      {banner.show_subtitle !== false && banner.subtitle && (
+                        <p className="text-xs" style={{ color: banner.text_color }}>{banner.subtitle}</p>
+                      )}
+                    </div>
                   </div>
-                </div>
+                )}
               </div>
 
               {/* Details */}
               <div className="flex-1 p-4">
                 <div className="flex items-start justify-between">
                   <div>
-                    <div className="flex items-center gap-2 mb-2">
-                      <h3 className="font-semibold text-white">{banner.title}</h3>
+                    <div className="flex items-center gap-2 mb-1">
+                      <h3 className="font-semibold text-white">{banner.name || banner.title || 'Untitled Banner'}</h3>
                       <span className={`px-2 py-0.5 rounded text-xs font-medium ${
                         banner.is_active ? 'bg-green-500/20 text-green-400' : 'bg-gray-500/20 text-gray-400'
                       }`}>
                         {banner.is_active ? 'Active' : 'Inactive'}
                       </span>
                     </div>
-                    {banner.subtitle && (
-                      <p className="text-sm text-gray-400 mb-2">{banner.subtitle}</p>
-                    )}
+                    
+                    {/* Content indicators */}
+                    <div className="flex items-center gap-2 text-xs text-gray-500 mb-2">
+                      {banner.title && <span className="bg-gray-700 px-2 py-0.5 rounded">Title</span>}
+                      {banner.subtitle && <span className="bg-gray-700 px-2 py-0.5 rounded">Subtitle</span>}
+                      {banner.show_button && banner.button_text && <span className="bg-gray-700 px-2 py-0.5 rounded">Button</span>}
+                      {banner.link && <span className="bg-gray-700 px-2 py-0.5 rounded">Link</span>}
+                    </div>
                     
                     {/* Device Visibility */}
                     <div className="flex items-center gap-2 mb-2">
@@ -323,10 +341,6 @@ const MerchantBanners = () => {
                         {banner.image_mobile ? <Check className="w-3 h-3" /> : '—'}
                       </span>
                     </div>
-
-                    {banner.link && (
-                      <p className="text-xs text-cyan-400 mt-2">Link: {banner.link}</p>
-                    )}
                   </div>
                   <div className="flex items-center gap-2 text-gray-400">
                     <GripVertical className="w-4 h-4" />
@@ -385,10 +399,10 @@ const MerchantBanners = () => {
       {/* Modal */}
       {showModal && (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4 overflow-y-auto">
-          <div className="bg-gray-800 rounded-lg w-full max-w-2xl border border-gray-700 my-8">
-            <div className="flex items-center justify-between p-4 border-b border-gray-700">
+          <div className="bg-gray-800 rounded-lg w-full max-w-3xl border border-gray-700 my-8 max-h-[90vh] overflow-y-auto">
+            <div className="flex items-center justify-between p-4 border-b border-gray-700 sticky top-0 bg-gray-800 z-10">
               <h2 className="text-lg font-semibold text-white">
-                {editingBanner ? 'Edit Banner' : 'Add Responsive Banner'}
+                {editingBanner ? 'Edit Banner' : 'Add Banner'}
               </h2>
               <button onClick={closeModal} className="text-gray-400 hover:text-white">
                 <X className="w-5 h-5" />
@@ -396,231 +410,332 @@ const MerchantBanners = () => {
             </div>
             
             <form onSubmit={handleSubmit} className="p-4 space-y-4">
-              {/* Device Visibility Toggles */}
+              {/* Banner Name (Required) */}
               <div className="bg-gray-700/50 rounded-lg p-4">
-                <Label className="text-gray-300 mb-3 block">Show banner on:</Label>
-                <div className="flex gap-4">
-                  <label className="flex items-center gap-2 cursor-pointer">
-                    <Switch
-                      checked={formData.show_on_desktop}
-                      onCheckedChange={(checked) => setFormData(prev => ({ ...prev, show_on_desktop: checked }))}
-                    />
-                    <Monitor className="w-4 h-4 text-blue-400" />
-                    <span className="text-sm text-gray-300">Desktop</span>
-                  </label>
-                  <label className="flex items-center gap-2 cursor-pointer">
-                    <Switch
-                      checked={formData.show_on_tablet}
-                      onCheckedChange={(checked) => setFormData(prev => ({ ...prev, show_on_tablet: checked }))}
-                    />
-                    <Tablet className="w-4 h-4 text-purple-400" />
-                    <span className="text-sm text-gray-300">Tablet</span>
-                  </label>
-                  <label className="flex items-center gap-2 cursor-pointer">
-                    <Switch
-                      checked={formData.show_on_mobile}
-                      onCheckedChange={(checked) => setFormData(prev => ({ ...prev, show_on_mobile: checked }))}
-                    />
-                    <Smartphone className="w-4 h-4 text-green-400" />
-                    <span className="text-sm text-gray-300">Mobile</span>
-                  </label>
-                </div>
-              </div>
-
-              {/* Device Image Tabs */}
-              <div>
-                <Label className="text-gray-300 mb-2 block">Banner Images</Label>
-                <div className="flex border-b border-gray-700 mb-4">
-                  {['desktop', 'tablet', 'mobile'].map((device) => {
-                    const Icon = getDeviceIcon(device);
-                    const hasImage = formData[`image_${device}`];
-                    const isEnabled = formData[`show_on_${device}`];
-                    return (
-                      <button
-                        key={device}
-                        type="button"
-                        onClick={() => setActiveTab(device)}
-                        className={`flex items-center gap-2 px-4 py-2 text-sm font-medium transition-colors ${
-                          activeTab === device
-                            ? 'text-cyan-400 border-b-2 border-cyan-400'
-                            : 'text-gray-400 hover:text-gray-300'
-                        } ${!isEnabled ? 'opacity-50' : ''}`}
-                      >
-                        <Icon className="w-4 h-4" />
-                        <span className="capitalize">{device}</span>
-                        {hasImage && <Check className="w-3 h-3 text-green-400" />}
-                      </button>
-                    );
-                  })}
-                </div>
-
-                {/* Desktop Upload */}
-                {activeTab === 'desktop' && (
-                  <div className={!formData.show_on_desktop ? 'opacity-50 pointer-events-none' : ''}>
-                    <div
-                      {...desktopDropzone.getRootProps()}
-                      className={`border-2 border-dashed rounded-lg p-4 text-center cursor-pointer transition-colors ${
-                        desktopDropzone.isDragActive ? 'border-cyan-500 bg-cyan-500/10' : 'border-gray-600 hover:border-gray-500'
-                      }`}
-                    >
-                      <input {...desktopDropzone.getInputProps()} />
-                      {uploading.desktop ? (
-                        <p className="text-gray-400">Uploading...</p>
-                      ) : formData.image_desktop ? (
-                        <div className="relative">
-                          <img src={formData.image_desktop} alt="Desktop Preview" className="h-32 mx-auto rounded" />
-                          <p className="text-xs text-gray-400 mt-2">Click or drag to replace</p>
-                        </div>
-                      ) : (
-                        <>
-                          <Monitor className="w-8 h-8 mx-auto mb-2 text-blue-400" />
-                          <p className="text-gray-400">Drop desktop image or click to upload</p>
-                          <p className="text-xs text-gray-500">Recommended: {getRecommendedSize('desktop')}</p>
-                        </>
-                      )}
-                    </div>
-                  </div>
-                )}
-
-                {/* Tablet Upload */}
-                {activeTab === 'tablet' && (
-                  <div className={!formData.show_on_tablet ? 'opacity-50 pointer-events-none' : ''}>
-                    <div
-                      {...tabletDropzone.getRootProps()}
-                      className={`border-2 border-dashed rounded-lg p-4 text-center cursor-pointer transition-colors ${
-                        tabletDropzone.isDragActive ? 'border-cyan-500 bg-cyan-500/10' : 'border-gray-600 hover:border-gray-500'
-                      }`}
-                    >
-                      <input {...tabletDropzone.getInputProps()} />
-                      {uploading.tablet ? (
-                        <p className="text-gray-400">Uploading...</p>
-                      ) : formData.image_tablet ? (
-                        <div className="relative">
-                          <img src={formData.image_tablet} alt="Tablet Preview" className="h-32 mx-auto rounded" />
-                          <p className="text-xs text-gray-400 mt-2">Click or drag to replace</p>
-                        </div>
-                      ) : (
-                        <>
-                          <Tablet className="w-8 h-8 mx-auto mb-2 text-purple-400" />
-                          <p className="text-gray-400">Drop tablet image or click to upload</p>
-                          <p className="text-xs text-gray-500">Recommended: {getRecommendedSize('tablet')}</p>
-                        </>
-                      )}
-                    </div>
-                  </div>
-                )}
-
-                {/* Mobile Upload */}
-                {activeTab === 'mobile' && (
-                  <div className={!formData.show_on_mobile ? 'opacity-50 pointer-events-none' : ''}>
-                    <div
-                      {...mobileDropzone.getRootProps()}
-                      className={`border-2 border-dashed rounded-lg p-4 text-center cursor-pointer transition-colors ${
-                        mobileDropzone.isDragActive ? 'border-cyan-500 bg-cyan-500/10' : 'border-gray-600 hover:border-gray-500'
-                      }`}
-                    >
-                      <input {...mobileDropzone.getInputProps()} />
-                      {uploading.mobile ? (
-                        <p className="text-gray-400">Uploading...</p>
-                      ) : formData.image_mobile ? (
-                        <div className="relative">
-                          <img src={formData.image_mobile} alt="Mobile Preview" className="h-32 mx-auto rounded" />
-                          <p className="text-xs text-gray-400 mt-2">Click or drag to replace</p>
-                        </div>
-                      ) : (
-                        <>
-                          <Smartphone className="w-8 h-8 mx-auto mb-2 text-green-400" />
-                          <p className="text-gray-400">Drop mobile image or click to upload</p>
-                          <p className="text-xs text-gray-500">Recommended: {getRecommendedSize('mobile')}</p>
-                        </>
-                      )}
-                    </div>
-                  </div>
-                )}
-              </div>
-
-              {/* Title & Subtitle */}
-              <div className="grid grid-cols-2 gap-4">
-                <div>
-                  <Label className="text-gray-300">Title</Label>
-                  <Input
-                    value={formData.title}
-                    onChange={(e) => setFormData(prev => ({ ...prev, title: e.target.value }))}
-                    required
-                    className="bg-gray-700 border-gray-600 text-white"
-                  />
-                </div>
-                <div>
-                  <Label className="text-gray-300">Subtitle</Label>
-                  <Input
-                    value={formData.subtitle}
-                    onChange={(e) => setFormData(prev => ({ ...prev, subtitle: e.target.value }))}
-                    className="bg-gray-700 border-gray-600 text-white"
-                  />
-                </div>
-              </div>
-
-              {/* Button & Link */}
-              <div className="grid grid-cols-2 gap-4">
-                <div>
-                  <Label className="text-gray-300">Button Text</Label>
-                  <Input
-                    value={formData.button_text}
-                    onChange={(e) => setFormData(prev => ({ ...prev, button_text: e.target.value }))}
-                    className="bg-gray-700 border-gray-600 text-white"
-                  />
-                </div>
-                <div>
-                  <Label className="text-gray-300">Link URL</Label>
-                  <Input
-                    value={formData.link}
-                    onChange={(e) => setFormData(prev => ({ ...prev, link: e.target.value }))}
-                    placeholder="/store/products"
-                    className="bg-gray-700 border-gray-600 text-white"
-                  />
-                </div>
-              </div>
-
-              {/* Text Color & Sort Order */}
-              <div className="grid grid-cols-2 gap-4">
-                <div>
-                  <Label className="text-gray-300">Text Color</Label>
-                  <div className="flex gap-2">
-                    <Input
-                      type="color"
-                      value={formData.text_color}
-                      onChange={(e) => setFormData(prev => ({ ...prev, text_color: e.target.value }))}
-                      className="w-12 h-10 p-1 bg-gray-700 border-gray-600"
-                    />
-                    <Input
-                      value={formData.text_color}
-                      onChange={(e) => setFormData(prev => ({ ...prev, text_color: e.target.value }))}
-                      className="bg-gray-700 border-gray-600 text-white flex-1"
-                    />
-                  </div>
-                </div>
-                <div>
-                  <Label className="text-gray-300">Sort Order</Label>
-                  <Input
-                    type="number"
-                    value={formData.sort_order}
-                    onChange={(e) => setFormData(prev => ({ ...prev, sort_order: parseInt(e.target.value) }))}
-                    className="bg-gray-700 border-gray-600 text-white"
-                  />
-                </div>
-              </div>
-
-              {/* Active Toggle */}
-              <div className="flex items-center justify-between">
-                <Label className="text-gray-300">Banner Active</Label>
-                <Switch
-                  checked={formData.is_active}
-                  onCheckedChange={(checked) => setFormData(prev => ({ ...prev, is_active: checked }))}
+                <Label className="text-gray-300 mb-2 block">Banner Name <span className="text-red-400">*</span></Label>
+                <Input
+                  value={formData.name}
+                  onChange={(e) => setFormData(prev => ({ ...prev, name: e.target.value }))}
+                  placeholder="e.g., Summer Sale 2025, Homepage Hero"
+                  required
+                  className="bg-gray-700 border-gray-600 text-white"
                 />
+                <p className="text-xs text-gray-500 mt-1">Internal name for identification (not shown on storefront)</p>
               </div>
+
+              {/* Section Tabs */}
+              <div className="flex border-b border-gray-700">
+                {[
+                  { id: 'images', label: 'Images', icon: Image },
+                  { id: 'content', label: 'Content', icon: Type },
+                  { id: 'style', label: 'Style', icon: AlignCenter },
+                ].map((section) => (
+                  <button
+                    key={section.id}
+                    type="button"
+                    onClick={() => setActiveSection(section.id)}
+                    className={`flex items-center gap-2 px-4 py-2 text-sm font-medium transition-colors ${
+                      activeSection === section.id
+                        ? 'text-cyan-400 border-b-2 border-cyan-400'
+                        : 'text-gray-400 hover:text-gray-300'
+                    }`}
+                  >
+                    <section.icon className="w-4 h-4" />
+                    {section.label}
+                  </button>
+                ))}
+              </div>
+
+              {/* Images Section */}
+              {activeSection === 'images' && (
+                <div className="space-y-4">
+                  {/* Device Visibility Toggles */}
+                  <div className="bg-gray-700/50 rounded-lg p-4">
+                    <Label className="text-gray-300 mb-3 block">Show banner on:</Label>
+                    <div className="flex gap-4">
+                      <label className="flex items-center gap-2 cursor-pointer">
+                        <Switch
+                          checked={formData.show_on_desktop}
+                          onCheckedChange={(checked) => setFormData(prev => ({ ...prev, show_on_desktop: checked }))}
+                        />
+                        <Monitor className="w-4 h-4 text-blue-400" />
+                        <span className="text-sm text-gray-300">Desktop</span>
+                      </label>
+                      <label className="flex items-center gap-2 cursor-pointer">
+                        <Switch
+                          checked={formData.show_on_tablet}
+                          onCheckedChange={(checked) => setFormData(prev => ({ ...prev, show_on_tablet: checked }))}
+                        />
+                        <Tablet className="w-4 h-4 text-purple-400" />
+                        <span className="text-sm text-gray-300">Tablet</span>
+                      </label>
+                      <label className="flex items-center gap-2 cursor-pointer">
+                        <Switch
+                          checked={formData.show_on_mobile}
+                          onCheckedChange={(checked) => setFormData(prev => ({ ...prev, show_on_mobile: checked }))}
+                        />
+                        <Smartphone className="w-4 h-4 text-green-400" />
+                        <span className="text-sm text-gray-300">Mobile</span>
+                      </label>
+                    </div>
+                  </div>
+
+                  {/* Device Image Tabs */}
+                  <div>
+                    <Label className="text-gray-300 mb-2 block">Banner Images</Label>
+                    <div className="flex border-b border-gray-600 mb-4">
+                      {['desktop', 'tablet', 'mobile'].map((device) => {
+                        const Icon = device === 'desktop' ? Monitor : device === 'tablet' ? Tablet : Smartphone;
+                        const hasImage = formData[`image_${device}`];
+                        const isEnabled = formData[`show_on_${device}`];
+                        return (
+                          <button
+                            key={device}
+                            type="button"
+                            onClick={() => setActiveTab(device)}
+                            className={`flex items-center gap-2 px-4 py-2 text-sm font-medium transition-colors ${
+                              activeTab === device
+                                ? 'text-cyan-400 border-b-2 border-cyan-400'
+                                : 'text-gray-400 hover:text-gray-300'
+                            } ${!isEnabled ? 'opacity-50' : ''}`}
+                          >
+                            <Icon className="w-4 h-4" />
+                            <span className="capitalize">{device}</span>
+                            {hasImage && <Check className="w-3 h-3 text-green-400" />}
+                          </button>
+                        );
+                      })}
+                    </div>
+
+                    {/* Upload Areas */}
+                    {['desktop', 'tablet', 'mobile'].map((device) => {
+                      const dropzone = device === 'desktop' ? desktopDropzone : device === 'tablet' ? tabletDropzone : mobileDropzone;
+                      const Icon = device === 'desktop' ? Monitor : device === 'tablet' ? Tablet : Smartphone;
+                      const iconColor = device === 'desktop' ? 'text-blue-400' : device === 'tablet' ? 'text-purple-400' : 'text-green-400';
+                      
+                      if (activeTab !== device) return null;
+                      
+                      return (
+                        <div key={device} className={!formData[`show_on_${device}`] ? 'opacity-50 pointer-events-none' : ''}>
+                          <div
+                            {...dropzone.getRootProps()}
+                            className={`border-2 border-dashed rounded-lg p-4 text-center cursor-pointer transition-colors ${
+                              dropzone.isDragActive ? 'border-cyan-500 bg-cyan-500/10' : 'border-gray-600 hover:border-gray-500'
+                            }`}
+                          >
+                            <input {...dropzone.getInputProps()} />
+                            {uploading[device] ? (
+                              <p className="text-gray-400">Uploading...</p>
+                            ) : formData[`image_${device}`] ? (
+                              <div className="relative">
+                                <img src={formData[`image_${device}`]} alt={`${device} Preview`} className="h-32 mx-auto rounded" />
+                                <p className="text-xs text-gray-400 mt-2">Click or drag to replace</p>
+                              </div>
+                            ) : (
+                              <>
+                                <Icon className={`w-8 h-8 mx-auto mb-2 ${iconColor}`} />
+                                <p className="text-gray-400">Drop {device} image or click to upload</p>
+                                <p className="text-xs text-gray-500">Recommended: {getRecommendedSize(device)}</p>
+                              </>
+                            )}
+                          </div>
+                        </div>
+                      );
+                    })}
+                  </div>
+                </div>
+              )}
+
+              {/* Content Section */}
+              {activeSection === 'content' && (
+                <div className="space-y-4">
+                  {/* Title */}
+                  <div className="bg-gray-700/30 rounded-lg p-4">
+                    <div className="flex items-center justify-between mb-2">
+                      <Label className="text-gray-300">Title</Label>
+                      <label className="flex items-center gap-2 text-sm">
+                        <span className="text-gray-400">Show</span>
+                        <Switch
+                          checked={formData.show_title}
+                          onCheckedChange={(checked) => setFormData(prev => ({ ...prev, show_title: checked }))}
+                        />
+                      </label>
+                    </div>
+                    <Input
+                      value={formData.title}
+                      onChange={(e) => setFormData(prev => ({ ...prev, title: e.target.value }))}
+                      placeholder="e.g., Summer Collection 2025"
+                      className={`bg-gray-700 border-gray-600 text-white ${!formData.show_title ? 'opacity-50' : ''}`}
+                    />
+                    <p className="text-xs text-gray-500 mt-1">Optional - Leave empty for image-only banner</p>
+                  </div>
+
+                  {/* Subtitle */}
+                  <div className="bg-gray-700/30 rounded-lg p-4">
+                    <div className="flex items-center justify-between mb-2">
+                      <Label className="text-gray-300">Subtitle</Label>
+                      <label className="flex items-center gap-2 text-sm">
+                        <span className="text-gray-400">Show</span>
+                        <Switch
+                          checked={formData.show_subtitle}
+                          onCheckedChange={(checked) => setFormData(prev => ({ ...prev, show_subtitle: checked }))}
+                        />
+                      </label>
+                    </div>
+                    <Input
+                      value={formData.subtitle}
+                      onChange={(e) => setFormData(prev => ({ ...prev, subtitle: e.target.value }))}
+                      placeholder="e.g., Up to 50% off on selected items"
+                      className={`bg-gray-700 border-gray-600 text-white ${!formData.show_subtitle ? 'opacity-50' : ''}`}
+                    />
+                  </div>
+
+                  {/* Button */}
+                  <div className="bg-gray-700/30 rounded-lg p-4">
+                    <div className="flex items-center justify-between mb-2">
+                      <Label className="text-gray-300">Button</Label>
+                      <label className="flex items-center gap-2 text-sm">
+                        <span className="text-gray-400">Show</span>
+                        <Switch
+                          checked={formData.show_button}
+                          onCheckedChange={(checked) => setFormData(prev => ({ ...prev, show_button: checked }))}
+                        />
+                      </label>
+                    </div>
+                    <div className={`grid grid-cols-2 gap-4 ${!formData.show_button ? 'opacity-50' : ''}`}>
+                      <div>
+                        <Label className="text-gray-400 text-xs">Button Text</Label>
+                        <Input
+                          value={formData.button_text}
+                          onChange={(e) => setFormData(prev => ({ ...prev, button_text: e.target.value }))}
+                          placeholder="Shop Now"
+                          className="bg-gray-700 border-gray-600 text-white"
+                        />
+                      </div>
+                      <div>
+                        <Label className="text-gray-400 text-xs">Button Style</Label>
+                        <select
+                          value={formData.button_style}
+                          onChange={(e) => setFormData(prev => ({ ...prev, button_style: e.target.value }))}
+                          className="w-full bg-gray-700 border border-gray-600 text-white rounded-md p-2"
+                        >
+                          <option value="primary">Primary (Orange)</option>
+                          <option value="secondary">Secondary (White)</option>
+                          <option value="outline">Outline</option>
+                        </select>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Link */}
+                  <div>
+                    <Label className="text-gray-300">Link URL</Label>
+                    <Input
+                      value={formData.link}
+                      onChange={(e) => setFormData(prev => ({ ...prev, link: e.target.value }))}
+                      placeholder="/store/products or https://..."
+                      className="bg-gray-700 border-gray-600 text-white"
+                    />
+                    <p className="text-xs text-gray-500 mt-1">Where clicking the banner/button will navigate to</p>
+                  </div>
+                </div>
+              )}
+
+              {/* Style Section */}
+              {activeSection === 'style' && (
+                <div className="space-y-4">
+                  {/* Text Position */}
+                  <div>
+                    <Label className="text-gray-300 mb-2 block">Text Position</Label>
+                    <div className="flex gap-2">
+                      {[
+                        { value: 'left', icon: AlignLeft, label: 'Left' },
+                        { value: 'center', icon: AlignCenter, label: 'Center' },
+                        { value: 'right', icon: AlignRight, label: 'Right' },
+                      ].map((pos) => (
+                        <button
+                          key={pos.value}
+                          type="button"
+                          onClick={() => setFormData(prev => ({ ...prev, text_position: pos.value }))}
+                          className={`flex items-center gap-2 px-4 py-2 rounded-lg transition-colors ${
+                            formData.text_position === pos.value
+                              ? 'bg-cyan-600 text-white'
+                              : 'bg-gray-700 text-gray-300 hover:bg-gray-600'
+                          }`}
+                        >
+                          <pos.icon className="w-4 h-4" />
+                          {pos.label}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+
+                  {/* Text Color */}
+                  <div>
+                    <Label className="text-gray-300 mb-2 block">Text Color</Label>
+                    <div className="flex gap-2">
+                      <Input
+                        type="color"
+                        value={formData.text_color}
+                        onChange={(e) => setFormData(prev => ({ ...prev, text_color: e.target.value }))}
+                        className="w-12 h-10 p-1 bg-gray-700 border-gray-600"
+                      />
+                      <Input
+                        value={formData.text_color}
+                        onChange={(e) => setFormData(prev => ({ ...prev, text_color: e.target.value }))}
+                        className="bg-gray-700 border-gray-600 text-white flex-1"
+                      />
+                    </div>
+                  </div>
+
+                  {/* Overlay */}
+                  <div className="bg-gray-700/30 rounded-lg p-4">
+                    <div className="flex items-center justify-between mb-3">
+                      <Label className="text-gray-300">Overlay</Label>
+                      <label className="flex items-center gap-2 text-sm">
+                        <span className="text-gray-400">Enable</span>
+                        <Switch
+                          checked={formData.overlay_enabled}
+                          onCheckedChange={(checked) => setFormData(prev => ({ ...prev, overlay_enabled: checked }))}
+                        />
+                      </label>
+                    </div>
+                    <div className={!formData.overlay_enabled ? 'opacity-50' : ''}>
+                      <Label className="text-gray-400 text-xs mb-1 block">Overlay Color</Label>
+                      <Input
+                        value={formData.overlay_color}
+                        onChange={(e) => setFormData(prev => ({ ...prev, overlay_color: e.target.value }))}
+                        placeholder="rgba(0,0,0,0.3)"
+                        className="bg-gray-700 border-gray-600 text-white"
+                      />
+                      <p className="text-xs text-gray-500 mt-1">Use rgba() for transparency, e.g., rgba(0,0,0,0.5)</p>
+                    </div>
+                  </div>
+
+                  {/* Sort Order */}
+                  <div>
+                    <Label className="text-gray-300">Sort Order</Label>
+                    <Input
+                      type="number"
+                      value={formData.sort_order}
+                      onChange={(e) => setFormData(prev => ({ ...prev, sort_order: parseInt(e.target.value) || 0 }))}
+                      className="bg-gray-700 border-gray-600 text-white"
+                    />
+                  </div>
+
+                  {/* Active Toggle */}
+                  <div className="flex items-center justify-between">
+                    <Label className="text-gray-300">Banner Active</Label>
+                    <Switch
+                      checked={formData.is_active}
+                      onCheckedChange={(checked) => setFormData(prev => ({ ...prev, is_active: checked }))}
+                    />
+                  </div>
+                </div>
+              )}
 
               {/* Action Buttons */}
-              <div className="flex gap-2 pt-4">
+              <div className="flex gap-2 pt-4 border-t border-gray-700">
                 <Button type="button" variant="outline" onClick={closeModal} className="flex-1 border-gray-600 text-gray-300">
                   Cancel
                 </Button>
