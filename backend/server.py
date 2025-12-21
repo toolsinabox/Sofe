@@ -87,36 +87,115 @@ class Category(CategoryBase):
     updated_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
 
 class ProductBase(BaseModel):
-    name: str
-    description: Optional[str] = None
-    price: float
-    compare_price: Optional[float] = None
-    sku: str
-    category_id: Optional[str] = None
-    images: List[str] = []
-    stock: int = 0
-    is_active: bool = True
-    rating: float = 0
-    reviews_count: int = 0
+    # === BASIC INFO ===
+    name: str  # [@product_name@]
+    subtitle: Optional[str] = None  # [@product_subtitle@]
+    description: Optional[str] = None  # [@product_description@]
+    short_description: Optional[str] = None  # [@product_short_description@]
+    
+    # === PRICING ===
+    price: float  # [@product_price@], [@product_price_formatted@]
+    compare_price: Optional[float] = None  # [@product_compare_price@], [@product_rrp@]
+    cost_price: Optional[float] = None  # [@product_cost@]
+    tax_class: Optional[str] = "standard"  # [@product_tax_class@]
+    
+    # === IDENTIFICATION ===
+    sku: str  # [@product_sku@]
+    barcode: Optional[str] = None  # [@product_barcode@], [@product_upc@]
+    mpn: Optional[str] = None  # [@product_mpn@] Manufacturer Part Number
+    
+    # === CATEGORIZATION ===
+    category_id: Optional[str] = None  # [@product_category@]
+    brand: Optional[str] = None  # [@product_brand@]
+    manufacturer: Optional[str] = None  # [@product_manufacturer@]
+    tags: List[str] = []  # [@product_tags@]
+    
+    # === IMAGES ===
+    images: List[str] = []  # [@product_image@], [@product_images@]
+    thumbnail: Optional[str] = None  # [@product_thumbnail@]
+    
+    # === INVENTORY ===
+    stock: int = 0  # [@product_stock@], [@product_qty@]
+    low_stock_threshold: int = 10  # [@product_low_stock@]
+    track_inventory: bool = True  # [@product_track_inventory@]
+    allow_backorder: bool = False  # [@product_backorder@]
+    
+    # === SHIPPING ===
+    weight: Optional[float] = None  # [@product_weight@] in kg
+    length: Optional[float] = None  # [@product_length@] in cm
+    width: Optional[float] = None  # [@product_width@] in cm
+    height: Optional[float] = None  # [@product_height@] in cm
+    shipping_class: Optional[str] = None  # [@product_shipping_class@]
+    requires_shipping: bool = True  # [@product_requires_shipping@]
+    
+    # === SEO ===
+    meta_title: Optional[str] = None  # [@product_meta_title@]
+    meta_description: Optional[str] = None  # [@product_meta_description@]
+    url_slug: Optional[str] = None  # [@product_url@], [@product_slug@]
+    
+    # === VISIBILITY ===
+    is_active: bool = True  # [@product_active@]
+    is_featured: bool = False  # [@product_featured@]
+    visibility: str = "visible"  # [@product_visibility@] visible, hidden, search_only
+    
+    # === REVIEWS ===
+    rating: float = 0  # [@product_rating@]
+    reviews_count: int = 0  # [@product_reviews_count@]
+    
+    # === VARIANTS ===
+    has_variants: bool = False  # [@product_has_variants@]
+    variant_options: List[Dict[str, Any]] = []  # color, size, etc.
+    
+    # === CUSTOM FIELDS ===
+    custom_fields: Dict[str, Any] = {}  # For extensibility
 
 class ProductCreate(ProductBase):
     pass
 
 class ProductUpdate(BaseModel):
     name: Optional[str] = None
+    subtitle: Optional[str] = None
     description: Optional[str] = None
+    short_description: Optional[str] = None
     price: Optional[float] = None
     compare_price: Optional[float] = None
+    cost_price: Optional[float] = None
+    tax_class: Optional[str] = None
+    sku: Optional[str] = None
+    barcode: Optional[str] = None
+    mpn: Optional[str] = None
     category_id: Optional[str] = None
+    brand: Optional[str] = None
+    manufacturer: Optional[str] = None
+    tags: Optional[List[str]] = None
     images: Optional[List[str]] = None
+    thumbnail: Optional[str] = None
     stock: Optional[int] = None
+    low_stock_threshold: Optional[int] = None
+    track_inventory: Optional[bool] = None
+    allow_backorder: Optional[bool] = None
+    weight: Optional[float] = None
+    length: Optional[float] = None
+    width: Optional[float] = None
+    height: Optional[float] = None
+    shipping_class: Optional[str] = None
+    requires_shipping: Optional[bool] = None
+    meta_title: Optional[str] = None
+    meta_description: Optional[str] = None
+    url_slug: Optional[str] = None
     is_active: Optional[bool] = None
+    is_featured: Optional[bool] = None
+    visibility: Optional[str] = None
+    has_variants: Optional[bool] = None
+    variant_options: Optional[List[Dict[str, Any]]] = None
+    custom_fields: Optional[Dict[str, Any]] = None
 
 class Product(ProductBase):
-    id: str = Field(default_factory=lambda: str(uuid.uuid4()))
-    sales_count: int = 0
-    created_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
-    updated_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
+    id: str = Field(default_factory=lambda: str(uuid.uuid4()))  # [@product_id@]
+    sales_count: int = 0  # [@product_sales@]
+    views_count: int = 0  # [@product_views@]
+    created_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))  # [@product_created@]
+    updated_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))  # [@product_updated@]
 
 class OrderItemBase(BaseModel):
     product_id: str
