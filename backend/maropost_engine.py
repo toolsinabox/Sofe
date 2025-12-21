@@ -845,51 +845,82 @@ class MaropostTemplateEngine:
         return result
     
     def _process_inline_conditionals(self, content: str, item: Dict) -> str:
-        """Process inline conditionals within loop items."""
-        # Pattern for [%if value%]content[%/if%] or [%if value%]content[%else%]other[%/if%]
-        # Made more lenient to handle spaces and edge cases
-        pattern = re.compile(
-            r'\[%if\s*([^\]%]*)%\](.*?)(?:\[%else%\](.*?))?\[%/?if%\]',
-            re.DOTALL
-        )
+        """Process inline conditionals within loop items.
         
-        def evaluate_and_replace(match):
-            condition = match.group(1).strip() if match.group(1) else ''
-            true_content = match.group(2)
-            false_content = match.group(3) or ''
+        Uses a non-greedy approach that processes innermost conditionals first
+        to correctly handle nested [%if%] blocks.
+        """
+        
+        def evaluate_condition(condition: str) -> bool:
+            """Evaluate a condition string and return True/False."""
+            condition = condition.strip() if condition else ''
             
             # Empty condition is falsy
             if not condition:
-                return false_content
+                return False
             
             # Check if condition is a direct value check (already replaced)
             # If the condition was a tag like [@product_compare_price@] and it's now empty or a value
             if condition.startswith('[@') and condition.endswith('@]'):
                 # Tag wasn't replaced - treat as falsy
-                return false_content
+                return False
             
-            # Check if it's a simple value (after tag replacement)
-            # Truthy: non-empty string that's not just whitespace
-            if condition and condition.strip():
-                # Check for equality
-                if '==' in condition:
-                    left, right = condition.split('==', 1)
-                    return true_content if left.strip() == right.strip().strip("'\"") else false_content
-                if '!=' in condition:
-                    left, right = condition.split('!=', 1)
-                    return true_content if left.strip() != right.strip().strip("'\"") else false_content
-                
-                # Simple truthy check - non-empty, non-zero
-                if condition.lower() in ('y', 'yes', 'true', '1'):
-                    return true_content
-                if condition.lower() in ('n', 'no', 'false', '0', ''):
-                    return false_content
-                # Non-empty string is truthy
-                return true_content
+            # Check for equality operators
+            if '==' in condition:
+                left, right = condition.split('==', 1)
+                return left.strip() == right.strip().strip("'\"")
+            if '!=' in condition:
+                left, right = condition.split('!=', 1)
+                return left.strip() != right.strip().strip("'\"")
             
-            return false_content
+            # Simple truthy check - non-empty, non-zero
+            if condition.lower() in ('y', 'yes', 'true', '1'):
+                return True
+            if condition.lower() in ('n', 'no', 'false', '0', ''):
+                return False
+            
+            # Non-empty string is truthy
+            return bool(condition.strip())
         
-        return pattern.sub(evaluate_and_replace, content)
+        def process_single_conditional(text: str) -> tuple:
+            """Find and process a single innermost conditional block.
+            Returns (processed_text, found_match)."""
+            
+            # Pattern that matches ONLY innermost [%if%]...[%/if%] blocks
+            # Uses negative lookahead to ensure no nested [%if inside the content
+            # This pattern matches blocks that don't contain other [%if tags inside
+            inner_pattern = re.compile(
+                r'\[%if\s*([^%\]]*?)%\]((?:(?!\[%if\s)(?!\[%/if%\]).)*?)(?:\[%else%\]((?:(?!\[%if\s)(?!\[%/if%\]).)*?))?\[%/if%\]',
+                re.DOTALL
+            )
+            
+            match = inner_pattern.search(text)
+            if not match:
+                return text, False
+            
+            condition = match.group(1) if match.group(1) else ''
+            true_content = match.group(2) if match.group(2) else ''
+            false_content = match.group(3) if match.group(3) else ''
+            
+            if evaluate_condition(condition):
+                replacement = true_content
+            else:
+                replacement = false_content
+            
+            # Replace this match with the evaluated result
+            result = text[:match.start()] + replacement + text[match.end():]
+            return result, True
+        
+        # Process all conditionals by repeatedly processing innermost blocks
+        result = content
+        max_iterations = 50  # Safety limit for deeply nested structures
+        
+        for _ in range(max_iterations):
+            result, found = process_single_conditional(result)
+            if not found:
+                break
+        
+        return result
     
     def _replace_product_item_tags(self, content: str, product: Dict, store: Dict) -> str:
         """Replace product item tags within a loop."""
