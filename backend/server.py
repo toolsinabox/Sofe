@@ -2102,6 +2102,117 @@ async def upload_theme_files(theme_name: str, file: UploadFile = File(...), curr
 
 # ==================== SERVER-SIDE RENDERING ====================
 
+@api_router.get("/render/full-page/{page_type}")
+async def render_full_page(page_type: str, category_id: Optional[str] = None, product_id: Optional[str] = None):
+    """Render a complete storefront page with header, content, and footer from active theme"""
+    active_theme = await get_active_theme_name()
+    theme_path = THEMES_DIR / active_theme
+    
+    if not theme_path.exists():
+        raise HTTPException(status_code=404, detail="Active theme not found")
+    
+    engine = MaropostTemplateEngine(db)
+    context = await engine.get_store_context()
+    
+    # Get products for product grids
+    products = await db.products.find({}, {"_id": 0}).limit(20).to_list(20)
+    context["products"] = products
+    context["featured_products"] = products[:8]
+    
+    # Get banners
+    banners = await db.banners.find({}, {"_id": 0}).to_list(20)
+    context["banners"] = banners
+    
+    # Get categories
+    categories = await db.categories.find({}, {"_id": 0}).to_list(50)
+    context["categories"] = categories
+    
+    # Add page-specific context
+    if page_type == "category" and category_id:
+        category = await db.categories.find_one({"id": category_id}, {"_id": 0})
+        if category:
+            context["category"] = category
+            cat_products = await db.products.find({"category": category.get("name")}, {"_id": 0}).to_list(100)
+            context["products"] = cat_products
+    
+    if page_type == "product" and product_id:
+        product = await db.products.find_one({"id": product_id}, {"_id": 0})
+        if product:
+            context["product"] = product
+    
+    # Helper function to process includes recursively
+    async def process_includes(content):
+        pattern = r"\[%load_template\s+file:'([^']+)'/?%\]"
+        matches = re.findall(pattern, content)
+        
+        for include_path in matches:
+            include_file = theme_path / "templates" / include_path
+            if include_file.exists():
+                async with aiofiles.open(include_file, 'r', encoding='utf-8') as f:
+                    include_content = await f.read()
+                include_content = await process_includes(include_content)
+                content = re.sub(
+                    rf"\[%load_template\s+file:'{re.escape(include_path)}'/?%\]",
+                    include_content,
+                    content
+                )
+        return content
+    
+    # Build the full page from header + content + footer
+    header_file = theme_path / "templates" / "headers" / "template.html"
+    footer_file = theme_path / "templates" / "footers" / "template.html"
+    
+    # Determine content template
+    content_file = None
+    if page_type == "home":
+        content_file = theme_path / "templates" / "cms" / "home.template.html"
+    elif page_type == "category":
+        content_file = theme_path / "templates" / "cms" / "category.template.html"
+    elif page_type == "product":
+        content_file = theme_path / "templates" / "products" / "template.html"
+    elif page_type == "cart":
+        content_file = theme_path / "templates" / "cart" / "shopping_cart.template.html"
+    else:
+        content_file = theme_path / "templates" / "cms" / f"{page_type}.template.html"
+    
+    # Read templates
+    header_html = ""
+    footer_html = ""
+    content_html = ""
+    
+    if header_file.exists():
+        async with aiofiles.open(header_file, 'r', encoding='utf-8') as f:
+            header_html = await f.read()
+        header_html = await process_includes(header_html)
+    
+    if footer_file.exists():
+        async with aiofiles.open(footer_file, 'r', encoding='utf-8') as f:
+            footer_html = await f.read()
+        footer_html = await process_includes(footer_html)
+    
+    if content_file and content_file.exists():
+        async with aiofiles.open(content_file, 'r', encoding='utf-8') as f:
+            content_html = await f.read()
+        content_html = await process_includes(content_html)
+    else:
+        content_html = f"<div class='container py-8'><h1>Page not found: {page_type}</h1></div>"
+    
+    # Combine: The header should contain <body>, content goes in main, footer closes </body>
+    # For skeletal theme, header has full structure, we just need to add content before footer
+    full_html = header_html + content_html + footer_html
+    
+    # Process Maropost tags
+    rendered = await engine.render(full_html, context)
+    
+    # Replace theme asset paths
+    rendered = rendered.replace("[%ntheme_asset%]", f"/api/themes/{active_theme}/assets/")
+    rendered = rendered.replace("[%/ntheme_asset%]", "")
+    
+    return StreamingResponse(
+        io.BytesIO(rendered.encode('utf-8')),
+        media_type='text/html'
+    )
+
 @api_router.get("/render/{page_type}")
 async def render_storefront_page(page_type: str, category_id: Optional[str] = None, product_id: Optional[str] = None):
     """Render a storefront page using the active theme templates"""
