@@ -461,6 +461,18 @@ class MaropostTemplateEngine:
             return default_settings.dict()
         return settings
     
+    async def get_store_context(self) -> dict:
+        """Build the full context for template rendering"""
+        settings = await self.get_store_settings()
+        categories = await self.db.categories.find({}, {"_id": 0}).to_list(100)
+        
+        return {
+            "store": settings,
+            "categories": categories,
+            "current_year": str(datetime.now(timezone.utc).year),
+            "current_date": datetime.now(timezone.utc).strftime('%Y-%m-%d'),
+        }
+    
     async def process_data_tags(self, content: str, context: dict) -> str:
         """Process [@tag@] data tags"""
         # Store/Global Tags
