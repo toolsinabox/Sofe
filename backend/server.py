@@ -1,4 +1,5 @@
-from fastapi import FastAPI, APIRouter, HTTPException, Query, UploadFile, File, Form
+from fastapi import FastAPI, APIRouter, HTTPException, Query, UploadFile, File, Form, Depends
+from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
 from fastapi.staticfiles import StaticFiles
 from dotenv import load_dotenv
 from starlette.middleware.cors import CORSMiddleware
@@ -9,10 +10,12 @@ from pathlib import Path
 from pydantic import BaseModel, Field
 from typing import List, Optional, Dict, Any
 import uuid
-from datetime import datetime, timezone
+from datetime import datetime, timezone, timedelta
 import aiofiles
 import re
 import json
+from jose import JWTError, jwt
+from passlib.context import CryptContext
 
 ROOT_DIR = Path(__file__).parent
 load_dotenv(ROOT_DIR / '.env')
