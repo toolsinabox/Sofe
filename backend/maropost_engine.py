@@ -1090,35 +1090,36 @@ class MaropostTemplateEngine:
         header_content = await self.read_template(header_path) if header_path.exists() else ""
         footer_content = await self.read_template(footer_path) if footer_path.exists() else ""
         
-        # Check if wrapper has content slot
-        if self.CONTENT_SLOT in wrapper:
-            # Insert head partial before </head>
-            if head_partial:
-                wrapper = re.sub(r'</head>', f'{head_partial}</head>', wrapper, count=1)
-            
-            # Replace content slot with: header + page content + footer
-            full_body = header_content + page_content + footer_content
-            wrapper = wrapper.replace(self.CONTENT_SLOT, full_body)
-            
-            return wrapper
+        result = wrapper
+        
+        # Replace [%head_includes%] with head partial, or inject before </head>
+        if '[%head_includes%]' in result:
+            result = result.replace('[%head_includes%]', head_partial)
+        elif head_partial:
+            result = re.sub(r'</head>', f'{head_partial}</head>', result, count=1)
+        
+        # Replace [%header%] with header content
+        if '[%header%]' in result:
+            result = result.replace('[%header%]', header_content)
+        
+        # Replace [%footer%] with footer content
+        if '[%footer%]' in result:
+            result = result.replace('[%footer%]', footer_content)
+        
+        # Check if wrapper has content slot [%content%]
+        if self.CONTENT_SLOT in result:
+            # Replace content slot with page content
+            result = result.replace(self.CONTENT_SLOT, page_content)
+        elif '[%page_content%]' in result:
+            result = result.replace('[%page_content%]', page_content)
         else:
-            # Wrapper doesn't have content slot - it's a complete template
-            # This might be used for special wrappers like checkout.template.html
-            # that define their own structure
-            
-            # Still inject head partial if present
-            if head_partial:
-                wrapper = re.sub(r'</head>', f'{head_partial}</head>', wrapper, count=1)
-            
-            # If wrapper has [%header%] and [%footer%] slots, use those
-            if '[%header%]' in wrapper:
-                wrapper = wrapper.replace('[%header%]', header_content)
-            if '[%footer%]' in wrapper:
-                wrapper = wrapper.replace('[%footer%]', footer_content)
-            if '[%page_content%]' in wrapper:
-                wrapper = wrapper.replace('[%page_content%]', page_content)
-            
-            return wrapper
+            # No content slot - try injecting before </main> or at end of body
+            if '</main>' in result:
+                result = result.replace('</main>', f'{page_content}</main>')
+            elif '</body>' in result:
+                result = result.replace('</body>', f'{page_content}</body>')
+        
+        return result
     
     def fix_asset_paths(self, html: str) -> str:
         """Fix relative asset paths to use theme asset URL."""
