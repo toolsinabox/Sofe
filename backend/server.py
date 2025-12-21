@@ -876,6 +876,89 @@ class MaropostTemplateEngine:
 # Initialize template engine
 template_engine = MaropostTemplateEngine(db)
 
+# ==================== AUTH ENDPOINTS ====================
+
+@api_router.post("/auth/login", response_model=Token)
+async def login(login_data: UserLogin):
+    """Login with email and password"""
+    user = await db.users.find_one({"email": login_data.email})
+    
+    if not user or not verify_password(login_data.password, user["hashed_password"]):
+        raise HTTPException(
+            status_code=401,
+            detail="Incorrect email or password"
+        )
+    
+    if not user.get("is_active", True):
+        raise HTTPException(status_code=401, detail="User account is disabled")
+    
+    access_token = create_access_token(data={"sub": user["id"]})
+    
+    return Token(
+        access_token=access_token,
+        user={
+            "id": user["id"],
+            "email": user["email"],
+            "name": user["name"],
+            "role": user["role"]
+        }
+    )
+
+@api_router.post("/auth/register", response_model=Token)
+async def register(user_data: UserCreate):
+    """Register a new user"""
+    # Check if user already exists
+    existing = await db.users.find_one({"email": user_data.email})
+    if existing:
+        raise HTTPException(status_code=400, detail="Email already registered")
+    
+    # Create new user
+    new_user = User(
+        email=user_data.email,
+        name=user_data.name,
+        role=user_data.role,
+        hashed_password=get_password_hash(user_data.password)
+    )
+    
+    await db.users.insert_one(new_user.dict())
+    
+    access_token = create_access_token(data={"sub": new_user.id})
+    
+    return Token(
+        access_token=access_token,
+        user={
+            "id": new_user.id,
+            "email": new_user.email,
+            "name": new_user.name,
+            "role": new_user.role
+        }
+    )
+
+@api_router.get("/auth/me")
+async def get_me(current_user: dict = Depends(get_current_active_user)):
+    """Get current authenticated user"""
+    return current_user
+
+@api_router.post("/auth/init-admin")
+async def init_admin():
+    """Initialize the default admin user - only works if no users exist"""
+    user_count = await db.users.count_documents({})
+    
+    if user_count > 0:
+        return {"message": "Admin user already exists", "initialized": False}
+    
+    # Create default admin user
+    admin_user = User(
+        email="eddie@toolsinabox.com.au",
+        name="Eddie",
+        role="admin",
+        hashed_password=get_password_hash("Yealink1991%")
+    )
+    
+    await db.users.insert_one(admin_user.dict())
+    
+    return {"message": "Admin user created successfully", "initialized": True, "email": admin_user.email}
+
 # ==================== CATEGORY ENDPOINTS ====================
 
 @api_router.get("/")
