@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   Search,
   Filter,
@@ -8,9 +8,12 @@ import {
   Trash2,
   Eye,
   Mail,
-  Store
+  Store,
+  RefreshCw,
+  X,
+  AlertCircle
 } from 'lucide-react';
-import { Card, CardContent, CardHeader, CardTitle } from '../../components/ui/card';
+import { Card, CardContent } from '../../components/ui/card';
 import { Button } from '../../components/ui/button';
 import {
   DropdownMenu,
@@ -23,7 +26,6 @@ import {
   DialogContent,
   DialogHeader,
   DialogTitle,
-  DialogTrigger,
 } from '../../components/ui/dialog';
 import { Input } from '../../components/ui/input';
 import { Label } from '../../components/ui/label';
@@ -34,13 +36,73 @@ import {
   SelectTrigger,
   SelectValue,
 } from '../../components/ui/select';
-import { merchants } from '../../data/mock';
+import { useAuth } from '../../context/AuthContext';
+import axios from 'axios';
+
+const API_URL = process.env.REACT_APP_BACKEND_URL;
 
 const AdminMerchants = () => {
+  const { token } = useAuth();
+  const [merchants, setMerchants] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
   const [searchQuery, setSearchQuery] = useState('');
   const [statusFilter, setStatusFilter] = useState('all');
   const [planFilter, setPlanFilter] = useState('all');
+  
+  // Modal states
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+  const [isViewModalOpen, setIsViewModalOpen] = useState(false);
+  const [selectedMerchant, setSelectedMerchant] = useState(null);
+  const [saving, setSaving] = useState(false);
+  
+  // Form state
+  const [formData, setFormData] = useState({
+    name: '',
+    email: '',
+    url: '',
+    plan: 'Starter',
+    status: 'active',
+    logo: ''
+  });
+
+  const fetchMerchants = async () => {
+    setLoading(true);
+    setError(null);
+    
+    try {
+      const headers = { Authorization: `Bearer ${token}` };
+      const params = new URLSearchParams();
+      
+      if (statusFilter !== 'all') params.append('status', statusFilter);
+      if (planFilter !== 'all') params.append('plan', planFilter);
+      if (searchQuery) params.append('search', searchQuery);
+      
+      const res = await axios.get(`${API_URL}/api/admin/websites?${params}`, { headers });
+      setMerchants(res.data);
+    } catch (err) {
+      console.error('Error fetching merchants:', err);
+      setError(err.response?.data?.detail || 'Failed to load merchants');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    if (token) {
+      fetchMerchants();
+    }
+  }, [token, statusFilter, planFilter]);
+
+  // Debounced search
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      if (token) fetchMerchants();
+    }, 300);
+    return () => clearTimeout(timer);
+  }, [searchQuery]);
 
   const formatCurrency = (value) => {
     return new Intl.NumberFormat('en-US', {
@@ -48,19 +110,132 @@ const AdminMerchants = () => {
       currency: 'USD',
       minimumFractionDigits: 0,
       maximumFractionDigits: 0
-    }).format(value);
+    }).format(value || 0);
   };
 
-  const filteredMerchants = merchants.filter(merchant => {
-    const matchesSearch = merchant.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      merchant.email.toLowerCase().includes(searchQuery.toLowerCase());
-    const matchesStatus = statusFilter === 'all' || merchant.status === statusFilter;
-    const matchesPlan = planFilter === 'all' || merchant.plan === planFilter;
-    return matchesSearch && matchesStatus && matchesPlan;
-  });
+  const resetForm = () => {
+    setFormData({
+      name: '',
+      email: '',
+      url: '',
+      plan: 'Starter',
+      status: 'active',
+      logo: ''
+    });
+  };
+
+  const handleAddMerchant = async () => {
+    if (!formData.name || !formData.email) {
+      setError('Name and email are required');
+      return;
+    }
+    
+    setSaving(true);
+    setError(null);
+    
+    try {
+      const headers = { Authorization: `Bearer ${token}` };
+      await axios.post(`${API_URL}/api/admin/websites`, formData, { headers });
+      setIsAddModalOpen(false);
+      resetForm();
+      fetchMerchants();
+    } catch (err) {
+      setError(err.response?.data?.detail || 'Failed to create merchant');
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  const handleEditMerchant = async () => {
+    if (!formData.name || !formData.email) {
+      setError('Name and email are required');
+      return;
+    }
+    
+    setSaving(true);
+    setError(null);
+    
+    try {
+      const headers = { Authorization: `Bearer ${token}` };
+      await axios.put(`${API_URL}/api/admin/websites/${selectedMerchant.id}`, formData, { headers });
+      setIsEditModalOpen(false);
+      setSelectedMerchant(null);
+      resetForm();
+      fetchMerchants();
+    } catch (err) {
+      setError(err.response?.data?.detail || 'Failed to update merchant');
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  const handleDeleteMerchant = async () => {
+    setSaving(true);
+    setError(null);
+    
+    try {
+      const headers = { Authorization: `Bearer ${token}` };
+      await axios.delete(`${API_URL}/api/admin/websites/${selectedMerchant.id}`, { headers });
+      setIsDeleteModalOpen(false);
+      setSelectedMerchant(null);
+      fetchMerchants();
+    } catch (err) {
+      setError(err.response?.data?.detail || 'Failed to delete merchant');
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  const openEditModal = (merchant) => {
+    setSelectedMerchant(merchant);
+    setFormData({
+      name: merchant.name,
+      email: merchant.email,
+      url: merchant.url || '',
+      plan: merchant.plan,
+      status: merchant.status,
+      logo: merchant.logo || ''
+    });
+    setIsEditModalOpen(true);
+  };
+
+  const openViewModal = (merchant) => {
+    setSelectedMerchant(merchant);
+    setIsViewModalOpen(true);
+  };
+
+  const openDeleteModal = (merchant) => {
+    setSelectedMerchant(merchant);
+    setIsDeleteModalOpen(true);
+  };
 
   return (
     <div className="space-y-6">
+      {/* Header */}
+      <div className="flex items-center justify-between">
+        <div>
+          <h1 className="text-2xl font-bold text-white">Merchants</h1>
+          <p className="text-gray-400 text-sm">Manage all merchant websites on your platform</p>
+        </div>
+        <button 
+          onClick={fetchMerchants}
+          disabled={loading}
+          className="flex items-center gap-2 px-4 py-2 bg-gray-800/50 hover:bg-gray-700/50 border border-gray-700 rounded-lg text-gray-300 text-sm transition-all disabled:opacity-50 mr-3"
+        >
+          <RefreshCw size={16} className={loading ? 'animate-spin' : ''} />
+        </button>
+      </div>
+
+      {error && (
+        <div className="bg-red-500/10 border border-red-500/50 text-red-400 px-4 py-3 rounded-lg flex items-center gap-2">
+          <AlertCircle size={18} />
+          {error}
+          <button onClick={() => setError(null)} className="ml-auto">
+            <X size={18} />
+          </button>
+        </div>
+      )}
+
       {/* Header Actions */}
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div className="flex items-center gap-3 flex-1">
@@ -97,129 +272,491 @@ const AdminMerchants = () => {
             </SelectContent>
           </Select>
         </div>
-        <Dialog open={isAddModalOpen} onOpenChange={setIsAddModalOpen}>
-          <DialogTrigger asChild>
-            <Button className="bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-600 hover:to-blue-700 text-white">
+        <Button 
+          onClick={() => { resetForm(); setIsAddModalOpen(true); }}
+          className="bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-600 hover:to-blue-700 text-white"
+        >
+          <Plus size={18} className="mr-2" />
+          Add Merchant
+        </Button>
+      </div>
+
+      {/* Loading state */}
+      {loading ? (
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          {[1, 2, 3, 4, 5, 6].map(i => (
+            <Card key={i} className="bg-[#151b28] border-gray-800">
+              <CardContent className="p-6">
+                <div className="animate-pulse space-y-4">
+                  <div className="flex items-center gap-3">
+                    <div className="w-12 h-12 bg-gray-700 rounded-xl"></div>
+                    <div className="flex-1">
+                      <div className="h-4 bg-gray-700 rounded w-3/4 mb-2"></div>
+                      <div className="h-3 bg-gray-700 rounded w-1/2"></div>
+                    </div>
+                  </div>
+                  <div className="flex gap-2">
+                    <div className="h-6 bg-gray-700 rounded w-20"></div>
+                    <div className="h-6 bg-gray-700 rounded w-16"></div>
+                  </div>
+                  <div className="grid grid-cols-3 gap-4 pt-4 border-t border-gray-800">
+                    <div className="h-8 bg-gray-700 rounded"></div>
+                    <div className="h-8 bg-gray-700 rounded"></div>
+                    <div className="h-8 bg-gray-700 rounded"></div>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+          ))}
+        </div>
+      ) : merchants.length === 0 ? (
+        <div className="text-center py-16">
+          <Store size={64} className="mx-auto text-gray-600 mb-4" />
+          <h3 className="text-xl font-semibold text-white mb-2">No merchants found</h3>
+          <p className="text-gray-400 mb-6">
+            {searchQuery || statusFilter !== 'all' || planFilter !== 'all' 
+              ? 'Try adjusting your filters'
+              : 'Get started by adding your first merchant'}
+          </p>
+          {!searchQuery && statusFilter === 'all' && planFilter === 'all' && (
+            <Button 
+              onClick={() => { resetForm(); setIsAddModalOpen(true); }}
+              className="bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-600 hover:to-blue-700 text-white"
+            >
               <Plus size={18} className="mr-2" />
               Add Merchant
             </Button>
-          </DialogTrigger>
-          <DialogContent className="bg-[#151b28] border-gray-800 text-white max-w-lg">
-            <DialogHeader>
-              <DialogTitle className="text-xl font-semibold">Add New Merchant</DialogTitle>
-            </DialogHeader>
-            <div className="space-y-4 mt-4">
-              <div className="space-y-2">
-                <Label className="text-gray-300">Business Name</Label>
-                <Input className="bg-gray-800/50 border-gray-700 text-white" placeholder="Enter business name" />
-              </div>
-              <div className="space-y-2">
-                <Label className="text-gray-300">Email Address</Label>
-                <Input type="email" className="bg-gray-800/50 border-gray-700 text-white" placeholder="admin@business.com" />
-              </div>
+          )}
+        </div>
+      ) : (
+        /* Merchants Grid */
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          {merchants.map((merchant) => (
+            <Card key={merchant.id} className="bg-[#151b28] border-gray-800 hover:border-gray-700 transition-all duration-300 group">
+              <CardContent className="p-6">
+                <div className="flex items-start justify-between mb-4">
+                  <div className="flex items-center gap-3">
+                    {merchant.logo ? (
+                      <img
+                        src={merchant.logo.startsWith('/api') ? `${API_URL}${merchant.logo}` : merchant.logo}
+                        alt={merchant.name}
+                        className="w-12 h-12 rounded-xl object-cover"
+                      />
+                    ) : (
+                      <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-cyan-500 to-blue-600 flex items-center justify-center">
+                        <Store size={24} className="text-white" />
+                      </div>
+                    )}
+                    <div>
+                      <h3 className="text-white font-semibold">{merchant.name}</h3>
+                      <p className="text-gray-500 text-sm">{merchant.email}</p>
+                    </div>
+                  </div>
+                  <DropdownMenu>
+                    <DropdownMenuTrigger asChild>
+                      <button className="p-1 rounded hover:bg-gray-800 text-gray-400 opacity-0 group-hover:opacity-100 transition-opacity">
+                        <MoreVertical size={18} />
+                      </button>
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent align="end" className="bg-[#1a1f2e] border-gray-700">
+                      <DropdownMenuItem 
+                        onClick={() => openViewModal(merchant)}
+                        className="text-gray-300 hover:text-white hover:bg-gray-700/50 cursor-pointer"
+                      >
+                        <Eye size={16} className="mr-2" /> View Details
+                      </DropdownMenuItem>
+                      <DropdownMenuItem 
+                        onClick={() => openEditModal(merchant)}
+                        className="text-gray-300 hover:text-white hover:bg-gray-700/50 cursor-pointer"
+                      >
+                        <Edit size={16} className="mr-2" /> Edit
+                      </DropdownMenuItem>
+                      <DropdownMenuItem className="text-gray-300 hover:text-white hover:bg-gray-700/50 cursor-pointer">
+                        <Mail size={16} className="mr-2" /> Send Email
+                      </DropdownMenuItem>
+                      <DropdownMenuItem 
+                        onClick={() => openDeleteModal(merchant)}
+                        className="text-red-400 hover:text-red-300 hover:bg-red-500/10 cursor-pointer"
+                      >
+                        <Trash2 size={16} className="mr-2" /> Delete
+                      </DropdownMenuItem>
+                    </DropdownMenuContent>
+                  </DropdownMenu>
+                </div>
+
+                <div className="flex items-center gap-2 mb-4">
+                  <span className={`px-2.5 py-1 rounded-full text-xs font-medium ${
+                    merchant.plan === 'Enterprise'
+                      ? 'bg-purple-500/20 text-purple-400'
+                      : merchant.plan === 'Professional'
+                      ? 'bg-cyan-500/20 text-cyan-400'
+                      : 'bg-gray-500/20 text-gray-400'
+                  }`}>
+                    {merchant.plan}
+                  </span>
+                  <span className={`px-2.5 py-1 rounded-full text-xs font-medium ${
+                    merchant.status === 'active'
+                      ? 'bg-emerald-500/20 text-emerald-400'
+                      : 'bg-red-500/20 text-red-400'
+                  }`}>
+                    {merchant.status?.charAt(0).toUpperCase() + merchant.status?.slice(1)}
+                  </span>
+                </div>
+
+                {merchant.url && (
+                  <a 
+                    href={merchant.url} 
+                    target="_blank" 
+                    rel="noopener noreferrer"
+                    className="text-cyan-400 text-sm hover:text-cyan-300 block mb-4 truncate"
+                  >
+                    {merchant.url}
+                  </a>
+                )}
+
+                <div className="grid grid-cols-3 gap-4 pt-4 border-t border-gray-800">
+                  <div>
+                    <p className="text-gray-500 text-xs mb-1">Revenue</p>
+                    <p className="text-white font-semibold text-sm">{formatCurrency(merchant.revenue)}</p>
+                  </div>
+                  <div>
+                    <p className="text-gray-500 text-xs mb-1">Orders</p>
+                    <p className="text-white font-semibold text-sm">{(merchant.orders || 0).toLocaleString()}</p>
+                  </div>
+                  <div>
+                    <p className="text-gray-500 text-xs mb-1">Products</p>
+                    <p className="text-white font-semibold text-sm">{(merchant.products || 0).toLocaleString()}</p>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+          ))}
+        </div>
+      )}
+
+      {/* Add Merchant Modal */}
+      <Dialog open={isAddModalOpen} onOpenChange={setIsAddModalOpen}>
+        <DialogContent className="bg-[#151b28] border-gray-800 text-white max-w-lg">
+          <DialogHeader>
+            <DialogTitle className="text-xl font-semibold">Add New Merchant</DialogTitle>
+          </DialogHeader>
+          <div className="space-y-4 mt-4">
+            <div className="space-y-2">
+              <Label className="text-gray-300">Business Name *</Label>
+              <Input 
+                value={formData.name}
+                onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                className="bg-gray-800/50 border-gray-700 text-white" 
+                placeholder="Enter business name" 
+              />
+            </div>
+            <div className="space-y-2">
+              <Label className="text-gray-300">Email Address *</Label>
+              <Input 
+                type="email" 
+                value={formData.email}
+                onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+                className="bg-gray-800/50 border-gray-700 text-white" 
+                placeholder="admin@business.com" 
+              />
+            </div>
+            <div className="space-y-2">
+              <Label className="text-gray-300">Website URL</Label>
+              <Input 
+                value={formData.url}
+                onChange={(e) => setFormData({ ...formData, url: e.target.value })}
+                className="bg-gray-800/50 border-gray-700 text-white" 
+                placeholder="https://example.com" 
+              />
+            </div>
+            <div className="grid grid-cols-2 gap-4">
               <div className="space-y-2">
                 <Label className="text-gray-300">Plan</Label>
-                <Select>
+                <Select value={formData.plan} onValueChange={(v) => setFormData({ ...formData, plan: v })}>
                   <SelectTrigger className="bg-gray-800/50 border-gray-700 text-gray-300">
                     <SelectValue placeholder="Select plan" />
                   </SelectTrigger>
                   <SelectContent className="bg-[#1a1f2e] border-gray-700">
-                    <SelectItem value="starter" className="text-gray-300">Starter</SelectItem>
-                    <SelectItem value="professional" className="text-gray-300">Professional</SelectItem>
-                    <SelectItem value="enterprise" className="text-gray-300">Enterprise</SelectItem>
+                    <SelectItem value="Starter" className="text-gray-300">Starter</SelectItem>
+                    <SelectItem value="Professional" className="text-gray-300">Professional</SelectItem>
+                    <SelectItem value="Enterprise" className="text-gray-300">Enterprise</SelectItem>
                   </SelectContent>
                 </Select>
               </div>
-              <div className="flex justify-end gap-3 mt-6">
-                <Button variant="ghost" onClick={() => setIsAddModalOpen(false)} className="text-gray-400 hover:text-white hover:bg-gray-800">
-                  Cancel
+              <div className="space-y-2">
+                <Label className="text-gray-300">Status</Label>
+                <Select value={formData.status} onValueChange={(v) => setFormData({ ...formData, status: v })}>
+                  <SelectTrigger className="bg-gray-800/50 border-gray-700 text-gray-300">
+                    <SelectValue placeholder="Select status" />
+                  </SelectTrigger>
+                  <SelectContent className="bg-[#1a1f2e] border-gray-700">
+                    <SelectItem value="active" className="text-gray-300">Active</SelectItem>
+                    <SelectItem value="suspended" className="text-gray-300">Suspended</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+            </div>
+            <div className="space-y-2">
+              <Label className="text-gray-300">Logo URL</Label>
+              <Input 
+                value={formData.logo}
+                onChange={(e) => setFormData({ ...formData, logo: e.target.value })}
+                className="bg-gray-800/50 border-gray-700 text-white" 
+                placeholder="https://example.com/logo.png" 
+              />
+            </div>
+            <div className="flex justify-end gap-3 mt-6">
+              <Button 
+                variant="ghost" 
+                onClick={() => setIsAddModalOpen(false)} 
+                className="text-gray-400 hover:text-white hover:bg-gray-800"
+              >
+                Cancel
+              </Button>
+              <Button 
+                onClick={handleAddMerchant}
+                disabled={saving}
+                className="bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-600 hover:to-blue-700 text-white"
+              >
+                {saving ? 'Creating...' : 'Create Merchant'}
+              </Button>
+            </div>
+          </div>
+        </DialogContent>
+      </Dialog>
+
+      {/* Edit Merchant Modal */}
+      <Dialog open={isEditModalOpen} onOpenChange={setIsEditModalOpen}>
+        <DialogContent className="bg-[#151b28] border-gray-800 text-white max-w-lg">
+          <DialogHeader>
+            <DialogTitle className="text-xl font-semibold">Edit Merchant</DialogTitle>
+          </DialogHeader>
+          <div className="space-y-4 mt-4">
+            <div className="space-y-2">
+              <Label className="text-gray-300">Business Name *</Label>
+              <Input 
+                value={formData.name}
+                onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                className="bg-gray-800/50 border-gray-700 text-white" 
+                placeholder="Enter business name" 
+              />
+            </div>
+            <div className="space-y-2">
+              <Label className="text-gray-300">Email Address *</Label>
+              <Input 
+                type="email" 
+                value={formData.email}
+                onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+                className="bg-gray-800/50 border-gray-700 text-white" 
+                placeholder="admin@business.com" 
+              />
+            </div>
+            <div className="space-y-2">
+              <Label className="text-gray-300">Website URL</Label>
+              <Input 
+                value={formData.url}
+                onChange={(e) => setFormData({ ...formData, url: e.target.value })}
+                className="bg-gray-800/50 border-gray-700 text-white" 
+                placeholder="https://example.com" 
+              />
+            </div>
+            <div className="grid grid-cols-2 gap-4">
+              <div className="space-y-2">
+                <Label className="text-gray-300">Plan</Label>
+                <Select value={formData.plan} onValueChange={(v) => setFormData({ ...formData, plan: v })}>
+                  <SelectTrigger className="bg-gray-800/50 border-gray-700 text-gray-300">
+                    <SelectValue placeholder="Select plan" />
+                  </SelectTrigger>
+                  <SelectContent className="bg-[#1a1f2e] border-gray-700">
+                    <SelectItem value="Starter" className="text-gray-300">Starter</SelectItem>
+                    <SelectItem value="Professional" className="text-gray-300">Professional</SelectItem>
+                    <SelectItem value="Enterprise" className="text-gray-300">Enterprise</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+              <div className="space-y-2">
+                <Label className="text-gray-300">Status</Label>
+                <Select value={formData.status} onValueChange={(v) => setFormData({ ...formData, status: v })}>
+                  <SelectTrigger className="bg-gray-800/50 border-gray-700 text-gray-300">
+                    <SelectValue placeholder="Select status" />
+                  </SelectTrigger>
+                  <SelectContent className="bg-[#1a1f2e] border-gray-700">
+                    <SelectItem value="active" className="text-gray-300">Active</SelectItem>
+                    <SelectItem value="suspended" className="text-gray-300">Suspended</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+            </div>
+            <div className="space-y-2">
+              <Label className="text-gray-300">Logo URL</Label>
+              <Input 
+                value={formData.logo}
+                onChange={(e) => setFormData({ ...formData, logo: e.target.value })}
+                className="bg-gray-800/50 border-gray-700 text-white" 
+                placeholder="https://example.com/logo.png" 
+              />
+            </div>
+            <div className="flex justify-end gap-3 mt-6">
+              <Button 
+                variant="ghost" 
+                onClick={() => setIsEditModalOpen(false)} 
+                className="text-gray-400 hover:text-white hover:bg-gray-800"
+              >
+                Cancel
+              </Button>
+              <Button 
+                onClick={handleEditMerchant}
+                disabled={saving}
+                className="bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-600 hover:to-blue-700 text-white"
+              >
+                {saving ? 'Saving...' : 'Save Changes'}
+              </Button>
+            </div>
+          </div>
+        </DialogContent>
+      </Dialog>
+
+      {/* View Merchant Modal */}
+      <Dialog open={isViewModalOpen} onOpenChange={setIsViewModalOpen}>
+        <DialogContent className="bg-[#151b28] border-gray-800 text-white max-w-lg">
+          <DialogHeader>
+            <DialogTitle className="text-xl font-semibold">Merchant Details</DialogTitle>
+          </DialogHeader>
+          {selectedMerchant && (
+            <div className="space-y-6 mt-4">
+              <div className="flex items-center gap-4">
+                {selectedMerchant.logo ? (
+                  <img
+                    src={selectedMerchant.logo.startsWith('/api') ? `${API_URL}${selectedMerchant.logo}` : selectedMerchant.logo}
+                    alt={selectedMerchant.name}
+                    className="w-16 h-16 rounded-xl object-cover"
+                  />
+                ) : (
+                  <div className="w-16 h-16 rounded-xl bg-gradient-to-br from-cyan-500 to-blue-600 flex items-center justify-center">
+                    <Store size={32} className="text-white" />
+                  </div>
+                )}
+                <div>
+                  <h3 className="text-xl font-semibold text-white">{selectedMerchant.name}</h3>
+                  <p className="text-gray-400">{selectedMerchant.email}</p>
+                </div>
+              </div>
+
+              <div className="grid grid-cols-2 gap-4">
+                <div className="p-4 bg-gray-800/30 rounded-lg">
+                  <p className="text-gray-400 text-sm">Plan</p>
+                  <p className="text-white font-medium">{selectedMerchant.plan}</p>
+                </div>
+                <div className="p-4 bg-gray-800/30 rounded-lg">
+                  <p className="text-gray-400 text-sm">Status</p>
+                  <span className={`px-2 py-0.5 rounded text-sm font-medium ${
+                    selectedMerchant.status === 'active'
+                      ? 'bg-emerald-500/20 text-emerald-400'
+                      : 'bg-red-500/20 text-red-400'
+                  }`}>
+                    {selectedMerchant.status?.charAt(0).toUpperCase() + selectedMerchant.status?.slice(1)}
+                  </span>
+                </div>
+              </div>
+
+              {selectedMerchant.url && (
+                <div className="p-4 bg-gray-800/30 rounded-lg">
+                  <p className="text-gray-400 text-sm mb-1">Website URL</p>
+                  <a 
+                    href={selectedMerchant.url} 
+                    target="_blank" 
+                    rel="noopener noreferrer"
+                    className="text-cyan-400 hover:text-cyan-300"
+                  >
+                    {selectedMerchant.url}
+                  </a>
+                </div>
+              )}
+
+              <div className="grid grid-cols-4 gap-4">
+                <div className="p-4 bg-gray-800/30 rounded-lg text-center">
+                  <p className="text-gray-400 text-xs mb-1">Revenue</p>
+                  <p className="text-white font-semibold">{formatCurrency(selectedMerchant.revenue)}</p>
+                </div>
+                <div className="p-4 bg-gray-800/30 rounded-lg text-center">
+                  <p className="text-gray-400 text-xs mb-1">Orders</p>
+                  <p className="text-white font-semibold">{(selectedMerchant.orders || 0).toLocaleString()}</p>
+                </div>
+                <div className="p-4 bg-gray-800/30 rounded-lg text-center">
+                  <p className="text-gray-400 text-xs mb-1">Products</p>
+                  <p className="text-white font-semibold">{(selectedMerchant.products || 0).toLocaleString()}</p>
+                </div>
+                <div className="p-4 bg-gray-800/30 rounded-lg text-center">
+                  <p className="text-gray-400 text-xs mb-1">Customers</p>
+                  <p className="text-white font-semibold">{(selectedMerchant.customers || 0).toLocaleString()}</p>
+                </div>
+              </div>
+
+              <div className="p-4 bg-gray-800/30 rounded-lg">
+                <p className="text-gray-400 text-sm mb-1">Joined</p>
+                <p className="text-white">{new Date(selectedMerchant.created_at).toLocaleDateString('en-US', {
+                  year: 'numeric',
+                  month: 'long',
+                  day: 'numeric'
+                })}</p>
+              </div>
+
+              <div className="flex justify-end gap-3">
+                <Button 
+                  variant="ghost" 
+                  onClick={() => setIsViewModalOpen(false)} 
+                  className="text-gray-400 hover:text-white hover:bg-gray-800"
+                >
+                  Close
                 </Button>
-                <Button className="bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-600 hover:to-blue-700 text-white">
-                  Create Merchant
+                <Button 
+                  onClick={() => {
+                    setIsViewModalOpen(false);
+                    openEditModal(selectedMerchant);
+                  }}
+                  className="bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-600 hover:to-blue-700 text-white"
+                >
+                  <Edit size={16} className="mr-2" />
+                  Edit Merchant
                 </Button>
               </div>
             </div>
-          </DialogContent>
-        </Dialog>
-      </div>
+          )}
+        </DialogContent>
+      </Dialog>
 
-      {/* Merchants Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {filteredMerchants.map((merchant) => (
-          <Card key={merchant.id} className="bg-[#151b28] border-gray-800 hover:border-gray-700 transition-all duration-300 group">
-            <CardContent className="p-6">
-              <div className="flex items-start justify-between mb-4">
-                <div className="flex items-center gap-3">
-                  <img
-                    src={merchant.logo}
-                    alt={merchant.name}
-                    className="w-12 h-12 rounded-xl object-cover"
-                  />
-                  <div>
-                    <h3 className="text-white font-semibold">{merchant.name}</h3>
-                    <p className="text-gray-500 text-sm">{merchant.email}</p>
-                  </div>
-                </div>
-                <DropdownMenu>
-                  <DropdownMenuTrigger asChild>
-                    <button className="p-1 rounded hover:bg-gray-800 text-gray-400 opacity-0 group-hover:opacity-100 transition-opacity">
-                      <MoreVertical size={18} />
-                    </button>
-                  </DropdownMenuTrigger>
-                  <DropdownMenuContent align="end" className="bg-[#1a1f2e] border-gray-700">
-                    <DropdownMenuItem className="text-gray-300 hover:text-white hover:bg-gray-700/50 cursor-pointer">
-                      <Eye size={16} className="mr-2" /> View Details
-                    </DropdownMenuItem>
-                    <DropdownMenuItem className="text-gray-300 hover:text-white hover:bg-gray-700/50 cursor-pointer">
-                      <Edit size={16} className="mr-2" /> Edit
-                    </DropdownMenuItem>
-                    <DropdownMenuItem className="text-gray-300 hover:text-white hover:bg-gray-700/50 cursor-pointer">
-                      <Mail size={16} className="mr-2" /> Send Email
-                    </DropdownMenuItem>
-                    <DropdownMenuItem className="text-red-400 hover:text-red-300 hover:bg-red-500/10 cursor-pointer">
-                      <Trash2 size={16} className="mr-2" /> Delete
-                    </DropdownMenuItem>
-                  </DropdownMenuContent>
-                </DropdownMenu>
+      {/* Delete Confirmation Modal */}
+      <Dialog open={isDeleteModalOpen} onOpenChange={setIsDeleteModalOpen}>
+        <DialogContent className="bg-[#151b28] border-gray-800 text-white max-w-md">
+          <DialogHeader>
+            <DialogTitle className="text-xl font-semibold text-red-400">Delete Merchant</DialogTitle>
+          </DialogHeader>
+          {selectedMerchant && (
+            <div className="space-y-4 mt-4">
+              <p className="text-gray-300">
+                Are you sure you want to delete <span className="text-white font-semibold">{selectedMerchant.name}</span>? 
+                This action cannot be undone.
+              </p>
+              <div className="flex justify-end gap-3 mt-6">
+                <Button 
+                  variant="ghost" 
+                  onClick={() => setIsDeleteModalOpen(false)} 
+                  className="text-gray-400 hover:text-white hover:bg-gray-800"
+                >
+                  Cancel
+                </Button>
+                <Button 
+                  onClick={handleDeleteMerchant}
+                  disabled={saving}
+                  className="bg-red-600 hover:bg-red-700 text-white"
+                >
+                  {saving ? 'Deleting...' : 'Delete Merchant'}
+                </Button>
               </div>
-
-              <div className="flex items-center gap-2 mb-4">
-                <span className={`px-2.5 py-1 rounded-full text-xs font-medium ${
-                  merchant.plan === 'Enterprise'
-                    ? 'bg-purple-500/20 text-purple-400'
-                    : merchant.plan === 'Professional'
-                    ? 'bg-cyan-500/20 text-cyan-400'
-                    : 'bg-gray-500/20 text-gray-400'
-                }`}>
-                  {merchant.plan}
-                </span>
-                <span className={`px-2.5 py-1 rounded-full text-xs font-medium ${
-                  merchant.status === 'active'
-                    ? 'bg-emerald-500/20 text-emerald-400'
-                    : 'bg-red-500/20 text-red-400'
-                }`}>
-                  {merchant.status.charAt(0).toUpperCase() + merchant.status.slice(1)}
-                </span>
-              </div>
-
-              <div className="grid grid-cols-3 gap-4 pt-4 border-t border-gray-800">
-                <div>
-                  <p className="text-gray-500 text-xs mb-1">Revenue</p>
-                  <p className="text-white font-semibold text-sm">{formatCurrency(merchant.revenue)}</p>
-                </div>
-                <div>
-                  <p className="text-gray-500 text-xs mb-1">Orders</p>
-                  <p className="text-white font-semibold text-sm">{merchant.orders.toLocaleString()}</p>
-                </div>
-                <div>
-                  <p className="text-gray-500 text-xs mb-1">Products</p>
-                  <p className="text-white font-semibold text-sm">{merchant.products}</p>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-        ))}
-      </div>
+            </div>
+          )}
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };
