@@ -1,4 +1,5 @@
-from fastapi import FastAPI, APIRouter, HTTPException, Query
+from fastapi import FastAPI, APIRouter, HTTPException, Query, UploadFile, File, Form
+from fastapi.staticfiles import StaticFiles
 from dotenv import load_dotenv
 from starlette.middleware.cors import CORSMiddleware
 from motor.motor_asyncio import AsyncIOMotorClient
@@ -6,12 +7,22 @@ import os
 import logging
 from pathlib import Path
 from pydantic import BaseModel, Field
-from typing import List, Optional
+from typing import List, Optional, Dict, Any
 import uuid
-from datetime import datetime
+from datetime import datetime, timezone
+import aiofiles
+import re
+import json
 
 ROOT_DIR = Path(__file__).parent
 load_dotenv(ROOT_DIR / '.env')
+
+# Create uploads directory
+UPLOADS_DIR = ROOT_DIR / "uploads"
+UPLOADS_DIR.mkdir(exist_ok=True)
+(UPLOADS_DIR / "logos").mkdir(exist_ok=True)
+(UPLOADS_DIR / "banners").mkdir(exist_ok=True)
+(UPLOADS_DIR / "products").mkdir(exist_ok=True)
 
 # MongoDB connection
 mongo_url = os.environ['MONGO_URL']
@@ -47,8 +58,8 @@ class CategoryCreate(CategoryBase):
 class Category(CategoryBase):
     id: str = Field(default_factory=lambda: str(uuid.uuid4()))
     product_count: int = 0
-    created_at: datetime = Field(default_factory=datetime.utcnow)
-    updated_at: datetime = Field(default_factory=datetime.utcnow)
+    created_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
+    updated_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
 
 class ProductBase(BaseModel):
     name: str
@@ -79,8 +90,8 @@ class ProductUpdate(BaseModel):
 class Product(ProductBase):
     id: str = Field(default_factory=lambda: str(uuid.uuid4()))
     sales_count: int = 0
-    created_at: datetime = Field(default_factory=datetime.utcnow)
-    updated_at: datetime = Field(default_factory=datetime.utcnow)
+    created_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
+    updated_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
 
 class OrderItemBase(BaseModel):
     product_id: str
@@ -106,31 +117,47 @@ class OrderCreate(OrderBase):
 
 class Order(OrderBase):
     id: str = Field(default_factory=lambda: str(uuid.uuid4()))
-    order_number: str = Field(default_factory=lambda: f"ORD-{datetime.utcnow().strftime('%Y%m%d')}-{str(uuid.uuid4())[:8].upper()}")
+    order_number: str = Field(default_factory=lambda: f"ORD-{datetime.now(timezone.utc).strftime('%Y%m%d')}-{str(uuid.uuid4())[:8].upper()}")
     status: str = "pending"  # pending, processing, shipped, delivered, cancelled
     payment_status: str = "pending"  # pending, paid, refunded
-    created_at: datetime = Field(default_factory=datetime.utcnow)
-    updated_at: datetime = Field(default_factory=datetime.utcnow)
+    created_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
+    updated_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
 
 class CustomerBase(BaseModel):
     name: str
     email: str
     phone: Optional[str] = None
+    first_name: Optional[str] = None
+    last_name: Optional[str] = None
+    address: Optional[str] = None
+    city: Optional[str] = None
+    state: Optional[str] = None
+    zip_code: Optional[str] = None
+    country: Optional[str] = "USA"
+
+class CustomerCreate(CustomerBase):
+    password: Optional[str] = None
+
+class CustomerUpdate(BaseModel):
+    name: Optional[str] = None
+    email: Optional[str] = None
+    phone: Optional[str] = None
+    first_name: Optional[str] = None
+    last_name: Optional[str] = None
+    address: Optional[str] = None
+    city: Optional[str] = None
+    state: Optional[str] = None
+    zip_code: Optional[str] = None
+    country: Optional[str] = None
+    status: Optional[str] = None
 
 class Customer(CustomerBase):
     id: str = Field(default_factory=lambda: str(uuid.uuid4()))
     total_orders: int = 0
     total_spent: float = 0
     status: str = "active"  # active, vip, inactive
-    created_at: datetime = Field(default_factory=datetime.utcnow)
-
-class CartItem(BaseModel):
-    product_id: str
-    quantity: int
-
-class CartBase(BaseModel):
-    items: List[CartItem]
-    session_id: str
+    created_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
+    updated_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
 
 class HeroBanner(BaseModel):
     id: str = Field(default_factory=lambda: str(uuid.uuid4()))
@@ -138,8 +165,630 @@ class HeroBanner(BaseModel):
     subtitle: Optional[str] = None
     image: str
     link: Optional[str] = None
+    button_text: Optional[str] = "Shop Now"
+    text_color: Optional[str] = "#FFFFFF"
+    overlay_color: Optional[str] = "rgba(0,0,0,0.3)"
     is_active: bool = True
     sort_order: int = 0
+    created_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
+
+class BannerUpdate(BaseModel):
+    title: Optional[str] = None
+    subtitle: Optional[str] = None
+    image: Optional[str] = None
+    link: Optional[str] = None
+    button_text: Optional[str] = None
+    text_color: Optional[str] = None
+    overlay_color: Optional[str] = None
+    is_active: Optional[bool] = None
+    sort_order: Optional[int] = None
+
+# ==================== STORE SETTINGS ====================
+
+class StoreSettings(BaseModel):
+    id: str = "store_settings"
+    store_name: str = "Fashion Hub"
+    store_email: str = "contact@fashionhub.com"
+    store_phone: str = "1800 123 456"
+    store_url: str = ""
+    store_logo: Optional[str] = None
+    store_favicon: Optional[str] = None
+    currency: str = "USD"
+    currency_symbol: str = "$"
+    store_address: Optional[str] = None
+    store_city: Optional[str] = None
+    store_state: Optional[str] = None
+    store_zip: Optional[str] = None
+    store_country: str = "USA"
+    store_facebook: Optional[str] = None
+    store_instagram: Optional[str] = None
+    store_twitter: Optional[str] = None
+    store_youtube: Optional[str] = None
+    store_tiktok: Optional[str] = None
+    free_shipping_threshold: float = 50.0
+    tax_rate: float = 0.08
+    meta_title: Optional[str] = None
+    meta_description: Optional[str] = None
+    google_analytics_id: Optional[str] = None
+    updated_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
+
+class StoreSettingsUpdate(BaseModel):
+    store_name: Optional[str] = None
+    store_email: Optional[str] = None
+    store_phone: Optional[str] = None
+    store_url: Optional[str] = None
+    store_logo: Optional[str] = None
+    store_favicon: Optional[str] = None
+    currency: Optional[str] = None
+    currency_symbol: Optional[str] = None
+    store_address: Optional[str] = None
+    store_city: Optional[str] = None
+    store_state: Optional[str] = None
+    store_zip: Optional[str] = None
+    store_country: Optional[str] = None
+    store_facebook: Optional[str] = None
+    store_instagram: Optional[str] = None
+    store_twitter: Optional[str] = None
+    store_youtube: Optional[str] = None
+    store_tiktok: Optional[str] = None
+    free_shipping_threshold: Optional[float] = None
+    tax_rate: Optional[float] = None
+    meta_title: Optional[str] = None
+    meta_description: Optional[str] = None
+    google_analytics_id: Optional[str] = None
+
+# ==================== THEME TEMPLATES ====================
+
+class ThemeTemplate(BaseModel):
+    id: str = Field(default_factory=lambda: str(uuid.uuid4()))
+    name: str  # e.g., "header", "footer", "homepage", "product-page"
+    display_name: str
+    content: str  # HTML/template content with Maropost-style tags
+    is_active: bool = True
+    template_type: str = "partial"  # partial, page, layout
+    created_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
+    updated_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
+
+class ThemeTemplateUpdate(BaseModel):
+    name: Optional[str] = None
+    display_name: Optional[str] = None
+    content: Optional[str] = None
+    is_active: Optional[bool] = None
+    template_type: Optional[str] = None
+
+class ContentZone(BaseModel):
+    id: str = Field(default_factory=lambda: str(uuid.uuid4()))
+    zone_id: str  # e.g., "homepage_banner", "footer_links"
+    name: str
+    content: str  # HTML content
+    is_active: bool = True
+    created_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
+    updated_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
+
+# ==================== MAROPOST TEMPLATE ENGINE ====================
+
+class MaropostTemplateEngine:
+    """Template engine that processes Maropost-style tags"""
+    
+    def __init__(self, db_instance):
+        self.db = db_instance
+    
+    async def get_store_settings(self) -> dict:
+        """Get store settings from database"""
+        settings = await self.db.store_settings.find_one({"id": "store_settings"})
+        if not settings:
+            default_settings = StoreSettings()
+            return default_settings.dict()
+        return settings
+    
+    async def process_data_tags(self, content: str, context: dict) -> str:
+        """Process [@tag@] data tags"""
+        # Store/Global Tags
+        store = context.get('store', {})
+        current_time = datetime.now(timezone.utc)
+        
+        global_replacements = {
+            '[@store_name@]': store.get('store_name', ''),
+            '[@store_email@]': store.get('store_email', ''),
+            '[@store_phone@]': store.get('store_phone', ''),
+            '[@store_url@]': store.get('store_url', ''),
+            '[@store_logo@]': store.get('store_logo', ''),
+            '[@currency@]': store.get('currency', 'USD'),
+            '[@currency_symbol@]': store.get('currency_symbol', '$'),
+            '[@store_facebook@]': store.get('store_facebook', ''),
+            '[@store_instagram@]': store.get('store_instagram', ''),
+            '[@store_twitter@]': store.get('store_twitter', ''),
+            '[@current_date@]': current_time.strftime('%Y-%m-%d'),
+            '[@current_year@]': str(current_time.year),
+        }
+        
+        for tag, value in global_replacements.items():
+            content = content.replace(tag, str(value or ''))
+        
+        # Product tags (when in product context)
+        if 'product' in context:
+            prod = context['product']
+            content = self._replace_product_tags(content, prod, context.get('store', {}))
+        
+        # Category/Content tags
+        if 'category' in context:
+            cat = context['category']
+            content = self._replace_category_tags(content, cat)
+        
+        # Cart tags
+        if 'cart' in context:
+            cart = context['cart']
+            content = self._replace_cart_tags(content, cart, store)
+        
+        # Customer tags
+        if 'customer' in context:
+            cust = context['customer']
+            content = self._replace_customer_tags(content, cust)
+        
+        # Order tags
+        if 'order' in context:
+            order = context['order']
+            content = self._replace_order_tags(content, order)
+        
+        return content
+    
+    def _replace_product_tags(self, content: str, prod: dict, store: dict) -> str:
+        """Replace product-related data tags"""
+        price = prod.get('price', 0)
+        compare_price = prod.get('compare_price', 0) or 0
+        currency_symbol = store.get('currency_symbol', '$')
+        
+        save_price = compare_price - price if compare_price > price else 0
+        save_percent = int((save_price / compare_price * 100)) if compare_price > 0 else 0
+        
+        replacements = {
+            '[@SKU@]': prod.get('sku', ''),
+            '[@name@]': prod.get('name', ''),
+            '[@model@]': prod.get('model', ''),
+            '[@brand@]': prod.get('brand', ''),
+            '[@description@]': prod.get('description', ''),
+            '[@short_description@]': (prod.get('description', '') or '')[:150],
+            '[@price@]': f"{price:.2f}",
+            '[@price_formatted@]': f"{currency_symbol}{price:.2f}",
+            '[@rrp@]': f"{compare_price:.2f}" if compare_price else '',
+            '[@rrp_formatted@]': f"{currency_symbol}{compare_price:.2f}" if compare_price else '',
+            '[@save_price@]': f"{save_price:.2f}",
+            '[@save_percent@]': str(save_percent),
+            '[@on_sale@]': 'y' if compare_price and compare_price > price else 'n',
+            '[@qty@]': str(prod.get('stock', 0)),
+            '[@in_stock@]': 'y' if prod.get('stock', 0) > 0 else 'n',
+            '[@stock_status@]': 'In Stock' if prod.get('stock', 0) > 0 else 'Out of Stock',
+            '[@image@]': prod.get('images', [''])[0] if prod.get('images') else '',
+            '[@thumb@]': prod.get('images', [''])[0] if prod.get('images') else '',
+            '[@url@]': f"/store/product/{prod.get('id', '')}",
+            '[@add_to_cart_url@]': f"/store/cart/add/{prod.get('id', '')}",
+            '[@weight@]': str(prod.get('weight', '')),
+            '[@category@]': prod.get('category_name', ''),
+            '[@id@]': prod.get('id', ''),
+            '[@rating@]': str(prod.get('rating', 0)),
+            '[@reviews_count@]': str(prod.get('reviews_count', 0)),
+        }
+        
+        # Handle multiple images
+        images = prod.get('images', [])
+        for i in range(1, 13):
+            tag = f'[@image_{i}@]' if i > 1 else '[@image@]'
+            replacements[tag] = images[i-1] if i <= len(images) else ''
+        
+        for tag, value in replacements.items():
+            content = content.replace(tag, str(value))
+        
+        return content
+    
+    def _replace_category_tags(self, content: str, cat: dict) -> str:
+        """Replace category-related data tags"""
+        replacements = {
+            '[@content_name@]': cat.get('name', ''),
+            '[@content_id@]': cat.get('id', ''),
+            '[@content_url@]': f"/store/category/{cat.get('id', '')}",
+            '[@content_description@]': cat.get('description', ''),
+            '[@content_image@]': cat.get('image', ''),
+            '[@content_product_count@]': str(cat.get('product_count', 0)),
+        }
+        
+        for tag, value in replacements.items():
+            content = content.replace(tag, str(value))
+        
+        return content
+    
+    def _replace_cart_tags(self, content: str, cart: dict, store: dict) -> str:
+        """Replace cart-related data tags"""
+        currency_symbol = store.get('currency_symbol', '$')
+        
+        replacements = {
+            '[@cart_subtotal@]': f"{currency_symbol}{cart.get('subtotal', 0):.2f}",
+            '[@cart_total@]': f"{currency_symbol}{cart.get('total', 0):.2f}",
+            '[@cart_item_count@]': str(cart.get('item_count', 0)),
+            '[@cart_coupon@]': cart.get('coupon', ''),
+            '[@mini_cart_count@]': str(cart.get('item_count', 0)),
+            '[@mini_cart_total@]': f"{currency_symbol}{cart.get('total', 0):.2f}",
+        }
+        
+        for tag, value in replacements.items():
+            content = content.replace(tag, str(value))
+        
+        return content
+    
+    def _replace_customer_tags(self, content: str, cust: dict) -> str:
+        """Replace customer-related data tags"""
+        replacements = {
+            '[@customer_id@]': cust.get('id', ''),
+            '[@customer_email@]': cust.get('email', ''),
+            '[@customer_first_name@]': cust.get('first_name', ''),
+            '[@customer_last_name@]': cust.get('last_name', ''),
+            '[@customer_full_name@]': cust.get('name', ''),
+            '[@customer_logged_in@]': 'y' if cust.get('id') else 'n',
+        }
+        
+        for tag, value in replacements.items():
+            content = content.replace(tag, str(value))
+        
+        return content
+    
+    def _replace_order_tags(self, content: str, order: dict) -> str:
+        """Replace order-related data tags"""
+        replacements = {
+            '[@order_id@]': order.get('id', ''),
+            '[@order_number@]': order.get('order_number', ''),
+            '[@order_status@]': order.get('status', ''),
+            '[@order_total@]': f"${order.get('total', 0):.2f}",
+            '[@order_customer_name@]': order.get('customer_name', ''),
+            '[@order_customer_email@]': order.get('customer_email', ''),
+        }
+        
+        for tag, value in replacements.items():
+            content = content.replace(tag, str(value))
+        
+        return content
+    
+    async def process_function_tags(self, content: str, context: dict) -> str:
+        """Process [%tag%]...[%/tag%] function tags"""
+        
+        # Process thumb_list
+        content = await self._process_thumb_list(content, context)
+        
+        # Process new_arrivals
+        content = await self._process_new_arrivals(content, context)
+        
+        # Process top_sellers
+        content = await self._process_top_sellers(content, context)
+        
+        # Process conditionals
+        content = self._process_conditionals(content, context)
+        
+        # Process forloop
+        content = self._process_forloop(content)
+        
+        # Process set variables
+        content = self._process_set_variables(content, context)
+        
+        # Process formatting tags
+        content = self._process_formatting(content, context)
+        
+        # Process content_zone
+        content = await self._process_content_zone(content)
+        
+        # Process load_template
+        content = await self._process_load_template(content)
+        
+        return content
+    
+    async def _process_thumb_list(self, content: str, context: dict) -> str:
+        """Process [%thumb_list%] tags"""
+        pattern = r'\[%thumb_list\s+([^%]*?)%\](.*?)\[%/thumb_list%\]'
+        matches = re.findall(pattern, content, re.DOTALL)
+        
+        for params_str, inner_content in matches:
+            params = self._parse_params(params_str)
+            
+            # Build query
+            query = {"is_active": True}
+            if params.get('category'):
+                query['category_id'] = params['category']
+            if params.get('featured') == 'true':
+                query['is_featured'] = True
+            if params.get('on_sale') == 'true':
+                query['compare_price'] = {'$exists': True, '$ne': None}
+            if params.get('in_stock') == 'true':
+                query['stock'] = {'$gt': 0}
+            
+            # Sorting
+            sort_field = params.get('orderby', 'created_at')
+            sort_order = 1 if params.get('order', 'desc') == 'asc' else -1
+            sort_map = {
+                'name': 'name',
+                'price': 'price',
+                'date': 'created_at',
+                'popularity': 'sales_count'
+            }
+            sort_field = sort_map.get(sort_field, 'created_at')
+            
+            limit = int(params.get('limit', 12))
+            offset = int(params.get('offset', 0))
+            
+            products = await self.db.products.find(query).sort(sort_field, sort_order).skip(offset).limit(limit).to_list(limit)
+            
+            # Parse inner template parts
+            header = self._extract_param(inner_content, 'header', '')
+            body = self._extract_param(inner_content, 'body', '')
+            footer = self._extract_param(inner_content, 'footer', '')
+            ifempty = self._extract_param(inner_content, 'ifempty', 'No products found')
+            
+            if not products:
+                result = ifempty
+            else:
+                result = header
+                store = context.get('store', {})
+                for idx, prod in enumerate(products):
+                    item_body = body
+                    item_body = item_body.replace('[@count@]', str(idx))
+                    item_body = item_body.replace('[@current_index@]', str(idx + 1))
+                    item_body = item_body.replace('[@total@]', str(len(products)))
+                    item_body = self._replace_product_tags(item_body, prod, store)
+                    result += item_body
+                result += footer
+            
+            full_pattern = re.escape(f'[%thumb_list {params_str}%]') + r'.*?' + re.escape('[%/thumb_list%]')
+            content = re.sub(full_pattern, result, content, count=1, flags=re.DOTALL)
+        
+        return content
+    
+    async def _process_new_arrivals(self, content: str, context: dict) -> str:
+        """Process [%new_arrivals%] tags"""
+        pattern = r'\[%new_arrivals\s+([^%]*?)%\](.*?)\[%/new_arrivals%\]'
+        matches = re.findall(pattern, content, re.DOTALL)
+        
+        for params_str, inner_content in matches:
+            params = self._parse_params(params_str)
+            limit = int(params.get('limit', 8))
+            
+            products = await self.db.products.find({"is_active": True}).sort("created_at", -1).limit(limit).to_list(limit)
+            
+            body = self._extract_param(inner_content, 'body', '')
+            ifempty = self._extract_param(inner_content, 'ifempty', '')
+            
+            if not products:
+                result = ifempty
+            else:
+                result = ''
+                store = context.get('store', {})
+                for prod in products:
+                    item_body = self._replace_product_tags(body, prod, store)
+                    result += item_body
+            
+            full_pattern = re.escape(f'[%new_arrivals {params_str}%]') + r'.*?' + re.escape('[%/new_arrivals%]')
+            content = re.sub(full_pattern, result, content, count=1, flags=re.DOTALL)
+        
+        return content
+    
+    async def _process_top_sellers(self, content: str, context: dict) -> str:
+        """Process [%top_sellers%] tags"""
+        pattern = r'\[%top_sellers\s+([^%]*?)%\](.*?)\[%/top_sellers%\]'
+        matches = re.findall(pattern, content, re.DOTALL)
+        
+        for params_str, inner_content in matches:
+            params = self._parse_params(params_str)
+            limit = int(params.get('limit', 8))
+            
+            products = await self.db.products.find({"is_active": True}).sort("sales_count", -1).limit(limit).to_list(limit)
+            
+            body = self._extract_param(inner_content, 'body', '')
+            ifempty = self._extract_param(inner_content, 'ifempty', '')
+            
+            if not products:
+                result = ifempty
+            else:
+                result = ''
+                store = context.get('store', {})
+                for prod in products:
+                    item_body = self._replace_product_tags(body, prod, store)
+                    result += item_body
+            
+            full_pattern = re.escape(f'[%top_sellers {params_str}%]') + r'.*?' + re.escape('[%/top_sellers%]')
+            content = re.sub(full_pattern, result, content, count=1, flags=re.DOTALL)
+        
+        return content
+    
+    def _process_conditionals(self, content: str, context: dict) -> str:
+        """Process [%if%]...[%/if%] conditionals"""
+        pattern = r'\[%if\s+([^%]+)%\](.*?)\[%/if%\]'
+        
+        def evaluate_condition(condition: str) -> bool:
+            # Simple condition evaluation
+            condition = condition.strip()
+            
+            # Handle string comparisons
+            if ' eq ' in condition:
+                parts = condition.split(' eq ')
+                return parts[0].strip().strip("'\"") == parts[1].strip().strip("'\"")
+            if ' ne ' in condition:
+                parts = condition.split(' ne ')
+                return parts[0].strip().strip("'\"") != parts[1].strip().strip("'\"")
+            
+            # Handle numeric comparisons
+            for op in ['>=', '<=', '>', '<', '==', '!=']:
+                if op in condition:
+                    parts = condition.split(op)
+                    try:
+                        left = float(parts[0].strip())
+                        right = float(parts[1].strip())
+                        if op == '>=': return left >= right
+                        if op == '<=': return left <= right
+                        if op == '>': return left > right
+                        if op == '<': return left < right
+                        if op == '==': return left == right
+                        if op == '!=': return left != right
+                    except:
+                        pass
+            
+            # Handle truthy checks
+            return bool(condition and condition != 'n' and condition != '0')
+        
+        def process_if_block(match):
+            condition = match.group(1)
+            block_content = match.group(2)
+            
+            # Handle elseif and else
+            parts = re.split(r'\[%elseif\s+([^%]+)%\]|\[%else%\]', block_content)
+            
+            if evaluate_condition(condition):
+                return parts[0]
+            
+            # Process elseif/else parts
+            for i in range(1, len(parts)):
+                if parts[i] is None:  # This is after [%else%]
+                    if i + 1 < len(parts):
+                        return parts[i + 1]
+                elif i % 2 == 1:  # This is an elseif condition
+                    if evaluate_condition(parts[i]) and i + 1 < len(parts):
+                        return parts[i + 1]
+            
+            return ''
+        
+        content = re.sub(pattern, process_if_block, content, flags=re.DOTALL)
+        return content
+    
+    def _process_forloop(self, content: str) -> str:
+        """Process [%forloop%] tags"""
+        pattern = r'\[%forloop\s+([^%]*?)%\](.*?)\[%/forloop%\]'
+        matches = re.findall(pattern, content, re.DOTALL)
+        
+        for params_str, inner_content in matches:
+            params = self._parse_params(params_str)
+            from_val = int(params.get('from', 1))
+            to_val = int(params.get('to', 10))
+            
+            body = self._extract_param(inner_content, 'body', '')
+            
+            result = ''
+            for i in range(from_val, to_val + 1):
+                item_body = body
+                item_body = item_body.replace('[@current_index@]', str(i))
+                item_body = item_body.replace('[@count@]', str(i - from_val))
+                result += item_body
+            
+            full_pattern = re.escape(f'[%forloop {params_str}%]') + r'.*?' + re.escape('[%/forloop%]')
+            content = re.sub(full_pattern, result, content, count=1, flags=re.DOTALL)
+        
+        return content
+    
+    def _process_set_variables(self, content: str, context: dict) -> str:
+        """Process [%set%] variable tags"""
+        pattern = r"\[%set\s+name:'([^']+)'\s+value:'([^']*)'%\]"
+        matches = re.findall(pattern, content)
+        
+        variables = context.get('variables', {})
+        for name, value in matches:
+            variables[name] = value
+            content = re.sub(re.escape(f"[%set name:'{name}' value:'{value}'%]"), '', content)
+        
+        # Replace variable references
+        for name, value in variables.items():
+            content = content.replace(f'[@{name}@]', value)
+        
+        return content
+    
+    def _process_formatting(self, content: str, context: dict) -> str:
+        """Process formatting function tags"""
+        # [%currency value:'100'%]
+        currency_pattern = r"\[%currency\s+value:'([^']*)'%\]"
+        currency_symbol = context.get('store', {}).get('currency_symbol', '$')
+        content = re.sub(currency_pattern, lambda m: f"{currency_symbol}{float(m.group(1) or 0):.2f}", content)
+        
+        # [%truncate value:'text' length:'100' suffix:'...'%]
+        truncate_pattern = r"\[%truncate\s+value:'([^']*)'\s+length:'(\d+)'(?:\s+suffix:'([^']*)')?%\]"
+        def truncate_replace(m):
+            text = m.group(1)
+            length = int(m.group(2))
+            suffix = m.group(3) or '...'
+            if len(text) > length:
+                return text[:length] + suffix
+            return text
+        content = re.sub(truncate_pattern, truncate_replace, content)
+        
+        # [%strip_tags value:'<p>text</p>'%]
+        strip_tags_pattern = r"\[%strip_tags\s+value:'([^']*)'%\]"
+        content = re.sub(strip_tags_pattern, lambda m: re.sub(r'<[^>]+>', '', m.group(1)), content)
+        
+        # [%date value:'2024-01-01' format:'d/m/Y'%]
+        date_pattern = r"\[%date\s+value:'([^']*)'\s+format:'([^']*)'%\]"
+        def date_replace(m):
+            try:
+                date_str = m.group(1)
+                fmt = m.group(2)
+                dt = datetime.fromisoformat(date_str.replace('Z', '+00:00'))
+                # Convert Python strftime format
+                fmt = fmt.replace('d', '%d').replace('m', '%m').replace('Y', '%Y')
+                return dt.strftime(fmt)
+            except:
+                return m.group(1)
+        content = re.sub(date_pattern, date_replace, content)
+        
+        return content
+    
+    async def _process_content_zone(self, content: str) -> str:
+        """Process [%content_zone%] tags"""
+        pattern = r"\[%content_zone\s+id:'([^']+)'%\]"
+        matches = re.findall(pattern, content)
+        
+        for zone_id in matches:
+            zone = await self.db.content_zones.find_one({"zone_id": zone_id, "is_active": True})
+            zone_content = zone.get('content', '') if zone else ''
+            content = content.replace(f"[%content_zone id:'{zone_id}'%]", zone_content)
+        
+        return content
+    
+    async def _process_load_template(self, content: str) -> str:
+        """Process [%load_template%] tags"""
+        pattern = r"\[%load_template\s+file:'([^']+)'%\]"
+        matches = re.findall(pattern, content)
+        
+        for template_name in matches:
+            template = await self.db.templates.find_one({"name": template_name, "is_active": True})
+            template_content = template.get('content', '') if template else ''
+            content = content.replace(f"[%load_template file:'{template_name}'%]", template_content)
+        
+        return content
+    
+    def _parse_params(self, params_str: str) -> dict:
+        """Parse parameter string like "type:'products' limit:'12'" into dict"""
+        params = {}
+        pattern = r"(\w+):'([^']*)'"
+        matches = re.findall(pattern, params_str)
+        for key, value in matches:
+            params[key] = value
+        return params
+    
+    def _extract_param(self, content: str, param_name: str, default: str = '') -> str:
+        """Extract content from [%param *name%]...[%/param%]"""
+        pattern = rf'\[%param\s+\*{param_name}%\](.*?)\[%/param%\]'
+        match = re.search(pattern, content, re.DOTALL)
+        return match.group(1) if match else default
+    
+    async def render(self, template_content: str, context: dict = None) -> str:
+        """Full template rendering with all tag processing"""
+        if context is None:
+            context = {}
+        
+        # Get store settings if not in context
+        if 'store' not in context:
+            context['store'] = await self.get_store_settings()
+        
+        # Process function tags first (they may contain data tags)
+        content = await self.process_function_tags(template_content, context)
+        
+        # Then process data tags
+        content = await self.process_data_tags(content, context)
+        
+        return content
+
+# Initialize template engine
+template_engine = MaropostTemplateEngine(db)
 
 # ==================== CATEGORY ENDPOINTS ====================
 
@@ -149,10 +798,9 @@ async def root():
 
 @api_router.post("/categories", response_model=Category)
 async def create_category(category: CategoryCreate):
-    category_dict = category.dict()
-    category_obj = Category(**category_dict)
-    await db.categories.insert_one(category_obj.dict())
-    return category_obj
+    new_category = Category(**category.dict())
+    await db.categories.insert_one(new_category.dict())
+    return new_category
 
 @api_router.get("/categories", response_model=List[Category])
 async def get_categories(is_active: Optional[bool] = None):
@@ -171,14 +819,14 @@ async def get_category(category_id: str):
 
 @api_router.put("/categories/{category_id}", response_model=Category)
 async def update_category(category_id: str, category: CategoryCreate):
-    existing = await db.categories.find_one({"id": category_id})
-    if not existing:
-        raise HTTPException(status_code=404, detail="Category not found")
-    
     update_data = category.dict()
-    update_data["updated_at"] = datetime.utcnow()
-    await db.categories.update_one({"id": category_id}, {"$set": update_data})
-    
+    update_data["updated_at"] = datetime.now(timezone.utc)
+    result = await db.categories.update_one(
+        {"id": category_id},
+        {"$set": update_data}
+    )
+    if result.matched_count == 0:
+        raise HTTPException(status_code=404, detail="Category not found")
     updated = await db.categories.find_one({"id": category_id})
     return Category(**updated)
 
@@ -193,9 +841,8 @@ async def delete_category(category_id: str):
 
 @api_router.post("/products", response_model=Product)
 async def create_product(product: ProductCreate):
-    product_dict = product.dict()
-    product_obj = Product(**product_dict)
-    await db.products.insert_one(product_obj.dict())
+    new_product = Product(**product.dict())
+    await db.products.insert_one(new_product.dict())
     
     # Update category product count
     if product.category_id:
@@ -204,63 +851,50 @@ async def create_product(product: ProductCreate):
             {"$inc": {"product_count": 1}}
         )
     
-    return product_obj
+    return new_product
 
 @api_router.get("/products", response_model=List[Product])
 async def get_products(
     category_id: Optional[str] = None,
     is_active: Optional[bool] = None,
+    in_stock: Optional[bool] = None,
+    on_sale: Optional[bool] = None,
     search: Optional[str] = None,
-    min_price: Optional[float] = None,
-    max_price: Optional[float] = None,
-    sort_by: Optional[str] = "created_at",
+    sort_by: str = "created_at",
+    sort_order: str = "desc",
     limit: int = Query(default=50, le=100),
     skip: int = 0
 ):
     query = {}
-    
     if category_id:
         query["category_id"] = category_id
     if is_active is not None:
         query["is_active"] = is_active
+    if in_stock:
+        query["stock"] = {"$gt": 0}
+    if on_sale:
+        query["compare_price"] = {"$exists": True, "$ne": None}
     if search:
         query["$or"] = [
             {"name": {"$regex": search, "$options": "i"}},
             {"description": {"$regex": search, "$options": "i"}},
             {"sku": {"$regex": search, "$options": "i"}}
         ]
-    if min_price is not None:
-        query["price"] = {"$gte": min_price}
-    if max_price is not None:
-        if "price" in query:
-            query["price"]["$lte"] = max_price
-        else:
-            query["price"] = {"$lte": max_price}
     
-    # Sort options
-    sort_mapping = {
-        "created_at": ("created_at", -1),
-        "price_asc": ("price", 1),
-        "price_desc": ("price", -1),
-        "name": ("name", 1),
-        "rating": ("rating", -1),
-        "sales": ("sales_count", -1)
-    }
-    sort_field, sort_order = sort_mapping.get(sort_by, ("created_at", -1))
-    
-    products = await db.products.find(query).sort(sort_field, sort_order).skip(skip).limit(limit).to_list(limit)
+    sort_direction = -1 if sort_order == "desc" else 1
+    products = await db.products.find(query).sort(sort_by, sort_direction).skip(skip).limit(limit).to_list(limit)
     return [Product(**prod) for prod in products]
 
 @api_router.get("/products/featured", response_model=List[Product])
 async def get_featured_products(limit: int = 8):
-    products = await db.products.find({"is_active": True}).sort("sales_count", -1).limit(limit).to_list(limit)
+    products = await db.products.find({"is_active": True}).sort("rating", -1).limit(limit).to_list(limit)
     return [Product(**prod) for prod in products]
 
 @api_router.get("/products/sale", response_model=List[Product])
 async def get_sale_products(limit: int = 8):
     products = await db.products.find({
-        "is_active": True,
-        "compare_price": {"$ne": None, "$gt": 0}
+        "is_active": True, 
+        "compare_price": {"$exists": True, "$ne": None}
     }).limit(limit).to_list(limit)
     return [Product(**prod) for prod in products]
 
@@ -273,14 +907,14 @@ async def get_product(product_id: str):
 
 @api_router.put("/products/{product_id}", response_model=Product)
 async def update_product(product_id: str, product: ProductUpdate):
-    existing = await db.products.find_one({"id": product_id})
-    if not existing:
-        raise HTTPException(status_code=404, detail="Product not found")
-    
     update_data = {k: v for k, v in product.dict().items() if v is not None}
-    update_data["updated_at"] = datetime.utcnow()
-    await db.products.update_one({"id": product_id}, {"$set": update_data})
-    
+    update_data["updated_at"] = datetime.now(timezone.utc)
+    result = await db.products.update_one(
+        {"id": product_id},
+        {"$set": update_data}
+    )
+    if result.matched_count == 0:
+        raise HTTPException(status_code=404, detail="Product not found")
     updated = await db.products.find_one({"id": product_id})
     return Product(**updated)
 
@@ -304,46 +938,38 @@ async def delete_product(product_id: str):
 
 @api_router.post("/orders", response_model=Order)
 async def create_order(order: OrderCreate):
-    order_dict = order.dict()
-    order_obj = Order(**order_dict)
-    order_obj.payment_status = "paid"  # Simulate payment success
-    await db.orders.insert_one(order_obj.dict())
+    new_order = Order(**order.dict())
+    new_order.payment_status = "paid"  # For demo purposes
+    await db.orders.insert_one(new_order.dict())
     
-    # Update product stock and sales count
+    # Update product sales count
     for item in order.items:
         await db.products.update_one(
             {"id": item.product_id},
-            {
-                "$inc": {
-                    "stock": -item.quantity,
-                    "sales_count": item.quantity
-                }
-            }
+            {"$inc": {"sales_count": item.quantity, "stock": -item.quantity}}
         )
     
     # Update or create customer
-    existing_customer = await db.customers.find_one({"email": order.customer_email})
-    if existing_customer:
+    customer = await db.customers.find_one({"email": order.customer_email})
+    if customer:
         await db.customers.update_one(
             {"email": order.customer_email},
             {
-                "$inc": {
-                    "total_orders": 1,
-                    "total_spent": order.total
-                }
+                "$inc": {"total_orders": 1, "total_spent": order.total},
+                "$set": {"updated_at": datetime.now(timezone.utc)}
             }
         )
     else:
-        customer = Customer(
+        new_customer = Customer(
             name=order.customer_name,
             email=order.customer_email,
             phone=order.customer_phone,
             total_orders=1,
             total_spent=order.total
         )
-        await db.customers.insert_one(customer.dict())
+        await db.customers.insert_one(new_customer.dict())
     
-    return order_obj
+    return new_order
 
 @api_router.get("/orders", response_model=List[Order])
 async def get_orders(
@@ -354,7 +980,6 @@ async def get_orders(
     query = {}
     if status:
         query["status"] = status
-    
     orders = await db.orders.find(query).sort("created_at", -1).skip(skip).limit(limit).to_list(limit)
     return [Order(**order) for order in orders]
 
@@ -365,7 +990,7 @@ async def get_order(order_id: str):
         raise HTTPException(status_code=404, detail="Order not found")
     return Order(**order)
 
-@api_router.put("/orders/{order_id}/status")
+@api_router.patch("/orders/{order_id}/status")
 async def update_order_status(order_id: str, status: str):
     valid_statuses = ["pending", "processing", "shipped", "delivered", "cancelled"]
     if status not in valid_statuses:
@@ -373,7 +998,7 @@ async def update_order_status(order_id: str, status: str):
     
     result = await db.orders.update_one(
         {"id": order_id},
-        {"$set": {"status": status, "updated_at": datetime.utcnow()}}
+        {"$set": {"status": status, "updated_at": datetime.now(timezone.utc)}}
     )
     if result.matched_count == 0:
         raise HTTPException(status_code=404, detail="Order not found")
@@ -382,15 +1007,33 @@ async def update_order_status(order_id: str, status: str):
 
 # ==================== CUSTOMER ENDPOINTS ====================
 
+@api_router.post("/customers", response_model=Customer)
+async def create_customer(customer: CustomerCreate):
+    # Check if customer with email exists
+    existing = await db.customers.find_one({"email": customer.email})
+    if existing:
+        raise HTTPException(status_code=400, detail="Customer with this email already exists")
+    
+    new_customer = Customer(**customer.dict(exclude={'password'}))
+    await db.customers.insert_one(new_customer.dict())
+    return new_customer
+
 @api_router.get("/customers", response_model=List[Customer])
 async def get_customers(
     status: Optional[str] = None,
+    search: Optional[str] = None,
     limit: int = Query(default=50, le=100),
     skip: int = 0
 ):
     query = {}
     if status:
         query["status"] = status
+    if search:
+        query["$or"] = [
+            {"name": {"$regex": search, "$options": "i"}},
+            {"email": {"$regex": search, "$options": "i"}},
+            {"phone": {"$regex": search, "$options": "i"}}
+        ]
     
     customers = await db.customers.find(query).sort("created_at", -1).skip(skip).limit(limit).to_list(limit)
     return [Customer(**cust) for cust in customers]
@@ -401,6 +1044,28 @@ async def get_customer(customer_id: str):
     if not customer:
         raise HTTPException(status_code=404, detail="Customer not found")
     return Customer(**customer)
+
+@api_router.put("/customers/{customer_id}", response_model=Customer)
+async def update_customer(customer_id: str, customer: CustomerUpdate):
+    update_data = {k: v for k, v in customer.dict().items() if v is not None}
+    update_data["updated_at"] = datetime.now(timezone.utc)
+    
+    result = await db.customers.update_one(
+        {"id": customer_id},
+        {"$set": update_data}
+    )
+    if result.matched_count == 0:
+        raise HTTPException(status_code=404, detail="Customer not found")
+    
+    updated = await db.customers.find_one({"id": customer_id})
+    return Customer(**updated)
+
+@api_router.delete("/customers/{customer_id}")
+async def delete_customer(customer_id: str):
+    result = await db.customers.delete_one({"id": customer_id})
+    if result.deleted_count == 0:
+        raise HTTPException(status_code=404, detail="Customer not found")
+    return {"message": "Customer deleted successfully"}
 
 # ==================== DASHBOARD STATS ====================
 
@@ -438,14 +1103,293 @@ async def get_dashboard_stats():
 # ==================== HERO BANNERS ====================
 
 @api_router.get("/banners", response_model=List[HeroBanner])
-async def get_banners():
-    banners = await db.banners.find({"is_active": True}).sort("sort_order", 1).to_list(10)
+async def get_banners(include_inactive: bool = False):
+    query = {} if include_inactive else {"is_active": True}
+    banners = await db.banners.find(query).sort("sort_order", 1).to_list(20)
     return [HeroBanner(**banner) for banner in banners]
 
 @api_router.post("/banners", response_model=HeroBanner)
 async def create_banner(banner: HeroBanner):
     await db.banners.insert_one(banner.dict())
     return banner
+
+@api_router.put("/banners/{banner_id}", response_model=HeroBanner)
+async def update_banner(banner_id: str, banner: BannerUpdate):
+    update_data = {k: v for k, v in banner.dict().items() if v is not None}
+    result = await db.banners.update_one(
+        {"id": banner_id},
+        {"$set": update_data}
+    )
+    if result.matched_count == 0:
+        raise HTTPException(status_code=404, detail="Banner not found")
+    updated = await db.banners.find_one({"id": banner_id})
+    return HeroBanner(**updated)
+
+@api_router.delete("/banners/{banner_id}")
+async def delete_banner(banner_id: str):
+    result = await db.banners.delete_one({"id": banner_id})
+    if result.deleted_count == 0:
+        raise HTTPException(status_code=404, detail="Banner not found")
+    return {"message": "Banner deleted successfully"}
+
+# ==================== STORE SETTINGS ====================
+
+@api_router.get("/store/settings", response_model=StoreSettings)
+async def get_store_settings():
+    settings = await db.store_settings.find_one({"id": "store_settings"})
+    if not settings:
+        # Return default settings
+        return StoreSettings()
+    return StoreSettings(**settings)
+
+@api_router.put("/store/settings", response_model=StoreSettings)
+async def update_store_settings(settings: StoreSettingsUpdate):
+    update_data = {k: v for k, v in settings.dict().items() if v is not None}
+    update_data["updated_at"] = datetime.now(timezone.utc)
+    
+    result = await db.store_settings.update_one(
+        {"id": "store_settings"},
+        {"$set": update_data},
+        upsert=True
+    )
+    
+    updated = await db.store_settings.find_one({"id": "store_settings"})
+    return StoreSettings(**updated)
+
+# ==================== FILE UPLOAD ====================
+
+@api_router.post("/upload/{upload_type}")
+async def upload_file(upload_type: str, file: UploadFile = File(...)):
+    """Upload a file (logo, banner, product image)"""
+    allowed_types = ["logos", "banners", "products"]
+    if upload_type not in allowed_types:
+        raise HTTPException(status_code=400, detail=f"Invalid upload type. Must be one of: {allowed_types}")
+    
+    # Validate file type
+    allowed_extensions = [".jpg", ".jpeg", ".png", ".gif", ".webp", ".svg"]
+    file_ext = Path(file.filename).suffix.lower()
+    if file_ext not in allowed_extensions:
+        raise HTTPException(status_code=400, detail=f"Invalid file type. Allowed: {allowed_extensions}")
+    
+    # Generate unique filename
+    unique_filename = f"{uuid.uuid4()}{file_ext}"
+    file_path = UPLOADS_DIR / upload_type / unique_filename
+    
+    # Save file
+    async with aiofiles.open(file_path, 'wb') as f:
+        content = await file.read()
+        await f.write(content)
+    
+    # Return the URL path
+    file_url = f"/api/uploads/{upload_type}/{unique_filename}"
+    
+    return {
+        "filename": unique_filename,
+        "url": file_url,
+        "size": len(content),
+        "type": file.content_type
+    }
+
+@api_router.get("/uploads/{upload_type}/{filename}")
+async def get_uploaded_file(upload_type: str, filename: str):
+    """Serve uploaded files"""
+    from fastapi.responses import FileResponse
+    
+    file_path = UPLOADS_DIR / upload_type / filename
+    if not file_path.exists():
+        raise HTTPException(status_code=404, detail="File not found")
+    
+    return FileResponse(file_path)
+
+# ==================== THEME TEMPLATES ====================
+
+@api_router.get("/templates", response_model=List[ThemeTemplate])
+async def get_templates():
+    templates = await db.templates.find({}).sort("name", 1).to_list(100)
+    return [ThemeTemplate(**t) for t in templates]
+
+@api_router.get("/templates/{template_id}", response_model=ThemeTemplate)
+async def get_template(template_id: str):
+    template = await db.templates.find_one({"id": template_id})
+    if not template:
+        raise HTTPException(status_code=404, detail="Template not found")
+    return ThemeTemplate(**template)
+
+@api_router.post("/templates", response_model=ThemeTemplate)
+async def create_template(template: ThemeTemplate):
+    # Check if template with same name exists
+    existing = await db.templates.find_one({"name": template.name})
+    if existing:
+        raise HTTPException(status_code=400, detail="Template with this name already exists")
+    
+    await db.templates.insert_one(template.dict())
+    return template
+
+@api_router.put("/templates/{template_id}", response_model=ThemeTemplate)
+async def update_template(template_id: str, template: ThemeTemplateUpdate):
+    update_data = {k: v for k, v in template.dict().items() if v is not None}
+    update_data["updated_at"] = datetime.now(timezone.utc)
+    
+    result = await db.templates.update_one(
+        {"id": template_id},
+        {"$set": update_data}
+    )
+    if result.matched_count == 0:
+        raise HTTPException(status_code=404, detail="Template not found")
+    
+    updated = await db.templates.find_one({"id": template_id})
+    return ThemeTemplate(**updated)
+
+@api_router.delete("/templates/{template_id}")
+async def delete_template(template_id: str):
+    result = await db.templates.delete_one({"id": template_id})
+    if result.deleted_count == 0:
+        raise HTTPException(status_code=404, detail="Template not found")
+    return {"message": "Template deleted successfully"}
+
+# ==================== CONTENT ZONES ====================
+
+@api_router.get("/content-zones")
+async def get_content_zones():
+    zones = await db.content_zones.find({}).to_list(100)
+    return [ContentZone(**z) for z in zones]
+
+@api_router.post("/content-zones", response_model=ContentZone)
+async def create_content_zone(zone: ContentZone):
+    await db.content_zones.insert_one(zone.dict())
+    return zone
+
+@api_router.put("/content-zones/{zone_id}")
+async def update_content_zone(zone_id: str, content: str = Form(...)):
+    result = await db.content_zones.update_one(
+        {"id": zone_id},
+        {"$set": {"content": content, "updated_at": datetime.now(timezone.utc)}}
+    )
+    if result.matched_count == 0:
+        raise HTTPException(status_code=404, detail="Content zone not found")
+    return {"message": "Content zone updated"}
+
+# ==================== TEMPLATE RENDERING ====================
+
+@api_router.post("/render-template")
+async def render_template(template_content: str = Form(...), context: str = Form(default="{}")):
+    """Render a template with Maropost-style tags"""
+    try:
+        ctx = json.loads(context)
+    except:
+        ctx = {}
+    
+    rendered = await template_engine.render(template_content, ctx)
+    return {"rendered": rendered}
+
+@api_router.get("/template-tags")
+async def get_template_tags():
+    """Return documentation of all available template tags"""
+    return {
+        "data_tags": {
+            "product": [
+                {"tag": "[@SKU@]", "description": "Product SKU code"},
+                {"tag": "[@name@]", "description": "Product name"},
+                {"tag": "[@model@]", "description": "Model number"},
+                {"tag": "[@brand@]", "description": "Brand name"},
+                {"tag": "[@description@]", "description": "Full HTML description"},
+                {"tag": "[@short_description@]", "description": "Brief summary"},
+                {"tag": "[@price@]", "description": "Selling price (29.95)"},
+                {"tag": "[@price_formatted@]", "description": "Price with currency ($29.95)"},
+                {"tag": "[@rrp@]", "description": "Recommended retail price"},
+                {"tag": "[@rrp_formatted@]", "description": "RRP with currency"},
+                {"tag": "[@save_price@]", "description": "Discount amount"},
+                {"tag": "[@save_percent@]", "description": "Discount percentage"},
+                {"tag": "[@on_sale@]", "description": "'y' if on sale"},
+                {"tag": "[@qty@]", "description": "Stock quantity"},
+                {"tag": "[@in_stock@]", "description": "'y' if in stock"},
+                {"tag": "[@stock_status@]", "description": "Human-readable status"},
+                {"tag": "[@image@]", "description": "Main image URL"},
+                {"tag": "[@image_2@] - [@image_12@]", "description": "Additional images"},
+                {"tag": "[@thumb@]", "description": "Thumbnail URL"},
+                {"tag": "[@url@]", "description": "Product page URL"},
+                {"tag": "[@add_to_cart_url@]", "description": "Direct add to cart link"},
+                {"tag": "[@weight@]", "description": "Product weight"},
+                {"tag": "[@category@]", "description": "Primary category"},
+                {"tag": "[@id@]", "description": "Product ID"},
+                {"tag": "[@count@]", "description": "Loop position (0-indexed)"},
+                {"tag": "[@current_index@]", "description": "Loop position (1-indexed)"},
+                {"tag": "[@total@]", "description": "Total items in list"},
+            ],
+            "category": [
+                {"tag": "[@content_name@]", "description": "Category name"},
+                {"tag": "[@content_id@]", "description": "Category ID"},
+                {"tag": "[@content_url@]", "description": "Category URL"},
+                {"tag": "[@content_description@]", "description": "Description"},
+                {"tag": "[@content_image@]", "description": "Category image"},
+                {"tag": "[@content_product_count@]", "description": "Product count"},
+            ],
+            "store": [
+                {"tag": "[@store_name@]", "description": "Business name"},
+                {"tag": "[@store_email@]", "description": "Contact email"},
+                {"tag": "[@store_phone@]", "description": "Phone number"},
+                {"tag": "[@store_url@]", "description": "Website URL"},
+                {"tag": "[@store_logo@]", "description": "Logo URL"},
+                {"tag": "[@currency@]", "description": "Currency code (USD)"},
+                {"tag": "[@currency_symbol@]", "description": "Symbol ($)"},
+                {"tag": "[@store_facebook@]", "description": "Facebook URL"},
+                {"tag": "[@store_instagram@]", "description": "Instagram URL"},
+                {"tag": "[@current_date@]", "description": "Today's date"},
+                {"tag": "[@current_year@]", "description": "Current year"},
+            ],
+            "cart": [
+                {"tag": "[@cart_subtotal@]", "description": "Cart subtotal"},
+                {"tag": "[@cart_total@]", "description": "Cart total"},
+                {"tag": "[@cart_item_count@]", "description": "Number of items"},
+                {"tag": "[@cart_coupon@]", "description": "Applied coupon"},
+                {"tag": "[@mini_cart_count@]", "description": "Items in cart"},
+                {"tag": "[@mini_cart_total@]", "description": "Cart total formatted"},
+            ],
+            "customer": [
+                {"tag": "[@customer_id@]", "description": "Customer ID"},
+                {"tag": "[@customer_email@]", "description": "Email address"},
+                {"tag": "[@customer_first_name@]", "description": "First name"},
+                {"tag": "[@customer_last_name@]", "description": "Last name"},
+                {"tag": "[@customer_full_name@]", "description": "Full name"},
+                {"tag": "[@customer_logged_in@]", "description": "'y' if logged in"},
+            ],
+            "order": [
+                {"tag": "[@order_id@]", "description": "Order ID"},
+                {"tag": "[@order_number@]", "description": "Display order number"},
+                {"tag": "[@order_status@]", "description": "Status"},
+                {"tag": "[@order_total@]", "description": "Order total"},
+                {"tag": "[@order_customer_name@]", "description": "Customer name"},
+                {"tag": "[@order_customer_email@]", "description": "Customer email"},
+            ],
+        },
+        "function_tags": {
+            "listings": [
+                {"tag": "[%thumb_list type:'products' category:'100' limit:'12'%]...[%/thumb_list%]", "description": "Display products"},
+                {"tag": "[%new_arrivals limit:'8'%]...[%/new_arrivals%]", "description": "Recent products"},
+                {"tag": "[%top_sellers limit:'8' days:'30'%]...[%/top_sellers%]", "description": "Best sellers"},
+            ],
+            "conditionals": [
+                {"tag": "[%if condition%]...[%elseif condition%]...[%else%]...[%/if%]", "description": "Conditional logic"},
+            ],
+            "loops": [
+                {"tag": "[%forloop from:'1' to:'10'%]...[%/forloop%]", "description": "Number iteration"},
+            ],
+            "variables": [
+                {"tag": "[%set name:'my_var' value:'Hello'%]", "description": "Set variable"},
+            ],
+            "includes": [
+                {"tag": "[%load_template file:'partials/header.html'%]", "description": "Include template"},
+                {"tag": "[%content_zone id:'homepage_banner'%]", "description": "Display content zone"},
+            ],
+            "formatting": [
+                {"tag": "[%currency value:'100'%]", "description": "Format as currency"},
+                {"tag": "[%truncate value:'text' length:'100' suffix:'...'%]", "description": "Truncate text"},
+                {"tag": "[%strip_tags value:'<p>text</p>'%]", "description": "Remove HTML tags"},
+                {"tag": "[%date value:'2024-01-01' format:'d/m/Y'%]", "description": "Format date"},
+            ],
+        },
+        "param_syntax": "[%param *header%]...[%/param%], [%param *body%]...[%/param%], [%param *footer%]...[%/param%], [%param *ifempty%]...[%/param%]"
+    }
 
 # ==================== INVENTORY ====================
 
@@ -475,7 +1419,7 @@ async def get_inventory():
 async def update_inventory(product_id: str, stock: int):
     result = await db.products.update_one(
         {"id": product_id},
-        {"$set": {"stock": stock, "updated_at": datetime.utcnow()}}
+        {"$set": {"stock": stock, "updated_at": datetime.now(timezone.utc)}}
     )
     if result.matched_count == 0:
         raise HTTPException(status_code=404, detail="Product not found")
@@ -492,12 +1436,20 @@ async def seed_database():
     if existing_products > 0:
         return {"message": "Database already has data. Skipping seed."}
     
+    # Create default store settings
+    default_settings = StoreSettings()
+    await db.store_settings.update_one(
+        {"id": "store_settings"},
+        {"$set": default_settings.dict()},
+        upsert=True
+    )
+    
     # Create categories
     categories_data = [
         {"name": "Electronics", "description": "Gadgets and devices", "image": "https://images.unsplash.com/photo-1498049794561-7780e7231661?w=400", "sort_order": 1},
         {"name": "Clothing", "description": "Fashion and apparel", "image": "https://images.unsplash.com/photo-1445205170230-053b83016050?w=400", "sort_order": 2},
         {"name": "Home & Office", "description": "Home and office essentials", "image": "https://images.unsplash.com/photo-1556909114-f6e7ad7d3136?w=400", "sort_order": 3},
-        {"name": "Sports", "description": "Sports equipment and gear", "image": "https://images.unsplash.com/photo-1461896836934- voices?w=400", "sort_order": 4},
+        {"name": "Sports", "description": "Sports equipment and gear", "image": "https://images.unsplash.com/photo-1461896836934-bc1c94de815c?w=400", "sort_order": 4},
         {"name": "Accessories", "description": "Bags, watches and more", "image": "https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=400", "sort_order": 5},
         {"name": "Beauty", "description": "Beauty and personal care", "image": "https://images.unsplash.com/photo-1596462502278-27bfdc403348?w=400", "sort_order": 6},
     ]
@@ -542,7 +1494,110 @@ async def seed_database():
         banner = HeroBanner(**banner_data)
         await db.banners.insert_one(banner.dict())
     
-    return {"message": "Database seeded successfully", "categories": len(categories_data), "products": len(products_data), "banners": len(banners_data)}
+    # Create default templates
+    default_templates = [
+        {
+            "name": "header",
+            "display_name": "Header",
+            "template_type": "partial",
+            "content": """<header class="site-header">
+  <div class="logo">
+    <img src="[@store_logo@]" alt="[@store_name@]" />
+  </div>
+  <nav class="main-nav">
+    <a href="/store">Home</a>
+    <a href="/store/products">Products</a>
+  </nav>
+  <div class="cart-icon">
+    <span class="cart-count">[@mini_cart_count@]</span>
+  </div>
+</header>"""
+        },
+        {
+            "name": "footer",
+            "display_name": "Footer",
+            "template_type": "partial",
+            "content": """<footer class="site-footer">
+  <div class="footer-info">
+    <p>© [@current_year@] [@store_name@]. All rights reserved.</p>
+    <p>Contact: [@store_email@] | [@store_phone@]</p>
+  </div>
+  <div class="social-links">
+    [%if [@store_facebook@]%]
+    <a href="[@store_facebook@]">Facebook</a>
+    [%/if%]
+    [%if [@store_instagram@]%]
+    <a href="[@store_instagram@]">Instagram</a>
+    [%/if%]
+  </div>
+</footer>"""
+        },
+        {
+            "name": "product-card",
+            "display_name": "Product Card",
+            "template_type": "partial",
+            "content": """<div class="product-card">
+  <a href="[@url@]">
+    <img src="[@image@]" alt="[@name@]" />
+    <h3>[@name@]</h3>
+    <div class="price">
+      [%if [@on_sale@] eq 'y'%]
+      <span class="sale-price">[@price_formatted@]</span>
+      <span class="original-price">[@rrp_formatted@]</span>
+      <span class="discount">Save [@save_percent@]%</span>
+      [%else%]
+      <span class="regular-price">[@price_formatted@]</span>
+      [%/if%]
+    </div>
+    <span class="stock-status">[@stock_status@]</span>
+  </a>
+</div>"""
+        },
+        {
+            "name": "homepage",
+            "display_name": "Homepage",
+            "template_type": "page",
+            "content": """<div class="homepage">
+  [%content_zone id:'hero_banner'%]
+  
+  <section class="new-arrivals">
+    <h2>New Arrivals</h2>
+    <div class="product-grid">
+      [%new_arrivals limit:'4'%]
+        [%param *body%]
+        <div class="product-item">
+          <img src="[@image@]" alt="[@name@]" />
+          <h3>[@name@]</h3>
+          <p>[@price_formatted@]</p>
+        </div>
+        [%/param%]
+      [%/new_arrivals%]
+    </div>
+  </section>
+  
+  <section class="top-sellers">
+    <h2>Best Sellers</h2>
+    <div class="product-grid">
+      [%top_sellers limit:'4'%]
+        [%param *body%]
+        <div class="product-item">
+          <img src="[@image@]" alt="[@name@]" />
+          <h3>[@name@]</h3>
+          <p>[@price_formatted@]</p>
+        </div>
+        [%/param%]
+      [%/top_sellers%]
+    </div>
+  </section>
+</div>"""
+        },
+    ]
+    
+    for tmpl_data in default_templates:
+        template = ThemeTemplate(**tmpl_data)
+        await db.templates.insert_one(template.dict())
+    
+    return {"message": "Database seeded successfully", "categories": len(categories_data), "products": len(products_data), "banners": len(banners_data), "templates": len(default_templates)}
 
 # Include the router in the main app
 app.include_router(api_router)
