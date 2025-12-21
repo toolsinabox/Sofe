@@ -20,6 +20,7 @@ import zipfile
 import shutil
 from jose import JWTError, jwt
 from passlib.context import CryptContext
+from maropost_engine import MaropostTemplateEngine as NewMaropostEngine, PageType, WrapperContext, create_engine
 
 ROOT_DIR = Path(__file__).parent
 load_dotenv(ROOT_DIR / '.env')
