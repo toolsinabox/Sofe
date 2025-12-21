@@ -1662,6 +1662,292 @@ async def get_template_tags():
         "param_syntax": "[%param *header%]...[%/param%], [%param *body%]...[%/param%], [%param *footer%]...[%/param%], [%param *ifempty%]...[%/param%]"
     }
 
+# ==================== THEME FILE MANAGEMENT ====================
+
+class ThemeFile(BaseModel):
+    path: str
+    file_type: str = "text"
+    size: int = 0
+    modified: Optional[str] = None
+
+class ThemeFileContent(BaseModel):
+    path: str
+    content: str
+
+class ThemeFileCreate(BaseModel):
+    path: str
+    content: str = ""
+
+# Helper to get all files in theme directory recursively
+def get_theme_files():
+    files = []
+    if THEME_DIR.exists():
+        for file_path in THEME_DIR.rglob('*'):
+            if file_path.is_file():
+                rel_path = str(file_path.relative_to(THEME_DIR))
+                ext = file_path.suffix.lower()
+                file_type = "text"
+                if ext in ['.png', '.jpg', '.jpeg', '.gif', '.webp', '.ico']:
+                    file_type = "image"
+                elif ext in ['.woff', '.woff2', '.ttf', '.eot', '.otf']:
+                    file_type = "font"
+                elif ext in ['.svg']:
+                    file_type = "svg"
+                
+                stat = file_path.stat()
+                files.append(ThemeFile(
+                    path=rel_path,
+                    file_type=file_type,
+                    size=stat.st_size,
+                    modified=datetime.fromtimestamp(stat.st_mtime, tz=timezone.utc).isoformat()
+                ))
+    return files
+
+@api_router.get("/theme/files")
+async def list_theme_files(current_user: dict = Depends(get_current_user)):
+    """List all files in the theme directory"""
+    return get_theme_files()
+
+@api_router.get("/theme/files/{file_path:path}")
+async def get_theme_file(file_path: str, current_user: dict = Depends(get_current_user)):
+    """Get content of a specific theme file"""
+    full_path = THEME_DIR / file_path
+    
+    if not full_path.exists():
+        raise HTTPException(status_code=404, detail="File not found")
+    
+    if not full_path.is_file():
+        raise HTTPException(status_code=400, detail="Path is not a file")
+    
+    # Check if it's a binary file
+    ext = full_path.suffix.lower()
+    if ext in ['.png', '.jpg', '.jpeg', '.gif', '.webp', '.ico', '.woff', '.woff2', '.ttf', '.eot', '.otf']:
+        raise HTTPException(status_code=400, detail="Binary files cannot be read as text")
+    
+    try:
+        async with aiofiles.open(full_path, 'r', encoding='utf-8') as f:
+            content = await f.read()
+        return {"path": file_path, "content": content}
+    except UnicodeDecodeError:
+        raise HTTPException(status_code=400, detail="File is not a valid text file")
+
+@api_router.get("/theme/files/{file_path:path}/raw")
+async def get_theme_file_raw(file_path: str):
+    """Get raw content of a file (for images, fonts, etc.)"""
+    full_path = THEME_DIR / file_path
+    
+    if not full_path.exists():
+        raise HTTPException(status_code=404, detail="File not found")
+    
+    # Determine content type
+    ext = full_path.suffix.lower()
+    content_types = {
+        '.html': 'text/html',
+        '.css': 'text/css',
+        '.js': 'application/javascript',
+        '.json': 'application/json',
+        '.png': 'image/png',
+        '.jpg': 'image/jpeg',
+        '.jpeg': 'image/jpeg',
+        '.gif': 'image/gif',
+        '.webp': 'image/webp',
+        '.svg': 'image/svg+xml',
+        '.ico': 'image/x-icon',
+        '.woff': 'font/woff',
+        '.woff2': 'font/woff2',
+        '.ttf': 'font/ttf',
+        '.eot': 'application/vnd.ms-fontobject',
+    }
+    
+    content_type = content_types.get(ext, 'application/octet-stream')
+    
+    return StreamingResponse(
+        open(full_path, 'rb'),
+        media_type=content_type
+    )
+
+@api_router.post("/theme/files")
+async def create_theme_file(file_data: ThemeFileCreate, current_user: dict = Depends(get_current_user)):
+    """Create a new theme file"""
+    full_path = THEME_DIR / file_data.path
+    
+    # Security: Prevent path traversal
+    try:
+        full_path.resolve().relative_to(THEME_DIR.resolve())
+    except ValueError:
+        raise HTTPException(status_code=400, detail="Invalid file path")
+    
+    if full_path.exists():
+        raise HTTPException(status_code=400, detail="File already exists")
+    
+    # Create parent directories if needed
+    full_path.parent.mkdir(parents=True, exist_ok=True)
+    
+    # Write file
+    async with aiofiles.open(full_path, 'w', encoding='utf-8') as f:
+        await f.write(file_data.content)
+    
+    return {"message": "File created successfully", "path": file_data.path}
+
+@api_router.put("/theme/files/{file_path:path}")
+async def update_theme_file(file_path: str, file_data: ThemeFileContent, current_user: dict = Depends(get_current_user)):
+    """Update a theme file's content"""
+    full_path = THEME_DIR / file_path
+    
+    if not full_path.exists():
+        raise HTTPException(status_code=404, detail="File not found")
+    
+    # Security: Prevent path traversal
+    try:
+        full_path.resolve().relative_to(THEME_DIR.resolve())
+    except ValueError:
+        raise HTTPException(status_code=400, detail="Invalid file path")
+    
+    async with aiofiles.open(full_path, 'w', encoding='utf-8') as f:
+        await f.write(file_data.content)
+    
+    return {"message": "File updated successfully", "path": file_path}
+
+@api_router.delete("/theme/files/{file_path:path}")
+async def delete_theme_file(file_path: str, current_user: dict = Depends(get_current_user)):
+    """Delete a theme file"""
+    full_path = THEME_DIR / file_path
+    
+    if not full_path.exists():
+        raise HTTPException(status_code=404, detail="File not found")
+    
+    # Security: Prevent path traversal
+    try:
+        full_path.resolve().relative_to(THEME_DIR.resolve())
+    except ValueError:
+        raise HTTPException(status_code=400, detail="Invalid file path")
+    
+    full_path.unlink()
+    
+    # Remove empty parent directories
+    parent = full_path.parent
+    while parent != THEME_DIR:
+        if not any(parent.iterdir()):
+            parent.rmdir()
+            parent = parent.parent
+        else:
+            break
+    
+    return {"message": "File deleted successfully"}
+
+@api_router.get("/theme/download")
+async def download_theme(current_user: dict = Depends(get_current_user)):
+    """Download the entire theme as a ZIP file"""
+    if not THEME_DIR.exists() or not any(THEME_DIR.iterdir()):
+        raise HTTPException(status_code=404, detail="No theme files to download")
+    
+    # Create ZIP in memory
+    zip_buffer = io.BytesIO()
+    with zipfile.ZipFile(zip_buffer, 'w', zipfile.ZIP_DEFLATED) as zip_file:
+        for file_path in THEME_DIR.rglob('*'):
+            if file_path.is_file():
+                arcname = str(file_path.relative_to(THEME_DIR))
+                zip_file.write(file_path, arcname)
+    
+    zip_buffer.seek(0)
+    
+    return StreamingResponse(
+        zip_buffer,
+        media_type='application/zip',
+        headers={'Content-Disposition': 'attachment; filename="theme.zip"'}
+    )
+
+@api_router.post("/theme/upload")
+async def upload_theme(file: UploadFile = File(...), current_user: dict = Depends(get_current_user)):
+    """Upload a theme ZIP file and extract it"""
+    if not file.filename.endswith('.zip'):
+        raise HTTPException(status_code=400, detail="Only ZIP files are allowed")
+    
+    # Read uploaded file
+    contents = await file.read()
+    
+    try:
+        # Validate it's a valid ZIP
+        with zipfile.ZipFile(io.BytesIO(contents)) as zf:
+            # Check for path traversal attempts
+            for name in zf.namelist():
+                if name.startswith('/') or '..' in name:
+                    raise HTTPException(status_code=400, detail=f"Invalid path in ZIP: {name}")
+        
+        # Clear existing theme files
+        if THEME_DIR.exists():
+            shutil.rmtree(THEME_DIR)
+        THEME_DIR.mkdir(exist_ok=True)
+        
+        # Extract new theme
+        with zipfile.ZipFile(io.BytesIO(contents)) as zf:
+            # Check if files are in a subdirectory
+            names = zf.namelist()
+            common_prefix = os.path.commonprefix(names)
+            if common_prefix and '/' in common_prefix:
+                # Files are in a subdirectory, strip it
+                common_prefix = common_prefix.split('/')[0] + '/'
+            else:
+                common_prefix = ''
+            
+            for member in zf.namelist():
+                if member.endswith('/'):
+                    continue  # Skip directories
+                
+                # Remove common prefix if exists
+                target_path = member
+                if common_prefix:
+                    target_path = member[len(common_prefix):]
+                
+                if not target_path:
+                    continue
+                
+                # Create full path
+                full_path = THEME_DIR / target_path
+                full_path.parent.mkdir(parents=True, exist_ok=True)
+                
+                # Extract file
+                with zf.open(member) as source:
+                    with open(full_path, 'wb') as target:
+                        target.write(source.read())
+        
+        file_count = len(get_theme_files())
+        return {"message": f"Theme uploaded successfully. {file_count} files extracted."}
+        
+    except zipfile.BadZipFile:
+        raise HTTPException(status_code=400, detail="Invalid ZIP file")
+
+@api_router.post("/theme/preview")
+async def preview_theme_template(
+    path: Optional[str] = None,
+    content: str = "",
+    current_user: dict = Depends(get_current_user)
+):
+    """Preview a template with sample data"""
+    engine = MaropostTemplateEngine(db)
+    
+    # Sample context data
+    context = {
+        "product": {
+            "name": "Sample Product",
+            "sku": "SAMPLE-001",
+            "price": 99.99,
+            "description": "This is a sample product description.",
+            "image": "https://via.placeholder.com/400",
+        },
+        "store": {
+            "name": "My Store",
+            "email": "info@store.com",
+            "phone": "1-800-STORE",
+        }
+    }
+    
+    try:
+        rendered = await engine.render(content, context)
+        return {"rendered": rendered}
+    except Exception as e:
+        return {"rendered": f"<pre>Error: {str(e)}</pre>", "error": str(e)}
+
 # ==================== INVENTORY ====================
 
 @api_router.get("/inventory")
