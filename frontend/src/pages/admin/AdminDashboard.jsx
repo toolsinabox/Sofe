@@ -109,7 +109,7 @@ const AdminDashboard = () => {
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-2xl font-bold text-white">Welcome back, {user?.name || 'Admin'}</h1>
-          <p className="text-gray-400 text-sm">Here's what's happening with your platform</p>
+          <p className="text-gray-400 text-sm">Here&apos;s what&apos;s happening with your platform</p>
         </div>
         <button 
           onClick={fetchData}
