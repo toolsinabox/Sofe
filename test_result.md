@@ -86,3 +86,5 @@ test_plan:
 agent_communication:
     - agent: "main"
     - message: "Admin Dashboard backend fully implemented. All API endpoints working. Frontend integrated with real data. Merchants and Users pages now use backend APIs instead of mock data."
+    - agent: "fork-main"
+    - message: "Completed toolsinabox theme. The theme now fully replicates the /store React design with: header with TIB logo, hero banner, trust badges, popular categories, featured products grid, sale banner, about section, features bar, and complete footer. Theme is active and accessible at /live. All files visible in Theme Editor."
