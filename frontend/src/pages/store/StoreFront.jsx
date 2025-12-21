@@ -39,8 +39,8 @@ const StoreFront = () => {
 
   return (
     <div>
-      {/* Hero Carousel */}
-      <HeroCarousel banners={banners} />
+      {/* Hero Carousel - Rendered from Theme Templates */}
+      <ThemeHero className="w-full" />
 
       {/* Feature Bar */}
       <section className="bg-white py-6 border-b border-gray-200">
