@@ -844,6 +844,48 @@ class MaropostTemplateEngine:
         
         return result
     
+    def _process_inline_conditionals(self, content: str, item: Dict) -> str:
+        """Process inline conditionals within loop items."""
+        # Pattern for [%if value%]content[%/if%] or [%if value%]content[%else%]other[%/if%]
+        pattern = re.compile(
+            r'\[%if\s+([^\]%]+)%\](.*?)(?:\[%else%\](.*?))?\[%/if%\]',
+            re.DOTALL
+        )
+        
+        def evaluate_and_replace(match):
+            condition = match.group(1).strip()
+            true_content = match.group(2)
+            false_content = match.group(3) or ''
+            
+            # Check if condition is a direct value check (already replaced)
+            # If the condition was a tag like [@product_compare_price@] and it's now empty or a value
+            if condition.startswith('[@') and condition.endswith('@]'):
+                # Tag wasn't replaced - treat as falsy
+                return false_content
+            
+            # Check if it's a simple value (after tag replacement)
+            # Truthy: non-empty string that's not just whitespace
+            if condition and condition.strip():
+                # Check for equality
+                if '==' in condition:
+                    left, right = condition.split('==', 1)
+                    return true_content if left.strip() == right.strip().strip("'\"") else false_content
+                if '!=' in condition:
+                    left, right = condition.split('!=', 1)
+                    return true_content if left.strip() != right.strip().strip("'\"") else false_content
+                
+                # Simple truthy check - non-empty, non-zero
+                if condition.lower() in ('y', 'yes', 'true', '1'):
+                    return true_content
+                if condition.lower() in ('n', 'no', 'false', '0', ''):
+                    return false_content
+                # Non-empty string is truthy
+                return true_content
+            
+            return false_content
+        
+        return pattern.sub(evaluate_and_replace, content)
+    
     def _replace_product_item_tags(self, content: str, product: Dict, store: Dict) -> str:
         """Replace product item tags within a loop."""
         currency = store.get('currency_symbol', '$')
