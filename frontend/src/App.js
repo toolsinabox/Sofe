@@ -200,8 +200,12 @@ function App() {
             <Route index element={<MerchantDashboard />} />
             <Route path="orders" element={<MerchantOrders />} />
             <Route path="products" element={<MerchantProducts />} />
+            <Route path="categories" element={<MerchantCategories />} />
             <Route path="inventory" element={<MerchantInventory />} />
             <Route path="customers" element={<MerchantCustomers />} />
+            <Route path="banners" element={<MerchantBanners />} />
+            <Route path="theme-editor" element={<MerchantThemeEditor />} />
+            <Route path="store-settings" element={<MerchantStoreSettings />} />
             <Route path="discounts" element={<MerchantDashboard />} />
             <Route path="analytics" element={<MerchantDashboard />} />
             <Route path="payments" element={<MerchantDashboard />} />
