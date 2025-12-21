@@ -242,6 +242,10 @@ function App() {
               <Route path="sale" element={<ProductListing />} />
             </Route>
 
+            {/* Live Theme Storefront - Renders full HTML from active theme */}
+            <Route path="/live" element={<LiveThemeStorefront />} />
+            <Route path="/live/*" element={<LiveThemeStorefront />} />
+
             {/* Catch all redirect */}
           <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
