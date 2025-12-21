@@ -175,7 +175,16 @@ class HeroBanner(BaseModel):
     id: str = Field(default_factory=lambda: str(uuid.uuid4()))
     title: str
     subtitle: Optional[str] = None
-    image: str
+    # Legacy single image field (for backwards compatibility)
+    image: Optional[str] = None
+    # Device-specific images
+    image_desktop: Optional[str] = None
+    image_tablet: Optional[str] = None
+    image_mobile: Optional[str] = None
+    # Device visibility toggles
+    show_on_desktop: bool = True
+    show_on_tablet: bool = True
+    show_on_mobile: bool = True
     link: Optional[str] = None
     button_text: Optional[str] = "Shop Now"
     text_color: Optional[str] = "#FFFFFF"
@@ -188,6 +197,12 @@ class BannerUpdate(BaseModel):
     title: Optional[str] = None
     subtitle: Optional[str] = None
     image: Optional[str] = None
+    image_desktop: Optional[str] = None
+    image_tablet: Optional[str] = None
+    image_mobile: Optional[str] = None
+    show_on_desktop: Optional[bool] = None
+    show_on_tablet: Optional[bool] = None
+    show_on_mobile: Optional[bool] = None
     link: Optional[str] = None
     button_text: Optional[str] = None
     text_color: Optional[str] = None
