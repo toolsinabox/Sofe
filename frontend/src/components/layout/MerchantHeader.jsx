@@ -1,5 +1,6 @@
 import React from 'react';
-import { Bell, Search, User, ChevronDown, Calendar } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
+import { Bell, Search, User, ChevronDown, Calendar, LogOut } from 'lucide-react';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -14,8 +15,17 @@ import {
   SelectTrigger,
   SelectValue,
 } from '../ui/select';
+import { useAuth } from '../../context/AuthContext';
 
 const MerchantHeader = ({ title }) => {
+  const navigate = useNavigate();
+  const { user, logout } = useAuth();
+
+  const handleLogout = () => {
+    logout();
+    navigate('/merchant/login');
+  };
+
   return (
     <header className="h-16 bg-[#0d1117] border-b border-gray-800 flex items-center justify-between px-6">
       <div className="flex items-center gap-4">
@@ -60,22 +70,32 @@ const MerchantHeader = ({ title }) => {
               <div className="w-8 h-8 bg-gradient-to-br from-emerald-500 to-teal-600 rounded-full flex items-center justify-center">
                 <User size={16} className="text-white" />
               </div>
-              <span className="text-sm text-white font-medium">Merchant</span>
+              <span className="text-sm text-white font-medium">{user?.name || 'Merchant'}</span>
               <ChevronDown size={16} className="text-gray-400" />
             </button>
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end" className="w-48 bg-[#1a1f2e] border-gray-700">
+            <div className="px-2 py-1.5 text-xs text-gray-500 border-b border-gray-700">
+              {user?.email}
+            </div>
             <DropdownMenuItem className="text-gray-300 hover:text-white hover:bg-gray-700/50 cursor-pointer">
               Profile Settings
             </DropdownMenuItem>
-            <DropdownMenuItem className="text-gray-300 hover:text-white hover:bg-gray-700/50 cursor-pointer">
+            <DropdownMenuItem 
+              className="text-gray-300 hover:text-white hover:bg-gray-700/50 cursor-pointer"
+              onClick={() => navigate('/merchant/store-settings')}
+            >
               Store Settings
             </DropdownMenuItem>
             <DropdownMenuItem className="text-gray-300 hover:text-white hover:bg-gray-700/50 cursor-pointer">
               Billing
             </DropdownMenuItem>
             <DropdownMenuSeparator className="bg-gray-700" />
-            <DropdownMenuItem className="text-red-400 hover:text-red-300 hover:bg-red-500/10 cursor-pointer">
+            <DropdownMenuItem 
+              className="text-red-400 hover:text-red-300 hover:bg-red-500/10 cursor-pointer"
+              onClick={handleLogout}
+            >
+              <LogOut size={16} className="mr-2" />
               Logout
             </DropdownMenuItem>
           </DropdownMenuContent>
