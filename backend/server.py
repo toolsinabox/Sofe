@@ -2242,8 +2242,9 @@ async def render_full_page(page_type: str, category_id: Optional[str] = None, pr
     rendered = await engine.render(full_html, context)
     
     # Replace theme asset paths
-    rendered = rendered.replace("[%ntheme_asset%]", f"/api/themes/{active_theme}/assets/")
-    rendered = rendered.replace("[%/ntheme_asset%]", "")
+    rendered = re.sub(r'\[%ntheme_asset%\]', f'/api/themes/{active_theme}/assets/', rendered)
+    rendered = re.sub(r'\[%/ntheme_asset%\]', '', rendered)
+    rendered = re.sub(r'/assets/themes/skeletal/', f'/api/themes/{active_theme}/assets/', rendered)
     
     return StreamingResponse(
         io.BytesIO(rendered.encode('utf-8')),
