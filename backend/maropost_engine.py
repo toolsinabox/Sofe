@@ -987,6 +987,9 @@ class MaropostTemplateEngine:
         """
         Process [%if condition%]...[%else%]...[%/if%] tags.
         
+        Uses a non-greedy approach that processes innermost conditionals first
+        to correctly handle nested blocks.
+        
         Args:
             content: Template content
             context: Rendering context
@@ -995,7 +998,11 @@ class MaropostTemplateEngine:
             Content with conditionals processed
         """
         def evaluate_condition(condition: str) -> bool:
-            condition = condition.strip()
+            condition = condition.strip() if condition else ''
+            
+            # Empty condition is falsy
+            if not condition:
+                return False
             
             # Simple equality check
             if '==' in condition:
@@ -1016,29 +1023,49 @@ class MaropostTemplateEngine:
             if isinstance(value, bool):
                 return value
             if isinstance(value, str):
-                return value.lower() in ('y', 'yes', 'true', '1') and value != ''
+                # Empty string is falsy
+                if not value.strip():
+                    return False
+                return value.lower() in ('y', 'yes', 'true', '1') or (value.strip() and value.lower() not in ('n', 'no', 'false', '0'))
             if isinstance(value, (int, float)):
                 return value > 0
             return bool(value)
         
-        def process_if(match):
-            condition = match.group(1)
-            true_content = match.group(2)
-            false_content = match.group(3) or ''
+        def process_single_conditional(text: str) -> tuple:
+            """Find and process a single innermost conditional block."""
+            
+            # Pattern that matches ONLY innermost [%if%]...[%/if%] blocks
+            # Uses negative lookahead to ensure no nested [%if inside the content
+            inner_pattern = re.compile(
+                r'\[%if\s*([^%\]]*?)%\]((?:(?!\[%if\s)(?!\[%/if%\]).)*?)(?:\[%else%\]((?:(?!\[%if\s)(?!\[%/if%\]).)*?))?\[%/if%\]',
+                re.DOTALL
+            )
+            
+            match = inner_pattern.search(text)
+            if not match:
+                return text, False
+            
+            condition = match.group(1) if match.group(1) else ''
+            true_content = match.group(2) if match.group(2) else ''
+            false_content = match.group(3) if match.group(3) else ''
             
             if evaluate_condition(condition):
-                return true_content
-            return false_content
+                replacement = true_content
+            else:
+                replacement = false_content
+            
+            # Replace this match with the evaluated result
+            result = text[:match.start()] + replacement + text[match.end():]
+            return result, True
         
-        # Process all conditionals
+        # Process all conditionals by repeatedly processing innermost blocks
         result = content
-        max_iterations = 10
+        max_iterations = 50  # Safety limit for deeply nested structures
         
         for _ in range(max_iterations):
-            new_result = self.IF_PATTERN.sub(process_if, result)
-            if new_result == result:
+            result, found = process_single_conditional(result)
+            if not found:
                 break
-            result = new_result
         
         return result
     
