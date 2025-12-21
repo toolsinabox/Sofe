@@ -847,15 +847,20 @@ class MaropostTemplateEngine:
     def _process_inline_conditionals(self, content: str, item: Dict) -> str:
         """Process inline conditionals within loop items."""
         # Pattern for [%if value%]content[%/if%] or [%if value%]content[%else%]other[%/if%]
+        # Made more lenient to handle spaces and edge cases
         pattern = re.compile(
-            r'\[%if\s+([^\]%]+)%\](.*?)(?:\[%else%\](.*?))?\[%/if%\]',
+            r'\[%if\s*([^\]%]*)%\](.*?)(?:\[%else%\](.*?))?\[%/?if%\]',
             re.DOTALL
         )
         
         def evaluate_and_replace(match):
-            condition = match.group(1).strip()
+            condition = match.group(1).strip() if match.group(1) else ''
             true_content = match.group(2)
             false_content = match.group(3) or ''
+            
+            # Empty condition is falsy
+            if not condition:
+                return false_content
             
             # Check if condition is a direct value check (already replaced)
             # If the condition was a tag like [@product_compare_price@] and it's now empty or a value
