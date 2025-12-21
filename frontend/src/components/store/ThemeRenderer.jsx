@@ -165,9 +165,9 @@ export const ThemeHero = ({ className = '', onBannersLoad = null }) => {
         </div>
         
         {/* Dots */}
-        {banners.length > 1 && (
+        {visibleBanners.length > 1 && (
           <div className="absolute bottom-4 left-1/2 -translate-x-1/2 flex gap-2">
-            {banners.map((_, idx) => (
+            {visibleBanners.map((_, idx) => (
               <button
                 key={idx}
                 onClick={() => setCurrentSlide(idx)}
@@ -180,16 +180,16 @@ export const ThemeHero = ({ className = '', onBannersLoad = null }) => {
         )}
         
         {/* Arrows */}
-        {banners.length > 1 && (
+        {visibleBanners.length > 1 && (
           <>
             <button
-              onClick={() => setCurrentSlide(prev => (prev - 1 + banners.length) % banners.length)}
+              onClick={() => setCurrentSlide(prev => (prev - 1 + visibleBanners.length) % visibleBanners.length)}
               className="absolute left-4 top-1/2 -translate-y-1/2 w-10 h-10 bg-black/50 text-white rounded-full flex items-center justify-center hover:bg-black/70"
             >
               ‹
             </button>
             <button
-              onClick={() => setCurrentSlide(prev => (prev + 1) % banners.length)}
+              onClick={() => setCurrentSlide(prev => (prev + 1) % visibleBanners.length)}
               className="absolute right-4 top-1/2 -translate-y-1/2 w-10 h-10 bg-black/50 text-white rounded-full flex items-center justify-center hover:bg-black/70"
             >
               ›
