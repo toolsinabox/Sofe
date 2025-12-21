@@ -1858,6 +1858,220 @@ async def seed_database():
     
     return {"message": "Database seeded successfully", "categories": len(categories_data), "products": len(products_data), "banners": len(banners_data), "templates": len(default_templates)}
 
+# ==================== ADMIN PLATFORM STATS ====================
+
+@api_router.get("/admin/stats")
+async def get_admin_platform_stats(admin: dict = Depends(get_admin_user)):
+    """Get platform-wide statistics for admin dashboard"""
+    
+    # Total websites/merchants
+    total_websites = await db.websites.count_documents({})
+    active_websites = await db.websites.count_documents({"status": "active"})
+    
+    # Aggregate revenue and orders from all websites
+    pipeline = [
+        {"$group": {
+            "_id": None,
+            "total_revenue": {"$sum": "$revenue"},
+            "total_orders": {"$sum": "$orders"},
+            "total_products": {"$sum": "$products"},
+            "total_customers": {"$sum": "$customers"}
+        }}
+    ]
+    website_stats = await db.websites.aggregate(pipeline).to_list(1)
+    
+    total_revenue = website_stats[0]["total_revenue"] if website_stats else 0
+    total_orders = website_stats[0]["total_orders"] if website_stats else 0
+    total_products = website_stats[0]["total_products"] if website_stats else 0
+    total_customers = website_stats[0]["total_customers"] if website_stats else 0
+    
+    # Total users
+    total_users = await db.users.count_documents({})
+    
+    # Monthly revenue data (simulated based on websites)
+    monthly_revenue = []
+    months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"]
+    current_month = datetime.now(timezone.utc).month
+    
+    for i, month in enumerate(months[:current_month]):
+        # Create realistic trending data
+        base = total_revenue / current_month if current_month > 0 else 0
+        variance = (i + 1) / current_month if current_month > 0 else 1
+        monthly_revenue.append({
+            "month": month,
+            "revenue": round(base * variance * (0.8 + (i * 0.05)), 2)
+        })
+    
+    return {
+        "total_merchants": total_websites,
+        "active_merchants": active_websites,
+        "total_revenue": round(total_revenue, 2),
+        "total_orders": total_orders,
+        "total_products": total_products,
+        "total_customers": total_customers,
+        "total_users": total_users,
+        "monthly_revenue": monthly_revenue
+    }
+
+# ==================== ADMIN WEBSITES/MERCHANTS CRUD ====================
+
+@api_router.get("/admin/websites", response_model=List[Website])
+async def get_admin_websites(
+    status: Optional[str] = None,
+    plan: Optional[str] = None,
+    search: Optional[str] = None,
+    limit: int = Query(default=50, le=100),
+    skip: int = 0,
+    admin: dict = Depends(get_admin_user)
+):
+    """Get all websites/merchants"""
+    query = {}
+    if status:
+        query["status"] = status
+    if plan:
+        query["plan"] = plan
+    if search:
+        query["$or"] = [
+            {"name": {"$regex": search, "$options": "i"}},
+            {"email": {"$regex": search, "$options": "i"}},
+            {"url": {"$regex": search, "$options": "i"}}
+        ]
+    
+    websites = await db.websites.find(query, {"_id": 0}).sort("created_at", -1).skip(skip).limit(limit).to_list(limit)
+    return [Website(**w) for w in websites]
+
+@api_router.get("/admin/websites/{website_id}", response_model=Website)
+async def get_admin_website(website_id: str, admin: dict = Depends(get_admin_user)):
+    """Get a specific website by ID"""
+    website = await db.websites.find_one({"id": website_id}, {"_id": 0})
+    if not website:
+        raise HTTPException(status_code=404, detail="Website not found")
+    return Website(**website)
+
+@api_router.post("/admin/websites", response_model=Website)
+async def create_admin_website(website: WebsiteCreate, admin: dict = Depends(get_admin_user)):
+    """Create a new website/merchant"""
+    # Check if website with email exists
+    existing = await db.websites.find_one({"email": website.email})
+    if existing:
+        raise HTTPException(status_code=400, detail="Website with this email already exists")
+    
+    new_website = Website(**website.dict())
+    await db.websites.insert_one(new_website.dict())
+    return new_website
+
+@api_router.put("/admin/websites/{website_id}", response_model=Website)
+async def update_admin_website(website_id: str, website: WebsiteUpdate, admin: dict = Depends(get_admin_user)):
+    """Update a website/merchant"""
+    update_data = {k: v for k, v in website.dict().items() if v is not None}
+    update_data["updated_at"] = datetime.now(timezone.utc)
+    
+    result = await db.websites.update_one(
+        {"id": website_id},
+        {"$set": update_data}
+    )
+    if result.matched_count == 0:
+        raise HTTPException(status_code=404, detail="Website not found")
+    
+    updated = await db.websites.find_one({"id": website_id}, {"_id": 0})
+    return Website(**updated)
+
+@api_router.delete("/admin/websites/{website_id}")
+async def delete_admin_website(website_id: str, admin: dict = Depends(get_admin_user)):
+    """Delete a website/merchant"""
+    result = await db.websites.delete_one({"id": website_id})
+    if result.deleted_count == 0:
+        raise HTTPException(status_code=404, detail="Website not found")
+    return {"message": "Website deleted successfully"}
+
+# ==================== ADMIN USERS CRUD ====================
+
+@api_router.get("/admin/users")
+async def get_admin_users(
+    role: Optional[str] = None,
+    search: Optional[str] = None,
+    limit: int = Query(default=50, le=100),
+    skip: int = 0,
+    admin: dict = Depends(get_admin_user)
+):
+    """Get all users"""
+    query = {}
+    if role:
+        query["role"] = role
+    if search:
+        query["$or"] = [
+            {"name": {"$regex": search, "$options": "i"}},
+            {"email": {"$regex": search, "$options": "i"}}
+        ]
+    
+    users = await db.users.find(query, {"_id": 0, "hashed_password": 0}).sort("created_at", -1).skip(skip).limit(limit).to_list(limit)
+    return users
+
+@api_router.get("/admin/users/{user_id}")
+async def get_admin_user_by_id(user_id: str, admin: dict = Depends(get_admin_user)):
+    """Get a specific user by ID"""
+    user = await db.users.find_one({"id": user_id}, {"_id": 0, "hashed_password": 0})
+    if not user:
+        raise HTTPException(status_code=404, detail="User not found")
+    return user
+
+@api_router.post("/admin/users")
+async def create_admin_user(user_data: UserCreate, admin: dict = Depends(get_admin_user)):
+    """Create a new user (admin creates merchant accounts)"""
+    # Check if user already exists
+    existing = await db.users.find_one({"email": user_data.email})
+    if existing:
+        raise HTTPException(status_code=400, detail="Email already registered")
+    
+    # Create new user
+    new_user = User(
+        email=user_data.email,
+        name=user_data.name,
+        role=user_data.role,
+        hashed_password=get_password_hash(user_data.password)
+    )
+    
+    await db.users.insert_one(new_user.dict())
+    
+    # Return user without password
+    return {
+        "id": new_user.id,
+        "email": new_user.email,
+        "name": new_user.name,
+        "role": new_user.role,
+        "is_active": new_user.is_active,
+        "created_at": new_user.created_at.isoformat(),
+        "updated_at": new_user.updated_at.isoformat()
+    }
+
+@api_router.put("/admin/users/{user_id}")
+async def update_admin_user(user_id: str, user: UserUpdate, admin: dict = Depends(get_admin_user)):
+    """Update a user"""
+    update_data = {k: v for k, v in user.dict().items() if v is not None}
+    update_data["updated_at"] = datetime.now(timezone.utc)
+    
+    result = await db.users.update_one(
+        {"id": user_id},
+        {"$set": update_data}
+    )
+    if result.matched_count == 0:
+        raise HTTPException(status_code=404, detail="User not found")
+    
+    updated = await db.users.find_one({"id": user_id}, {"_id": 0, "hashed_password": 0})
+    return updated
+
+@api_router.delete("/admin/users/{user_id}")
+async def delete_admin_user(user_id: str, admin: dict = Depends(get_admin_user)):
+    """Delete a user"""
+    # Prevent deleting self
+    if user_id == admin.get("id"):
+        raise HTTPException(status_code=400, detail="Cannot delete your own account")
+    
+    result = await db.users.delete_one({"id": user_id})
+    if result.deleted_count == 0:
+        raise HTTPException(status_code=404, detail="User not found")
+    return {"message": "User deleted successfully"}
+
 # Include the router in the main app
 app.include_router(api_router)
 
