@@ -1,5 +1,5 @@
 import React from 'react';
-import { NavLink } from 'react-router-dom';
+import { NavLink, useNavigate } from 'react-router-dom';
 import {
   LayoutDashboard,
   ShoppingCart,
@@ -20,8 +20,16 @@ import {
   Code,
   Store
 } from 'lucide-react';
+import { useAuth } from '../../context/AuthContext';
 
 const MerchantSidebar = ({ collapsed, setCollapsed }) => {
+  const { logout } = useAuth();
+  const navigate = useNavigate();
+
+  const handleLogout = () => {
+    logout();
+    navigate('/merchant/login');
+  };
   const navItems = [
     { path: '/merchant', icon: LayoutDashboard, label: 'Dashboard', exact: true },
     { path: '/merchant/orders', icon: ShoppingCart, label: 'Orders' },
