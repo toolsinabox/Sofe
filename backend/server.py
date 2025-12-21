@@ -2182,6 +2182,273 @@ async def render_storefront_page(page_type: str, category_id: Optional[str] = No
         media_type='text/html'
     )
 
+# ==================== PARTIAL RENDERING FOR HYBRID APPROACH ====================
+
+@api_router.get("/render/partial/header")
+async def render_partial_header():
+    """Render just the header from active theme"""
+    active_theme = await get_active_theme_name()
+    theme_path = THEMES_DIR / active_theme
+    
+    if not theme_path.exists():
+        return {"html": "", "error": "Theme not found"}
+    
+    # Try to find header template
+    header_file = theme_path / "templates" / "headers" / "template.html"
+    if not header_file.exists():
+        return {"html": "", "error": "Header template not found"}
+    
+    engine = MaropostTemplateEngine(db)
+    context = await engine.get_store_context()
+    
+    async with aiofiles.open(header_file, 'r', encoding='utf-8') as f:
+        template_content = await f.read()
+    
+    # Process includes
+    async def process_includes(content, base_path):
+        pattern = r"\[%load_template\s+file:'([^']+)'/?%\]"
+        matches = re.findall(pattern, content)
+        for include_path in matches:
+            include_file = theme_path / "templates" / include_path
+            if include_file.exists():
+                async with aiofiles.open(include_file, 'r', encoding='utf-8') as f:
+                    include_content = await f.read()
+                include_content = await process_includes(include_content, base_path)
+                content = re.sub(rf"\[%load_template\s+file:'{re.escape(include_path)}'/?%\]", include_content, content)
+        return content
+    
+    full_template = await process_includes(template_content, theme_path)
+    rendered = await engine.render(full_template, context)
+    
+    return {"html": rendered, "theme": active_theme}
+
+@api_router.get("/render/partial/footer")
+async def render_partial_footer():
+    """Render just the footer from active theme"""
+    active_theme = await get_active_theme_name()
+    theme_path = THEMES_DIR / active_theme
+    
+    if not theme_path.exists():
+        return {"html": "", "error": "Theme not found"}
+    
+    footer_file = theme_path / "templates" / "footers" / "template.html"
+    if not footer_file.exists():
+        return {"html": "", "error": "Footer template not found"}
+    
+    engine = MaropostTemplateEngine(db)
+    context = await engine.get_store_context()
+    
+    async with aiofiles.open(footer_file, 'r', encoding='utf-8') as f:
+        template_content = await f.read()
+    
+    async def process_includes(content, base_path):
+        pattern = r"\[%load_template\s+file:'([^']+)'/?%\]"
+        matches = re.findall(pattern, content)
+        for include_path in matches:
+            include_file = theme_path / "templates" / include_path
+            if include_file.exists():
+                async with aiofiles.open(include_file, 'r', encoding='utf-8') as f:
+                    include_content = await f.read()
+                include_content = await process_includes(include_content, base_path)
+                content = re.sub(rf"\[%load_template\s+file:'{re.escape(include_path)}'/?%\]", include_content, content)
+        return content
+    
+    full_template = await process_includes(template_content, theme_path)
+    rendered = await engine.render(full_template, context)
+    
+    return {"html": rendered, "theme": active_theme}
+
+@api_router.get("/render/partial/hero")
+async def render_partial_hero():
+    """Render hero/banner section from active theme"""
+    active_theme = await get_active_theme_name()
+    theme_path = THEMES_DIR / active_theme
+    
+    if not theme_path.exists():
+        return {"html": "", "error": "Theme not found"}
+    
+    engine = MaropostTemplateEngine(db)
+    context = await engine.get_store_context()
+    
+    # Get banners for hero section
+    banners = await db.banners.find({}, {"_id": 0}).to_list(20)
+    context["banners"] = banners
+    
+    # Try hero template first, then carousel template
+    hero_file = theme_path / "templates" / "thumbs" / "advert" / "carousel.template.html"
+    if not hero_file.exists():
+        # Create a simple hero template from banners data
+        banner_html = '<div class="hero-carousel">'
+        for banner in banners:
+            img_url = banner.get("image_url_desktop", banner.get("image_url", ""))
+            title = banner.get("title", "")
+            subtitle = banner.get("subtitle", "")
+            link = banner.get("link_url", "#")
+            btn_text = banner.get("button_text", "")
+            
+            banner_html += f'''
+            <div class="hero-slide" style="background-image: url('{img_url}');">
+                <div class="hero-content">
+                    {f'<h1>{title}</h1>' if title else ''}
+                    {f'<p>{subtitle}</p>' if subtitle else ''}
+                    {f'<a href="{link}" class="hero-btn">{btn_text}</a>' if btn_text else ''}
+                </div>
+            </div>
+            '''
+        banner_html += '</div>'
+        return {"html": banner_html, "theme": active_theme, "banners": banners}
+    
+    async with aiofiles.open(hero_file, 'r', encoding='utf-8') as f:
+        template_content = await f.read()
+    
+    rendered = await engine.render(template_content, context)
+    return {"html": rendered, "theme": active_theme, "banners": banners}
+
+@api_router.get("/render/partial/products")
+async def render_partial_products(
+    category: Optional[str] = None,
+    limit: int = Query(default=12, le=50),
+    featured: bool = False
+):
+    """Render product grid from active theme"""
+    active_theme = await get_active_theme_name()
+    theme_path = THEMES_DIR / active_theme
+    
+    if not theme_path.exists():
+        return {"html": "", "error": "Theme not found"}
+    
+    engine = MaropostTemplateEngine(db)
+    context = await engine.get_store_context()
+    
+    # Get products
+    query = {}
+    if category:
+        query["category"] = category
+    if featured:
+        query["featured"] = True
+    
+    products = await db.products.find(query, {"_id": 0}).limit(limit).to_list(limit)
+    context["products"] = products
+    
+    # Try to find product thumb template
+    thumb_file = theme_path / "templates" / "thumbs" / "product" / "template.html"
+    
+    if not thumb_file.exists():
+        # Create a simple product grid
+        html = '<div class="product-grid">'
+        for prod in products:
+            price = prod.get("price", 0)
+            img = prod.get("images", [""])[0] if prod.get("images") else ""
+            html += f'''
+            <div class="product-card" data-product-id="{prod.get('id', '')}">
+                <a href="/store/product/{prod.get('id', '')}">
+                    <img src="{img}" alt="{prod.get('name', '')}" loading="lazy">
+                    <h3>{prod.get('name', '')}</h3>
+                    <p class="price">${price:.2f}</p>
+                </a>
+                <button class="add-to-cart-btn" data-product-id="{prod.get('id', '')}">Add to Cart</button>
+            </div>
+            '''
+        html += '</div>'
+        return {"html": html, "theme": active_theme, "products": products}
+    
+    # Render each product with the template
+    async with aiofiles.open(thumb_file, 'r', encoding='utf-8') as f:
+        thumb_template = await f.read()
+    
+    html = '<div class="product-grid">'
+    for idx, prod in enumerate(products):
+        prod_context = {**context, "product": prod, "count": idx, "current_index": idx + 1, "total": len(products)}
+        rendered_item = await engine.render(thumb_template, prod_context)
+        html += f'<div class="product-item" data-product-id="{prod.get("id", "")}">{rendered_item}</div>'
+    html += '</div>'
+    
+    return {"html": html, "theme": active_theme, "products": products}
+
+@api_router.get("/render/partial/categories")
+async def render_partial_categories():
+    """Render category navigation from active theme"""
+    active_theme = await get_active_theme_name()
+    
+    engine = MaropostTemplateEngine(db)
+    context = await engine.get_store_context()
+    categories = context.get("categories", [])
+    
+    # Simple category nav
+    html = '<nav class="category-nav"><ul>'
+    for cat in categories:
+        html += f'<li><a href="/store/category/{cat.get("id", "")}">{cat.get("name", "")}</a></li>'
+    html += '</ul></nav>'
+    
+    return {"html": html, "theme": active_theme, "categories": categories}
+
+@api_router.get("/render/partial/product-detail")
+async def render_partial_product_detail(product_id: str):
+    """Render single product detail from active theme"""
+    active_theme = await get_active_theme_name()
+    theme_path = THEMES_DIR / active_theme
+    
+    if not theme_path.exists():
+        return {"html": "", "error": "Theme not found"}
+    
+    product = await db.products.find_one({"id": product_id}, {"_id": 0})
+    if not product:
+        return {"html": "<p>Product not found</p>", "error": "Product not found"}
+    
+    engine = MaropostTemplateEngine(db)
+    context = await engine.get_store_context()
+    context["product"] = product
+    
+    # Try product detail template
+    detail_file = theme_path / "templates" / "products" / "template.html"
+    
+    if not detail_file.exists():
+        # Create simple product detail
+        price = product.get("price", 0)
+        compare_price = product.get("compare_price", 0)
+        images = product.get("images", [])
+        
+        html = f'''
+        <div class="product-detail" data-product-id="{product.get('id', '')}">
+            <div class="product-images">
+                {f'<img src="{images[0]}" alt="{product.get("name", "")}">' if images else ''}
+            </div>
+            <div class="product-info">
+                <h1>{product.get('name', '')}</h1>
+                <p class="sku">SKU: {product.get('sku', '')}</p>
+                <div class="price">
+                    <span class="current-price">${price:.2f}</span>
+                    {f'<span class="compare-price">${compare_price:.2f}</span>' if compare_price and compare_price > price else ''}
+                </div>
+                <div class="description">{product.get('description', '')}</div>
+                <div class="stock-status">{"In Stock" if product.get("stock", 0) > 0 else "Out of Stock"}</div>
+                <button class="add-to-cart-btn" data-product-id="{product.get('id', '')}">Add to Cart</button>
+            </div>
+        </div>
+        '''
+        return {"html": html, "theme": active_theme, "product": product}
+    
+    async with aiofiles.open(detail_file, 'r', encoding='utf-8') as f:
+        template_content = await f.read()
+    
+    # Process includes
+    async def process_includes(content):
+        pattern = r"\[%load_template\s+file:'([^']+)'/?%\]"
+        matches = re.findall(pattern, content)
+        for include_path in matches:
+            include_file = theme_path / "templates" / include_path
+            if include_file.exists():
+                async with aiofiles.open(include_file, 'r', encoding='utf-8') as f:
+                    include_content = await f.read()
+                include_content = await process_includes(include_content)
+                content = re.sub(rf"\[%load_template\s+file:'{re.escape(include_path)}'/?%\]", include_content, content)
+        return content
+    
+    full_template = await process_includes(template_content)
+    rendered = await engine.render(full_template, context)
+    
+    return {"html": rendered, "theme": active_theme, "product": product}
+
 # ==================== INVENTORY ====================
 
 @api_router.get("/inventory")
