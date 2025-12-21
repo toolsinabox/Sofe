@@ -99,14 +99,17 @@ export const ThemeHero = ({ className = '', onBannersLoad = null }) => {
     fetchHero();
   }, [onBannersLoad]);
 
+  // Filter visible banners
+  const visibleBanners = banners.filter(b => b.show_on_desktop !== false && b.is_active !== false);
+  
   // Auto-advance slides
   useEffect(() => {
-    if (banners.length <= 1) return;
+    if (visibleBanners.length <= 1) return;
     const interval = setInterval(() => {
-      setCurrentSlide(prev => (prev + 1) % banners.length);
+      setCurrentSlide(prev => (prev + 1) % visibleBanners.length);
     }, 5000);
     return () => clearInterval(interval);
-  }, [banners.length]);
+  }, [visibleBanners.length]);
 
   if (loading) {
     return (
