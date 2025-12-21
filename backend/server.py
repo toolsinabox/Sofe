@@ -173,7 +173,10 @@ class Customer(CustomerBase):
 
 class HeroBanner(BaseModel):
     id: str = Field(default_factory=lambda: str(uuid.uuid4()))
-    title: str
+    # Internal identification name (required)
+    name: str
+    # Display elements (all optional)
+    title: Optional[str] = None
     subtitle: Optional[str] = None
     # Legacy single image field (for backwards compatibility)
     image: Optional[str] = None
@@ -185,15 +188,25 @@ class HeroBanner(BaseModel):
     show_on_desktop: bool = True
     show_on_tablet: bool = True
     show_on_mobile: bool = True
+    # Button/link options (optional)
     link: Optional[str] = None
-    button_text: Optional[str] = "Shop Now"
+    button_text: Optional[str] = None
+    button_style: Optional[str] = "primary"  # primary, secondary, outline
+    show_button: bool = False
+    # Text styling
+    show_title: bool = True
+    show_subtitle: bool = True
     text_color: Optional[str] = "#FFFFFF"
+    text_position: Optional[str] = "left"  # left, center, right
     overlay_color: Optional[str] = "rgba(0,0,0,0.3)"
+    overlay_enabled: bool = True
+    # Status
     is_active: bool = True
     sort_order: int = 0
     created_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
 
 class BannerUpdate(BaseModel):
+    name: Optional[str] = None
     title: Optional[str] = None
     subtitle: Optional[str] = None
     image: Optional[str] = None
@@ -205,8 +218,14 @@ class BannerUpdate(BaseModel):
     show_on_mobile: Optional[bool] = None
     link: Optional[str] = None
     button_text: Optional[str] = None
+    button_style: Optional[str] = None
+    show_button: Optional[bool] = None
+    show_title: Optional[bool] = None
+    show_subtitle: Optional[bool] = None
     text_color: Optional[str] = None
+    text_position: Optional[str] = None
     overlay_color: Optional[str] = None
+    overlay_enabled: Optional[bool] = None
     is_active: Optional[bool] = None
     sort_order: Optional[int] = None
 
