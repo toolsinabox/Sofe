@@ -1,6 +1,7 @@
 from fastapi import FastAPI, APIRouter, HTTPException, Query, UploadFile, File, Form, Depends
 from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
 from fastapi.staticfiles import StaticFiles
+from fastapi.responses import StreamingResponse
 from dotenv import load_dotenv
 from starlette.middleware.cors import CORSMiddleware
 from motor.motor_asyncio import AsyncIOMotorClient
@@ -14,6 +15,9 @@ from datetime import datetime, timezone, timedelta
 import aiofiles
 import re
 import json
+import io
+import zipfile
+import shutil
 from jose import JWTError, jwt
 from passlib.context import CryptContext
 
@@ -26,6 +30,10 @@ UPLOADS_DIR.mkdir(exist_ok=True)
 (UPLOADS_DIR / "logos").mkdir(exist_ok=True)
 (UPLOADS_DIR / "banners").mkdir(exist_ok=True)
 (UPLOADS_DIR / "products").mkdir(exist_ok=True)
+
+# Create theme directory
+THEME_DIR = ROOT_DIR / "theme"
+THEME_DIR.mkdir(exist_ok=True)
 
 # JWT Settings
 SECRET_KEY = os.environ.get('JWT_SECRET_KEY', 'maropost-clone-super-secret-key-change-in-production')
