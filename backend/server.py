@@ -173,8 +173,8 @@ class Customer(CustomerBase):
 
 class HeroBanner(BaseModel):
     id: str = Field(default_factory=lambda: str(uuid.uuid4()))
-    # Internal identification name (required)
-    name: str
+    # Internal identification name (optional with fallback to title)
+    name: Optional[str] = None
     # Display elements (all optional)
     title: Optional[str] = None
     subtitle: Optional[str] = None
