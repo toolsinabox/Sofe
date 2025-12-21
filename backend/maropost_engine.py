@@ -824,6 +824,10 @@ class MaropostTemplateEngine:
                 item_content = item_content.replace('[@index@]', str(i))
                 item_content = item_content.replace('[@index1@]', str(i + 1))
                 
+                # Process inline conditionals within the item
+                # Simple pattern: [%if value%]content[%/if%] or [%if value%]content[%else%]other[%/if%]
+                item_content = self._process_inline_conditionals(item_content, item)
+                
                 output.append(item_content)
             
             return ''.join(output)
