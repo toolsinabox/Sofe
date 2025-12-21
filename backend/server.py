@@ -337,6 +337,10 @@ class WebsiteUpdate(BaseModel):
     status: Optional[str] = None
     owner_id: Optional[str] = None
     logo: Optional[str] = None
+    revenue: Optional[float] = None
+    orders: Optional[int] = None
+    products: Optional[int] = None
+    customers: Optional[int] = None
 
 class Website(WebsiteBase):
     id: str = Field(default_factory=lambda: str(uuid.uuid4()))
