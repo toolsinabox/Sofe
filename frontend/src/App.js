@@ -7,6 +7,7 @@ import { AuthProvider, ProtectedRoute } from "./context/AuthContext";
 import AdminLayout from "./pages/admin/AdminLayout";
 import AdminDashboard from "./pages/admin/AdminDashboard";
 import AdminMerchants from "./pages/admin/AdminMerchants";
+import AdminUsers from "./pages/admin/AdminUsers";
 import AdminLogin from "./pages/admin/AdminLogin";
 
 // Merchant Pages
