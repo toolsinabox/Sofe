@@ -977,6 +977,43 @@ class MaropostTemplateEngine:
         # Then process data tags
         content = await self.process_data_tags(content, context)
         
+        # Clean up unprocessed Maropost tags
+        content = self._cleanup_unprocessed_tags(content)
+        
+        return content
+    
+    def _cleanup_unprocessed_tags(self, content: str) -> str:
+        """Remove or replace unprocessed Maropost tags for cleaner output"""
+        
+        # Remove block function tags [%tag%]...[%/tag%]
+        block_patterns = [
+            r'\[%if\s+[^\]]*%\].*?\[%/if%\]',
+            r'\[%cache\s+[^\]]*%\].*?\[%/cache%\]',
+            r'\[%format\s+[^\]]*%\].*?\[%/format%\]',
+            r'\[%foreach\s+[^\]]*%\].*?\[%/foreach%\]',
+            r'\[%content_menu\s+[^\]]*%\].*?\[%/content_menu%\]',
+            r'\[%advert\s+[^\]]*%\].*?\[%/advert%\]',
+            r'\[%param\s+[^\]]*%\].*?\[%/param%\]',
+        ]
+        
+        for pattern in block_patterns:
+            content = re.sub(pattern, '', content, flags=re.DOTALL)
+        
+        # Remove inline function tags [%tag%]
+        inline_function_pattern = r'\[%[a-zA-Z_][a-zA-Z0-9_]*(?:\s+[^\]]*)?\s*/?%\]'
+        content = re.sub(inline_function_pattern, '', content)
+        
+        # Remove closing tags [%/tag%]
+        closing_tag_pattern = r'\[%/[a-zA-Z_][a-zA-Z0-9_]*%\]'
+        content = re.sub(closing_tag_pattern, '', content)
+        
+        # Replace unprocessed data tags [@tag@] with empty string or placeholder
+        data_tag_pattern = r'\[@[a-zA-Z_][a-zA-Z0-9_:]*@\]'
+        content = re.sub(data_tag_pattern, '', content)
+        
+        # Clean up multiple blank lines
+        content = re.sub(r'\n\s*\n\s*\n', '\n\n', content)
+        
         return content
 
 # Initialize template engine
