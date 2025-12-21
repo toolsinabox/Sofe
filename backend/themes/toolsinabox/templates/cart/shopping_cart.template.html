@@ -1,0 +1,106 @@
+        <!-- Shopping Cart Page -->
+        <div class="bg-gray-50 py-8">
+            <div class="max-w-7xl mx-auto px-4">
+                <h1 class="text-3xl font-bold text-gray-900 mb-8">Shopping Cart</h1>
+                
+                <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                    <!-- Cart Items -->
+                    <div class="lg:col-span-2">
+                        <div class="bg-white rounded-xl shadow-sm overflow-hidden">
+                            <!-- Cart Header -->
+                            <div class="hidden md:grid grid-cols-12 gap-4 p-4 bg-gray-50 border-b text-sm font-medium text-gray-600">
+                                <div class="col-span-6">Product</div>
+                                <div class="col-span-2 text-center">Price</div>
+                                <div class="col-span-2 text-center">Quantity</div>
+                                <div class="col-span-2 text-right">Total</div>
+                            </div>
+                            
+                            <!-- Cart Items -->
+                            <div class="divide-y" id="cart-items">
+                                [%cart_list%]
+                                <div class="p-4 grid grid-cols-1 md:grid-cols-12 gap-4 items-center cart-item" data-item-id="[@item_id@]">
+                                    <div class="col-span-6 flex items-center gap-4">
+                                        <img src="[@item_image@]" alt="[@item_name@]" class="w-20 h-20 object-cover rounded-lg">
+                                        <div>
+                                            <h3 class="font-medium text-gray-900">[@item_name@]</h3>
+                                            <p class="text-sm text-gray-500">SKU: [@item_sku@]</p>
+                                            <button class="text-sm text-red-600 hover:text-red-700 mt-1 remove-item" data-item-id="[@item_id@]">Remove</button>
+                                        </div>
+                                    </div>
+                                    <div class="col-span-2 text-center">
+                                        <span class="md:hidden text-sm text-gray-500">Price: </span>
+                                        <span class="font-medium">[@item_price_formatted@]</span>
+                                    </div>
+                                    <div class="col-span-2 flex justify-center">
+                                        <div class="flex items-center border rounded-lg">
+                                            <button class="px-3 py-1 text-gray-600 hover:bg-gray-100 cart-qty-btn" data-action="decrease">−</button>
+                                            <input type="number" value="[@item_quantity@]" min="1" class="w-12 text-center border-x py-1">
+                                            <button class="px-3 py-1 text-gray-600 hover:bg-gray-100 cart-qty-btn" data-action="increase">+</button>
+                                        </div>
+                                    </div>
+                                    <div class="col-span-2 text-right">
+                                        <span class="md:hidden text-sm text-gray-500">Total: </span>
+                                        <span class="font-bold text-gray-900">[@item_total_formatted@]</span>
+                                    </div>
+                                </div>
+                                [%/cart_list%]
+                            </div>
+                            
+                            <!-- Empty Cart Message -->
+                            <div class="p-12 text-center empty-cart-message hidden">
+                                <svg class="w-16 h-16 mx-auto text-gray-300 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z"></path>
+                                </svg>
+                                <h3 class="text-lg font-medium text-gray-900 mb-2">Your cart is empty</h3>
+                                <p class="text-gray-500 mb-6">Looks like you haven't added any items yet.</p>
+                                <a href="/live/products" class="inline-block bg-blue-600 text-white px-6 py-3 rounded-lg font-medium hover:bg-blue-700 transition">Continue Shopping</a>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Order Summary -->
+                    <div class="lg:col-span-1">
+                        <div class="bg-white rounded-xl shadow-sm p-6 sticky top-24">
+                            <h2 class="text-lg font-semibold text-gray-900 mb-6">Order Summary</h2>
+                            
+                            <div class="space-y-4 mb-6">
+                                <div class="flex justify-between text-gray-600">
+                                    <span>Subtotal</span>
+                                    <span class="font-medium cart-subtotal">[@cart_subtotal@]</span>
+                                </div>
+                                <div class="flex justify-between text-gray-600">
+                                    <span>Shipping</span>
+                                    <span class="font-medium">Calculated at checkout</span>
+                                </div>
+                                <div class="flex justify-between text-gray-600">
+                                    <span>Tax</span>
+                                    <span class="font-medium">Calculated at checkout</span>
+                                </div>
+                                <hr>
+                                <div class="flex justify-between text-lg font-bold text-gray-900">
+                                    <span>Estimated Total</span>
+                                    <span class="cart-total">[@cart_total@]</span>
+                                </div>
+                            </div>
+                            
+                            <a href="/live/checkout" class="block w-full bg-blue-600 text-white text-center py-3 rounded-lg font-medium hover:bg-blue-700 transition mb-4">
+                                Proceed to Checkout
+                            </a>
+                            
+                            <a href="/live/products" class="block w-full border border-gray-300 text-gray-700 text-center py-3 rounded-lg font-medium hover:bg-gray-50 transition">
+                                Continue Shopping
+                            </a>
+                            
+                            <!-- Trust Badges -->
+                            <div class="mt-6 pt-6 border-t">
+                                <div class="flex items-center justify-center gap-4 text-gray-400">
+                                    <svg class="w-8 h-8" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/></svg>
+                                    <svg class="w-8 h-8" viewBox="0 0 24 24" fill="currentColor"><path d="M18 8h-1V6c0-2.76-2.24-5-5-5S7 3.24 7 6v2H6c-1.1 0-2 .9-2 2v10c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V10c0-1.1-.9-2-2-2zm-6 9c-1.1 0-2-.9-2-2s.9-2 2-2 2 .9 2 2-.9 2-2 2zm3.1-9H8.9V6c0-1.71 1.39-3.1 3.1-3.1 1.71 0 3.1 1.39 3.1 3.1v2z"/></svg>
+                                    <span class="text-sm">Secure Checkout</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
