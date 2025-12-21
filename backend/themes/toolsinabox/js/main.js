@@ -1,179 +1,198 @@
 // Tools In A Box Theme JavaScript
+// Shopping Cart with Mini Cart and Modal
 
 document.addEventListener('DOMContentLoaded', function() {
     console.log('Theme loaded: Tools In A Box');
     
-    // Initialize cart functionality
+    // Initialize cart
     initCart();
     
-    // Initialize product interactions
-    initProductInteractions();
-    
-    // Initialize quantity buttons
+    // Initialize quantity buttons on product pages
     initQuantityButtons();
 });
 
-// Cart state
-let cart = JSON.parse(localStorage.getItem('cart') || '[]');
+// Cart state - use unique key to avoid conflicts
+let tiabCart = JSON.parse(localStorage.getItem('tiab_cart')) || { items: [], total: 0 };
 
+// Initialize cart
 function initCart() {
-    updateCartCount();
-    
-    // Add to cart buttons
-    document.querySelectorAll('.add-to-cart-btn').forEach(btn => {
-        btn.addEventListener('click', async function(e) {
-            e.preventDefault();
-            const productId = this.dataset.productId;
-            
-            if (!productId) return;
-            
-            try {
-                // Fetch product data
-                const response = await fetch(`/api/products/${productId}`);
-                const product = await response.json();
-                
-                addToCart(product);
-                
-                // Visual feedback
-                this.textContent = 'Added!';
-                this.classList.add('bg-green-600');
-                this.classList.remove('bg-blue-600');
-                
-                setTimeout(() => {
-                    this.textContent = 'Add to Cart';
-                    this.classList.remove('bg-green-600');
-                    this.classList.add('bg-blue-600');
-                }, 1500);
-            } catch (err) {
-                console.error('Error adding to cart:', err);
-            }
-        });
-    });
+    updateCartUI();
 }
 
-function addToCart(product) {
-    const existingItem = cart.find(item => item.id === product.id);
+// Add to Cart Function - called via onclick
+function addToCart(button) {
+    const productId = button.dataset.productId;
+    const productName = button.dataset.productName;
+    const productPrice = button.dataset.productPrice;
+    const productImage = button.dataset.productImage;
+    
+    if (!productId) {
+        console.error('No product ID provided');
+        return;
+    }
+    
+    // Parse price (remove currency symbol and parse)
+    const priceNum = parseFloat(productPrice.replace(/[^0-9.]/g, '')) || 0;
+    
+    // Check if item already exists in cart
+    const existingItem = tiabCart.items.find(item => item.id === productId);
     
     if (existingItem) {
-        existingItem.quantity += 1;
+        existingItem.qty += 1;
     } else {
-        cart.push({
-            id: product.id,
-            name: product.name,
-            price: product.price,
-            image: product.images?.[0] || '',
-            quantity: 1
+        tiabCart.items.push({
+            id: productId,
+            name: productName,
+            price: priceNum,
+            priceFormatted: productPrice,
+            image: productImage,
+            qty: 1
         });
     }
     
-    saveCart();
-    updateCartCount();
+    // Update total
+    tiabCart.total = tiabCart.items.reduce((sum, item) => sum + (item.price * item.qty), 0);
+    
+    // Save to localStorage
+    localStorage.setItem('tiab_cart', JSON.stringify(tiabCart));
+    
+    // Update UI
+    updateCartUI();
+    
+    // Show modal
+    showCartModal(productName, productPrice, productImage);
+    
+    // Button feedback
+    const originalText = button.textContent;
+    button.textContent = 'Added!';
+    button.style.backgroundColor = '#22c55e';
+    
+    setTimeout(() => {
+        button.textContent = originalText;
+        button.style.backgroundColor = '';
+    }, 2000);
 }
 
-function removeFromCart(productId) {
-    cart = cart.filter(item => item.id !== productId);
-    saveCart();
-    updateCartCount();
-}
-
-function updateCartItemQuantity(productId, quantity) {
-    const item = cart.find(item => item.id === productId);
-    if (item) {
-        item.quantity = Math.max(1, quantity);
-        saveCart();
-        updateCartCount();
+// Update Cart UI (mini cart and badge)
+function updateCartUI() {
+    const itemCount = tiabCart.items.reduce((sum, item) => sum + item.qty, 0);
+    
+    // Update badge
+    const cartBadge = document.getElementById('cart-count');
+    if (cartBadge) {
+        cartBadge.textContent = itemCount;
+    }
+    
+    // Update mini cart item count
+    const miniCartItemCount = document.getElementById('mini-cart-item-count');
+    if (miniCartItemCount) {
+        miniCartItemCount.textContent = itemCount + ' item' + (itemCount !== 1 ? 's' : '');
+    }
+    
+    // Update mini cart total
+    const miniCartTotal = document.getElementById('mini-cart-total');
+    if (miniCartTotal) {
+        miniCartTotal.textContent = '$' + tiabCart.total.toFixed(2);
+    }
+    
+    // Update mini cart items list
+    const itemsContainer = document.getElementById('mini-cart-items');
+    if (itemsContainer) {
+        if (tiabCart.items.length === 0) {
+            itemsContainer.innerHTML = '<div class="mini-cart-empty"><p>Your cart is empty</p></div>';
+        } else {
+            itemsContainer.innerHTML = tiabCart.items.map(item => `
+                <div class="mini-cart-item">
+                    <img src="${item.image}" alt="${item.name}" onerror="this.src='https://placehold.co/60x60?text=Product'">
+                    <div class="mini-cart-item-info">
+                        <p class="mini-cart-item-name">${item.name}</p>
+                        <p class="mini-cart-item-price">${item.priceFormatted}</p>
+                        <p class="mini-cart-item-qty">Qty: ${item.qty}</p>
+                    </div>
+                    <button class="mini-cart-item-remove" onclick="removeFromCart('${item.id}')">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                        </svg>
+                    </button>
+                </div>
+            `).join('');
+        }
     }
 }
 
-function saveCart() {
-    localStorage.setItem('cart', JSON.stringify(cart));
+// Remove item from cart
+function removeFromCart(productId) {
+    tiabCart.items = tiabCart.items.filter(item => item.id !== productId);
+    tiabCart.total = tiabCart.items.reduce((sum, item) => sum + (item.price * item.qty), 0);
+    localStorage.setItem('tiab_cart', JSON.stringify(tiabCart));
+    updateCartUI();
 }
 
-function updateCartCount() {
-    const count = cart.reduce((sum, item) => sum + item.quantity, 0);
-    document.querySelectorAll('.cart-count').forEach(el => {
-        el.textContent = count;
-    });
+// Show the "Added to Cart" modal
+function showCartModal(name, price, image) {
+    const overlay = document.getElementById('cart-modal-overlay');
+    if (!overlay) {
+        console.error('Modal overlay not found');
+        return;
+    }
+    
+    // Set product info in modal
+    const modalProductName = document.getElementById('modal-product-name');
+    const modalProductPrice = document.getElementById('modal-product-price');
+    const modalProductImage = document.getElementById('modal-product-image');
+    const modalCartTotal = document.getElementById('modal-cart-total');
+    
+    if (modalProductName) modalProductName.textContent = name;
+    if (modalProductPrice) modalProductPrice.textContent = price;
+    if (modalProductImage) {
+        modalProductImage.src = image;
+        modalProductImage.onerror = function() { this.src = 'https://placehold.co/80x80?text=Product'; };
+    }
+    if (modalCartTotal) modalCartTotal.textContent = '$' + tiabCart.total.toFixed(2);
+    
+    // Show modal
+    overlay.classList.add('show');
 }
 
-function getCartTotal() {
-    return cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+// Close the cart modal
+function closeCartModal() {
+    const overlay = document.getElementById('cart-modal-overlay');
+    if (overlay) {
+        overlay.classList.remove('show');
+    }
 }
 
-function initProductInteractions() {
-    // Product image thumbnails
-    document.querySelectorAll('.product-thumb').forEach(thumb => {
-        thumb.addEventListener('click', function() {
-            const img = this.querySelector('img');
-            const mainImage = document.getElementById('main-product-image');
-            if (mainImage && img) {
-                mainImage.src = img.src;
-            }
-            
-            // Update active state
-            document.querySelectorAll('.product-thumb').forEach(t => {
-                t.classList.remove('border-blue-600');
-                t.classList.add('border-transparent');
-            });
-            this.classList.add('border-blue-600');
-            this.classList.remove('border-transparent');
-        });
-    });
-}
+// Close modal when clicking overlay background
+document.addEventListener('click', function(e) {
+    if (e.target && e.target.id === 'cart-modal-overlay') {
+        closeCartModal();
+    }
+});
 
+// Quantity buttons for product pages
 function initQuantityButtons() {
-    // Quantity buttons on product page
     document.querySelectorAll('.qty-btn').forEach(btn => {
         btn.addEventListener('click', function() {
+            const action = this.dataset.action;
             const input = document.getElementById('product-qty');
             if (!input) return;
             
             let value = parseInt(input.value) || 1;
             
-            if (this.dataset.action === 'increase') {
+            if (action === 'increase') {
                 value++;
-            } else if (this.dataset.action === 'decrease' && value > 1) {
+            } else if (action === 'decrease' && value > 1) {
                 value--;
             }
             
             input.value = value;
         });
     });
-    
-    // Cart quantity buttons
-    document.querySelectorAll('.cart-qty-btn').forEach(btn => {
-        btn.addEventListener('click', function() {
-            const input = this.parentElement.querySelector('input');
-            const cartItem = this.closest('.cart-item');
-            const itemId = cartItem?.dataset.itemId;
-            
-            if (!input) return;
-            
-            let value = parseInt(input.value) || 1;
-            
-            if (this.dataset.action === 'increase') {
-                value++;
-            } else if (this.dataset.action === 'decrease' && value > 1) {
-                value--;
-            }
-            
-            input.value = value;
-            
-            if (itemId) {
-                updateCartItemQuantity(itemId, value);
-            }
-        });
-    });
-    
-    // Remove from cart
-    document.querySelectorAll('.remove-item').forEach(btn => {
-        btn.addEventListener('click', function() {
-            const itemId = this.dataset.itemId;
-            if (itemId) {
-                removeFromCart(itemId);
-                const cartItem = this.closest('.cart-item');
-                if (cartItem) cartItem.remove();
-            }
-        });
-    });
+}
+
+// Clear cart (for testing)
+function clearCart() {
+    tiabCart = { items: [], total: 0 };
+    localStorage.setItem('tiab_cart', JSON.stringify(tiabCart));
+    updateCartUI();
 }
