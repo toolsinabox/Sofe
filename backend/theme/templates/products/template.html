@@ -1,0 +1,131 @@
+[%load_template file:"products/includes/product_scripts.template.html"/%]
+[%cache type:'display' id:'[@inventory_id@]'%]
+<div id="mainContent" role="main" class="main-content container clearfix">
+<div class="row">
+<div class="col-12">
+		[%breadcrumb%]
+			[%param *header%]
+					<ul class="breadcrumb justify-content-start" itemscope="" itemtype="http://schema.org/BreadcrumbList" role="navigation" aria-label="Breadcrumb">
+						<li class="breadcrumb-item" itemprop="itemListElement" itemscope="" itemtype="http://schema.org/ListItem">
+							<a href="[@config:home_url@]" itemprop="item"><span itemprop="name">Home</span></a>
+							<meta itemprop="position" content="0">
+						</li>
+			[%/param%]
+			[%param *body%]
+						<li class="breadcrumb-item" itemprop="itemListElement" itemscope itemtype="http://schema.org/ListItem">
+							<a href="[@url@]" itemprop="item"><span itemprop="name">[@name@]</span></a>
+							<meta itemprop="position" content="[%calc [@count@] + 1 /%]" />
+						</li>
+			[%/param%]
+			[%param *footer%]
+					</ul>
+				
+			[%/param%]
+		[%/breadcrumb%]
+</div>
+<div class="col-12  d-block d-sm-none mb-4">
+<div class="product-detail-title-mb d-block d-sm-none">[@name@]</div>
+<div class="product-review mt-1">
+[%if [@reviews@] > 0 %]
+<div class="rating">
+        [%set [@data:ratings-count@] = 1 /%]
+        [%while [@data:ratings-count@] <= [@data:rating@]%]
+            [%set [@data:ratings-count@] = [@data:ratings-count@]+1 /%]
+            <i class="fa fa-star"></i>
+        [%/while%]
+        [%while [@data:ratings-count@] <= 5%]
+            [%set [@data:ratings-count@] = [@data:ratings-count@]+1 /%]
+            <i class="fa fa-star-o"></i>
+        [%/while%]
+        <span class="ml-1">[@rating@] ([@reviews@])</span> [%if [@reviews@] > 1%][%/if%]
+	</span>
+</div>
+[%else%]
+[%/if%]
+[%if [@reviews@] > 0 %]<div class="separator-straight"></div>[%/if%]
+<a class="link" href="[%URL page:'account' type:'write_review' qs:'item=[@SKU@]'%][%/URL%]">Write a review</a>
+</div>
+
+
+</div>
+<div class="col-12">
+<div class="row row-product-detail">
+				<div class="col-12 col-md-5 col-lg-6">
+				    <div class="product-images">
+					<!-- images template -->
+						[%load_ajax_template id:'_images' type:'item' template:'images' preload:'1' tmpl_sku:'[@current_sku@]' tmpl_preview:'y'/%]
+					</div>
+				</div>
+				
+				 
+					<!-- header template -->
+					<div class="col-12 col-md-7 col-lg-6">
+                        <div class="product-detail">
+					[%load_ajax_template id:'_header' type:'item' template:'header' preload:'1' tmpl_sku:'[@current_sku@]' tmpl_preview:'y'/%]
+					
+
+					<!-- child_products template -->
+					[%load_template file:"products/includes/child_products.template.html"/%]
+					[%if [@has_variation@] || ![@has_child@] AND ![@has_components@]%]
+						<!-- buying_options template -->
+						[%load_ajax_template id:'_buying_options' type:'item' template:'buying_options' preload:'1' tmpl_sku:'[@current_sku@]' tmpl_preview:'y'/%]
+					[%/if%]
+					[%if [@has_components@]%]
+						<!-- components template -->
+						[%load_template file:"products/includes/components.template.html"/%]
+					[%/if%]
+					</div></div>
+				
+            </div></div>
+<div class="col-12 ">
+</div>
+</div></div>
+
+					<!-- product_information template -->
+					[%load_template file:"products/includes/product_information.template.html"/%]
+					[%if [@form:disable_scripts@] ne 'true'%][%tracking_code type:'ProductDescription' /%][%/if%]
+					
+					
+[%tracking_code type:'ProductDescription' /%]
+<div class="upsells-outer-wrapper" style="padding-bottom: 52px;">		
+	[%related_products id:'[@SKU@]' limit:'10' template:'' show_all:'1' show_rating:'1'%]
+	[%param *header%]
+		    <section class="section overflow-hidden">
+		    <div class="section-title text-uppercase meg-h2">MORE FROM THIS CATEGORY</div>
+			<div class="container">
+				<div class="row">
+						<div class="slick-product">
+
+	[%/param%]
+	[%param footer%]
+						</div>
+
+				</div>
+			</div>
+		    </section>
+	[%/param%]
+	[%/related_products%]
+</div>
+
+[%/CACHE%]
+
+
+ <script type="application/ld+json">
+ {
+   "@context": "https://schema.org",
+   "@type": "Product",
+   "name": "[%url_info type:'product' id:'[@inventory_id@]' name:'page_heading' default:'[@name@]'/%]",
+   "image": "https://www.toolsinabox.com.au[@thumb@]",
+   "sku": "[@sku@]",
+
+   "offers": {
+     "@type": "Offer",
+     "price": "[@price@]",
+     "priceCurrency": "AUD",
+     "availability": "https:schema.org/InStock",
+     "url": "[@url@]"
+   }
+ }
+ </script>
+
+

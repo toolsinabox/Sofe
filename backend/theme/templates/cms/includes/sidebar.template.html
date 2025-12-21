@@ -1,0 +1,234 @@
+<div id="left-sidebar" class="col-12 col-sidebar show">
+    <div class="sidebar-filter">
+        
+        
+<!-- Length Header -->	
+	    <div class="sidebar-header justify-content-between align-items-center d-none d-lg-block " data-toggle="collapse" id="sidebar-header-filters" href="#filters1" role="button" aria-expanded="false" aria-controls="collapseExample">
+	        <div class="mb-0 h3" data-toggle="collapse">
+                <svg xmlns="http://www.w3.org/2000/svg" width="35" height="30" viewBox="0 0 50 40" version="1.1">
+                	<path d="M 20.586 1.860 C 20.294 2.334, 21.875 3.542, 24.100 4.545 C 26.325 5.548, 28.965 7.411, 29.966 8.684 C 31.498 10.631, 31.883 10.748, 32.393 9.417 C 33.437 6.697, 33.121 6.239, 28.374 3.585 C 23.528 0.877, 21.475 0.422, 20.586 1.860 M 11.637 5.465 C 4.335 8.068, 0 14.550, 0 22.866 C 0 25.665, 0.313 26, 2.929 26 C 7.247 26, 9 28.331, 9 34.071 L 9 39 20.594 39 C 31.433 39, 32.222 38.867, 32.722 36.954 C 33.194 35.151, 33.925 34.943, 38.879 35.204 C 43.840 35.465, 44.538 35.764, 44.820 37.750 C 45.028 39.216, 45.827 40, 47.115 40 C 48.917 40, 49.065 39.406, 48.796 33.250 C 48.533 27.247, 48.266 26.467, 46.380 26.198 C 44.903 25.987, 44.031 26.593, 43.503 28.198 L 42.746 30.500 42.303 28.250 C 41.737 25.369, 40.442 25.369, 39.490 28.250 L 38.746 30.500 38.303 28.250 C 38.060 27.012, 37.495 26, 37.047 26 C 36.599 26, 35.914 27.012, 35.524 28.250 C 34.880 30.291, 34.735 30.175, 33.964 27 C 33.496 25.075, 32.830 21.327, 32.484 18.672 C 31.644 12.233, 26.752 6.679, 20.545 5.116 C 15.344 3.806, 16.408 3.764, 11.637 5.465 M 16 6.875 C 16 7.494, 16.943 8, 18.096 8 C 22.923 8, 29 14.077, 29 18.904 C 29 20.057, 29.450 21, 30 21 C 32.913 21, 29.112 11.928, 24.961 8.972 C 21.570 6.558, 16 5.254, 16 6.875 M 11.174 16.314 C 7.386 20.347, 8.465 26.451, 13.329 28.496 C 16.916 30.005, 21.499 28.806, 23.021 25.961 C 27.287 17.989, 17.266 9.830, 11.174 16.314 M 12.245 17.250 C 9.806 20.299, 9.853 22.944, 12.392 25.483 C 15.550 28.641, 17.436 28.655, 20.545 25.545 C 23.406 22.685, 23.579 21.272, 21.443 18.223 C 19.694 15.725, 13.951 15.118, 12.245 17.250 M 0.195 33.183 C 0.494 38.397, 0.564 38.506, 3.805 38.817 L 7.109 39.135 6.805 33.817 C 6.506 28.603, 6.436 28.494, 3.195 28.183 L -0.109 27.865 0.195 33.183 M 24.046 30.444 C 21.345 33.699, 25.815 37.614, 28.811 34.618 C 30.084 33.344, 30.215 32.563, 29.376 31.231 C 27.916 28.913, 25.601 28.571, 24.046 30.444 M 25 32.500 C 25 33.325, 25.675 34, 26.500 34 C 27.325 34, 28 33.325, 28 32.500 C 28 31.675, 27.325 31, 26.500 31 C 25.675 31, 25 31.675, 25 32.500" stroke="none" fill="#a2ce46" fill-rule="evenodd"></path>
+                </svg>
+	            Length Filter
+            </div>     
+	   	</div>
+		<div class="sidebar-content collapse show" id="filters1">
+            <div class="list-group-item filter-title hidden-sm d-none d-lg-block"  style="margin-bottom: 30px;">
+<!-- Length Filter -->
+                <div id="length-filter">
+                    <p id="length-range-text"></p>
+                    <div id="length-range"></div>
+                    <button class="btn btn-outline-secondary btn-sm" onclick="filterByLength()">Filter Length</button>
+                    <button class="btn btn-outline-secondary btn-sm" onclick="clearFilter()">Clear</button>
+                </div>	
+			</div>
+		</div>
+
+	[%cache type:'cmenu' id:'sidebar-category' ttl:'86400'%]
+	[%CATEGORYMENU sortby:'sortorder,selected,name' show_empty:'1'%]
+		[%param header%]
+		<div class="d-none d-lg-block">
+			<div class="sidebar-header  d-flex justify-content-between align-items-center" data-toggle="collapse" href="#subcategory" role="button" aria-expanded="true" aria-controls="subcategory">
+				<div class="mb-0 h3" data-toggle="collapse">
+                    <svg id="fi-bs-apps" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24">
+<g id="Group_1481" data-name="Group 1481">
+<path id="Path_1856" data-name="Path 1856" d="M0,3v8H11V0H3A3,3,0,0,0,0,3ZM3,3H8V8H3Z" fill="#a2ce46"></path>
+<path id="Path_1857" data-name="Path 1857" d="M21,0H13V11H24V3A3,3,0,0,0,21,0Zm0,8H16V3h5Z" fill="#a2ce46"></path>
+<path id="Path_1858" data-name="Path 1858" d="M0,21a3,3,0,0,0,3,3h8V13H0Zm3-5H8v5H3Z" fill="#a2ce46"></path>
+<path id="Path_1859" data-name="Path 1859" d="M13,24h8a3,3,0,0,0,3-3V13H13Zm3-8h5v5H16Z" fill="#a2ce46"></path>
+</g>
+</svg>
+                    Categories
+                </div>
+            </div>
+            <div class="sidebar-content collapse show" id="subcategory" aria-labelledby="headingOne">
+                <ul>
+		        [%/param%]
+	        	[%param *level_1%]
+		    	    <li class="">
+		        		<a class="list-group-item dropdown-toggle" href="[@url@]">[%escape%][@name@][%/escape%]</a>
+		        	</li>
+				[%if [@next_level@]%]
+					<ul class="dropdown-menu dropdown-menu-horizontal">[@next_level@]</ul>
+				[%/if%]
+	        	[%/param%]
+	        	[%param *level_2%]
+	    			<li class="[%if [@next_level@]%] dropdown dropdown-hover[%/if%]">
+			    		<a class="dropdown-item" href="[@url@]">[%escape%][@name@][%/escape%]</a>
+					    [%if [@next_level@]%]
+						<ul class="dropdown-menu dropdown-menu-horizontal">[@next_level@]</ul>
+				    	[%/if%]
+			    	</li>
+		        [%/param%]
+	        	[%param *level_3%]
+			    	<li><a class="dropdown-item" href="[@url@]">[%escape%][@name@][%/escape%]</a></li>
+	        	[%/param%]
+	        	[%param footer%]
+				</ul>
+			</div>
+		</div>	
+		[%/param%]
+	[%/CATEGORYMENU%]
+	[%/cache%]
+	
+	[%IF [@page_type@] eq 'category' and [@config:show_filters@]%]
+	        <div class="sidebar-header d-flex justify-content-between align-items-center" data-toggle="collapse" id="sidebar-header-filters" href="#filters" role="button" aria-expanded="false" aria-controls="collapseExample">
+	        <div class="mb-0 h3" data-toggle="collapse">
+                <svg xmlns="http://www.w3.org/2000/svg" width="22" height="24.024" viewBox="0 0 22 24.024">
+<g id="fi-bs-filter" transform="translate(-1)">
+<g id="Group_1483" data-name="Group 1483">
+<path id="Path_1860" data-name="Path 1860" d="M16,24.024l-8-4.8V14.538l-7-8.5V3.5A3.5,3.5,0,0,1,4.5,0h15A3.5,3.5,0,0,1,23,3.5V6.038l-7,8.5Zm-5-6.5,2,1.2V13.462l7-8.5V3.5a.5.5,0,0,0-.5-.5H4.5a.5.5,0,0,0-.5.5V4.962l7,8.5Z" fill="#a2ce46"></path>
+</g>
+</g>
+</svg>
+	            Filter Products
+            </div>     
+	   	</div>
+			<div class="sidebar-content collapse" id="filters" aria-labelledby="headingOne" style="">
+					[%product_filter type:'variations' autohide:'0' sortoption:'sortorder'%]
+						[%param *header%]
+							<div class="mb-0 h3" href="#filters-brand" data-toggle="collapse" role="button" aria-expanded="false" aria-controls="filters-brand">[@filter_name@]</div>
+						[%/param%]
+						[%param *body%]
+							[%if [@selected@]%]
+								<a class="filter-remove filter text-dark list-group-item list-group-item-action d-flex justify-content-between align-items-center" href="[@remove_single_url@]" rel="nofollow">
+									<span><i class="fa fa-check-square"></i> [%escape%][@name@][%/escape%]</span>
+									<span class="badge badge-secondary badge-pill">[@total@]</span>
+								</a>
+							[%else%]
+								<a class="filter text-dark list-group-item list-group-item-action d-flex justify-content-between align-items-center" href="[@url@]" aria-label="Filter [@filter_name@] to [%escape%][@name@][%/escape%]" rel="nofollow">
+									<span><i class="fa fa-square-o"></i> [%escape%][@name@][%/escape%]</span>
+									<span class="badge badge-secondary badge-pill">[@total@]</span>
+								</a>
+							[%/if%]
+						[%/param%]
+					[%/product_filter%]
+					[%product_filter type:'instock' autohide:'0'%]
+						[%param header%]
+							<div class="mb-0 h3" href="#filters-brand" data-toggle="collapse" role="button" aria-expanded="false" aria-controls="filters-brand">[@filter_name@]</div>
+						[%/param%]
+						[%param *body%]
+							[%if [@selected@]%]
+								<a class="filter-remove filter text-dark list-group-item list-group-item-action d-flex justify-content-between align-items-center" href="[@remove_url@]" rel="nofollow">
+									<span><i class="fa fa-check-square"></i> In Stock</span>
+									<span class="badge badge-secondary badge-pill">[@total@]</span>
+								</a>
+							[%else%]
+								<a class="filter text-dark list-group-item list-group-item-action d-flex justify-content-between align-items-center" href="[@url@]" rel="nofollow">
+									<span><i class="fa fa-square-o"></i> In Stock</span>
+									<span class="badge badge-secondary badge-pill">[@total@]</span>
+								</a>
+							[%/if%]
+						[%/param%]
+					[%/product_filter%]
+					[%product_filter type:'price' limit:'6'%]
+						[%param header%]
+							<div class="mb-0 h3" href="#filters-brand" data-toggle="collapse" role="button" aria-expanded="false" aria-controls="filters-brand">[@filter_name@]</div>
+						[%/param%]
+						[%param *body%]
+							[%if [@selected@]%]
+								<a class="filter-remove list-group-item d-l-none d-xl-none d-flex justify-content-between align-items-center" href="[@remove_url@]" class="list-group-item" rel="nofollow">
+									<span><i class="fa fa-check-square"></i> [%escape%][@name@][%/escape%]</span>
+									<span class="badge badge-secondary badge-pill">[@total@]</span>
+								</a>
+							[%else%]
+								[%if [@min@] == 0 AND [@max@] > 0%]
+									<a class="text-dark filter list-group-item d-l-none d-xl-none" href="[@url@]" rel="nofollow"><i class="fa fa-square-o"></i> [%format type:'currency' dp:'0'%][@max@][%/format%] or below</a>
+								[%elseif [@min@] > 0 AND [@max@] > 0%]
+									<a class="text-dark filter list-group-item d-l-none d-xl-none" href="[@url@]" rel="nofollow"><i class="fa fa-square-o"></i> [%format type:'currency' dp:'0'%][@min@][%/format%] to [%format type:'currency' dp:'0'%][@max@][%/format%]</a>
+								[%elseif [@max@] == 0%]
+									<a class="text-dark filter list-group-item d-l-none d-xl-none" href="[@url@]" rel="nofollow"><i class="fa fa-square-o"></i> [%format type:'currency' dp:'0'%][@min@][%/format%] or above</a>
+								[%/if%]
+							[%/if%]
+						[%/param%]
+					[%/product_filter%]
+					[%product_filter type:'price' limit:'1'%]
+						[%param header%]
+							<div class="mb-0 h3" href="#filters-brand" data-toggle="collapse" role="button" aria-expanded="false" aria-controls="filters-brand">[@filter_name@]</div>
+						[%/param%]
+						[%param *body%]
+							[%SITE_VALUE id:'footer_javascript'%]
+								<script>
+									$(function() {
+										var vals = ['[@min@]','[@max@]'];
+										for(var i=0; i<vals.length; i++) { vals[i]=parseInt(vals[i]); }
+										$('#price-range').slider({
+											range: true,
+											min: vals[0],
+											max: vals[1],
+											values: vals,
+											slide: function( event, ui ) {
+												$('#price-range-text').html('[@config:currency_symbol@]'+ui.values[0]+' to [@config:currency_symbol@]'+ui.values[1]);
+												$('#pricesearch input[name="pr"]').val( ui.values[0]+'-'+ui.values[1] );
+											},
+											create: function( event, ui ) {
+												$('#price-range-text').html('[@config:currency_symbol@]'+vals[0]+' to [@config:currency_symbol@]'+vals[1]);
+												$('#pricesearch input[name="pr"]').val( vals[0]+'-'+vals[1] );
+											}
+										});
+									});
+								</script>
+							[%/SITE_VALUE%]
+							<div class="list-group-item filter-title hidden-sm d-none d-sm-block">
+								<p id="price-range"></p><p id="price-range-text" class="price_range"></p>
+								<form id="pricesearch" method="get" action="[@config:current_url@]">
+									<input type="hidden" name="rf" value="[%FILTER_CODE id:'price'%][%/FILTER_CODE%]">
+									<input  name="pr" type="hidden" value="">
+									<input type="submit" value="Filter Price" class="btn btn-outline-secondary btn-sm" />
+									[%if [@selected@]%]<a href="[@remove_url@]" class="btn btn-outline-secondary btn-sm" rel="nofollow"> Clear</a>[%/if%]
+								</form>
+							</div>
+					[%/product_filter%]
+				</div>
+	</div>
+</div>
+	<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script>
+$(document).ready(function () {
+    // Auto-detect the min and max length from product data
+    let lengths = $(".allprod").map(function () {
+        return parseFloat($(this).attr("data-length")) || 0;
+    }).get();
+
+    let minLength = Math.min(...lengths);
+    let maxLength = Math.max(...lengths);
+
+    // Initialize jQuery UI Slider with dynamic values
+    $("#length-range").slider({
+        range: true,
+        min: minLength,  // Set detected min
+        max: maxLength,  // Set detected max
+        values: [minLength, maxLength], // Default values
+        slide: function (event, ui) {
+            $("#length-range-text").text(ui.values[0] + "mm to " + ui.values[1] + "mm");
+        }
+    });
+
+    // Set default text
+    $("#length-range-text").text(minLength + "mm to " + maxLength + "mm");
+
+    // Apply Filter
+    window.filterByLength = function () {
+        let minVal = $("#length-range").slider("values", 0);
+        let maxVal = $("#length-range").slider("values", 1);
+
+        $(".allprod").each(function () {
+            let length = parseFloat($(this).attr("data-length")) || 0;
+
+            if (length < minVal || length > maxVal) {
+                $(this).hide();
+            } else {
+                $(this).show();
+            }
+        });
+    };
+
+    // Clear Filter
+    window.clearFilter = function () {
+        $("#length-range").slider("values", [minLength, maxLength]); // Reset slider
+        $("#length-range-text").text(minLength + "mm to " + maxLength + "mm"); // Reset text
+        $(".allprod").show(); // Show all products
+    };
+});
+</script>
+	[%/IF%]
+<div id="category-content" class="col-12  col-product">

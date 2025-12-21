@@ -1,0 +1,321 @@
+<div id="mainContent" role="main" class="main-content container clearfix">
+			<div class="row">
+			    <div class="col-12" >
+	<nav aria-label="breadcrumb" itemscope itemtype="http://schema.org/BreadcrumbList">
+		<ol class="breadcrumb">
+			<li class="breadcrumb-item"><a href="[@config:home_url@]">Home</a></li>
+			<li class="breadcrumb-item"><a href="[%URL page:'account'%][%/ URL%]">My account</a></li>
+			<li class="breadcrumb-item"><a href="#">Edit my account</a></li>
+		</ol>
+	</nav>
+	<form enctype="multipart/form-data" method="POST" name="UPDATEINFO" action="[%URL page:'account' type:'edit_account'%][%/ URL%]">
+		<div class="page-header">
+			<h1>Edit Your [@config:company_name@] Account Details</h1>
+			<!-- This block will give them a description on what fields are missing -->
+			[%DATA id:'updated' if:'=' value:'0'%]
+				<p>Please complete all the required fields below before continuing.</p>
+			[%/ DATA%]
+		</div>
+		[%DATA id:'error' if:'ne' value:''%]<div class="alert alert-danger" role="alert">[@error@]</div>[%/ DATA%]
+		<div class="row">
+			<div class="col-12 col-md-6">
+				<h2 name="billing" id="billing">Billing Information</h2>
+				<div class="form-group">
+					<label for="bill_first_name">First name</label><span class="text-danger">*</span>
+					<input type="text" class="form-control" name="bill_first_name" id="bill_first_name" value="[@bill_first_name@]" maxlength="50">
+				</div>
+				<div class="form-group">
+					<label for="bill_last_name">Last name</label><span class="text-danger">*</span>
+					<input type="text" class="form-control" name="bill_last_name" id="bill_last_name" value="[@bill_last_name@]" maxlength="50">
+				</div>
+				<div class="form-group">
+					<label for="bill_company">Company name</label>
+					<input type="text" class="form-control" name="bill_company" id="bill_company" value="[@bill_company@]" maxlength="50">
+				</div>
+				<div class="form-group">
+					<label for="bill_country">Country</label><span class="text-danger">*</span>
+					<select class="form-control" id="bill_country" name="bill_country">
+						[%countries sortby:'sortorder,name' %]
+						[%PARAM *body%]
+						<option value="[@country_code@]" [%DATA id:'country_code' if:'eq' value:'[@bill_country@]'%]selected[%/ DATA%]>[@country_name@]</option>
+						[%/ PARAM%]
+						[%/ countries%]
+					</select>
+				</div>
+				<div class="form-group">
+					<label for="bill_street1">Address</label><span class="text-danger">*</span>
+					<input class="form-control" type="text" id="bill_street1" name="bill_street1" value="[@bill_street1@]" maxlength="50">
+				</div>
+				<div class="form-group">
+					<input class="form-control" type="text" id="bill_street2" name="bill_street2" value="[@bill_street2@]" maxlength="50">
+				</div>
+				<div class="form-group">
+					<label for="bill_zip">[%if [@config:defaultcountry@] eq 'US'%]Zip [%else%]Postal [%/if%] code</label><span class="text-danger">*</span>
+					<input class="form-control" type="text" id="bill_zip" name="bill_zip" value="[@bill_zip@]" size="50" maxlength="10">
+				</div>
+				<div class="form-group n-wrapper-form-control">
+					<label for="suburb_sl">Suburb/City</label><span class="text-danger">*</span>
+					<div id="suburb_di">
+						<select class="form-control" id="suburb_sl">
+							<option value="">Select Suburb/City</option>
+						</select>
+					</div>
+					<div style="display:none;" id="suburb_mg">&nbsp;</div>
+					<input type="hidden" name="bill_city" value="[@bill_city@]">
+					<input type="hidden" name="bill_state" value="[@bill_state@]">
+				</div>
+				<div class="form-group">
+					<label for="state_in">State</label><span class="text-danger">*</span>
+					<input class="form-control" type="text" id="state_in" value="[@bill_state@]" maxlength="50" onChange="document.UPDATEINFO.bill_state.value=this.value">
+				</div>
+				<div class="form-group">
+					<label for="city_in">City</label><span class="text-danger">*</span>
+					<input class="form-control" type="text" id="city_in" value="[@bill_city@]" maxlength="50" onChange="document.UPDATEINFO.bill_city.value=this.value">
+				</div>
+				<div class="form-group">
+					<label for="card_type">Preferred payment method</label><span class="text-danger">*</span>
+					<select class="form-control" name="card_type" id="card_type">
+						<option value="">Select Payment Type</option>
+						[%payment_methods sortby:'sortorder,name' ignore_balance:'1' %]
+						[%PARAM *body%]
+						<option value="[@id@]" [%DATA id:'id' if:'==' value:'[@card_type@]'%]selected[%/ DATA%]>[@name@]</option>
+						[%/ PARAM%]
+						[%/ payment_methods%]
+					</select>
+				</div>
+				<div class="form-group">
+					<label for="order_comment">Default Order Instructions</label>
+					<textarea class="form-control" cols="40" rows="4" name="order_comment" id="order_comment">[%NOHTML%][@order_comment@][%/ NOHTML%]</textarea>
+				</div>
+			</div>
+			<div class="col-12 col-md-6">
+				<h2 name="contact" id="contact">Contact Information</h2>
+				<div class="form-group">
+					<label for="email">Email address</label><span class="text-danger">*</span>
+					<input class="form-control" type="text" name="email" id="email" size="50" value="[@email@]">
+				</div>
+				<div class="form-group">
+					<label>
+						<input type='checkbox' id="subscribe_newsletter" [%if [@opt_in_newsletter@]%]checked[%/if%]>
+						<input type="hidden" name="opt_in" value="[@opt_in_newsletter@]">
+						Subscribe to newsletter
+					</label>
+				</div>
+				<div class="form-group">
+					<label for="phone">Phone number</label><span class="text-danger">*</span>
+					<input class="form-control" type="text" name="phone" id="phone" size="50" value="[@phone@]">
+				</div>
+				<div class="form-group">
+					<label for="fax">Fax number</label>
+					<input class="form-control" type="text" name="fax" id="fax" size="50" value="[@fax@]">
+				</div>
+				<!-- Company Information -->
+				<h2 name="company" id="Company">Company Information</h2>
+				[%if [@config:defaultcountry@] eq 'AU' || [@config:PRIMARY_ABN_LABEL@] ne 'ABN'%]
+				<div class="form-group">
+					<label for="usercustom2">[%if [@config:PRIMARY_ABN_LABEL@]%][@config:PRIMARY_ABN_LABEL@][%else%]ABN[%/if%] / [%if [@config:PRIMARY_ACN_LABEL@]%][@config:PRIMARY_ACN_LABEL@][%else%]ACN[%/if%]</label>
+					<input class="form-control" type="text" name="usercustom2" id="usercustom2" size="20" maxlength="25" value="[@usercustom2@]">
+				</div>
+				[%/if%]
+				<div class="form-group">
+					<label for="usercustom3">Web site url</label>
+					<input class="form-control"  type="text" name="usercustom3" id="usercustom3" size="100" maxlength="255" value="[@usercustom3@]">
+				</div>
+				[%CONFIG id:'ALLOW_DROPSHIP_CHECKOUT' if:'=' value:'1'%]
+					<!-- Dropshipping Information -->
+					<h2>Dropshipping Information</h2>
+					<p>Customise the documentation we send out with your drop shipped orders.<br/>Ignore this section if you do not drop ship orders.</p>
+					<label><b>Dropshipping documentation footer</b></label>
+					<p>Enter the text you would like to see on the footer of any documentation we send out to your customers. Appears in footer of packing slips, labels etc.</p>
+					<textarea class="form-control"  name="usercustom7" cols="50">[@usercustom7@]</textarea>
+					<br/>
+					<label><b>Dropshipping company logo</b></label>
+					<p>Click browse to select and upload your company logo. Your logo should be in .JPG or .GIF format. Your logo will be displayed on header of packing slips, labels etc.</p>
+					<img src="[%asset_url type:'user' id:'[@username@]' default:'[@config:ASSETS_URL@]/pixel.gif'%][%/ asset_url%]?[@config:current_timestamp@]">
+					<input type="file" name="logo">
+					<br/><br/>
+					<label>Delete logo?</label>
+					<input type="checkbox" name="dellogo" value="1">
+				[%/ CONFIG%]
+			</div>
+		</div>
+		<div class="row">
+			<div class="col-12"><hr></div>
+			<div class="col-12 col-md-3 offset-md-9 text-md-right">
+				<input type="hidden" name="update" value="1">
+				<input type="submit" class="btn btn-lg btn-success" value="Save Changes">
+			</div>
+		</div>
+	</form>
+</div></div></div>
+
+[%SITE_VALUE id:'footer_javascript'%]
+<script>
+	var editAccount = {
+		vars:{
+			loadingMsg: 'Loading...',
+			countryPostalCodeMsg: 'Please enter your billing country and [%if [@config:defaultcountry@] eq 'US'%]zip [%else%]postal [%/if%] code above.',
+			errorMsg: 'Error. Please contact our customer support: [@config:COMPANY_EMAIL@]',
+			suburbStateMsg: 'Please enter your billing suburb/city and state below.',
+			selectSuburbMsg: 'Select suburb/city',
+			invalidPostalCodeMsg: 'Invalid [%if [@config:defaultcountry@] eq 'US'%]zip [%else%]postal [%/if%] code.'
+		},
+		checkPostCode: function(ta) {
+			var id ='';
+			var zip_id = 'bill_zip';
+			var country_id = 'bill_country';
+
+			if(ta && ta=='sh') {
+				id = '_'+ta;
+				zip_id = 'ship_zip';
+				country_id = 'ship_country';
+			}
+			var zip = document.UPDATEINFO.elements[zip_id];
+			var country = document.UPDATEINFO.elements[country_id];
+
+			if(country.options[country.selectedIndex].value == 'AU') {
+				zip.value = zip.value.replace(new RegExp('\\D','g'), '');
+			}
+		},
+		getLocation: function(ta) {
+			var id ='';
+			var city_id = 'bill_city';
+			var state_id = 'bill_state';
+			var zip_id = 'bill_zip';
+			var country_id = 'bill_country';
+
+			if(ta && ta=='sh') {
+				id = '_'+ta;
+				city_id = 'ship_city';
+				state_id = 'ship_state';
+				zip_id = 'ship_zip';
+				country_id = 'ship_country';
+			}
+			editAccount.checkPostCode(ta);
+			var dis = document.getElementById('suburb_di'+id);
+			var msg = document.getElementById('suburb_mg'+id);
+			var frame = document.getElementById('suburb_sh'+id);
+			var zip = document.UPDATEINFO.elements[zip_id];
+			var country = document.UPDATEINFO.elements[country_id];
+			var city = document.UPDATEINFO.elements[city_id];
+			var city_in = document.getElementById('city_in'+id);
+			var state = document.UPDATEINFO.elements[state_id];
+			var state_in = document.getElementById('state_in'+id);
+			var sel = document.getElementById('suburb_sl'+id);
+
+			if(!zip.cvalue || zip.value!=zip.cvalue || country.value!=country.cvalue) {
+				zip.cvalue = zip.value;
+				msg.innerHTML = '<i>'+editAccount.vars.loadingMsg+'</i>';
+				dis.style.display = 'none';
+				msg.style.display = '';
+				if(country.options[country.selectedIndex].value == '[@config:SELECTORCOUNTRY@]') {
+					city_in.value ='';
+					state_in.value ='';
+					city_in.disabled = true;
+					state_in.disabled = true;
+					if( zip.value == '' ) {
+						msg.innerHTML = '<i>'+editAccount.vars.countryPostalCodeMsg+'</i>';
+					} else {
+						$.get('/do/get_locate?zip=' + escape(zip.value), function (data, textStatus) {
+							if (textStatus === 'success') {
+								var suburbArray = data.split("\n");
+								editAccount.setSuburbSl(suburbArray, ta);
+							} else {
+								msg.innerHTML = '<i>'+editAccount.vars.errorMsg+'</i>';
+							}
+						});
+					}
+				} else {
+					city_in.disabled = false;
+					state_in.disabled = false;
+					msg.innerHTML = '<i>'+editAccount.vars.suburbStateMsg+'</i>';
+				}
+			}
+		},
+		selectSuburb: function(ta) {
+			var id ='';
+			var city_id = 'bill_city';
+			var state_id = 'bill_state';
+
+			if(ta && ta=='sh') {
+				id = '_'+ta;
+				city_id = 'ship_city';
+				state_id = 'ship_state';
+			}
+
+			var sel = document.getElementById('suburb_sl'+id);
+			var city = document.UPDATEINFO.elements[city_id];
+			var city_in = document.getElementById('city_in'+id);
+			var state = document.UPDATEINFO.elements[state_id];
+			var state_in = document.getElementById('state_in'+id);
+
+			if(sel) {
+				if(sel.selectedIndex > 0) {
+					var sp = sel.options[sel.selectedIndex].value.split(' - ');
+					if( sp.length > 1 ) {
+						state_in.value =state.value = sp[sp.length-1];
+						city_in.value =city.value = (sp.slice(0,sp.length-1)).join(' - ');
+					}
+				}
+			}
+		},
+		setSuburbSl: function(data, ta) {
+			var id ='';
+			var city_id = 'bill_city';
+			var state_id = 'bill_state';
+
+			if(ta && ta=='sh') {
+				id = '_'+ta;
+				city_id = 'ship_city';
+				state_id = 'ship_state';
+			}
+
+			var dis = document.getElementById('suburb_di'+id);
+			var msg = document.getElementById('suburb_mg'+id);
+			var count = 0;
+
+			if(data.length > 0) {
+				var option = '<option value="">'+editAccount.vars.selectSuburbMsg+'</option>';
+				var city = document.UPDATEINFO.elements[city_id];
+				var state = document.UPDATEINFO.elements[state_id];
+				var sel_value = city.value+' - '+state.value;
+				for(var i=0; i<data.length; i++) {
+					if(data[i] != '') {
+						option += '<option value="'+data[i]+'"'+(data[i] == sel_value? ' selected':'')+'>'+data[i]+'</option>';
+						count++;
+					}
+				}
+			}
+			if(count <= 0) {
+				msg.innerHTML = '<span class="text-danger">'+editAccount.vars.invalidPostalCodeMsg+'</span>';
+				dis.style.display = 'none';
+				msg.style.display = '';
+			} else {
+				dis.innerHTML = '<select id="suburb_sl'+id+'">'+option+'</select>';
+				msg.style.display = 'none';
+				dis.style.display = '';
+				editAccount.selectSuburb(ta);
+
+				$('#suburb_sl'+id).off('change');
+				if(ta && ta == 'sh'){
+					$('#suburb_sl'+id).on('change', function(){
+						editAccount.selectSuburb('sh');
+					});
+				}else{
+					$('#suburb_sl'+id).on('change', editAccount.selectSuburb);
+				}
+			}
+		}
+	};
+	// // Events
+	$(document).ready(function() {
+		editAccount.getLocation();
+	});
+	$('#subscribe_newsletter').on('change', function() {
+		$('input[name="opt_in"]').val(this.checked ? 'y' : 'n');
+	});
+	$('#bill_country').on('change', editAccount.getLocation);
+	$('#bill_zip').on('change keyup', editAccount.getLocation);
+	$('#suburb_sl').on('change', editAccount.selectSuburb);
+</script>
+[%/ SITE_VALUE%]

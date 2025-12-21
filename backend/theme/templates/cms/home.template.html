@@ -1,0 +1,180 @@
+<div class="main-content--homepage" id="mainContent">
+	[%if [@config:show_home_ads@]%]
+		[%advert type:'text' template:'carousel' limit:'10' ad_group:''%]
+			[%param *header%]
+				<section id="homepageCarousel" class="carousel slide" data-ride="carousel" aria-label="Banner images">
+					[%if [@total_showing@] > 1%]
+						<ol class="carousel-indicators">
+							[%site_value id:'counter' type:'load'/%]
+						</ol>
+					[%/if%]
+					<div class="carousel-inner">
+			[%/param%]
+			[%param *footer%]
+					</div>
+					[%if [@total_showing@] > 1%]
+						<a class="carousel-control-prev" href="#homepageCarousel" role="button" data-slide="prev">
+							<span class="carousel-control-prev-icon" aria-hidden="true"></span>
+							<span class="sr-only">Previous</span>
+						</a>
+						<a class="carousel-control-next" href="#homepageCarousel" role="button" data-slide="next">
+							<span class="carousel-control-next-icon" aria-hidden="true"></span>
+							<span class="sr-only">Next</span>
+						</a>
+					[%/if%]
+				</section>
+			[%/param%]
+		[%/advert%]
+	[%/if%]
+	[%if [@config:show_home_ads@]%]
+		[%advert type:'text' template:'carouselmobile' limit:'10' ad_group:'mobile'%]
+			[%param *header%]
+				<section id="mainCarousel_mb" class="carousel slide" data-ride="carousel" aria-label="Banner images">
+					[%if [@total_showing@] > 1%]
+						<ol class="carousel-indicators">
+							[%site_value id:'counter' type:'load'/%]
+						</ol>
+					[%/if%]
+					<div class="carousel-inner">
+			[%/param%]
+			[%param *footer%]
+					</div>
+					[%if [@total_showing@] > 1%]
+						<a class="carousel-control-prev" href="#homepageCarousel" role="button" data-slide="prev">
+							<span class="carousel-control-prev-icon" aria-hidden="true"></span>
+							<span class="sr-only">Previous</span>
+						</a>
+						<a class="carousel-control-next" href="#homepageCarousel" role="button" data-slide="next">
+							<span class="carousel-control-next-icon" aria-hidden="true"></span>
+							<span class="sr-only">Next</span>
+						</a>
+					[%/if%]
+				</section>
+			[%/param%]
+		[%/advert%]
+	[%/if%]
+
+
+
+
+
+
+<section class="section home-usps">
+<div class="container">
+<div class="row">
+
+<div class="js-usp">
+<div class="col-6 col-md-3 usps">
+<a href="/about_us">
+<div class="usps__icon">
+<svg xmlns="http://www.w3.org/2000/svg" width="35" height="35" version="1.0" viewBox="0 0 36 36"><path d="M9.9 4.9c-2.5 3.1-5.2 5.2-7 5.6-2.8.6-2.9.9-2.9 6.5v5.8L4.9 24c4.6 1.1 5.2 1 7.9-1s3.3-2.1 6.6-.9c2.3.8 3.6 1.9 3.6 3.1 0 1.5.8 1.8 4.8 1.8 4.5 0 4.9-.2 6.5-3.5 2.8-5.9 2.2-9-2.9-15.6C28.8 4.7 26.5 2 26.2 2c-.3 0-1 .7-1.7 1.7-1.5 2.1-3.8.8-3-1.8.6-1.7.1-1.9-3.4-1.9s-4.4.5-8.2 4.9zm8.5-1.4c-.9 2.1 5.7 4.7 7.1 2.8.8-1.1 1.8-.3 4.8 3.5 4 5.4 4.6 8.6 2.2 13.2-1.9 3.7-6.4 4.2-7.2 1-.5-2-6-5-9-5-.8 0-2.7.9-4.2 2-2.4 1.6-3.4 1.8-6.4.9-3.5-.9-3.7-1.2-3.7-5 0-3.5.4-4.1 2.8-5 1.6-.5 4.5-3 6.6-5.4 3.5-4.3 8.2-6.3 7-3zM24.1 33c.9 2.4 1.7 3 4 3 1.6 0 2.9-.3 2.9-.8 0-.4.3-1.7.6-3 .6-2 .3-2.2-3.9-2.2h-4.6l1 3zm5.1.2c-.9.9-1.5.9-2.4 0-.9-.9-.7-1.2 1.2-1.2s2.1.3 1.2 1.2z"/></svg>
+</div>
+<div class="usps__content">100% Australian Owned Company</div>
+</a>
+</div>
+<div class="col-6 col-md-3 usps">
+<a href="/delivery/">
+<div class="usps__icon">
+<svg xmlns="http://www.w3.org/2000/svg" width="35" height="35" version="1.0"><path d="M8 3.4.5 6.7v21.6l8 3.4 7.9 3.4 9.1-3.4 9-3.4V6.7L26 3.4C21.3 1.6 17.1.1 16.5.1 16 .1 12.1 1.6 8 3.4zm21.9 4.2c1.3 1.3-3.2 1.3-5.8 0-4.8-2.5-11 .7-6.3 3.3 1.5.9 1.5 1 .1 1.6-.9.3-4.5-.7-7.9-2.2L3.7 7.5l6.4-2.6 6.3-2.6L23 4.7c3.6 1.4 6.7 2.6 6.9 2.9zm-7.2 2c-.3.3-1.2.4-1.9.1-.8-.3-.5-.6.6-.6 1.1-.1 1.7.2 1.3.5zM9.5 12.4l5.5 2.5v8.7c0 6.5-.3 8.5-1.2 8.1-.7-.3-3.7-1.5-6.5-2.7L2 26.7v-8.3c0-4.8.4-8.4 1-8.4.5 0 3.4 1.1 6.5 2.4zM33 18.3v8.2l-7.3 2.8c-4.1 1.5-7.7 2.7-8 2.7-.4 0-.7-3.8-.7-8.3 0-8 .1-8.4 2.5-9.5 2.4-1.1 2.5-1 2.5 2.3 0 3.6 1 4.2 4.4 2.9 1.1-.4 1.6-1.9 1.6-4.3 0-4.2.5-5.1 3.2-5.1 1.6 0 1.8.9 1.8 8.3zm-7-3.9c0 1.4-.4 2.8-1 3.1-.6.4-1-.7-1-2.4s.5-3.1 1-3.1c.6 0 1 1.1 1 2.4z"/><path d="M5 24.8c0 1.4 4.8 3.3 5.5 2.2.4-.6-.6-1.5-2-2-3.2-1.2-3.5-1.2-3.5-.2z"/></svg>
+</div>
+<div class="usps__content">Next Business Day Dispatch</div>
+</a>
+</div>
+<div class="col-6 col-md-3 usps">
+<a href="/returns_policy">
+<div class="usps__icon">
+<svg xmlns="http://www.w3.org/2000/svg" width="33" height="32" version="1.0"><path d="M17.4 2.7c-.4 1.6-1.8 4.5-3.1 6.5-2 3.3-2.3 5-2.3 13.3V32h8.5c9.5 0 8.3 1.2 10.5-10.3 1-5.2 1-6.1-.6-7.8-.9-1-2.7-1.9-4-1.9-2 0-2.2-.4-1.8-3.3.8-4.8-1-8.7-4.1-8.7-1.9 0-2.6.7-3.1 2.7zm4.9 3c.3 1.5.1 3.5-.4 4.5-1.6 2.9-1 3.7 2.9 4l3.7.3-.1 5.2C28.1 29.6 27.8 30 21 30h-6v-8.4c0-7.1.4-9.2 2.6-13.5C19.1 5.3 20.6 3 21 3c.4 0 1 1.2 1.3 2.7zM0 22.5V32h9V13H0v9.5zm7 .1c0 7.2-.1 7.5-2.2 7.2-2.1-.3-2.3-1-2.6-6.2-.4-7.1.1-8.6 2.8-8.6 1.8 0 2 .6 2 7.6z"/></svg>
+</div>
+<div class="usps__content">100% Satisfaction Guarantee</div>
+</a>
+</div>
+<div class="col-6 col-md-3 usps">
+<a href="/returns_policy">
+<div class="usps__icon">
+<svg xmlns="http://www.w3.org/2000/svg" width="27" height="32" version="1.0"><path d="M6 1.5c0 .9-1.2 1.8-3 2.1-3 .6-3 .7-3 7.1C0 20.5 4.2 28.2 11 31c2.2.9 3.4.9 5.6-.3 6.9-3.6 10.4-10.4 10.4-20 0-6.4 0-6.5-3-7.1-1.8-.3-3-1.2-3-2.1C21 .3 19.6 0 13.5 0S6 .3 6 1.5zM20.5 4c1 1.1 2.4 2 3.2 2 1.8 0 1.7 9.1-.2 13.7-1.9 4.5-4.1 7-7.6 8.9-2.4 1.2-3 1.1-6-.9C5.2 24.6 2 17.9 2 11.3 2 7.5 2.4 6 3.3 6c.8 0 2.2-.9 3.2-2 1.4-1.5 3.1-2 7-2s5.6.5 7 2z"/><path d="M6.8 6.3C3.8 8.8 3.3 12 5 17.9c1.2 4.3 5.7 9.1 8.5 9.1 4.6 0 9.5-8.1 9.5-15.6 0-6.5-10.4-9.8-16.2-5.1zm6 9.1c.2 6.6 0 8.7-.9 8.4-2.3-.8-5-5.5-5.6-9.6-.5-3.5-.2-4.5 1.8-6.1C9.4 7 11 6.2 11.5 6.4c.6.1 1.1 4.2 1.3 9zM18.9 8c2 1.7 2.3 2.7 1.8 6.2-.6 4.1-3.3 8.8-5.5 9.6-.9.3-1.2-2-1.2-8.1 0-10.4.5-11.3 4.9-7.7z"/></svg>
+</div>
+<div class="usps__content">Genuine Support &amp; Warranty</div>
+</a>
+</div>
+</div>
+
+</div>
+</div>
+</section>
+
+
+
+
+<section class="section list-category-box">
+<div class="section-title meg-h2">POPULAR CATEGORIES</div>
+    <div class="container">
+        <div class="row justify-content-center">    
+            [%content_menu content_type:'category' sortby:'sortorder,name' limit:'25'%]
+			[%param *header%]
+            <div class="js-list-category">
+			[%/param%]
+			    [%param *level_1%]
+				<div class="hovercartmain">
+                    <a class="hovercart" href="[@url@]">
+                        <img width="217" height="137" alt="[@id@]" src="[%asset_url type:'category' id:'[@id@]'%][%param default%][%cdn_asset html:'0' library:'images'%]default_product.gif[%/cdn_asset%][%end param%][%END asset_url%]"> 
+                        <p class="view">[@name@]</p>
+                    </a>
+                </div>
+				[%/param%]
+				[%param *footer%]
+			</div>
+		</div>
+		[%/param%]
+		[%/content_menu%]
+	</div>
+</section>
+<section class="section testimonials">
+[%if [@page_content@] ne ''%]
+<div class="container">
+				<div id="homepage-content" class="text-center">[@page_content@]</div>
+			[%/if%]
+</div>			
+</section>
+[%advert type:'product' limit:'8' template:'' show_rating:'1' ad_group:'' show_rating:'1'%]
+	[%param *header%]
+		<div class="home-outer-wrapper" style="padding-bottom: 52px;">
+		    <section class="section overflow-hidden">
+			<div class="container">
+				<div class="row">
+					
+						<h2 class="section-title">Featured <span>PRODUCTS</span></h2>
+						<div class="slick-product">
+	[%/param%]
+	[%param footer%]
+						</div>
+					
+				</div>
+			</div>
+		    </section>
+		</div>
+	[%/param%]
+[%/advert%]
+<section>
+    <div class="firstpage-custom-collection container">
+    <div class="content-container">
+<div class="layout-wrapper text-image">
+<div class="image-container"><img alt="Tools In A Box Showcase Products" src="https://www.toolsinabox.com.au/assets/full/1961A-PRO-CP.webp?20250116143824" /></div>
+
+<div class="text-container">
+<h2 class="fp-title">Ute Toolbox <span>Solutions For You</span></h2>
+
+<p>With unbeatable customer service, a satisfaction guarantee, and flexible payment options, there's never been a better time to elevate your workspace with our ute toolboxes.&nbsp;</p>
+
+<p>Equip your Ute with the strength and reliability of Tools In A Box today—where quality meets craftsmanship and the customer's needs are always top priority. Your ultimate toolbox awaits.</p>
+</div>
+</div>
+</div>
+</div>
+</section>
+
+
+<section class="section testimonials">
+    <div class="section-title meg-h2">WHAT OUR CUSTOMERS SAY ABOUT US</div>
+[%content_zone id:'elfsightreviews'%][%end content_zone%]
+</section>
+</div>

@@ -1,0 +1,8 @@
+<div id="[@count@]" class="carousel-item [%if [@count@] eq '0'%]active[%/if%]">
+	<a href="[@url@]">
+	    <img width="2880px" height="810px" src="[%asset_url type:'adw' id:'[@ad_id@]'%][%param default%][%cdn_asset html:'0' library:'images'%]default_product.gif[%/cdn_asset%][%end param%][%/asset_url%]" [%if [@count@] eq '0'%] fetchpriority="high" [%else%] loading="lazy" [%/if%]  class="edd-block edw-100" alt="[@headline@]" />
+	</a>
+</div>
+[%SITE_VALUE id:'counter'%]
+<li data-target="#homepageCarousel" data-slide-to="[@count@]" [%if [@count@] eq '0'%]class="active"[%/if%]></li>
+[%/SITE_VALUE%]

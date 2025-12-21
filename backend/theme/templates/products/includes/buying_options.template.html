@@ -1,0 +1,236 @@
+<div class="extra-options">
+	[%multilevelpricing id:'[@SKU@]'%]
+		[%param *header%]
+			<!-- Multi-level Pricing -->
+			<table class="table table-sm mt-3">
+				<thead>
+					<tr>
+						<th colspan="2">
+							Buy In Bulk &amp; Save!
+						</th>
+					</tr>
+				</thead>
+				<tbody>
+		[%/ param%]
+		[%param *body%]
+				<tr>
+					<td width="20%" nowrap="nowrap">
+						<span class="productmultilevelqty">Buy [%FORMAT type:'number' dp:'0' sp:','%][@minqty@][%/ FORMAT%]
+					[%if [@maxqty@] > 0%]
+							to [%FORMAT type:'number' dp:'0' sp:','%][@maxqty@][%/ FORMAT%]:
+						</span>
+					</td>
+					[%else%]
+							or more:
+						</span>
+					</td>
+					[%/ if%]
+					<td nowrap="nowrap">
+						<span class="productmultilevelprice"> Pay [%FORMAT type:'currency'%][@price@][%/ FORMAT%]</span>
+					</td>
+				</tr>
+		[%/ param%]
+		[%param *footer%]
+				</tbody>
+			</table>
+		[%/ param%]
+	[%/ multilevelpricing%]
+
+	[%extra_options id:'[@SKU@]'%]
+		[%param *header%]
+			<!-- Extra Options -->
+			<div class="variation-wrapper">
+		[%/ param%]
+		[%param *select_option%]
+				<div>
+					<div class="_itmspec_listopt variation-item variation-item-wrapper">
+						<label class="variation-name">[@name@]</label>
+					
+					    <div class="specific variation-options">
+						<select name="extra[@count@]" class="_itmspec_opt js-selectbox form-control" id="productextra[@count@]" rel="[@SKU@]">
+							[@choices@]
+						</select>
+					    </div>
+					</div>
+					
+				</div>
+			[%if [@name@] like 'Locking Options' %][%content_zone id:'clicktowatchalarm'%][%end content_zone%][%/if%]	
+		[%/ param%]
+		
+		[%param *choices%]
+				<option type="text" class="form-control" value="[@option_id@]">[%nohtml%][@text@][%end nohtml%]
+				[%DATA id:'price' if:'!=' value:'0'%]
+					(+ [%FORMAT type:'currency'%][@price@][%/ FORMAT%])
+				[%/ DATA%]
+				</option>
+		[%/ param%]
+		
+		[%param *footer%]
+				<input type="hidden" name="extras" value="[@total_options@]"/>
+			</div>
+			<hr aria-hidden="true"/>
+		[%/ param%]
+	[%/ extra_options%]
+
+	[%data id:'multiplier_qty' if:'ne' value:'0' %]
+		Order In Lots Of <strong>[@multiplier_qty@]</strong>
+	[%end data%]
+	[%data id:'min_qty' if:'ne' value:'0' %]
+		Minimum Order Quantity <strong>[@min_qty@]</strong>
+	[%end data%]
+	[%data id:'max_qty' if:'ne' value:'0' %]
+		Maximum Order Quantity <strong>[@max_qty@]</strong>
+	[%end data%]
+	
+	<!-- Buying Options -->
+	<div class="btn-container ">
+	<form class="buying-options" autocomplete="off" role="form" aria-label="Product purchase form">
+		<input type="hidden" id="model[@rndm@][@SKU@]" name="model" value="[@model@]">
+		<input type="hidden" id="thumb[@rndm@][@SKU@]" name="thumb" value="[@thumb@]">
+		<input type="hidden" id="sku[@rndm@][@SKU@]" name="sku" value="[@SKU@]">
+		<div class="d-flex align-items-center flex-wrap pt-0 pt-sm-0">
+			<div class="select-quantity">
+			    <script>
+						function handleUpQty() {
+							var input = document.querySelector('.js-quantity'),
+							min = input.getAttribute('min'),
+							max = input.getAttribute('max');
+
+							var oldValue = parseFloat(input.value) || 0;
+							if (max) {
+								if (oldValue >= max) {
+									var newVal = oldValue;
+								} else {
+									var newVal = oldValue + 1;
+								}
+							} else {
+								var newVal = oldValue + 1;
+							}
+							input.value = newVal;
+						}
+
+						function handleDownQty() {
+							var input = document.querySelector('.js-quantity'),
+							min = input.getAttribute('min'),
+							max = input.getAttribute('max');
+
+							var oldValue = parseFloat(input.value) || 0;
+							if (oldValue <= min) {
+								var newVal = oldValue;
+							} else {
+								var newVal = oldValue - 1;
+							}
+							input.value = newVal;
+						}
+
+					// function handleKeyDownQty(event) {
+					// 	if ( (event.key !== 'ArrowDown' &&
+					// 		event.key !== 'ArrowUp' &&
+					// 		event.key !== 'ArrowLeft' &&
+					// 		event.key !== 'ArrowRight') &&
+					// 		event.key !== 'Backspace' &&
+					// 		(event.which < 48 || event.which > 57)
+					// 	) {
+					// 		event.preventDefault();
+					// 	}
+					// }
+				</script>
+				<div class="js-quantity-wrapper">
+				   <input type="number" min="[@min_qty@]" class="form-control qty form-control-lg" id="qty[@rndm@][@SKU@]" name="qty" aria-label="[@model@] quantity field" value="[%data id:'min_qty' if:'ne' value:'0' %][@min_qty@][%end data%][%data id:'min_qty' if:'eq' value:'0' %]1[%end data%]" size="2"/>
+				</div>
+			</div>
+			<div class="buying-btn">
+				[%if [@available_preorder_quantity@] > 0 AND [@preorder@] AND [@config:WEBSTORE_USE_PREORDER_QUANTITY@]%]
+					<button type="button" title="Add [@model@] to Cart" class="addtocart btn btn-warning btn-block btn-lg btn-ajax-loads" data-loading-text="<i class='fa fa-spinner fa-spin' style='font-size: 14px'></i>" rel="[@rndm@][@SKU@]"><i class="fa fa-clock icon-white" aria-hidden="true"></i> Pre-Order Now</button>
+				[%elseif [@store_quantity@] > 0 AND [@preorder@] AND ![@config:WEBSTORE_USE_PREORDER_QUANTITY@]%]
+					<button type="button" title="Add [@model@] to Cart" class="addtocart btn btn-warning btn-block btn-lg btn-ajax-loads" data-loading-text="<i class='fa fa-spinner fa-spin' style='font-size: 14px'></i>" rel="[@rndm@][@SKU@]"><i class="fa fa-clock icon-white" aria-hidden="true"></i> Pre-Order Now</button>
+				[%elseif [@store_quantity@] > 0 AND ![@preorder@] %]
+					<button type="button" title="Add [@model@] to Cart" class="addtocart btn btn-lg btn-success btn-block btn-ajax-loads" data-loading-text="<i class='fa fa-spinner fa-spin' style='font-size: 14px'></i>" rel="[@rndm@][@SKU@]">
+Add To Cart<svg id="Group_1348" data-name="Group 1348" xmlns="http://www.w3.org/2000/svg" width="23" height="22" viewBox="0 0 23 22">
+<g id="Group_1347" data-name="Group 1347">
+<g id="Path_1748" data-name="Path 1748" transform="translate(-119.478 -37.216)" fill="none">
+<path d="M125.972,37.216h16.506v12.51H125.972Z" stroke="none"></path>
+<path d="M 128.0715637207031 39.31570053100586 L 128.0715637207031 47.62552261352539 L 140.3778991699219 47.62552261352539 L 140.3778991699219 39.31570053100586 L 128.0715637207031 39.31570053100586 M 125.9715576171875 37.21570205688477 L 142.4779052734375 37.21570205688477 L 142.4779052734375 49.72552108764648 L 125.9715576171875 49.72552108764648 L 125.9715576171875 37.21570205688477 Z" stroke="none" fill="#fff"></path>
+</g>
+<path id="Path_1749" data-name="Path 1749" d="M0,13.892V16.1H2.612V30.386H23V28.18H4.789V13.892Z" transform="translate(0 -13.892)" fill="#fff"></path>
+<ellipse id="Ellipse_83" data-name="Ellipse 83" cx="2.213" cy="2.243" rx="2.213" ry="2.243" transform="translate(4.281 17.514)" fill="#fff"></ellipse>
+<ellipse id="Ellipse_84" data-name="Ellipse 84" cx="2.213" cy="2.243" rx="2.213" ry="2.243" transform="translate(16.978 17.514)" fill="#fff"></ellipse>
+</g>
+</svg></button>
+				[%elseif [@store_quantity@] < 1 AND [@config:ALLOW_NOSTOCK_CHECKOUT@] %]
+					<button type="button" title="Add [@model@] to Cart" class="addtocart btn btn-warning btn-block btn-lg btn-ajax-loads" data-loading-text="<i class='fa fa-spinner fa-spin' style='font-size: 14px'></i>" rel="[@rndm@][@SKU@]"><i class="fa fa-clock icon-white" aria-hidden="true"></i> Backorder</button>
+				[%else%]
+					<a href title="Notify Me When [@model@] Is Back In Stock" class="btn btn-info btn-block btn-lg btn-ajax-loads" data-loading-text="<i class='fa fa-spinner fa-spin' style='font-size: 14px'></i>" data-toggle="modal" data-target="#notifymodal"><i class="fa fa-envelope" aria-hidden="true"></i> Notify Me</a>
+				[%/ if%]
+			</div>
+		</div>
+		
+				
+		
+	</form>
+	[%if [@config:show_wishlist@]%]
+					<div class="product-wishlist">
+						[%IN_WISHLIST id:'[@SKU@]' %]
+							[%param if_true%]
+								<a class="wishlist_toggle btn btn-lg btn-block btn-warning" href role="button" title="Remove From Wishlist" rel="[@SKU@]"><span class="remove" rel="wishlist_text[@SKU@]"><i class="fa fa-star" aria-hidden="true"></i></span></a>
+							[%/ param%]
+							[%param if_false%]
+								<a class="wishlist_toggle btn btn-secondary" href role="button" title="Add To Wishlist" rel="[@SKU@]">
+							    <span class="add  d-flex align-items-center" rel="wishlist_text[@SKU@]">
+				                    <i class="far fa-star mr-0 mr-sm-2" aria-hidden="true"></i>
+				                    <span>Wishlist</span>
+			                    </span></a>
+							[%/ param%]
+						[%/ IN_WISHLIST%]
+					</div>
+	[%/ if%]</div>
+	<div class="btn-stack nCustom-product-options">
+        <div class="price-match">
+            <a href="" class="btn btn-default btn-block" data-fancybox="" data-type="iframe" data-src="https://www.toolsinabox.com.au/price-match?name=[@name@]&amp;sku=[@sku@]"> Price Match</a>
+        </div>
+        <div class="ml-3 mb-3">
+            <a data-fancybox="" data-type="iframe" data-src="https://www.toolsinabox.com.au/productquestion?name=[@name@]&amp;sku=[@sku@]" href="javascript:;" class="btn btn-default btn-block">Product Enquiry</a>
+        </div>
+    </div>
+	[%if [@config:show_shipping_calc@] and [@service_only@] eq 'n'%]
+		<!-- shipping_calc template -->
+		[%load_template file:'products/includes/shipping_calc.template.html'/%]
+	[%/ if%]
+	[%if [@short_description@]%]
+		<p itemprop="description" aria-label="Product Short Description" class="mt-2 mb-0">[@short_description@]</p>
+	[%/ if%]
+</div>
+
+<!-- Out of stock modal -->
+<div class="modal fade notifymodal" id="notifymodal">
+	<div class="modal-dialog">
+		<div class="modal-content">
+			<div class="modal-header">
+				<h4 class="modal-title">Notify me when back in stock</h4>
+			</div>
+			<div class="modal-body">
+				<div class="form-group">
+					<label>Your Name</label>
+					<input placeholder="Jane Smith" name="from_name" id="from_name" type="text" class="form-control" value="[%NOHTML%][@FROM_NAME@][%/ NOHTML%]">
+				</div>
+				<div class="form-group">
+					<label>Your Email Address</label>
+					<input placeholder="jane.smith@test.com.au" name="from" id="from" type="email" class="form-control" value="[%NOHTML%][@FROM@][%/ NOHTML%]">
+				</div>
+				<div class="checkbox">
+					<label>
+						<input type="checkbox" value="y" class="terms_box" required/>
+						I have read and agree to
+						<a href="#" data-toggle="modal" data-target="#termsModal">Terms &amp; Conditions</a> and
+						<a href="#" data-toggle="modal" data-target="#privacyModal">Privacy Policy</a>.
+					</label>
+					<span class="help-block hidden">Please tick this box to proceed.</span>
+				</div>
+			</div>
+			<div class="modal-footer">
+				<input class="btn btn-default" type="button" data-dismiss="modal" value="Cancel">
+				<input class="btn btn-success js-notifymodal-in-stock" data-sku="[@sku@]" type="button" value="Save My Details">
+			</div>
+		</div>
+	</div>
+</div>

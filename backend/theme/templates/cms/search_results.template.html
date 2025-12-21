@@ -1,0 +1,117 @@
+[%SET [@page_type@]='category'/%]
+
+	<div id="mainContent" role="main" class="main-content container clearfix">
+<div class="row">
+        <div class="col-12">
+    [%breadcrumb%]
+	[%param *header%]
+                <ul class="breadcrumb" itemscope="" itemtype="http://schema.org/BreadcrumbList" role="navigation" aria-label="Breadcrumb">
+				<li class="breadcrumb-item" itemprop="itemListElement" itemscope itemtype="http://schema.org/ListItem">
+					<a href="[@config:home_url@]" itemprop="item"><span itemprop="name">Home</span></a>
+					<meta itemprop="position" content="0" />
+				</li>
+	[%/param%]
+	[%param *body%]
+				<li class="breadcrumb-item" itemprop="itemListElement" itemscope itemtype="http://schema.org/ListItem">
+					<a href="[@url@]" itemprop="item"><span itemprop="name">[@name@]</span></a>
+					<meta itemprop="position" content="[%calc [@count@] + 1 /%]" />
+				</li>
+	[%/param%]
+	[%param *footer%]
+			</ul>
+		</div>
+	[%/param%]
+[%/breadcrumb%]
+<div class="collection-title">
+<h1 class="page-header">
+ Search... </h1>
+</div>
+<br>
+<div class="col-12">
+<div class="row js-row-result mt-sm-4">
+[%load_template file:'cms/includes/sidebar.template.html'/%]
+	[%filter ID:'keywords' if:'eq' value:''%]
+		<h1>
+			[%url_info name:'page_heading' default:'[@name@]'/%]
+			[%if [@id@] eq ''%]
+				[%filter ID:'keywords' if:'ne' value:''%][%NOHTML%][%filter ID:'keywords'/%][%/NOHTML%][%/filter%]
+			[%/if%]
+		</h1>
+	[%/filter%]
+	[%filter ID:'keywords' if:'ne' value:' '%]
+[%thumb_list type:'products' template:'mycustomthumb' limit:'[@config:THUMB_LIMIT@]'%]
+	[%param template%][%VIEWBY type:'products' default:'[@templatethumb@]'%][%/VIEWBY%][%/param%]
+	[%param *header%]
+	<div class="row row-header-category d-none d-lg-flex">
+	    <div class="col-6 col-left">
+	        <p class="number-result js-number-result-origin d-none d-sm-block">
+                <strong>[@total_results@] products</strong>[%if [@total_results@] > 1%][%/if%]&nbsp;fitting your needs
+            </p>
+	        <script>
+				function viewtype(view) {
+					var f=document.viewForm;
+					f['viewby'].value=view;
+					f.submit();
+				}
+			</script>
+			<form method="get" name="viewForm" action="[@config:CURRENT_URL@]" class="hidden">
+				<input name="rf" type="hidden" value="[%FILTER_CODE%][%/FILTER_CODE%]">
+				<input name="viewby" type="hidden" value=""/>
+			</form>
+		</div>
+		
+	    <form method="get" class="form-sort" action="[@config:CURRENT_URL@]">
+			<input name="rf" type="hidden" value="[%FILTER_CODE%][%/FILTER_CODE%]">
+				<label class="mb-0 mr-4 d-none d-md-block" for="sortby"><strong>Sort by</strong></label>
+				<div class="form-select">
+					<select id="sortby" name="sortby" onChange="return this.form.submit();" class="js-selectbox form-control" aria-label="Sort products by">
+					<option value="popular" [%SORTBY type:'products' if:'eq' value:'popular'%]selected[%/SORTBY%]>Most Popular</option>
+					<option value="name" [%SORTBY type:'products' if:'eq' value:'name'%]selected[%/SORTBY%]>Name</option>
+					<option value="SKU" [%SORTBY type:'products' if:'eq' value:'SKU'%]selected[%/SORTBY%]>SKU</option>
+					<option value="lowest_price" [%SORTBY type:'products' if:'eq' value:'lowest_price'%]selected[%/SORTBY%]>Lowest Price</option>
+					<option value="highest_price" [%SORTBY type:'products' if:'eq' value:'highest_price'%]selected[%/SORTBY%]>Highest Price</option>
+			    	</select>
+			</div>
+		</form>
+	</div>
+					<div class="row row-product [%VIEWBY type:'products' if:'eq' value:'list' if_true:'thumb_list' if_false:'thumb'%][%/VIEWBY%]">
+					[%/param%]
+					[%param *footer%]
+						</div>
+					[%IF [@total_results@] > [@config:thumb_limit@]%]
+						<div class="row">
+							<div class="col-12">
+								<nav aria-label="Page navigation">
+									<ul class="pagination justify-content-center">
+										[%paging limit:'3'%]
+											[%param *previous_page%]<li class="page-item"><a class="page-link" href="[@url@]" aria-label="Go back one page"><i class="fa fa-chevron-left" aria-hidden="true"></i></a></li>[%/param%]
+											[%param *goback_pages%]<li class="page-item"><a class="page-link" href="[@url@]" aria-label="Go to page [@page@]">[@page@]</a></li>[%/param%]
+											[%param *current_page%]<li class="page-item active"><a class="page-link" href="[@url@]" aria-label="Current page">[@page@]</a></li>[%/param%]
+											[%param *gonext_pages%]<li class="page-item"><a href="[@url@]" class="page-link" aria-label="Go to page [@page@]">[@page@]</a></li>[%/param%]
+											[%param *next_page%]<li class="page-item"><a class="page-link" href="[@url@]" aria-label="Go forward one page"><i class="fa fa-chevron-right" aria-hidden="true"></i></a></li>[%/param%]
+										[%/paging%]
+									</ul>
+								</nav>
+								<hr aria-hidden="true"/>
+							</div>
+						</div>
+					[%/IF%]
+				[%/param%]
+				[%param *ifempty%]
+					<div class="row">
+						<div class="col-12">
+							[%filter ID:'keywords' if:'ne' value:''%]
+								<p>Search was unable to find any product results for '[%NOHTML%][%filter ID:'keywords'/%][%/NOHTML%]' you may have typed your word incorrectly, or are being too specific. Try using a broader search phrase.</p>
+							[%/filter%]
+							[%filter ID:'keywords' if:'eq' value:''%]
+								<p>This category is empty! Please try another category or use our search function to find what you are looking for. If you require further assistance please contact us.</p>
+							[%/filter%]
+							<hr aria-hidden="true"/>
+						</div>
+					</div>
+				[%/param%]
+			[%/thumb_list%]
+		</div>
+	[%/filter%]
+</div>
+</div>
