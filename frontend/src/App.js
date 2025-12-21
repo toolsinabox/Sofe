@@ -30,6 +30,7 @@ import ProductListing from "./pages/store/ProductListing";
 import ProductDetail from "./pages/store/ProductDetail";
 import Cart from "./pages/store/Cart";
 import Checkout from "./pages/store/Checkout";
+import LiveThemeStorefront from "./pages/store/LiveThemeStorefront";
 
 // Landing Page Component
 const LandingPage = () => {
