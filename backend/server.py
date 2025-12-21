@@ -309,6 +309,44 @@ class Token(BaseModel):
     token_type: str = "bearer"
     user: dict
 
+class UserUpdate(BaseModel):
+    email: Optional[str] = None
+    name: Optional[str] = None
+    role: Optional[str] = None
+    is_active: Optional[bool] = None
+
+# ==================== WEBSITE/MERCHANT MODELS ====================
+
+class WebsiteBase(BaseModel):
+    name: str
+    url: Optional[str] = None
+    email: str
+    plan: str = "Starter"  # Starter, Professional, Enterprise
+    status: str = "active"  # active, suspended
+    owner_id: Optional[str] = None
+    logo: Optional[str] = None
+
+class WebsiteCreate(WebsiteBase):
+    pass
+
+class WebsiteUpdate(BaseModel):
+    name: Optional[str] = None
+    url: Optional[str] = None
+    email: Optional[str] = None
+    plan: Optional[str] = None
+    status: Optional[str] = None
+    owner_id: Optional[str] = None
+    logo: Optional[str] = None
+
+class Website(WebsiteBase):
+    id: str = Field(default_factory=lambda: str(uuid.uuid4()))
+    revenue: float = 0.0
+    orders: int = 0
+    products: int = 0
+    customers: int = 0
+    created_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
+    updated_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
+
 # ==================== AUTH HELPERS ====================
 
 def verify_password(plain_password: str, hashed_password: str) -> bool:
