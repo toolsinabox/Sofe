@@ -5,11 +5,13 @@ import { Store, Mail, Lock, Eye, EyeOff, AlertCircle } from 'lucide-react';
 import { Button } from '../../components/ui/button';
 import { Input } from '../../components/ui/input';
 import { Label } from '../../components/ui/label';
+import { useAuth } from '../../context/AuthContext';
 
 const API = `${process.env.REACT_APP_BACKEND_URL}/api`;
 
 const MerchantLogin = () => {
   const navigate = useNavigate();
+  const { login } = useAuth();
   const [formData, setFormData] = useState({
     email: '',
     password: ''
@@ -26,9 +28,8 @@ const MerchantLogin = () => {
     try {
       const response = await axios.post(`${API}/auth/login`, formData);
       
-      // Store token and user info
-      localStorage.setItem('token', response.data.access_token);
-      localStorage.setItem('user', JSON.stringify(response.data.user));
+      // Use context login function to update state
+      login(response.data.access_token, response.data.user);
       
       // Redirect to dashboard
       navigate('/merchant');
