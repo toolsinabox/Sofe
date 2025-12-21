@@ -2607,6 +2607,176 @@ async def render_partial_product_detail(product_id: str):
     
     return {"html": rendered, "theme": active_theme, "product": product}
 
+# ==================== SHOPPING CART API ====================
+
+class CartItem(BaseModel):
+    product_id: str
+    quantity: int = 1
+
+class CartResponse(BaseModel):
+    id: str
+    items: List[dict]
+    subtotal: float
+    total: float
+    item_count: int
+    created_at: Optional[str] = None
+    updated_at: Optional[str] = None
+
+@api_router.get("/cart/{cart_id}")
+async def get_cart(cart_id: str):
+    """Get cart by ID"""
+    cart = await db.carts.find_one({"id": cart_id}, {"_id": 0})
+    if not cart:
+        # Create new cart if not exists
+        cart = {
+            "id": cart_id,
+            "items": [],
+            "subtotal": 0,
+            "total": 0,
+            "item_count": 0,
+            "created_at": datetime.now(timezone.utc).isoformat(),
+            "updated_at": datetime.now(timezone.utc).isoformat()
+        }
+        await db.carts.insert_one(cart)
+    return cart
+
+@api_router.post("/cart/{cart_id}/add")
+async def add_to_cart(cart_id: str, item: CartItem):
+    """Add item to cart"""
+    # Get or create cart
+    cart = await db.carts.find_one({"id": cart_id}, {"_id": 0})
+    if not cart:
+        cart = {
+            "id": cart_id,
+            "items": [],
+            "subtotal": 0,
+            "total": 0,
+            "item_count": 0,
+            "created_at": datetime.now(timezone.utc).isoformat()
+        }
+    
+    # Get product details
+    product = await db.products.find_one({"id": item.product_id}, {"_id": 0})
+    if not product:
+        raise HTTPException(status_code=404, detail="Product not found")
+    
+    # Check if item already in cart
+    existing_item = None
+    for cart_item in cart["items"]:
+        if cart_item["product_id"] == item.product_id:
+            existing_item = cart_item
+            break
+    
+    if existing_item:
+        existing_item["quantity"] += item.quantity
+        existing_item["line_total"] = existing_item["quantity"] * existing_item["price"]
+    else:
+        cart["items"].append({
+            "product_id": item.product_id,
+            "name": product.get("name", ""),
+            "sku": product.get("sku", ""),
+            "price": product.get("price", 0),
+            "compare_price": product.get("compare_price"),
+            "image": product.get("images", [""])[0] if product.get("images") else "",
+            "quantity": item.quantity,
+            "line_total": item.quantity * product.get("price", 0)
+        })
+    
+    # Recalculate totals
+    cart["subtotal"] = sum(i["line_total"] for i in cart["items"])
+    cart["total"] = cart["subtotal"]  # Add tax/shipping later if needed
+    cart["item_count"] = sum(i["quantity"] for i in cart["items"])
+    cart["updated_at"] = datetime.now(timezone.utc).isoformat()
+    
+    # Save cart
+    await db.carts.update_one(
+        {"id": cart_id},
+        {"$set": cart},
+        upsert=True
+    )
+    
+    return {
+        "success": True,
+        "message": "Item added to cart",
+        "cart": cart,
+        "added_item": {
+            "product_id": item.product_id,
+            "name": product.get("name", ""),
+            "price": product.get("price", 0),
+            "image": product.get("images", [""])[0] if product.get("images") else "",
+            "quantity": item.quantity
+        }
+    }
+
+@api_router.put("/cart/{cart_id}/update")
+async def update_cart_item(cart_id: str, item: CartItem):
+    """Update item quantity in cart"""
+    cart = await db.carts.find_one({"id": cart_id}, {"_id": 0})
+    if not cart:
+        raise HTTPException(status_code=404, detail="Cart not found")
+    
+    # Find and update item
+    item_found = False
+    for cart_item in cart["items"]:
+        if cart_item["product_id"] == item.product_id:
+            if item.quantity <= 0:
+                cart["items"].remove(cart_item)
+            else:
+                cart_item["quantity"] = item.quantity
+                cart_item["line_total"] = item.quantity * cart_item["price"]
+            item_found = True
+            break
+    
+    if not item_found:
+        raise HTTPException(status_code=404, detail="Item not in cart")
+    
+    # Recalculate totals
+    cart["subtotal"] = sum(i["line_total"] for i in cart["items"])
+    cart["total"] = cart["subtotal"]
+    cart["item_count"] = sum(i["quantity"] for i in cart["items"])
+    cart["updated_at"] = datetime.now(timezone.utc).isoformat()
+    
+    await db.carts.update_one({"id": cart_id}, {"$set": cart})
+    
+    return {"success": True, "cart": cart}
+
+@api_router.delete("/cart/{cart_id}/remove/{product_id}")
+async def remove_from_cart(cart_id: str, product_id: str):
+    """Remove item from cart"""
+    cart = await db.carts.find_one({"id": cart_id}, {"_id": 0})
+    if not cart:
+        raise HTTPException(status_code=404, detail="Cart not found")
+    
+    # Remove item
+    cart["items"] = [i for i in cart["items"] if i["product_id"] != product_id]
+    
+    # Recalculate totals
+    cart["subtotal"] = sum(i["line_total"] for i in cart["items"])
+    cart["total"] = cart["subtotal"]
+    cart["item_count"] = sum(i["quantity"] for i in cart["items"])
+    cart["updated_at"] = datetime.now(timezone.utc).isoformat()
+    
+    await db.carts.update_one({"id": cart_id}, {"$set": cart})
+    
+    return {"success": True, "cart": cart}
+
+@api_router.delete("/cart/{cart_id}/clear")
+async def clear_cart(cart_id: str):
+    """Clear all items from cart"""
+    cart = {
+        "id": cart_id,
+        "items": [],
+        "subtotal": 0,
+        "total": 0,
+        "item_count": 0,
+        "updated_at": datetime.now(timezone.utc).isoformat()
+    }
+    
+    await db.carts.update_one({"id": cart_id}, {"$set": cart}, upsert=True)
+    
+    return {"success": True, "cart": cart}
+
+
 # ==================== MAROPOST TEMPLATE ENGINE V2 ====================
 
 @api_router.get("/maropost/info")
