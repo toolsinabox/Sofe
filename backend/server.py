@@ -35,6 +35,10 @@ UPLOADS_DIR.mkdir(exist_ok=True)
 THEME_DIR = ROOT_DIR / "theme"
 THEME_DIR.mkdir(exist_ok=True)
 
+# Create themes directory for multiple themes
+THEMES_DIR = ROOT_DIR / "themes"
+THEMES_DIR.mkdir(exist_ok=True)
+
 # JWT Settings
 SECRET_KEY = os.environ.get('JWT_SECRET_KEY', 'maropost-clone-super-secret-key-change-in-production')
 ALGORITHM = "HS256"
