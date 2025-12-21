@@ -1,11 +1,13 @@
 import React from "react";
 import "./App.css";
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
+import { AuthProvider, ProtectedRoute } from "./context/AuthContext";
 
 // Admin Pages
 import AdminLayout from "./pages/admin/AdminLayout";
 import AdminDashboard from "./pages/admin/AdminDashboard";
 import AdminMerchants from "./pages/admin/AdminMerchants";
+import AdminLogin from "./pages/admin/AdminLogin";
 
 // Merchant Pages
 import MerchantLayout from "./pages/merchant/MerchantLayout";
@@ -18,6 +20,7 @@ import MerchantCategories from "./pages/merchant/MerchantCategories";
 import MerchantBanners from "./pages/merchant/MerchantBanners";
 import MerchantThemeEditor from "./pages/merchant/MerchantThemeEditor";
 import MerchantStoreSettings from "./pages/merchant/MerchantStoreSettings";
+import MerchantLogin from "./pages/merchant/MerchantLogin";
 
 // Store Pages
 import StoreLayout from "./pages/store/StoreLayout";
