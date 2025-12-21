@@ -2609,7 +2609,7 @@ async def render_partial_product_detail(product_id: str):
 
 # ==================== MAROPOST TEMPLATE ENGINE V2 ====================
 
-@api_router.get("/render/v2-info")
+@api_router.get("/maropost/info")
 async def get_render_v2_info():
     """Get information about the template rendering system"""
     active_theme = await get_active_theme_name()
@@ -2635,17 +2635,17 @@ async def get_render_v2_info():
         "supported_page_types": [pt.value for pt in PageType],
         "wrapper_contexts": [wc.value for wc in WrapperContext],
         "endpoints": {
-            "render_home": "/api/render/v2/home",
-            "render_product": "/api/render/v2/product/{product_id}",
-            "render_category": "/api/render/v2/category/{category_id}",
-            "render_checkout": "/api/render/v2/checkout",
-            "render_with_debug": "/api/render/v2/home?debug=true",
-            "render_print": "/api/render/v2/product/{id}?print=true"
+            "render_home": "/api/maropost/home",
+            "render_product": "/api/maropost/product/{product_id}",
+            "render_category": "/api/maropost/category/{category_id}",
+            "render_checkout": "/api/maropost/checkout",
+            "render_with_debug": "/api/maropost/home?debug=true",
+            "render_print": "/api/maropost/product/{id}?print=true"
         }
     }
 
 
-@api_router.get("/render/v2/{path:path}")
+@api_router.get("/maropost/{path:path}")
 async def render_page_v2(
     path: str,
     print: Optional[bool] = None,
