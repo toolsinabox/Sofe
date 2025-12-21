@@ -1,5 +1,7 @@
 // Tools In A Box Theme JavaScript
-// Shopping Cart with Mini Cart and Modal
+// Shopping Cart with Backend Integration, Mini Cart, and Modal
+
+const API_BASE = window.location.origin + '/api';
 
 document.addEventListener('DOMContentLoaded', function() {
     console.log('Theme loaded: Tools In A Box');
@@ -11,16 +13,38 @@ document.addEventListener('DOMContentLoaded', function() {
     initQuantityButtons();
 });
 
-// Cart state - use unique key to avoid conflicts
-let tiabCart = JSON.parse(localStorage.getItem('tiab_cart')) || { items: [], total: 0 };
+// Get or create cart ID (stored in localStorage for session persistence)
+function getCartId() {
+    let cartId = localStorage.getItem('tiab_cart_id');
+    if (!cartId) {
+        cartId = 'cart_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
+        localStorage.setItem('tiab_cart_id', cartId);
+    }
+    return cartId;
+}
 
-// Initialize cart
-function initCart() {
-    updateCartUI();
+// Cart state - synced with backend
+let tiabCart = { items: [], subtotal: 0, total: 0, item_count: 0 };
+
+// Initialize cart - fetch from backend
+async function initCart() {
+    try {
+        const cartId = getCartId();
+        const response = await fetch(`${API_BASE}/cart/${cartId}`);
+        if (response.ok) {
+            tiabCart = await response.json();
+            updateCartUI();
+        }
+    } catch (error) {
+        console.error('Error initializing cart:', error);
+        // Fallback to localStorage if backend fails
+        tiabCart = JSON.parse(localStorage.getItem('tiab_cart_backup')) || { items: [], subtotal: 0, total: 0, item_count: 0 };
+        updateCartUI();
+    }
 }
 
 // Add to Cart Function - called via onclick
-function addToCart(button) {
+async function addToCart(button) {
     const productId = button.dataset.productId;
     const productName = button.dataset.productName;
     const productPrice = button.dataset.productPrice;
@@ -31,51 +55,99 @@ function addToCart(button) {
         return;
     }
     
-    // Parse price (remove currency symbol and parse)
-    const priceNum = parseFloat(productPrice.replace(/[^0-9.]/g, '')) || 0;
+    // Show loading state
+    const originalText = button.textContent;
+    button.textContent = 'Adding...';
+    button.disabled = true;
     
-    // Check if item already exists in cart
-    const existingItem = tiabCart.items.find(item => item.id === productId);
-    
-    if (existingItem) {
-        existingItem.qty += 1;
-    } else {
-        tiabCart.items.push({
-            id: productId,
-            name: productName,
-            price: priceNum,
-            priceFormatted: productPrice,
-            image: productImage,
-            qty: 1
+    try {
+        const cartId = getCartId();
+        const response = await fetch(`${API_BASE}/cart/${cartId}/add`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                product_id: productId,
+                quantity: 1
+            })
         });
+        
+        if (response.ok) {
+            const data = await response.json();
+            tiabCart = data.cart;
+            
+            // Backup to localStorage
+            localStorage.setItem('tiab_cart_backup', JSON.stringify(tiabCart));
+            
+            // Update UI
+            updateCartUI();
+            
+            // Show modal with added item info
+            const addedItem = data.added_item;
+            showCartModal(
+                addedItem.name || productName,
+                '$' + (addedItem.price || 0).toFixed(2),
+                addedItem.image || productImage
+            );
+            
+            // Success feedback
+            button.textContent = 'Added!';
+            button.style.backgroundColor = '#22c55e';
+        } else {
+            throw new Error('Failed to add to cart');
+        }
+    } catch (error) {
+        console.error('Error adding to cart:', error);
+        
+        // Fallback to local cart
+        addToCartLocal(productId, productName, productPrice, productImage);
+        showCartModal(productName, productPrice, productImage);
+        
+        button.textContent = 'Added!';
+        button.style.backgroundColor = '#22c55e';
     }
     
-    // Update total
-    tiabCart.total = tiabCart.items.reduce((sum, item) => sum + (item.price * item.qty), 0);
-    
-    // Save to localStorage
-    localStorage.setItem('tiab_cart', JSON.stringify(tiabCart));
-    
-    // Update UI
-    updateCartUI();
-    
-    // Show modal
-    showCartModal(productName, productPrice, productImage);
-    
-    // Button feedback
-    const originalText = button.textContent;
-    button.textContent = 'Added!';
-    button.style.backgroundColor = '#22c55e';
-    
+    // Reset button after delay
     setTimeout(() => {
         button.textContent = originalText;
         button.style.backgroundColor = '';
+        button.disabled = false;
     }, 2000);
+}
+
+// Fallback local cart add
+function addToCartLocal(productId, productName, productPrice, productImage) {
+    const priceNum = parseFloat(productPrice.replace(/[^0-9.]/g, '')) || 0;
+    
+    const existingItem = tiabCart.items.find(item => item.product_id === productId);
+    
+    if (existingItem) {
+        existingItem.quantity += 1;
+        existingItem.line_total = existingItem.quantity * existingItem.price;
+    } else {
+        tiabCart.items.push({
+            product_id: productId,
+            name: productName,
+            price: priceNum,
+            image: productImage,
+            quantity: 1,
+            line_total: priceNum
+        });
+    }
+    
+    tiabCart.subtotal = tiabCart.items.reduce((sum, item) => sum + item.line_total, 0);
+    tiabCart.total = tiabCart.subtotal;
+    tiabCart.item_count = tiabCart.items.reduce((sum, item) => sum + item.quantity, 0);
+    
+    localStorage.setItem('tiab_cart_backup', JSON.stringify(tiabCart));
+    updateCartUI();
 }
 
 // Update Cart UI (mini cart and badge)
 function updateCartUI() {
-    const itemCount = tiabCart.items.reduce((sum, item) => sum + item.qty, 0);
+    const itemCount = tiabCart.item_count || tiabCart.items.reduce((sum, item) => sum + (item.quantity || 0), 0);
+    const total = tiabCart.total || tiabCart.subtotal || 0;
     
     // Update badge
     const cartBadge = document.getElementById('cart-count');
@@ -92,7 +164,7 @@ function updateCartUI() {
     // Update mini cart total
     const miniCartTotal = document.getElementById('mini-cart-total');
     if (miniCartTotal) {
-        miniCartTotal.textContent = '$' + tiabCart.total.toFixed(2);
+        miniCartTotal.textContent = '$' + total.toFixed(2);
     }
     
     // Update mini cart items list
@@ -106,10 +178,10 @@ function updateCartUI() {
                     <img src="${item.image}" alt="${item.name}" onerror="this.src='https://placehold.co/60x60?text=Product'">
                     <div class="mini-cart-item-info">
                         <p class="mini-cart-item-name">${item.name}</p>
-                        <p class="mini-cart-item-price">${item.priceFormatted}</p>
-                        <p class="mini-cart-item-qty">Qty: ${item.qty}</p>
+                        <p class="mini-cart-item-price">$${(item.price || 0).toFixed(2)}</p>
+                        <p class="mini-cart-item-qty">Qty: ${item.quantity}</p>
                     </div>
-                    <button class="mini-cart-item-remove" onclick="removeFromCart('${item.id}')">
+                    <button class="mini-cart-item-remove" onclick="removeFromCart('${item.product_id}')">
                         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
                         </svg>
@@ -121,11 +193,57 @@ function updateCartUI() {
 }
 
 // Remove item from cart
-function removeFromCart(productId) {
-    tiabCart.items = tiabCart.items.filter(item => item.id !== productId);
-    tiabCart.total = tiabCart.items.reduce((sum, item) => sum + (item.price * item.qty), 0);
-    localStorage.setItem('tiab_cart', JSON.stringify(tiabCart));
-    updateCartUI();
+async function removeFromCart(productId) {
+    try {
+        const cartId = getCartId();
+        const response = await fetch(`${API_BASE}/cart/${cartId}/remove/${productId}`, {
+            method: 'DELETE'
+        });
+        
+        if (response.ok) {
+            const data = await response.json();
+            tiabCart = data.cart;
+            localStorage.setItem('tiab_cart_backup', JSON.stringify(tiabCart));
+            updateCartUI();
+        } else {
+            throw new Error('Failed to remove from cart');
+        }
+    } catch (error) {
+        console.error('Error removing from cart:', error);
+        // Fallback to local removal
+        tiabCart.items = tiabCart.items.filter(item => item.product_id !== productId);
+        tiabCart.subtotal = tiabCart.items.reduce((sum, item) => sum + item.line_total, 0);
+        tiabCart.total = tiabCart.subtotal;
+        tiabCart.item_count = tiabCart.items.reduce((sum, item) => sum + item.quantity, 0);
+        localStorage.setItem('tiab_cart_backup', JSON.stringify(tiabCart));
+        updateCartUI();
+    }
+}
+
+// Update item quantity
+async function updateCartItemQty(productId, quantity) {
+    try {
+        const cartId = getCartId();
+        const response = await fetch(`${API_BASE}/cart/${cartId}/update`, {
+            method: 'PUT',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                product_id: productId,
+                quantity: quantity
+            })
+        });
+        
+        if (response.ok) {
+            const data = await response.json();
+            tiabCart = data.cart;
+            localStorage.setItem('tiab_cart_backup', JSON.stringify(tiabCart));
+            updateCartUI();
+        }
+    } catch (error) {
+        console.error('Error updating cart:', error);
+    }
 }
 
 // Show the "Added to Cart" modal
@@ -148,7 +266,7 @@ function showCartModal(name, price, image) {
         modalProductImage.src = image;
         modalProductImage.onerror = function() { this.src = 'https://placehold.co/80x80?text=Product'; };
     }
-    if (modalCartTotal) modalCartTotal.textContent = '$' + tiabCart.total.toFixed(2);
+    if (modalCartTotal) modalCartTotal.textContent = '$' + (tiabCart.total || 0).toFixed(2);
     
     // Show modal
     overlay.classList.add('show');
@@ -190,9 +308,28 @@ function initQuantityButtons() {
     });
 }
 
-// Clear cart (for testing)
-function clearCart() {
-    tiabCart = { items: [], total: 0 };
-    localStorage.setItem('tiab_cart', JSON.stringify(tiabCart));
+// Clear cart (for testing/checkout completion)
+async function clearCart() {
+    try {
+        const cartId = getCartId();
+        const response = await fetch(`${API_BASE}/cart/${cartId}/clear`, {
+            method: 'DELETE'
+        });
+        
+        if (response.ok) {
+            const data = await response.json();
+            tiabCart = data.cart;
+        }
+    } catch (error) {
+        console.error('Error clearing cart:', error);
+    }
+    
+    tiabCart = { items: [], subtotal: 0, total: 0, item_count: 0 };
+    localStorage.setItem('tiab_cart_backup', JSON.stringify(tiabCart));
     updateCartUI();
+}
+
+// Get current cart state (for checkout)
+function getCart() {
+    return tiabCart;
 }
