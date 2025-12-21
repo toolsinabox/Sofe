@@ -2637,7 +2637,7 @@ async def get_cart(cart_id: str):
             "created_at": datetime.now(timezone.utc).isoformat(),
             "updated_at": datetime.now(timezone.utc).isoformat()
         }
-        await db.carts.insert_one(cart)
+        await db.carts.insert_one(cart.copy())  # Insert a copy to avoid _id pollution
     return cart
 
 @api_router.post("/cart/{cart_id}/add")
