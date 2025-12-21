@@ -202,7 +202,7 @@ function App() {
             }>
               <Route index element={<AdminDashboard />} />
               <Route path="merchants" element={<AdminMerchants />} />
-              <Route path="users" element={<AdminDashboard />} />
+              <Route path="users" element={<AdminUsers />} />
               <Route path="billing" element={<AdminDashboard />} />
               <Route path="analytics" element={<AdminDashboard />} />
               <Route path="settings" element={<AdminDashboard />} />
