@@ -64,41 +64,54 @@ const HeroCarousel = ({ banners = [] }) => {
     if (deviceType === 'desktop' && banner.image_desktop) {
       return banner.image_desktop;
     }
-    // Fallback to desktop, tablet, mobile, or legacy image field
     return banner.image_desktop || banner.image_tablet || banner.image_mobile || banner.image;
+  };
+
+  // Get button style classes
+  const getButtonClasses = (style) => {
+    switch (style) {
+      case 'secondary':
+        return 'bg-white text-gray-900 hover:bg-gray-100';
+      case 'outline':
+        return 'bg-transparent border-2 border-white text-white hover:bg-white/10';
+      default: // primary
+        return 'bg-orange-500 text-white hover:bg-orange-600';
+    }
+  };
+
+  // Get text alignment classes
+  const getTextAlignClasses = (position) => {
+    switch (position) {
+      case 'center':
+        return 'text-center items-center mx-auto';
+      case 'right':
+        return 'text-right items-end ml-auto';
+      default: // left
+        return 'text-left items-start';
+    }
   };
 
   // Default banners if none provided
   const defaultBanners = [
     {
       id: '1',
+      name: 'New Collection Banner',
       title: 'New Collection 2025',
       subtitle: 'Discover the latest trends in fashion',
       image: 'https://images.unsplash.com/photo-1441986300917-64674bd600d8?w=1920',
       show_on_desktop: true,
       show_on_tablet: true,
       show_on_mobile: true,
-      link: '/store/products'
-    },
-    {
-      id: '2',
-      title: 'Summer Sale',
-      subtitle: 'Up to 50% off on selected items',
-      image: 'https://images.unsplash.com/photo-1607082349566-187342175e2f?w=1920',
-      show_on_desktop: true,
-      show_on_tablet: true,
-      show_on_mobile: true,
-      link: '/store/sale'
-    },
-    {
-      id: '3',
-      title: 'Free Shipping',
-      subtitle: 'On all orders over $50',
-      image: 'https://images.unsplash.com/photo-1556742049-0cfed4f6a45d?w=1920',
-      show_on_desktop: true,
-      show_on_tablet: true,
-      show_on_mobile: true,
-      link: '/store/products'
+      show_title: true,
+      show_subtitle: true,
+      show_button: true,
+      button_text: 'Shop Now',
+      button_style: 'primary',
+      link: '/store/products',
+      overlay_enabled: true,
+      overlay_color: 'rgba(0,0,0,0.3)',
+      text_color: '#FFFFFF',
+      text_position: 'left'
     }
   ];
 
@@ -112,61 +125,82 @@ const HeroCarousel = ({ banners = [] }) => {
     <div className="relative group">
       <div className="overflow-hidden" ref={emblaRef}>
         <div className="flex">
-          {displayBanners.map((banner) => (
-            <div
-              key={banner.id}
-              className="flex-[0_0_100%] min-w-0 relative"
-            >
-              <div className="relative h-[300px] md:h-[450px] lg:h-[500px]">
-                {/* Responsive image with srcset */}
-                <picture>
-                  {banner.image_mobile && (
-                    <source media="(max-width: 639px)" srcSet={banner.image_mobile} />
+          {displayBanners.map((banner) => {
+            const hasContent = (banner.show_title !== false && banner.title) || 
+                             (banner.show_subtitle !== false && banner.subtitle) || 
+                             (banner.show_button && banner.button_text);
+            
+            return (
+              <div
+                key={banner.id}
+                className="flex-[0_0_100%] min-w-0 relative"
+              >
+                <div className="relative h-[300px] md:h-[450px] lg:h-[500px]">
+                  {/* Responsive image with srcset */}
+                  <picture>
+                    {banner.image_mobile && (
+                      <source media="(max-width: 639px)" srcSet={banner.image_mobile} />
+                    )}
+                    {banner.image_tablet && (
+                      <source media="(max-width: 1023px)" srcSet={banner.image_tablet} />
+                    )}
+                    <img
+                      src={getBannerImage(banner)}
+                      alt={banner.name || banner.title || 'Banner'}
+                      className="w-full h-full object-cover"
+                    />
+                  </picture>
+                  
+                  {/* Overlay */}
+                  {banner.overlay_enabled !== false && (
+                    <div 
+                      className="absolute inset-0"
+                      style={{ backgroundColor: banner.overlay_color || 'rgba(0,0,0,0.3)' }}
+                    />
                   )}
-                  {banner.image_tablet && (
-                    <source media="(max-width: 1023px)" srcSet={banner.image_tablet} />
-                  )}
-                  <img
-                    src={getBannerImage(banner)}
-                    alt={banner.title}
-                    className="w-full h-full object-cover"
-                  />
-                </picture>
-                <div 
-                  className="absolute inset-0"
-                  style={{ backgroundColor: banner.overlay_color || 'rgba(0,0,0,0.3)' }}
-                />
-                <div className="absolute inset-0 flex items-center">
-                  <div className="max-w-7xl mx-auto px-4 w-full">
-                    <div className="max-w-xl">
-                      <h2 
-                        className="text-3xl md:text-5xl lg:text-6xl font-bold mb-4 leading-tight"
-                        style={{ color: banner.text_color || '#FFFFFF' }}
-                      >
-                        {banner.title}
-                      </h2>
-                      {banner.subtitle && (
-                        <p 
-                          className="text-lg md:text-xl mb-6 opacity-90"
-                          style={{ color: banner.text_color || '#FFFFFF' }}
-                        >
-                          {banner.subtitle}
-                        </p>
-                      )}
-                      {banner.link && (
-                        <a
-                          href={banner.link}
-                          className="inline-block px-8 py-3 bg-orange-500 text-white font-semibold rounded-lg hover:bg-orange-600 transition-colors"
-                        >
-                          {banner.button_text || 'SHOP NOW'}
-                        </a>
-                      )}
+                  
+                  {/* Content (only if there's something to show) */}
+                  {hasContent && (
+                    <div className="absolute inset-0 flex items-center">
+                      <div className="max-w-7xl mx-auto px-4 w-full">
+                        <div className={`max-w-xl flex flex-col ${getTextAlignClasses(banner.text_position)}`}>
+                          {banner.show_title !== false && banner.title && (
+                            <h2 
+                              className="text-3xl md:text-5xl lg:text-6xl font-bold mb-4 leading-tight"
+                              style={{ color: banner.text_color || '#FFFFFF' }}
+                            >
+                              {banner.title}
+                            </h2>
+                          )}
+                          {banner.show_subtitle !== false && banner.subtitle && (
+                            <p 
+                              className="text-lg md:text-xl mb-6 opacity-90"
+                              style={{ color: banner.text_color || '#FFFFFF' }}
+                            >
+                              {banner.subtitle}
+                            </p>
+                          )}
+                          {banner.show_button && banner.button_text && banner.link && (
+                            <a
+                              href={banner.link}
+                              className={`inline-block px-8 py-3 font-semibold rounded-lg transition-colors ${getButtonClasses(banner.button_style)}`}
+                            >
+                              {banner.button_text}
+                            </a>
+                          )}
+                        </div>
+                      </div>
                     </div>
-                  </div>
+                  )}
+                  
+                  {/* Clickable area for image-only banners */}
+                  {!hasContent && banner.link && (
+                    <a href={banner.link} className="absolute inset-0" />
+                  )}
                 </div>
               </div>
-            </div>
-          ))}
+            );
+          })}
         </div>
       </div>
 
