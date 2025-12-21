@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import axios from 'axios';
 import {
   Search,
@@ -6,13 +6,29 @@ import {
   MoreVertical,
   Edit,
   Trash2,
-  Eye,
-  Copy,
   Grid,
   List,
-  Image as ImageIcon
+  X,
+  Save,
+  Copy,
+  Check,
+  ChevronDown,
+  ChevronRight,
+  Package,
+  DollarSign,
+  Barcode,
+  Tag,
+  Image as ImageIcon,
+  Box,
+  Truck,
+  Globe,
+  Eye,
+  Star,
+  Info,
+  Upload,
+  Code
 } from 'lucide-react';
-import { Card, CardContent } from '../../components/ui/card';
+import { Card, CardContent, CardHeader, CardTitle } from '../../components/ui/card';
 import { Button } from '../../components/ui/button';
 import {
   DropdownMenu,
@@ -20,13 +36,6 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from '../../components/ui/dropdown-menu';
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from '../../components/ui/dialog';
 import { Input } from '../../components/ui/input';
 import { Label } from '../../components/ui/label';
 import { Textarea } from '../../components/ui/textarea';
@@ -37,10 +46,923 @@ import {
   SelectTrigger,
   SelectValue,
 } from '../../components/ui/select';
+import { Switch } from '../../components/ui/switch';
+import {
+  Tabs,
+  TabsContent,
+  TabsList,
+  TabsTrigger,
+} from '../../components/ui/tabs';
 
 const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
 const API = `${BACKEND_URL}/api`;
 
+// Template Tag Display Component
+const TemplateTag = ({ tag, description }) => {
+  const [copied, setCopied] = useState(false);
+  
+  const copyTag = () => {
+    navigator.clipboard.writeText(tag);
+    setCopied(true);
+    setTimeout(() => setCopied(false), 2000);
+  };
+  
+  return (
+    <div className="flex items-center gap-2 py-1 group">
+      <button
+        onClick={copyTag}
+        className="flex items-center gap-1 px-2 py-1 bg-gray-800 hover:bg-gray-700 rounded text-xs font-mono text-emerald-400 transition-colors"
+        title="Click to copy"
+      >
+        {copied ? <Check size={12} /> : <Copy size={12} />}
+        <span>{tag}</span>
+      </button>
+      <span className="text-gray-500 text-xs">{description}</span>
+    </div>
+  );
+};
+
+// Product Editor Modal
+const ProductEditor = ({ product, categories, onSave, onClose, templateTags }) => {
+  const [formData, setFormData] = useState({
+    // Basic Info
+    name: '',
+    subtitle: '',
+    description: '',
+    short_description: '',
+    // Pricing
+    price: '',
+    compare_price: '',
+    cost_price: '',
+    tax_class: 'standard',
+    // Identification
+    sku: '',
+    barcode: '',
+    mpn: '',
+    // Categorization
+    category_id: '',
+    brand: '',
+    manufacturer: '',
+    tags: [],
+    // Images
+    images: [],
+    thumbnail: '',
+    // Inventory
+    stock: '',
+    low_stock_threshold: '10',
+    track_inventory: true,
+    allow_backorder: false,
+    // Shipping
+    weight: '',
+    length: '',
+    width: '',
+    height: '',
+    shipping_class: '',
+    requires_shipping: true,
+    // SEO
+    meta_title: '',
+    meta_description: '',
+    url_slug: '',
+    // Visibility
+    is_active: true,
+    is_featured: false,
+    visibility: 'visible',
+    // Custom
+    custom_fields: {},
+    ...product
+  });
+  
+  const [activeTab, setActiveTab] = useState('basic');
+  const [saving, setSaving] = useState(false);
+  const [newImageUrl, setNewImageUrl] = useState('');
+  const [newTag, setNewTag] = useState('');
+  const [showTagsPanel, setShowTagsPanel] = useState(false);
+  
+  useEffect(() => {
+    if (product) {
+      setFormData(prev => ({
+        ...prev,
+        ...product,
+        price: product.price?.toString() || '',
+        compare_price: product.compare_price?.toString() || '',
+        cost_price: product.cost_price?.toString() || '',
+        stock: product.stock?.toString() || '',
+        low_stock_threshold: product.low_stock_threshold?.toString() || '10',
+        weight: product.weight?.toString() || '',
+        length: product.length?.toString() || '',
+        width: product.width?.toString() || '',
+        height: product.height?.toString() || '',
+        tags: product.tags || [],
+        images: product.images || [],
+      }));
+    }
+  }, [product]);
+  
+  const handleChange = (field, value) => {
+    setFormData(prev => ({ ...prev, [field]: value }));
+  };
+  
+  const addImage = () => {
+    if (newImageUrl.trim()) {
+      setFormData(prev => ({
+        ...prev,
+        images: [...prev.images, newImageUrl.trim()]
+      }));
+      setNewImageUrl('');
+    }
+  };
+  
+  const removeImage = (index) => {
+    setFormData(prev => ({
+      ...prev,
+      images: prev.images.filter((_, i) => i !== index)
+    }));
+  };
+  
+  const addTag = () => {
+    if (newTag.trim() && !formData.tags.includes(newTag.trim())) {
+      setFormData(prev => ({
+        ...prev,
+        tags: [...prev.tags, newTag.trim()]
+      }));
+      setNewTag('');
+    }
+  };
+  
+  const removeTag = (tag) => {
+    setFormData(prev => ({
+      ...prev,
+      tags: prev.tags.filter(t => t !== tag)
+    }));
+  };
+  
+  const handleSave = async () => {
+    setSaving(true);
+    try {
+      const dataToSave = {
+        ...formData,
+        price: parseFloat(formData.price) || 0,
+        compare_price: formData.compare_price ? parseFloat(formData.compare_price) : null,
+        cost_price: formData.cost_price ? parseFloat(formData.cost_price) : null,
+        stock: parseInt(formData.stock) || 0,
+        low_stock_threshold: parseInt(formData.low_stock_threshold) || 10,
+        weight: formData.weight ? parseFloat(formData.weight) : null,
+        length: formData.length ? parseFloat(formData.length) : null,
+        width: formData.width ? parseFloat(formData.width) : null,
+        height: formData.height ? parseFloat(formData.height) : null,
+      };
+      await onSave(dataToSave);
+    } catch (error) {
+      console.error('Error saving product:', error);
+    } finally {
+      setSaving(false);
+    }
+  };
+  
+  const tabs = [
+    { id: 'basic', label: 'Basic Info', icon: Package },
+    { id: 'pricing', label: 'Pricing', icon: DollarSign },
+    { id: 'identification', label: 'SKU & Codes', icon: Barcode },
+    { id: 'categorization', label: 'Categories', icon: Tag },
+    { id: 'images', label: 'Images', icon: ImageIcon },
+    { id: 'inventory', label: 'Inventory', icon: Box },
+    { id: 'shipping', label: 'Shipping', icon: Truck },
+    { id: 'seo', label: 'SEO', icon: Globe },
+    { id: 'visibility', label: 'Visibility', icon: Eye },
+  ];
+
+  return (
+    <div className="fixed inset-0 bg-black/80 flex items-center justify-center z-50 p-4">
+      <div className="bg-[#151b28] border border-gray-800 rounded-xl w-full max-w-6xl max-h-[95vh] flex flex-col">
+        {/* Header */}
+        <div className="flex items-center justify-between p-4 border-b border-gray-800">
+          <div className="flex items-center gap-3">
+            <h2 className="text-xl font-semibold text-white">
+              {product?.id ? 'Edit Product' : 'Add New Product'}
+            </h2>
+            {product?.sku && (
+              <span className="px-2 py-1 bg-gray-800 rounded text-gray-400 text-sm">
+                SKU: {product.sku}
+              </span>
+            )}
+          </div>
+          <div className="flex items-center gap-2">
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={() => setShowTagsPanel(!showTagsPanel)}
+              className={`text-gray-400 hover:text-white ${showTagsPanel ? 'bg-gray-800' : ''}`}
+            >
+              <Code size={16} className="mr-2" />
+              Template Tags
+            </Button>
+            <Button variant="ghost" size="icon" onClick={onClose} className="text-gray-400 hover:text-white">
+              <X size={20} />
+            </Button>
+          </div>
+        </div>
+        
+        {/* Content */}
+        <div className="flex flex-1 overflow-hidden">
+          {/* Main Editor */}
+          <div className="flex-1 flex flex-col overflow-hidden">
+            {/* Tabs */}
+            <div className="flex border-b border-gray-800 px-4 overflow-x-auto">
+              {tabs.map(tab => (
+                <button
+                  key={tab.id}
+                  onClick={() => setActiveTab(tab.id)}
+                  className={`flex items-center gap-2 px-4 py-3 text-sm font-medium border-b-2 transition-colors whitespace-nowrap ${
+                    activeTab === tab.id
+                      ? 'text-emerald-400 border-emerald-400'
+                      : 'text-gray-400 border-transparent hover:text-white'
+                  }`}
+                >
+                  <tab.icon size={16} />
+                  {tab.label}
+                </button>
+              ))}
+            </div>
+            
+            {/* Tab Content */}
+            <div className="flex-1 overflow-y-auto p-6">
+              {/* Basic Info Tab */}
+              {activeTab === 'basic' && (
+                <div className="space-y-6 max-w-3xl">
+                  <div className="space-y-2">
+                    <Label className="text-gray-300 flex items-center gap-2">
+                      Product Name *
+                      <span className="text-xs text-gray-500 font-mono">[@product_name@]</span>
+                    </Label>
+                    <Input
+                      className="bg-gray-800/50 border-gray-700 text-white"
+                      placeholder="Enter product name"
+                      value={formData.name}
+                      onChange={(e) => handleChange('name', e.target.value)}
+                    />
+                  </div>
+                  
+                  <div className="space-y-2">
+                    <Label className="text-gray-300 flex items-center gap-2">
+                      Subtitle
+                      <span className="text-xs text-gray-500 font-mono">[@product_subtitle@]</span>
+                    </Label>
+                    <Input
+                      className="bg-gray-800/50 border-gray-700 text-white"
+                      placeholder="Product tagline or subtitle"
+                      value={formData.subtitle || ''}
+                      onChange={(e) => handleChange('subtitle', e.target.value)}
+                    />
+                  </div>
+                  
+                  <div className="space-y-2">
+                    <Label className="text-gray-300 flex items-center gap-2">
+                      Short Description
+                      <span className="text-xs text-gray-500 font-mono">[@product_short_description@]</span>
+                    </Label>
+                    <Textarea
+                      className="bg-gray-800/50 border-gray-700 text-white min-h-20"
+                      placeholder="Brief product summary (displayed in listings)"
+                      value={formData.short_description || ''}
+                      onChange={(e) => handleChange('short_description', e.target.value)}
+                    />
+                  </div>
+                  
+                  <div className="space-y-2">
+                    <Label className="text-gray-300 flex items-center gap-2">
+                      Full Description
+                      <span className="text-xs text-gray-500 font-mono">[@product_description@]</span>
+                    </Label>
+                    <Textarea
+                      className="bg-gray-800/50 border-gray-700 text-white min-h-40"
+                      placeholder="Detailed product description (HTML supported)"
+                      value={formData.description || ''}
+                      onChange={(e) => handleChange('description', e.target.value)}
+                    />
+                    <p className="text-xs text-gray-500">HTML tags are supported for formatting</p>
+                  </div>
+                </div>
+              )}
+              
+              {/* Pricing Tab */}
+              {activeTab === 'pricing' && (
+                <div className="space-y-6 max-w-3xl">
+                  <div className="grid grid-cols-2 gap-4">
+                    <div className="space-y-2">
+                      <Label className="text-gray-300 flex items-center gap-2">
+                        Selling Price *
+                        <span className="text-xs text-gray-500 font-mono">[@product_price@]</span>
+                      </Label>
+                      <div className="relative">
+                        <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500">$</span>
+                        <Input
+                          type="number"
+                          step="0.01"
+                          className="bg-gray-800/50 border-gray-700 text-white pl-7"
+                          placeholder="0.00"
+                          value={formData.price}
+                          onChange={(e) => handleChange('price', e.target.value)}
+                        />
+                      </div>
+                    </div>
+                    
+                    <div className="space-y-2">
+                      <Label className="text-gray-300 flex items-center gap-2">
+                        Compare Price (RRP)
+                        <span className="text-xs text-gray-500 font-mono">[@product_rrp@]</span>
+                      </Label>
+                      <div className="relative">
+                        <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500">$</span>
+                        <Input
+                          type="number"
+                          step="0.01"
+                          className="bg-gray-800/50 border-gray-700 text-white pl-7"
+                          placeholder="0.00"
+                          value={formData.compare_price || ''}
+                          onChange={(e) => handleChange('compare_price', e.target.value)}
+                        />
+                      </div>
+                      <p className="text-xs text-gray-500">If higher than selling price, product shows as "On Sale"</p>
+                    </div>
+                  </div>
+                  
+                  <div className="grid grid-cols-2 gap-4">
+                    <div className="space-y-2">
+                      <Label className="text-gray-300 flex items-center gap-2">
+                        Cost Price
+                        <span className="text-xs text-gray-500 font-mono">[@product_cost@]</span>
+                      </Label>
+                      <div className="relative">
+                        <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500">$</span>
+                        <Input
+                          type="number"
+                          step="0.01"
+                          className="bg-gray-800/50 border-gray-700 text-white pl-7"
+                          placeholder="0.00"
+                          value={formData.cost_price || ''}
+                          onChange={(e) => handleChange('cost_price', e.target.value)}
+                        />
+                      </div>
+                      <p className="text-xs text-gray-500">Your cost (not shown to customers)</p>
+                    </div>
+                    
+                    <div className="space-y-2">
+                      <Label className="text-gray-300 flex items-center gap-2">
+                        Tax Class
+                        <span className="text-xs text-gray-500 font-mono">[@product_tax_class@]</span>
+                      </Label>
+                      <Select value={formData.tax_class} onValueChange={(v) => handleChange('tax_class', v)}>
+                        <SelectTrigger className="bg-gray-800/50 border-gray-700 text-gray-300">
+                          <SelectValue />
+                        </SelectTrigger>
+                        <SelectContent className="bg-[#1a1f2e] border-gray-700">
+                          <SelectItem value="standard" className="text-gray-300">Standard Rate</SelectItem>
+                          <SelectItem value="reduced" className="text-gray-300">Reduced Rate</SelectItem>
+                          <SelectItem value="zero" className="text-gray-300">Zero Rate</SelectItem>
+                          <SelectItem value="exempt" className="text-gray-300">Tax Exempt</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
+                  </div>
+                  
+                  {formData.price && formData.compare_price && parseFloat(formData.compare_price) > parseFloat(formData.price) && (
+                    <div className="p-4 bg-emerald-500/10 border border-emerald-500/30 rounded-lg">
+                      <p className="text-emerald-400 text-sm flex items-center gap-2">
+                        <Tag size={16} />
+                        This product will display as "On Sale" with {Math.round((1 - parseFloat(formData.price) / parseFloat(formData.compare_price)) * 100)}% off
+                      </p>
+                    </div>
+                  )}
+                </div>
+              )}
+              
+              {/* Identification Tab */}
+              {activeTab === 'identification' && (
+                <div className="space-y-6 max-w-3xl">
+                  <div className="space-y-2">
+                    <Label className="text-gray-300 flex items-center gap-2">
+                      SKU (Stock Keeping Unit) *
+                      <span className="text-xs text-gray-500 font-mono">[@product_sku@]</span>
+                    </Label>
+                    <Input
+                      className="bg-gray-800/50 border-gray-700 text-white"
+                      placeholder="e.g., PROD-001"
+                      value={formData.sku}
+                      onChange={(e) => handleChange('sku', e.target.value)}
+                    />
+                    <p className="text-xs text-gray-500">Unique identifier for your inventory system</p>
+                  </div>
+                  
+                  <div className="space-y-2">
+                    <Label className="text-gray-300 flex items-center gap-2">
+                      Barcode / UPC / EAN
+                      <span className="text-xs text-gray-500 font-mono">[@product_barcode@]</span>
+                    </Label>
+                    <Input
+                      className="bg-gray-800/50 border-gray-700 text-white"
+                      placeholder="e.g., 012345678901"
+                      value={formData.barcode || ''}
+                      onChange={(e) => handleChange('barcode', e.target.value)}
+                    />
+                  </div>
+                  
+                  <div className="space-y-2">
+                    <Label className="text-gray-300 flex items-center gap-2">
+                      MPN (Manufacturer Part Number)
+                      <span className="text-xs text-gray-500 font-mono">[@product_mpn@]</span>
+                    </Label>
+                    <Input
+                      className="bg-gray-800/50 border-gray-700 text-white"
+                      placeholder="Manufacturer's product code"
+                      value={formData.mpn || ''}
+                      onChange={(e) => handleChange('mpn', e.target.value)}
+                    />
+                  </div>
+                </div>
+              )}
+              
+              {/* Categorization Tab */}
+              {activeTab === 'categorization' && (
+                <div className="space-y-6 max-w-3xl">
+                  <div className="space-y-2">
+                    <Label className="text-gray-300 flex items-center gap-2">
+                      Category
+                      <span className="text-xs text-gray-500 font-mono">[@product_category@]</span>
+                    </Label>
+                    <Select value={formData.category_id || ''} onValueChange={(v) => handleChange('category_id', v)}>
+                      <SelectTrigger className="bg-gray-800/50 border-gray-700 text-gray-300">
+                        <SelectValue placeholder="Select category" />
+                      </SelectTrigger>
+                      <SelectContent className="bg-[#1a1f2e] border-gray-700">
+                        <SelectItem value="" className="text-gray-300">No Category</SelectItem>
+                        {categories.map(cat => (
+                          <SelectItem key={cat.id} value={cat.id} className="text-gray-300">{cat.name}</SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  
+                  <div className="space-y-2">
+                    <Label className="text-gray-300 flex items-center gap-2">
+                      Brand
+                      <span className="text-xs text-gray-500 font-mono">[@product_brand@]</span>
+                    </Label>
+                    <Input
+                      className="bg-gray-800/50 border-gray-700 text-white"
+                      placeholder="Brand name"
+                      value={formData.brand || ''}
+                      onChange={(e) => handleChange('brand', e.target.value)}
+                    />
+                  </div>
+                  
+                  <div className="space-y-2">
+                    <Label className="text-gray-300 flex items-center gap-2">
+                      Manufacturer
+                      <span className="text-xs text-gray-500 font-mono">[@product_manufacturer@]</span>
+                    </Label>
+                    <Input
+                      className="bg-gray-800/50 border-gray-700 text-white"
+                      placeholder="Manufacturer name"
+                      value={formData.manufacturer || ''}
+                      onChange={(e) => handleChange('manufacturer', e.target.value)}
+                    />
+                  </div>
+                  
+                  <div className="space-y-2">
+                    <Label className="text-gray-300 flex items-center gap-2">
+                      Tags
+                      <span className="text-xs text-gray-500 font-mono">[@product_tags@]</span>
+                    </Label>
+                    <div className="flex gap-2">
+                      <Input
+                        className="bg-gray-800/50 border-gray-700 text-white flex-1"
+                        placeholder="Add a tag"
+                        value={newTag}
+                        onChange={(e) => setNewTag(e.target.value)}
+                        onKeyPress={(e) => e.key === 'Enter' && (e.preventDefault(), addTag())}
+                      />
+                      <Button onClick={addTag} variant="outline" className="border-gray-700 text-gray-300">
+                        Add
+                      </Button>
+                    </div>
+                    {formData.tags.length > 0 && (
+                      <div className="flex flex-wrap gap-2 mt-2">
+                        {formData.tags.map(tag => (
+                          <span key={tag} className="flex items-center gap-1 px-2 py-1 bg-gray-800 rounded text-sm text-gray-300">
+                            {tag}
+                            <button onClick={() => removeTag(tag)} className="hover:text-red-400">
+                              <X size={14} />
+                            </button>
+                          </span>
+                        ))}
+                      </div>
+                    )}
+                  </div>
+                </div>
+              )}
+              
+              {/* Images Tab */}
+              {activeTab === 'images' && (
+                <div className="space-y-6 max-w-3xl">
+                  <div className="space-y-2">
+                    <Label className="text-gray-300 flex items-center gap-2">
+                      Product Images
+                      <span className="text-xs text-gray-500 font-mono">[@product_image@]</span>
+                    </Label>
+                    <div className="flex gap-2">
+                      <Input
+                        className="bg-gray-800/50 border-gray-700 text-white flex-1"
+                        placeholder="Enter image URL"
+                        value={newImageUrl}
+                        onChange={(e) => setNewImageUrl(e.target.value)}
+                        onKeyPress={(e) => e.key === 'Enter' && (e.preventDefault(), addImage())}
+                      />
+                      <Button onClick={addImage} variant="outline" className="border-gray-700 text-gray-300">
+                        <Plus size={16} className="mr-2" /> Add
+                      </Button>
+                    </div>
+                    
+                    {formData.images.length > 0 ? (
+                      <div className="grid grid-cols-4 gap-4 mt-4">
+                        {formData.images.map((img, idx) => (
+                          <div key={idx} className="relative group aspect-square bg-gray-800 rounded-lg overflow-hidden">
+                            <img src={img} alt={`Product ${idx + 1}`} className="w-full h-full object-cover" />
+                            <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-2">
+                              <button
+                                onClick={() => removeImage(idx)}
+                                className="p-2 bg-red-500 rounded-full text-white hover:bg-red-600"
+                              >
+                                <Trash2 size={16} />
+                              </button>
+                            </div>
+                            {idx === 0 && (
+                              <span className="absolute top-2 left-2 px-2 py-0.5 bg-emerald-500 text-white text-xs rounded">
+                                Primary
+                              </span>
+                            )}
+                          </div>
+                        ))}
+                      </div>
+                    ) : (
+                      <div className="mt-4 p-8 border-2 border-dashed border-gray-700 rounded-lg text-center">
+                        <ImageIcon className="w-12 h-12 mx-auto text-gray-600 mb-2" />
+                        <p className="text-gray-500">No images added yet</p>
+                        <p className="text-gray-600 text-sm">Add image URLs above</p>
+                      </div>
+                    )}
+                  </div>
+                  
+                  <div className="space-y-2">
+                    <Label className="text-gray-300 flex items-center gap-2">
+                      Thumbnail URL
+                      <span className="text-xs text-gray-500 font-mono">[@product_thumbnail@]</span>
+                    </Label>
+                    <Input
+                      className="bg-gray-800/50 border-gray-700 text-white"
+                      placeholder="Custom thumbnail URL (optional)"
+                      value={formData.thumbnail || ''}
+                      onChange={(e) => handleChange('thumbnail', e.target.value)}
+                    />
+                    <p className="text-xs text-gray-500">Leave empty to use first product image</p>
+                  </div>
+                </div>
+              )}
+              
+              {/* Inventory Tab */}
+              {activeTab === 'inventory' && (
+                <div className="space-y-6 max-w-3xl">
+                  <div className="flex items-center justify-between p-4 bg-gray-800/30 rounded-lg">
+                    <div>
+                      <Label className="text-gray-300">Track Inventory</Label>
+                      <p className="text-xs text-gray-500">Enable stock tracking for this product</p>
+                    </div>
+                    <Switch
+                      checked={formData.track_inventory}
+                      onCheckedChange={(v) => handleChange('track_inventory', v)}
+                    />
+                  </div>
+                  
+                  {formData.track_inventory && (
+                    <>
+                      <div className="grid grid-cols-2 gap-4">
+                        <div className="space-y-2">
+                          <Label className="text-gray-300 flex items-center gap-2">
+                            Stock Quantity
+                            <span className="text-xs text-gray-500 font-mono">[@product_stock@]</span>
+                          </Label>
+                          <Input
+                            type="number"
+                            className="bg-gray-800/50 border-gray-700 text-white"
+                            placeholder="0"
+                            value={formData.stock}
+                            onChange={(e) => handleChange('stock', e.target.value)}
+                          />
+                        </div>
+                        
+                        <div className="space-y-2">
+                          <Label className="text-gray-300 flex items-center gap-2">
+                            Low Stock Alert
+                            <span className="text-xs text-gray-500 font-mono">[@product_low_stock@]</span>
+                          </Label>
+                          <Input
+                            type="number"
+                            className="bg-gray-800/50 border-gray-700 text-white"
+                            placeholder="10"
+                            value={formData.low_stock_threshold}
+                            onChange={(e) => handleChange('low_stock_threshold', e.target.value)}
+                          />
+                        </div>
+                      </div>
+                      
+                      <div className="flex items-center justify-between p-4 bg-gray-800/30 rounded-lg">
+                        <div>
+                          <Label className="text-gray-300">Allow Backorders</Label>
+                          <p className="text-xs text-gray-500">Allow orders when out of stock</p>
+                        </div>
+                        <Switch
+                          checked={formData.allow_backorder}
+                          onCheckedChange={(v) => handleChange('allow_backorder', v)}
+                        />
+                      </div>
+                    </>
+                  )}
+                </div>
+              )}
+              
+              {/* Shipping Tab */}
+              {activeTab === 'shipping' && (
+                <div className="space-y-6 max-w-3xl">
+                  <div className="flex items-center justify-between p-4 bg-gray-800/30 rounded-lg">
+                    <div>
+                      <Label className="text-gray-300">Requires Shipping</Label>
+                      <p className="text-xs text-gray-500">This is a physical product that needs to be shipped</p>
+                    </div>
+                    <Switch
+                      checked={formData.requires_shipping}
+                      onCheckedChange={(v) => handleChange('requires_shipping', v)}
+                    />
+                  </div>
+                  
+                  {formData.requires_shipping && (
+                    <>
+                      <div className="space-y-2">
+                        <Label className="text-gray-300 flex items-center gap-2">
+                          Weight (kg)
+                          <span className="text-xs text-gray-500 font-mono">[@product_weight@]</span>
+                        </Label>
+                        <Input
+                          type="number"
+                          step="0.01"
+                          className="bg-gray-800/50 border-gray-700 text-white"
+                          placeholder="0.00"
+                          value={formData.weight || ''}
+                          onChange={(e) => handleChange('weight', e.target.value)}
+                        />
+                      </div>
+                      
+                      <div className="grid grid-cols-3 gap-4">
+                        <div className="space-y-2">
+                          <Label className="text-gray-300 flex items-center gap-2">
+                            Length (cm)
+                            <span className="text-xs text-gray-500 font-mono">[@product_length@]</span>
+                          </Label>
+                          <Input
+                            type="number"
+                            step="0.1"
+                            className="bg-gray-800/50 border-gray-700 text-white"
+                            placeholder="0"
+                            value={formData.length || ''}
+                            onChange={(e) => handleChange('length', e.target.value)}
+                          />
+                        </div>
+                        <div className="space-y-2">
+                          <Label className="text-gray-300 flex items-center gap-2">
+                            Width (cm)
+                            <span className="text-xs text-gray-500 font-mono">[@product_width@]</span>
+                          </Label>
+                          <Input
+                            type="number"
+                            step="0.1"
+                            className="bg-gray-800/50 border-gray-700 text-white"
+                            placeholder="0"
+                            value={formData.width || ''}
+                            onChange={(e) => handleChange('width', e.target.value)}
+                          />
+                        </div>
+                        <div className="space-y-2">
+                          <Label className="text-gray-300 flex items-center gap-2">
+                            Height (cm)
+                            <span className="text-xs text-gray-500 font-mono">[@product_height@]</span>
+                          </Label>
+                          <Input
+                            type="number"
+                            step="0.1"
+                            className="bg-gray-800/50 border-gray-700 text-white"
+                            placeholder="0"
+                            value={formData.height || ''}
+                            onChange={(e) => handleChange('height', e.target.value)}
+                          />
+                        </div>
+                      </div>
+                      
+                      <div className="space-y-2">
+                        <Label className="text-gray-300 flex items-center gap-2">
+                          Shipping Class
+                          <span className="text-xs text-gray-500 font-mono">[@product_shipping_class@]</span>
+                        </Label>
+                        <Select value={formData.shipping_class || ''} onValueChange={(v) => handleChange('shipping_class', v)}>
+                          <SelectTrigger className="bg-gray-800/50 border-gray-700 text-gray-300">
+                            <SelectValue placeholder="Select shipping class" />
+                          </SelectTrigger>
+                          <SelectContent className="bg-[#1a1f2e] border-gray-700">
+                            <SelectItem value="" className="text-gray-300">Default</SelectItem>
+                            <SelectItem value="standard" className="text-gray-300">Standard Shipping</SelectItem>
+                            <SelectItem value="express" className="text-gray-300">Express Shipping</SelectItem>
+                            <SelectItem value="freight" className="text-gray-300">Freight / Heavy Items</SelectItem>
+                            <SelectItem value="free" className="text-gray-300">Free Shipping</SelectItem>
+                          </SelectContent>
+                        </Select>
+                      </div>
+                    </>
+                  )}
+                </div>
+              )}
+              
+              {/* SEO Tab */}
+              {activeTab === 'seo' && (
+                <div className="space-y-6 max-w-3xl">
+                  <div className="space-y-2">
+                    <Label className="text-gray-300 flex items-center gap-2">
+                      URL Slug
+                      <span className="text-xs text-gray-500 font-mono">[@product_url@]</span>
+                    </Label>
+                    <div className="flex items-center gap-2">
+                      <span className="text-gray-500">/live/product/</span>
+                      <Input
+                        className="bg-gray-800/50 border-gray-700 text-white flex-1"
+                        placeholder="product-url-slug"
+                        value={formData.url_slug || ''}
+                        onChange={(e) => handleChange('url_slug', e.target.value)}
+                      />
+                    </div>
+                    <p className="text-xs text-gray-500">Leave empty to auto-generate from product name</p>
+                  </div>
+                  
+                  <div className="space-y-2">
+                    <Label className="text-gray-300 flex items-center gap-2">
+                      Meta Title
+                      <span className="text-xs text-gray-500 font-mono">[@product_meta_title@]</span>
+                    </Label>
+                    <Input
+                      className="bg-gray-800/50 border-gray-700 text-white"
+                      placeholder="SEO page title (defaults to product name)"
+                      value={formData.meta_title || ''}
+                      onChange={(e) => handleChange('meta_title', e.target.value)}
+                    />
+                    <p className="text-xs text-gray-500">{formData.meta_title?.length || 0}/60 characters recommended</p>
+                  </div>
+                  
+                  <div className="space-y-2">
+                    <Label className="text-gray-300 flex items-center gap-2">
+                      Meta Description
+                      <span className="text-xs text-gray-500 font-mono">[@product_meta_description@]</span>
+                    </Label>
+                    <Textarea
+                      className="bg-gray-800/50 border-gray-700 text-white min-h-24"
+                      placeholder="SEO description for search engines"
+                      value={formData.meta_description || ''}
+                      onChange={(e) => handleChange('meta_description', e.target.value)}
+                    />
+                    <p className="text-xs text-gray-500">{formData.meta_description?.length || 0}/160 characters recommended</p>
+                  </div>
+                  
+                  {/* SEO Preview */}
+                  <div className="p-4 bg-gray-800/30 rounded-lg">
+                    <p className="text-xs text-gray-500 mb-2">Search Engine Preview</p>
+                    <p className="text-blue-400 text-lg hover:underline cursor-pointer">
+                      {formData.meta_title || formData.name || 'Product Title'}
+                    </p>
+                    <p className="text-emerald-500 text-sm">
+                      yourstore.com/live/product/{formData.url_slug || formData.name?.toLowerCase().replace(/\s+/g, '-') || 'product-slug'}
+                    </p>
+                    <p className="text-gray-400 text-sm mt-1">
+                      {formData.meta_description || formData.short_description || 'Product description will appear here...'}
+                    </p>
+                  </div>
+                </div>
+              )}
+              
+              {/* Visibility Tab */}
+              {activeTab === 'visibility' && (
+                <div className="space-y-6 max-w-3xl">
+                  <div className="flex items-center justify-between p-4 bg-gray-800/30 rounded-lg">
+                    <div>
+                      <Label className="text-gray-300 flex items-center gap-2">
+                        Active
+                        <span className="text-xs text-gray-500 font-mono">[@product_active@]</span>
+                      </Label>
+                      <p className="text-xs text-gray-500">Product is available for purchase</p>
+                    </div>
+                    <Switch
+                      checked={formData.is_active}
+                      onCheckedChange={(v) => handleChange('is_active', v)}
+                    />
+                  </div>
+                  
+                  <div className="flex items-center justify-between p-4 bg-gray-800/30 rounded-lg">
+                    <div>
+                      <Label className="text-gray-300 flex items-center gap-2">
+                        Featured
+                        <span className="text-xs text-gray-500 font-mono">[@product_featured@]</span>
+                      </Label>
+                      <p className="text-xs text-gray-500">Show in featured products section</p>
+                    </div>
+                    <Switch
+                      checked={formData.is_featured}
+                      onCheckedChange={(v) => handleChange('is_featured', v)}
+                    />
+                  </div>
+                  
+                  <div className="space-y-2">
+                    <Label className="text-gray-300 flex items-center gap-2">
+                      Visibility
+                      <span className="text-xs text-gray-500 font-mono">[@product_visibility@]</span>
+                    </Label>
+                    <Select value={formData.visibility} onValueChange={(v) => handleChange('visibility', v)}>
+                      <SelectTrigger className="bg-gray-800/50 border-gray-700 text-gray-300">
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent className="bg-[#1a1f2e] border-gray-700">
+                        <SelectItem value="visible" className="text-gray-300">Visible - Show everywhere</SelectItem>
+                        <SelectItem value="hidden" className="text-gray-300">Hidden - Only accessible via direct link</SelectItem>
+                        <SelectItem value="search_only" className="text-gray-300">Search Only - Show in search results only</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                </div>
+              )}
+            </div>
+          </div>
+          
+          {/* Template Tags Panel */}
+          {showTagsPanel && (
+            <div className="w-80 border-l border-gray-800 overflow-y-auto bg-gray-900/50">
+              <div className="p-4 border-b border-gray-800">
+                <h3 className="text-white font-medium flex items-center gap-2">
+                  <Code size={16} />
+                  Template Tags Reference
+                </h3>
+                <p className="text-xs text-gray-500 mt-1">Click any tag to copy it to clipboard</p>
+              </div>
+              <div className="p-4 space-y-4">
+                {templateTags && Object.entries(templateTags).map(([key, section]) => (
+                  <div key={key} className="space-y-2">
+                    <h4 className="text-sm font-medium text-gray-300">{section.title}</h4>
+                    <div className="space-y-1">
+                      {section.tags.map((tag, idx) => (
+                        <TemplateTag key={idx} tag={tag.tag} description={tag.description} />
+                      ))}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+        </div>
+        
+        {/* Footer */}
+        <div className="flex items-center justify-between p-4 border-t border-gray-800">
+          <div className="text-sm text-gray-500">
+            {product?.id && (
+              <>Last updated: {new Date(product.updated_at).toLocaleString()}</>
+            )}
+          </div>
+          <div className="flex items-center gap-3">
+            <Button variant="ghost" onClick={onClose} className="text-gray-400 hover:text-white">
+              Cancel
+            </Button>
+            <Button
+              onClick={handleSave}
+              disabled={!formData.name || !formData.price || !formData.sku || saving}
+              className="bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-600 hover:to-teal-700 text-white"
+            >
+              {saving ? (
+                <>Saving...</>
+              ) : (
+                <>
+                  <Save size={16} className="mr-2" />
+                  {product?.id ? 'Update Product' : 'Create Product'}
+                </>
+              )}
+            </Button>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+// Main Products Page
 const MerchantProducts = () => {
   const [products, setProducts] = useState([]);
   const [categories, setCategories] = useState([]);
@@ -48,20 +970,13 @@ const MerchantProducts = () => {
   const [searchQuery, setSearchQuery] = useState('');
   const [categoryFilter, setCategoryFilter] = useState('all');
   const [viewMode, setViewMode] = useState('grid');
-  const [isAddModalOpen, setIsAddModalOpen] = useState(false);
-  const [newProduct, setNewProduct] = useState({
-    name: '',
-    description: '',
-    price: '',
-    compare_price: '',
-    sku: '',
-    category_id: '',
-    stock: '',
-    images: []
-  });
+  const [editingProduct, setEditingProduct] = useState(null);
+  const [isEditorOpen, setIsEditorOpen] = useState(false);
+  const [templateTags, setTemplateTags] = useState(null);
 
   useEffect(() => {
     fetchData();
+    fetchTemplateTags();
   }, [categoryFilter]);
 
   const fetchData = async () => {
@@ -84,22 +999,39 @@ const MerchantProducts = () => {
     }
   };
 
-  const handleCreateProduct = async () => {
+  const fetchTemplateTags = async () => {
     try {
-      const productData = {
-        ...newProduct,
-        price: parseFloat(newProduct.price) || 0,
-        compare_price: newProduct.compare_price ? parseFloat(newProduct.compare_price) : null,
-        stock: parseInt(newProduct.stock) || 0,
-        images: newProduct.images.length > 0 ? newProduct.images : ['https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=500']
-      };
-      await axios.post(`${API}/products`, productData);
-      setIsAddModalOpen(false);
-      setNewProduct({ name: '', description: '', price: '', compare_price: '', sku: '', category_id: '', stock: '', images: [] });
+      const res = await axios.get(`${API}/products/template-tags`);
+      setTemplateTags(res.data);
+    } catch (error) {
+      console.error('Error fetching template tags:', error);
+    }
+  };
+
+  const handleSaveProduct = async (productData) => {
+    try {
+      if (editingProduct?.id) {
+        await axios.put(`${API}/products/${editingProduct.id}`, productData);
+      } else {
+        await axios.post(`${API}/products`, productData);
+      }
+      setIsEditorOpen(false);
+      setEditingProduct(null);
       fetchData();
     } catch (error) {
-      console.error('Error creating product:', error);
+      console.error('Error saving product:', error);
+      throw error;
     }
+  };
+
+  const handleEditProduct = (product) => {
+    setEditingProduct(product);
+    setIsEditorOpen(true);
+  };
+
+  const handleAddProduct = () => {
+    setEditingProduct(null);
+    setIsEditorOpen(true);
   };
 
   const handleDeleteProduct = async (productId) => {
@@ -123,13 +1055,14 @@ const MerchantProducts = () => {
 
   const getStatusColor = (product) => {
     if (product.stock === 0) return 'bg-red-500/20 text-red-400';
-    if (product.stock <= 10) return 'bg-yellow-500/20 text-yellow-400';
+    if (product.stock <= (product.low_stock_threshold || 10)) return 'bg-yellow-500/20 text-yellow-400';
     return 'bg-emerald-500/20 text-emerald-400';
   };
 
   const filteredProducts = products.filter(product => {
     const matchesSearch = product.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      product.sku.toLowerCase().includes(searchQuery.toLowerCase());
+      product.sku?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      product.brand?.toLowerCase().includes(searchQuery.toLowerCase());
     return matchesSearch;
   });
 
@@ -175,116 +1108,13 @@ const MerchantProducts = () => {
               <List size={18} />
             </button>
           </div>
-          <Dialog open={isAddModalOpen} onOpenChange={setIsAddModalOpen}>
-            <DialogTrigger asChild>
-              <Button className="bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-600 hover:to-teal-700 text-white">
-                <Plus size={18} className="mr-2" />
-                Add Product
-              </Button>
-            </DialogTrigger>
-            <DialogContent className="bg-[#151b28] border-gray-800 text-white max-w-2xl max-h-[90vh] overflow-y-auto">
-              <DialogHeader>
-                <DialogTitle className="text-xl font-semibold">Add New Product</DialogTitle>
-              </DialogHeader>
-              <div className="space-y-4 mt-4">
-                <div className="space-y-2">
-                  <Label className="text-gray-300">Product Name *</Label>
-                  <Input 
-                    className="bg-gray-800/50 border-gray-700 text-white" 
-                    placeholder="Enter product name"
-                    value={newProduct.name}
-                    onChange={(e) => setNewProduct({...newProduct, name: e.target.value})}
-                  />
-                </div>
-                <div className="space-y-2">
-                  <Label className="text-gray-300">Description</Label>
-                  <Textarea 
-                    className="bg-gray-800/50 border-gray-700 text-white min-h-24" 
-                    placeholder="Enter product description"
-                    value={newProduct.description}
-                    onChange={(e) => setNewProduct({...newProduct, description: e.target.value})}
-                  />
-                </div>
-                <div className="grid grid-cols-2 gap-4">
-                  <div className="space-y-2">
-                    <Label className="text-gray-300">Price *</Label>
-                    <Input 
-                      type="number" 
-                      className="bg-gray-800/50 border-gray-700 text-white" 
-                      placeholder="0.00"
-                      value={newProduct.price}
-                      onChange={(e) => setNewProduct({...newProduct, price: e.target.value})}
-                    />
-                  </div>
-                  <div className="space-y-2">
-                    <Label className="text-gray-300">Compare Price (RRP)</Label>
-                    <Input 
-                      type="number" 
-                      className="bg-gray-800/50 border-gray-700 text-white" 
-                      placeholder="0.00"
-                      value={newProduct.compare_price}
-                      onChange={(e) => setNewProduct({...newProduct, compare_price: e.target.value})}
-                    />
-                  </div>
-                </div>
-                <div className="grid grid-cols-2 gap-4">
-                  <div className="space-y-2">
-                    <Label className="text-gray-300">Category</Label>
-                    <Select value={newProduct.category_id} onValueChange={(val) => setNewProduct({...newProduct, category_id: val})}>
-                      <SelectTrigger className="bg-gray-800/50 border-gray-700 text-gray-300">
-                        <SelectValue placeholder="Select category" />
-                      </SelectTrigger>
-                      <SelectContent className="bg-[#1a1f2e] border-gray-700">
-                        {categories.map(cat => (
-                          <SelectItem key={cat.id} value={cat.id} className="text-gray-300">{cat.name}</SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                  </div>
-                  <div className="space-y-2">
-                    <Label className="text-gray-300">SKU *</Label>
-                    <Input 
-                      className="bg-gray-800/50 border-gray-700 text-white" 
-                      placeholder="SKU-001"
-                      value={newProduct.sku}
-                      onChange={(e) => setNewProduct({...newProduct, sku: e.target.value})}
-                    />
-                  </div>
-                </div>
-                <div className="space-y-2">
-                  <Label className="text-gray-300">Stock Quantity *</Label>
-                  <Input 
-                    type="number" 
-                    className="bg-gray-800/50 border-gray-700 text-white" 
-                    placeholder="0"
-                    value={newProduct.stock}
-                    onChange={(e) => setNewProduct({...newProduct, stock: e.target.value})}
-                  />
-                </div>
-                <div className="space-y-2">
-                  <Label className="text-gray-300">Image URL</Label>
-                  <Input 
-                    className="bg-gray-800/50 border-gray-700 text-white" 
-                    placeholder="https://example.com/image.jpg"
-                    value={newProduct.images[0] || ''}
-                    onChange={(e) => setNewProduct({...newProduct, images: [e.target.value]})}
-                  />
-                </div>
-                <div className="flex justify-end gap-3 mt-6">
-                  <Button variant="ghost" onClick={() => setIsAddModalOpen(false)} className="text-gray-400 hover:text-white hover:bg-gray-800">
-                    Cancel
-                  </Button>
-                  <Button 
-                    onClick={handleCreateProduct}
-                    disabled={!newProduct.name || !newProduct.price || !newProduct.sku}
-                    className="bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-600 hover:to-teal-700 text-white"
-                  >
-                    Create Product
-                  </Button>
-                </div>
-              </div>
-            </DialogContent>
-          </Dialog>
+          <Button 
+            onClick={handleAddProduct}
+            className="bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-600 hover:to-teal-700 text-white"
+          >
+            <Plus size={18} className="mr-2" />
+            Add Product
+          </Button>
         </div>
       </div>
 
@@ -319,7 +1149,10 @@ const MerchantProducts = () => {
                       </button>
                     </DropdownMenuTrigger>
                     <DropdownMenuContent align="end" className="bg-[#1a1f2e] border-gray-700">
-                      <DropdownMenuItem className="text-gray-300 hover:text-white hover:bg-gray-700/50 cursor-pointer">
+                      <DropdownMenuItem 
+                        className="text-gray-300 hover:text-white hover:bg-gray-700/50 cursor-pointer"
+                        onClick={() => handleEditProduct(product)}
+                      >
                         <Edit size={16} className="mr-2" /> Edit
                       </DropdownMenuItem>
                       <DropdownMenuItem 
@@ -336,10 +1169,16 @@ const MerchantProducts = () => {
                     Sale
                   </span>
                 )}
+                {product.is_featured && (
+                  <span className="absolute top-3 left-3 px-2 py-1 bg-yellow-500 text-black text-xs font-medium rounded flex items-center gap-1">
+                    <Star size={12} /> Featured
+                  </span>
+                )}
               </div>
               <CardContent className="p-4">
                 <p className="text-gray-500 text-xs mb-1">{product.sku}</p>
                 <h3 className="text-white font-medium text-sm line-clamp-2 mb-2">{product.name}</h3>
+                {product.brand && <p className="text-gray-500 text-xs mb-2">{product.brand}</p>}
                 <div className="flex items-center gap-2 mb-3">
                   <span className="text-emerald-400 font-bold">{formatCurrency(product.price)}</span>
                   {product.compare_price && product.compare_price > product.price && (
@@ -407,7 +1246,10 @@ const MerchantProducts = () => {
                             </button>
                           </DropdownMenuTrigger>
                           <DropdownMenuContent align="end" className="bg-[#1a1f2e] border-gray-700">
-                            <DropdownMenuItem className="text-gray-300 hover:text-white hover:bg-gray-700/50 cursor-pointer">
+                            <DropdownMenuItem 
+                              className="text-gray-300 hover:text-white hover:bg-gray-700/50 cursor-pointer"
+                              onClick={() => handleEditProduct(product)}
+                            >
                               <Edit size={16} className="mr-2" /> Edit
                             </DropdownMenuItem>
                             <DropdownMenuItem 
@@ -430,8 +1272,30 @@ const MerchantProducts = () => {
 
       {!loading && filteredProducts.length === 0 && (
         <div className="text-center py-16 bg-[#151b28] rounded-lg border border-gray-800">
+          <Package className="w-12 h-12 mx-auto text-gray-600 mb-4" />
           <p className="text-gray-500 text-lg">No products found</p>
+          <Button 
+            onClick={handleAddProduct}
+            className="mt-4 bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-600 hover:to-teal-700 text-white"
+          >
+            <Plus size={18} className="mr-2" />
+            Add Your First Product
+          </Button>
         </div>
+      )}
+
+      {/* Product Editor Modal */}
+      {isEditorOpen && (
+        <ProductEditor
+          product={editingProduct}
+          categories={categories}
+          templateTags={templateTags}
+          onSave={handleSaveProduct}
+          onClose={() => {
+            setIsEditorOpen(false);
+            setEditingProduct(null);
+          }}
+        />
       )}
     </div>
   );
