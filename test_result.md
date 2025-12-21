@@ -88,3 +88,5 @@ agent_communication:
     - message: "Admin Dashboard backend fully implemented. All API endpoints working. Frontend integrated with real data. Merchants and Users pages now use backend APIs instead of mock data."
     - agent: "fork-main"
     - message: "Completed toolsinabox theme. The theme now fully replicates the /store React design with: header with TIB logo, hero banner, trust badges, popular categories, featured products grid, sale banner, about section, features bar, and complete footer. Theme is active and accessible at /live. All files visible in Theme Editor."
+    - agent: "fork-main-2"
+    - message: "Implemented full Maropost-style template rendering engine. Features: layout wrapper selection (default/checkout/print/empty), page template selection based on routing, include directive processing, data binding with [@tag@] and [%loop%] tags, conditional processing [%if%], template caching, debug headers. New theme structure with template.html wrapper, headers/includes/head.template.html, separate checkout/print/empty wrappers. All acceptance tests passing."
