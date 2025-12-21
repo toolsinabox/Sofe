@@ -1,7 +1,10 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import axios from 'axios';
 import { useDropzone } from 'react-dropzone';
-import { Plus, Edit, Trash2, Image, Upload, X, Eye, EyeOff, GripVertical } from 'lucide-react';
+import { 
+  Plus, Edit, Trash2, Image, Upload, X, Eye, EyeOff, GripVertical,
+  Monitor, Tablet, Smartphone, Check
+} from 'lucide-react';
 import { Button } from '../../components/ui/button';
 import { Input } from '../../components/ui/input';
 import { Label } from '../../components/ui/label';
@@ -18,7 +21,12 @@ const MerchantBanners = () => {
   const [formData, setFormData] = useState({
     title: '',
     subtitle: '',
-    image: '',
+    image_desktop: '',
+    image_tablet: '',
+    image_mobile: '',
+    show_on_desktop: true,
+    show_on_tablet: true,
+    show_on_mobile: true,
     link: '',
     button_text: 'Shop Now',
     text_color: '#FFFFFF',
@@ -26,7 +34,8 @@ const MerchantBanners = () => {
     is_active: true,
     sort_order: 0
   });
-  const [uploading, setUploading] = useState(false);
+  const [uploading, setUploading] = useState({ desktop: false, tablet: false, mobile: false });
+  const [activeTab, setActiveTab] = useState('desktop');
 
   useEffect(() => {
     fetchBanners();
@@ -46,10 +55,16 @@ const MerchantBanners = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
+      // Use desktop image as fallback for legacy 'image' field
+      const submitData = {
+        ...formData,
+        image: formData.image_desktop || formData.image_tablet || formData.image_mobile
+      };
+      
       if (editingBanner) {
-        await axios.put(`${API}/banners/${editingBanner.id}`, formData);
+        await axios.put(`${API}/banners/${editingBanner.id}`, submitData);
       } else {
-        await axios.post(`${API}/banners`, formData);
+        await axios.post(`${API}/banners`, submitData);
       }
       fetchBanners();
       closeModal();
@@ -85,7 +100,12 @@ const MerchantBanners = () => {
       setFormData({
         title: banner.title,
         subtitle: banner.subtitle || '',
-        image: banner.image,
+        image_desktop: banner.image_desktop || banner.image || '',
+        image_tablet: banner.image_tablet || '',
+        image_mobile: banner.image_mobile || '',
+        show_on_desktop: banner.show_on_desktop ?? true,
+        show_on_tablet: banner.show_on_tablet ?? true,
+        show_on_mobile: banner.show_on_mobile ?? true,
         link: banner.link || '',
         button_text: banner.button_text || 'Shop Now',
         text_color: banner.text_color || '#FFFFFF',
@@ -98,7 +118,12 @@ const MerchantBanners = () => {
       setFormData({
         title: '',
         subtitle: '',
-        image: '',
+        image_desktop: '',
+        image_tablet: '',
+        image_mobile: '',
+        show_on_desktop: true,
+        show_on_tablet: true,
+        show_on_mobile: true,
         link: '',
         button_text: 'Shop Now',
         text_color: '#FFFFFF',
@@ -107,6 +132,7 @@ const MerchantBanners = () => {
         sort_order: banners.length
       });
     }
+    setActiveTab('desktop');
     setShowModal(true);
   };
 
@@ -115,11 +141,8 @@ const MerchantBanners = () => {
     setEditingBanner(null);
   };
 
-  const onImageDrop = useCallback(async (acceptedFiles) => {
-    if (acceptedFiles.length === 0) return;
-    
-    setUploading(true);
-    const file = acceptedFiles[0];
+  const uploadImage = async (file, deviceType) => {
+    setUploading(prev => ({ ...prev, [deviceType]: true }));
     const uploadFormData = new FormData();
     uploadFormData.append('file', file);
 
@@ -127,20 +150,69 @@ const MerchantBanners = () => {
       const response = await axios.post(`${API}/upload/banners`, uploadFormData, {
         headers: { 'Content-Type': 'multipart/form-data' }
       });
-      setFormData(prev => ({ ...prev, image: `${BACKEND_URL}${response.data.url}` }));
+      const imageUrl = `${BACKEND_URL}${response.data.url}`;
+      setFormData(prev => ({ ...prev, [`image_${deviceType}`]: imageUrl }));
     } catch (error) {
       console.error('Error uploading image:', error);
       alert('Failed to upload image');
     } finally {
-      setUploading(false);
+      setUploading(prev => ({ ...prev, [deviceType]: false }));
     }
-  }, []);
+  };
 
-  const { getRootProps, getInputProps, isDragActive } = useDropzone({
-    onDrop: onImageDrop,
-    accept: { 'image/*': ['.png', '.jpg', '.jpeg', '.webp'] },
-    maxFiles: 1
-  });
+  const createDropzone = (deviceType) => {
+    return useDropzone({
+      onDrop: (acceptedFiles) => {
+        if (acceptedFiles.length > 0) {
+          uploadImage(acceptedFiles[0], deviceType);
+        }
+      },
+      accept: { 'image/*': ['.png', '.jpg', '.jpeg', '.webp'] },
+      maxFiles: 1
+    });
+  };
+
+  const desktopDropzone = createDropzone('desktop');
+  const tabletDropzone = createDropzone('tablet');
+  const mobileDropzone = createDropzone('mobile');
+
+  const getDeviceIcon = (device) => {
+    switch (device) {
+      case 'desktop': return Monitor;
+      case 'tablet': return Tablet;
+      case 'mobile': return Smartphone;
+      default: return Monitor;
+    }
+  };
+
+  const getRecommendedSize = (device) => {
+    switch (device) {
+      case 'desktop': return '1920 x 600px';
+      case 'tablet': return '1024 x 400px';
+      case 'mobile': return '640 x 400px';
+      default: return '';
+    }
+  };
+
+  const DeviceVisibilityBadges = ({ banner }) => (
+    <div className="flex gap-1">
+      {banner.show_on_desktop && (
+        <span className="p-1 bg-blue-500/20 rounded" title="Desktop">
+          <Monitor className="w-3 h-3 text-blue-400" />
+        </span>
+      )}
+      {banner.show_on_tablet && (
+        <span className="p-1 bg-purple-500/20 rounded" title="Tablet">
+          <Tablet className="w-3 h-3 text-purple-400" />
+        </span>
+      )}
+      {banner.show_on_mobile && (
+        <span className="p-1 bg-green-500/20 rounded" title="Mobile">
+          <Smartphone className="w-3 h-3 text-green-400" />
+        </span>
+      )}
+    </div>
+  );
 
   if (loading) {
     return (
@@ -155,7 +227,7 @@ const MerchantBanners = () => {
       <div className="flex items-center justify-between mb-6">
         <div>
           <h1 className="text-2xl font-bold text-white">Hero Banners</h1>
-          <p className="text-gray-400">Manage your storefront carousel banners</p>
+          <p className="text-gray-400">Manage responsive banners for different devices</p>
         </div>
         <Button onClick={() => openModal()} className="bg-cyan-600 hover:bg-cyan-700">
           <Plus className="w-4 h-4 mr-2" />
@@ -165,7 +237,7 @@ const MerchantBanners = () => {
 
       {/* Banners List */}
       <div className="space-y-4">
-        {banners.map((banner, index) => (
+        {banners.map((banner) => (
           <div
             key={banner.id}
             className={`bg-gray-800 rounded-lg border overflow-hidden transition-colors ${
@@ -174,10 +246,10 @@ const MerchantBanners = () => {
           >
             <div className="flex">
               {/* Preview */}
-              <div className="w-64 h-36 bg-gray-700 relative flex-shrink-0">
-                {banner.image ? (
+              <div className="w-72 h-40 bg-gray-700 relative flex-shrink-0">
+                {(banner.image_desktop || banner.image) ? (
                   <img
-                    src={banner.image}
+                    src={banner.image_desktop || banner.image}
                     alt={banner.title}
                     className="w-full h-full object-cover"
                   />
@@ -203,7 +275,7 @@ const MerchantBanners = () => {
               <div className="flex-1 p-4">
                 <div className="flex items-start justify-between">
                   <div>
-                    <div className="flex items-center gap-2">
+                    <div className="flex items-center gap-2 mb-2">
                       <h3 className="font-semibold text-white">{banner.title}</h3>
                       <span className={`px-2 py-0.5 rounded text-xs font-medium ${
                         banner.is_active ? 'bg-green-500/20 text-green-400' : 'bg-gray-500/20 text-gray-400'
@@ -212,8 +284,31 @@ const MerchantBanners = () => {
                       </span>
                     </div>
                     {banner.subtitle && (
-                      <p className="text-sm text-gray-400 mt-1">{banner.subtitle}</p>
+                      <p className="text-sm text-gray-400 mb-2">{banner.subtitle}</p>
                     )}
+                    
+                    {/* Device Visibility */}
+                    <div className="flex items-center gap-2 mb-2">
+                      <span className="text-xs text-gray-500">Visible on:</span>
+                      <DeviceVisibilityBadges banner={banner} />
+                    </div>
+
+                    {/* Image Status */}
+                    <div className="flex items-center gap-3 text-xs">
+                      <span className={`flex items-center gap-1 ${banner.image_desktop ? 'text-green-400' : 'text-gray-500'}`}>
+                        <Monitor className="w-3 h-3" />
+                        {banner.image_desktop ? <Check className="w-3 h-3" /> : '—'}
+                      </span>
+                      <span className={`flex items-center gap-1 ${banner.image_tablet ? 'text-green-400' : 'text-gray-500'}`}>
+                        <Tablet className="w-3 h-3" />
+                        {banner.image_tablet ? <Check className="w-3 h-3" /> : '—'}
+                      </span>
+                      <span className={`flex items-center gap-1 ${banner.image_mobile ? 'text-green-400' : 'text-gray-500'}`}>
+                        <Smartphone className="w-3 h-3" />
+                        {banner.image_mobile ? <Check className="w-3 h-3" /> : '—'}
+                      </span>
+                    </div>
+
                     {banner.link && (
                       <p className="text-xs text-cyan-400 mt-2">Link: {banner.link}</p>
                     )}
@@ -264,7 +359,7 @@ const MerchantBanners = () => {
         <div className="text-center py-12 bg-gray-800 rounded-lg border border-gray-700">
           <Image className="w-12 h-12 mx-auto text-gray-500 mb-4" />
           <h3 className="text-lg font-medium text-white mb-2">No banners yet</h3>
-          <p className="text-gray-400 mb-4">Create your first hero banner for the storefront</p>
+          <p className="text-gray-400 mb-4">Create your first responsive hero banner</p>
           <Button onClick={() => openModal()} className="bg-cyan-600 hover:bg-cyan-700">
             <Plus className="w-4 h-4 mr-2" />
             Add Banner
@@ -275,58 +370,182 @@ const MerchantBanners = () => {
       {/* Modal */}
       {showModal && (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4 overflow-y-auto">
-          <div className="bg-gray-800 rounded-lg w-full max-w-lg border border-gray-700 my-8">
+          <div className="bg-gray-800 rounded-lg w-full max-w-2xl border border-gray-700 my-8">
             <div className="flex items-center justify-between p-4 border-b border-gray-700">
               <h2 className="text-lg font-semibold text-white">
-                {editingBanner ? 'Edit Banner' : 'Add Banner'}
+                {editingBanner ? 'Edit Banner' : 'Add Responsive Banner'}
               </h2>
               <button onClick={closeModal} className="text-gray-400 hover:text-white">
                 <X className="w-5 h-5" />
               </button>
             </div>
+            
             <form onSubmit={handleSubmit} className="p-4 space-y-4">
-              <div>
-                <Label className="text-gray-300">Banner Image</Label>
-                <div
-                  {...getRootProps()}
-                  className={`border-2 border-dashed rounded-lg p-4 text-center cursor-pointer transition-colors ${
-                    isDragActive ? 'border-cyan-500 bg-cyan-500/10' : 'border-gray-600 hover:border-gray-500'
-                  }`}
-                >
-                  <input {...getInputProps()} />
-                  {uploading ? (
-                    <p className="text-gray-400">Uploading...</p>
-                  ) : formData.image ? (
-                    <div className="relative">
-                      <img src={formData.image} alt="Preview" className="h-32 mx-auto rounded" />
-                      <p className="text-xs text-gray-400 mt-2">Click or drag to replace</p>
-                    </div>
-                  ) : (
-                    <>
-                      <Upload className="w-8 h-8 mx-auto mb-2 text-gray-400" />
-                      <p className="text-gray-400">Drop banner image or click to upload</p>
-                      <p className="text-xs text-gray-500">Recommended: 1920x600px</p>
-                    </>
-                  )}
+              {/* Device Visibility Toggles */}
+              <div className="bg-gray-700/50 rounded-lg p-4">
+                <Label className="text-gray-300 mb-3 block">Show banner on:</Label>
+                <div className="flex gap-4">
+                  <label className="flex items-center gap-2 cursor-pointer">
+                    <Switch
+                      checked={formData.show_on_desktop}
+                      onCheckedChange={(checked) => setFormData(prev => ({ ...prev, show_on_desktop: checked }))}
+                    />
+                    <Monitor className="w-4 h-4 text-blue-400" />
+                    <span className="text-sm text-gray-300">Desktop</span>
+                  </label>
+                  <label className="flex items-center gap-2 cursor-pointer">
+                    <Switch
+                      checked={formData.show_on_tablet}
+                      onCheckedChange={(checked) => setFormData(prev => ({ ...prev, show_on_tablet: checked }))}
+                    />
+                    <Tablet className="w-4 h-4 text-purple-400" />
+                    <span className="text-sm text-gray-300">Tablet</span>
+                  </label>
+                  <label className="flex items-center gap-2 cursor-pointer">
+                    <Switch
+                      checked={formData.show_on_mobile}
+                      onCheckedChange={(checked) => setFormData(prev => ({ ...prev, show_on_mobile: checked }))}
+                    />
+                    <Smartphone className="w-4 h-4 text-green-400" />
+                    <span className="text-sm text-gray-300">Mobile</span>
+                  </label>
                 </div>
               </div>
+
+              {/* Device Image Tabs */}
               <div>
-                <Label className="text-gray-300">Title</Label>
-                <Input
-                  value={formData.title}
-                  onChange={(e) => setFormData(prev => ({ ...prev, title: e.target.value }))}
-                  required
-                  className="bg-gray-700 border-gray-600 text-white"
-                />
+                <Label className="text-gray-300 mb-2 block">Banner Images</Label>
+                <div className="flex border-b border-gray-700 mb-4">
+                  {['desktop', 'tablet', 'mobile'].map((device) => {
+                    const Icon = getDeviceIcon(device);
+                    const hasImage = formData[`image_${device}`];
+                    const isEnabled = formData[`show_on_${device}`];
+                    return (
+                      <button
+                        key={device}
+                        type="button"
+                        onClick={() => setActiveTab(device)}
+                        className={`flex items-center gap-2 px-4 py-2 text-sm font-medium transition-colors ${
+                          activeTab === device
+                            ? 'text-cyan-400 border-b-2 border-cyan-400'
+                            : 'text-gray-400 hover:text-gray-300'
+                        } ${!isEnabled ? 'opacity-50' : ''}`}
+                      >
+                        <Icon className="w-4 h-4" />
+                        <span className="capitalize">{device}</span>
+                        {hasImage && <Check className="w-3 h-3 text-green-400" />}
+                      </button>
+                    );
+                  })}
+                </div>
+
+                {/* Desktop Upload */}
+                {activeTab === 'desktop' && (
+                  <div className={!formData.show_on_desktop ? 'opacity-50 pointer-events-none' : ''}>
+                    <div
+                      {...desktopDropzone.getRootProps()}
+                      className={`border-2 border-dashed rounded-lg p-4 text-center cursor-pointer transition-colors ${
+                        desktopDropzone.isDragActive ? 'border-cyan-500 bg-cyan-500/10' : 'border-gray-600 hover:border-gray-500'
+                      }`}
+                    >
+                      <input {...desktopDropzone.getInputProps()} />
+                      {uploading.desktop ? (
+                        <p className="text-gray-400">Uploading...</p>
+                      ) : formData.image_desktop ? (
+                        <div className="relative">
+                          <img src={formData.image_desktop} alt="Desktop Preview" className="h-32 mx-auto rounded" />
+                          <p className="text-xs text-gray-400 mt-2">Click or drag to replace</p>
+                        </div>
+                      ) : (
+                        <>
+                          <Monitor className="w-8 h-8 mx-auto mb-2 text-blue-400" />
+                          <p className="text-gray-400">Drop desktop image or click to upload</p>
+                          <p className="text-xs text-gray-500">Recommended: {getRecommendedSize('desktop')}</p>
+                        </>
+                      )}
+                    </div>
+                  </div>
+                )}
+
+                {/* Tablet Upload */}
+                {activeTab === 'tablet' && (
+                  <div className={!formData.show_on_tablet ? 'opacity-50 pointer-events-none' : ''}>
+                    <div
+                      {...tabletDropzone.getRootProps()}
+                      className={`border-2 border-dashed rounded-lg p-4 text-center cursor-pointer transition-colors ${
+                        tabletDropzone.isDragActive ? 'border-cyan-500 bg-cyan-500/10' : 'border-gray-600 hover:border-gray-500'
+                      }`}
+                    >
+                      <input {...tabletDropzone.getInputProps()} />
+                      {uploading.tablet ? (
+                        <p className="text-gray-400">Uploading...</p>
+                      ) : formData.image_tablet ? (
+                        <div className="relative">
+                          <img src={formData.image_tablet} alt="Tablet Preview" className="h-32 mx-auto rounded" />
+                          <p className="text-xs text-gray-400 mt-2">Click or drag to replace</p>
+                        </div>
+                      ) : (
+                        <>
+                          <Tablet className="w-8 h-8 mx-auto mb-2 text-purple-400" />
+                          <p className="text-gray-400">Drop tablet image or click to upload</p>
+                          <p className="text-xs text-gray-500">Recommended: {getRecommendedSize('tablet')}</p>
+                        </>
+                      )}
+                    </div>
+                  </div>
+                )}
+
+                {/* Mobile Upload */}
+                {activeTab === 'mobile' && (
+                  <div className={!formData.show_on_mobile ? 'opacity-50 pointer-events-none' : ''}>
+                    <div
+                      {...mobileDropzone.getRootProps()}
+                      className={`border-2 border-dashed rounded-lg p-4 text-center cursor-pointer transition-colors ${
+                        mobileDropzone.isDragActive ? 'border-cyan-500 bg-cyan-500/10' : 'border-gray-600 hover:border-gray-500'
+                      }`}
+                    >
+                      <input {...mobileDropzone.getInputProps()} />
+                      {uploading.mobile ? (
+                        <p className="text-gray-400">Uploading...</p>
+                      ) : formData.image_mobile ? (
+                        <div className="relative">
+                          <img src={formData.image_mobile} alt="Mobile Preview" className="h-32 mx-auto rounded" />
+                          <p className="text-xs text-gray-400 mt-2">Click or drag to replace</p>
+                        </div>
+                      ) : (
+                        <>
+                          <Smartphone className="w-8 h-8 mx-auto mb-2 text-green-400" />
+                          <p className="text-gray-400">Drop mobile image or click to upload</p>
+                          <p className="text-xs text-gray-500">Recommended: {getRecommendedSize('mobile')}</p>
+                        </>
+                      )}
+                    </div>
+                  </div>
+                )}
               </div>
-              <div>
-                <Label className="text-gray-300">Subtitle</Label>
-                <Input
-                  value={formData.subtitle}
-                  onChange={(e) => setFormData(prev => ({ ...prev, subtitle: e.target.value }))}
-                  className="bg-gray-700 border-gray-600 text-white"
-                />
+
+              {/* Title & Subtitle */}
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <Label className="text-gray-300">Title</Label>
+                  <Input
+                    value={formData.title}
+                    onChange={(e) => setFormData(prev => ({ ...prev, title: e.target.value }))}
+                    required
+                    className="bg-gray-700 border-gray-600 text-white"
+                  />
+                </div>
+                <div>
+                  <Label className="text-gray-300">Subtitle</Label>
+                  <Input
+                    value={formData.subtitle}
+                    onChange={(e) => setFormData(prev => ({ ...prev, subtitle: e.target.value }))}
+                    className="bg-gray-700 border-gray-600 text-white"
+                  />
+                </div>
               </div>
+
+              {/* Button & Link */}
               <div className="grid grid-cols-2 gap-4">
                 <div>
                   <Label className="text-gray-300">Button Text</Label>
@@ -346,6 +565,8 @@ const MerchantBanners = () => {
                   />
                 </div>
               </div>
+
+              {/* Text Color & Sort Order */}
               <div className="grid grid-cols-2 gap-4">
                 <div>
                   <Label className="text-gray-300">Text Color</Label>
@@ -373,19 +594,23 @@ const MerchantBanners = () => {
                   />
                 </div>
               </div>
+
+              {/* Active Toggle */}
               <div className="flex items-center justify-between">
-                <Label className="text-gray-300">Active</Label>
+                <Label className="text-gray-300">Banner Active</Label>
                 <Switch
                   checked={formData.is_active}
                   onCheckedChange={(checked) => setFormData(prev => ({ ...prev, is_active: checked }))}
                 />
               </div>
+
+              {/* Action Buttons */}
               <div className="flex gap-2 pt-4">
                 <Button type="button" variant="outline" onClick={closeModal} className="flex-1 border-gray-600 text-gray-300">
                   Cancel
                 </Button>
                 <Button type="submit" className="flex-1 bg-cyan-600 hover:bg-cyan-700">
-                  {editingBanner ? 'Update' : 'Create'}
+                  {editingBanner ? 'Update' : 'Create'} Banner
                 </Button>
               </div>
             </form>
