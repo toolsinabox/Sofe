@@ -1,18 +1,22 @@
-        <!-- Hero Section -->
+        <!-- Hero Section - Banner Carousel -->
         <section class="hero-section">
+            [%banner_list limit:'1'%]
             <div class="hero-slide">
-                <img src="https://images.unsplash.com/photo-1504148455328-c376907d081c?w=1920&h=600&fit=crop" alt="Premium Toolboxes" class="hero-image">
+                <img src="[@banner_image@]" alt="[@banner_title@]" class="hero-image" onerror="this.src='https://images.unsplash.com/photo-1504148455328-c376907d081c?w=1920&h=600&fit=crop'">
                 <div class="hero-overlay"></div>
                 <div class="hero-content">
                     <div class="max-w-7xl mx-auto px-4 w-full">
                         <div class="max-w-xl">
-                            <h1 class="hero-title">Premium Ute Toolboxes</h1>
-                            <p class="hero-subtitle">Australia's largest range of quality aluminium toolboxes. Built tough for Aussie conditions.</p>
-                            <a href="/live/products" class="hero-btn">Shop All Toolboxes</a>
+                            <h1 class="hero-title">[@banner_title@]</h1>
+                            <p class="hero-subtitle">[@banner_subtitle@]</p>
+                            [%if [@banner_button_text@]%]
+                            <a href="[@banner_link@]" class="hero-btn">[@banner_button_text@]</a>
+                            [%/if%]
                         </div>
                     </div>
                 </div>
             </div>
+            [%/banner_list%]
         </section>
         
         <!-- Trust Badges -->
