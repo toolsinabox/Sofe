@@ -121,7 +121,10 @@ const MerchantSidebar = ({ collapsed, setCollapsed }) => {
           <HelpCircle size={20} />
           {!collapsed && <span className="font-medium text-sm">Help & Support</span>}
         </NavLink>
-        <button className="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-gray-400 hover:text-red-400 hover:bg-red-500/10 transition-all">
+        <button 
+          onClick={handleLogout}
+          className="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-gray-400 hover:text-red-400 hover:bg-red-500/10 transition-all"
+        >
           <LogOut size={20} />
           {!collapsed && <span className="font-medium text-sm">Logout</span>}
         </button>
