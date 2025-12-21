@@ -1308,13 +1308,23 @@ async def get_dashboard_stats():
 @api_router.get("/banners", response_model=List[HeroBanner])
 async def get_banners(include_inactive: bool = False):
     query = {} if include_inactive else {"is_active": True}
-    banners = await db.banners.find(query).sort("sort_order", 1).to_list(20)
-    return [HeroBanner(**banner) for banner in banners]
+    banners = await db.banners.find(query, {"_id": 0}).sort("sort_order", 1).to_list(20)
+    # Handle legacy banners that don't have name field - use title as fallback
+    result = []
+    for banner in banners:
+        if not banner.get('name'):
+            banner['name'] = banner.get('title', 'Untitled Banner')
+        result.append(HeroBanner(**banner))
+    return result
 
 @api_router.post("/banners", response_model=HeroBanner)
 async def create_banner(banner: HeroBanner):
-    await db.banners.insert_one(banner.dict())
-    return banner
+    banner_data = banner.dict()
+    # Ensure name is set
+    if not banner_data.get('name'):
+        banner_data['name'] = banner_data.get('title', 'Untitled Banner')
+    await db.banners.insert_one(banner_data)
+    return HeroBanner(**banner_data)
 
 @api_router.put("/banners/{banner_id}", response_model=HeroBanner)
 async def update_banner(banner_id: str, banner: BannerUpdate):
@@ -1325,7 +1335,9 @@ async def update_banner(banner_id: str, banner: BannerUpdate):
     )
     if result.matched_count == 0:
         raise HTTPException(status_code=404, detail="Banner not found")
-    updated = await db.banners.find_one({"id": banner_id})
+    updated = await db.banners.find_one({"id": banner_id}, {"_id": 0})
+    if not updated.get('name'):
+        updated['name'] = updated.get('title', 'Untitled Banner')
     return HeroBanner(**updated)
 
 @api_router.delete("/banners/{banner_id}")
