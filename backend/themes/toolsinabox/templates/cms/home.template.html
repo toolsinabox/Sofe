@@ -1,120 +1,109 @@
         <!-- Hero Section -->
-        <section class="hero-section relative">
-            <div class="relative overflow-hidden bg-gray-900">
-                [%banner_list limit:'5'%]
-                <div class="hero-slide" data-banner-id="[@banner_id@]">
-                    <img 
-                        src="[@banner_image_desktop@]" 
-                        alt="[@banner_title@]" 
-                        class="w-full h-[400px] md:h-[500px] lg:h-[600px] object-cover"
-                    >
-                    <div class="absolute inset-0 bg-gradient-to-r from-black/60 to-transparent flex items-center">
-                        <div class="max-w-7xl mx-auto px-4 w-full">
-                            <div class="max-w-xl">
-                                <h1 class="text-4xl md:text-5xl lg:text-6xl font-bold text-white mb-4">[@banner_title@]</h1>
-                                <p class="text-lg md:text-xl text-gray-200 mb-8">[@banner_subtitle@]</p>
-                                <a href="[@banner_link@]" class="inline-block bg-blue-600 text-white px-8 py-3 rounded-lg font-semibold hover:bg-blue-700 transition text-lg">
-                                    [@banner_button_text@]
-                                </a>
-                            </div>
+        <section class="hero-section">
+            <div class="hero-slide">
+                <img src="https://images.unsplash.com/photo-1504148455328-c376907d081c?w=1920&h=600&fit=crop" alt="Black Series Tools" class="hero-image">
+                <div class="hero-overlay"></div>
+                <div class="hero-content">
+                    <div class="max-w-7xl mx-auto px-4 w-full">
+                        <div class="max-w-xl">
+                            <h1 class="hero-title">Black Series</h1>
+                            <p class="hero-subtitle">Professional grade tools built to last. Discover our flagship collection.</p>
+                            <a href="/live/category/black-series" class="hero-btn">Shop Now</a>
                         </div>
                     </div>
                 </div>
-                [%/banner_list%]
             </div>
         </section>
-
+        
         <!-- Trust Badges -->
-        <section class="py-8 bg-white border-b">
+        <section class="trust-badges">
             <div class="max-w-7xl mx-auto px-4">
-                <div class="grid grid-cols-2 md:grid-cols-4 gap-6">
-                    <div class="flex items-center justify-center gap-3 p-4">
-                        <div class="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center">
-                            <svg class="w-6 h-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
-                            </svg>
-                        </div>
-                        <div>
-                            <p class="font-semibold text-gray-900">Free Shipping</p>
-                            <p class="text-sm text-gray-500">Orders over $99</p>
-                        </div>
+                <div class="grid grid-cols-2 md:grid-cols-4 gap-4 text-center">
+                    <div class="trust-item">
+                        <svg class="w-7 h-7 text-orange-500 mx-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 10h4.764a2 2 0 011.789 2.894l-3.5 7A2 2 0 0115.263 21h-4.017c-.163 0-.326-.02-.485-.06L7 20m7-10V5a2 2 0 00-2-2h-.095c-.5 0-.905.405-.905.905 0 .714-.211 1.412-.608 2.006L7 11v9m7-10h-2M7 20H5a2 2 0 01-2-2v-6a2 2 0 012-2h2.5"></path>
+                        </svg>
+                        <span class="text-sm font-semibold text-gray-900 mt-2 block">100% Satisfaction</span>
                     </div>
-                    <div class="flex items-center justify-center gap-3 p-4">
-                        <div class="w-12 h-12 bg-green-100 rounded-full flex items-center justify-center">
-                            <svg class="w-6 h-6 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"></path>
-                            </svg>
-                        </div>
-                        <div>
-                            <p class="font-semibold text-gray-900">Secure Payment</p>
-                            <p class="text-sm text-gray-500">100% Protected</p>
-                        </div>
+                    <div class="trust-item">
+                        <svg class="w-7 h-7 text-orange-500 mx-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 8h14M5 8a2 2 0 110-4h14a2 2 0 110 4M5 8v10a2 2 0 002 2h10a2 2 0 002-2V8m-9 4h4"></path>
+                        </svg>
+                        <span class="text-sm font-semibold text-gray-900 mt-2 block">Fast Delivery</span>
                     </div>
-                    <div class="flex items-center justify-center gap-3 p-4">
-                        <div class="w-12 h-12 bg-yellow-100 rounded-full flex items-center justify-center">
-                            <svg class="w-6 h-6 text-yellow-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path>
-                            </svg>
-                        </div>
-                        <div>
-                            <p class="font-semibold text-gray-900">Easy Returns</p>
-                            <p class="text-sm text-gray-500">30 Day Policy</p>
-                        </div>
+                    <div class="trust-item">
+                        <svg class="w-7 h-7 text-orange-500 mx-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path>
+                        </svg>
+                        <span class="text-sm font-semibold text-gray-900 mt-2 block">30-Day Returns</span>
                     </div>
-                    <div class="flex items-center justify-center gap-3 p-4">
-                        <div class="w-12 h-12 bg-purple-100 rounded-full flex items-center justify-center">
-                            <svg class="w-6 h-6 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18.364 5.636l-3.536 3.536m0 5.656l3.536 3.536M9.172 9.172L5.636 5.636m3.536 9.192l-3.536 3.536M21 12a9 9 0 11-18 0 9 9 0 0118 0zm-5 0a4 4 0 11-8 0 4 4 0 018 0z"></path>
-                            </svg>
-                        </div>
-                        <div>
-                            <p class="font-semibold text-gray-900">24/7 Support</p>
-                            <p class="text-sm text-gray-500">Dedicated Help</p>
-                        </div>
+                    <div class="trust-item">
+                        <svg class="w-7 h-7 text-orange-500 mx-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"></path>
+                        </svg>
+                        <span class="text-sm font-semibold text-gray-900 mt-2 block">Secure Payment</span>
                     </div>
                 </div>
             </div>
         </section>
-
-        <!-- Featured Categories -->
-        <section class="py-12 bg-gray-50">
+        
+        <!-- Popular Categories -->
+        <section class="categories-section">
             <div class="max-w-7xl mx-auto px-4">
-                <div class="text-center mb-10">
-                    <h2 class="text-3xl font-bold text-gray-900 mb-3">Shop by Category</h2>
-                    <p class="text-gray-600">Browse our popular categories</p>
-                </div>
+                <h2 class="section-title">POPULAR CATEGORIES</h2>
                 <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
-                    [%category_list limit:'6'%]
-                    <a href="/live/category/[@category_id@]" class="group">
-                        <div class="bg-white rounded-xl shadow-sm overflow-hidden hover:shadow-lg transition">
-                            <div class="aspect-square bg-gray-100 overflow-hidden">
-                                <img 
-                                    src="[@category_image@]" 
-                                    alt="[@category_name@]" 
-                                    class="w-full h-full object-cover group-hover:scale-105 transition duration-300"
-                                    onerror="this.src='https://via.placeholder.com/200?text=[@category_name@]'"
-                                >
-                            </div>
-                            <div class="p-4 text-center">
-                                <h3 class="font-semibold text-gray-900 group-hover:text-blue-600 transition">[@category_name@]</h3>
-                                <p class="text-sm text-gray-500">[@category_product_count@] Products</p>
-                            </div>
+                    <a href="/live/category/black-series" class="category-card">
+                        <div class="category-image">
+                            <img src="https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=200&h=200&fit=crop" alt="Black Series">
                         </div>
+                        <h3>Black Series</h3>
+                        <p>45 products</p>
                     </a>
-                    [%/category_list%]
+                    <a href="/live/category/white-series" class="category-card">
+                        <div class="category-image">
+                            <img src="https://images.unsplash.com/photo-1572981779307-38b8cabb2407?w=200&h=200&fit=crop" alt="White Series">
+                        </div>
+                        <h3>White Series</h3>
+                        <p>32 products</p>
+                    </a>
+                    <a href="/live/category/dog-boxes" class="category-card">
+                        <div class="category-image">
+                            <img src="https://images.unsplash.com/photo-1587300003388-59208cc962cb?w=200&h=200&fit=crop" alt="Dog Boxes">
+                        </div>
+                        <h3>Dog Boxes</h3>
+                        <p>18 products</p>
+                    </a>
+                    <a href="/live/category/sports" class="category-card">
+                        <div class="category-image">
+                            <img src="https://images.unsplash.com/photo-1461896836934- voices?w=200&h=200&fit=crop" alt="Sports">
+                        </div>
+                        <h3>Sports</h3>
+                        <p>27 products</p>
+                    </a>
+                    <a href="/live/category/accessories" class="category-card">
+                        <div class="category-image">
+                            <img src="https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=200&h=200&fit=crop" alt="Accessories">
+                        </div>
+                        <h3>Accessories</h3>
+                        <p>56 products</p>
+                    </a>
+                    <a href="/live/category/beauty" class="category-card">
+                        <div class="category-image">
+                            <img src="https://images.unsplash.com/photo-1596462502278-27bfdc403348?w=200&h=200&fit=crop" alt="Beauty">
+                        </div>
+                        <h3>Beauty</h3>
+                        <p>41 products</p>
+                    </a>
                 </div>
             </div>
         </section>
-
+        
         <!-- Featured Products -->
-        <section class="py-12">
+        <section class="products-section bg-gray-50">
             <div class="max-w-7xl mx-auto px-4">
-                <div class="flex items-center justify-between mb-10">
-                    <div>
-                        <h2 class="text-3xl font-bold text-gray-900 mb-2">Featured Products</h2>
-                        <p class="text-gray-600">Handpicked products just for you</p>
-                    </div>
-                    <a href="/live/products" class="hidden md:flex items-center gap-2 text-blue-600 hover:text-blue-700 font-medium">
+                <div class="flex items-center justify-between mb-8">
+                    <h2 class="section-title mb-0">FEATURED PRODUCTS</h2>
+                    <a href="/live/products" class="view-all-link">
                         View All
                         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"></path>
@@ -122,111 +111,196 @@
                     </a>
                 </div>
                 <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-                    [%product_list limit:'8' featured:'true'%]
-                    <div class="product-card bg-white rounded-xl shadow-sm overflow-hidden group hover:shadow-lg transition" data-product-id="[@product_id@]">
-                        <a href="/live/product/[@product_id@]" class="block">
-                            <div class="aspect-square bg-gray-100 overflow-hidden relative">
-                                <img 
-                                    src="[@product_image@]" 
-                                    alt="[@product_name@]" 
-                                    class="w-full h-full object-cover group-hover:scale-105 transition duration-300"
-                                    loading="lazy"
-                                >
-                                [%if [@product_sale@]%]
-                                <span class="absolute top-3 left-3 bg-red-600 text-white text-xs font-bold px-2 py-1 rounded">SALE</span>
-                                [%/if%]
+                    <div class="product-card">
+                        <a href="/live/product/1">
+                            <div class="product-image">
+                                <img src="https://images.unsplash.com/photo-1504148455328-c376907d081c?w=400&h=400&fit=crop" alt="Black Series Toolbox">
                             </div>
-                            <div class="p-4">
-                                <p class="text-sm text-gray-500 mb-1">[@product_category@]</p>
-                                <h3 class="font-semibold text-gray-900 mb-2 line-clamp-2 group-hover:text-blue-600 transition">[@product_name@]</h3>
-                                <div class="flex items-center gap-2">
-                                    <span class="text-lg font-bold text-gray-900">[@product_price_formatted@]</span>
-                                    [%if [@product_compare_price@]%]
-                                    <span class="text-sm text-gray-400 line-through">[@product_compare_price_formatted@]</span>
-                                    [%/if%]
+                            <div class="product-info">
+                                <h3>Black Series Toolbox</h3>
+                                <div class="product-price">
+                                    <span class="current-price">$299.00</span>
+                                    <span class="old-price">$399.00</span>
                                 </div>
                             </div>
                         </a>
-                        <div class="px-4 pb-4">
-                            <button 
-                                class="add-to-cart-btn w-full bg-blue-600 text-white py-2.5 rounded-lg hover:bg-blue-700 transition font-medium"
-                                data-product-id="[@product_id@]"
-                            >
-                                Add to Cart
-                            </button>
-                        </div>
+                        <button class="add-to-cart-btn">Add to Cart</button>
                     </div>
-                    [%/product_list%]
+                    <div class="product-card">
+                        <a href="/live/product/2">
+                            <div class="product-image">
+                                <span class="sale-badge">SALE</span>
+                                <img src="https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=400&h=400&fit=crop" alt="Power Drill Pro">
+                            </div>
+                            <div class="product-info">
+                                <h3>Power Drill Pro</h3>
+                                <div class="product-price">
+                                    <span class="current-price">$149.00</span>
+                                    <span class="old-price">$199.00</span>
+                                </div>
+                            </div>
+                        </a>
+                        <button class="add-to-cart-btn">Add to Cart</button>
+                    </div>
+                    <div class="product-card">
+                        <a href="/live/product/3">
+                            <div class="product-image">
+                                <img src="https://images.unsplash.com/photo-1572981779307-38b8cabb2407?w=400&h=400&fit=crop" alt="Safety Helmet">
+                            </div>
+                            <div class="product-info">
+                                <h3>Safety Helmet</h3>
+                                <div class="product-price">
+                                    <span class="current-price">$49.00</span>
+                                </div>
+                            </div>
+                        </a>
+                        <button class="add-to-cart-btn">Add to Cart</button>
+                    </div>
+                    <div class="product-card">
+                        <a href="/live/product/4">
+                            <div class="product-image">
+                                <span class="new-badge">NEW</span>
+                                <img src="https://images.unsplash.com/photo-1581147036324-c17ac41f3604?w=400&h=400&fit=crop" alt="Work Gloves">
+                            </div>
+                            <div class="product-info">
+                                <h3>Work Gloves</h3>
+                                <div class="product-price">
+                                    <span class="current-price">$29.00</span>
+                                </div>
+                            </div>
+                        </a>
+                        <button class="add-to-cart-btn">Add to Cart</button>
+                    </div>
                 </div>
-                <div class="text-center mt-8 md:hidden">
-                    <a href="/live/products" class="inline-flex items-center gap-2 text-blue-600 hover:text-blue-700 font-medium">
-                        View All Products
+            </div>
+        </section>
+        
+        <!-- Sale Banner -->
+        <section class="sale-banner">
+            <div class="max-w-7xl mx-auto px-4 text-center">
+                <h2 class="text-3xl md:text-4xl font-bold text-white mb-4">ON SALE NOW!</h2>
+                <p class="text-white/90 text-lg mb-6">Limited time offers - Don't miss out on these amazing deals</p>
+                <a href="/live/sale" class="sale-btn">
+                    SHOP SALE
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"></path>
+                    </svg>
+                </a>
+            </div>
+        </section>
+        
+        <!-- More Products -->
+        <section class="products-section">
+            <div class="max-w-7xl mx-auto px-4">
+                <div class="flex items-center justify-between mb-8">
+                    <h2 class="section-title mb-0">ON SALE</h2>
+                    <a href="/live/sale" class="view-all-link">
+                        View All
                         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"></path>
                         </svg>
                     </a>
                 </div>
-            </div>
-        </section>
-
-        <!-- Promotional Banner -->
-        <section class="py-12 bg-gradient-to-r from-blue-600 to-blue-800">
-            <div class="max-w-7xl mx-auto px-4">
-                <div class="flex flex-col md:flex-row items-center justify-between gap-8">
-                    <div class="text-center md:text-left">
-                        <h2 class="text-3xl md:text-4xl font-bold text-white mb-4">Subscribe & Save 10%</h2>
-                        <p class="text-blue-100 text-lg">Get exclusive offers and updates delivered to your inbox</p>
-                    </div>
-                    <form class="flex gap-3 w-full md:w-auto">
-                        <input 
-                            type="email" 
-                            placeholder="Enter your email" 
-                            class="flex-1 md:w-80 px-4 py-3 rounded-lg border-0 focus:ring-2 focus:ring-white outline-none"
-                            required
-                        >
-                        <button type="submit" class="bg-white text-blue-600 px-6 py-3 rounded-lg font-semibold hover:bg-gray-100 transition">
-                            Subscribe
-                        </button>
-                    </form>
-                </div>
-            </div>
-        </section>
-
-        <!-- New Arrivals -->
-        <section class="py-12 bg-white">
-            <div class="max-w-7xl mx-auto px-4">
-                <div class="text-center mb-10">
-                    <h2 class="text-3xl font-bold text-gray-900 mb-3">New Arrivals</h2>
-                    <p class="text-gray-600">Check out the latest products in our store</p>
-                </div>
                 <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-                    [%product_list limit:'4' sort:'newest'%]
-                    <div class="product-card bg-white rounded-xl shadow-sm border overflow-hidden group hover:shadow-lg transition" data-product-id="[@product_id@]">
-                        <a href="/live/product/[@product_id@]" class="block">
-                            <div class="aspect-square bg-gray-100 overflow-hidden relative">
-                                <img 
-                                    src="[@product_image@]" 
-                                    alt="[@product_name@]" 
-                                    class="w-full h-full object-cover group-hover:scale-105 transition duration-300"
-                                    loading="lazy"
-                                >
-                                <span class="absolute top-3 left-3 bg-green-600 text-white text-xs font-bold px-2 py-1 rounded">NEW</span>
+                    <div class="product-card">
+                        <a href="/live/product/5">
+                            <div class="product-image">
+                                <span class="sale-badge">-25%</span>
+                                <img src="https://images.unsplash.com/photo-1590920296939-e1c25e55c6b4?w=400&h=400&fit=crop" alt="Tool Belt">
                             </div>
-                            <div class="p-4">
-                                <h3 class="font-semibold text-gray-900 mb-2 line-clamp-2 group-hover:text-blue-600 transition">[@product_name@]</h3>
-                                <span class="text-lg font-bold text-gray-900">[@product_price_formatted@]</span>
+                            <div class="product-info">
+                                <h3>Tool Belt Premium</h3>
+                                <div class="product-price">
+                                    <span class="current-price">$59.00</span>
+                                    <span class="old-price">$79.00</span>
+                                </div>
                             </div>
                         </a>
-                        <div class="px-4 pb-4">
-                            <button 
-                                class="add-to-cart-btn w-full bg-gray-900 text-white py-2.5 rounded-lg hover:bg-gray-800 transition font-medium"
-                                data-product-id="[@product_id@]"
-                            >
-                                Add to Cart
-                            </button>
-                        </div>
+                        <button class="add-to-cart-btn">Add to Cart</button>
                     </div>
-                    [%/product_list%]
+                    <div class="product-card">
+                        <a href="/live/product/6">
+                            <div class="product-image">
+                                <span class="sale-badge">-30%</span>
+                                <img src="https://images.unsplash.com/photo-1530124566582-a618bc2615dc?w=400&h=400&fit=crop" alt="Measuring Tape">
+                            </div>
+                            <div class="product-info">
+                                <h3>Measuring Tape Pro</h3>
+                                <div class="product-price">
+                                    <span class="current-price">$19.00</span>
+                                    <span class="old-price">$29.00</span>
+                                </div>
+                            </div>
+                        </a>
+                        <button class="add-to-cart-btn">Add to Cart</button>
+                    </div>
+                    <div class="product-card">
+                        <a href="/live/product/7">
+                            <div class="product-image">
+                                <span class="sale-badge">-40%</span>
+                                <img src="https://images.unsplash.com/photo-1581244277943-fe4a9c777189?w=400&h=400&fit=crop" alt="Wrench Set">
+                            </div>
+                            <div class="product-info">
+                                <h3>Wrench Set (12pc)</h3>
+                                <div class="product-price">
+                                    <span class="current-price">$89.00</span>
+                                    <span class="old-price">$149.00</span>
+                                </div>
+                            </div>
+                        </a>
+                        <button class="add-to-cart-btn">Add to Cart</button>
+                    </div>
+                    <div class="product-card">
+                        <a href="/live/product/8">
+                            <div class="product-image">
+                                <span class="sale-badge">-20%</span>
+                                <img src="https://images.unsplash.com/photo-1527770218965-c4ce80bfc8fc?w=400&h=400&fit=crop" alt="Safety Goggles">
+                            </div>
+                            <div class="product-info">
+                                <h3>Safety Goggles</h3>
+                                <div class="product-price">
+                                    <span class="current-price">$24.00</span>
+                                    <span class="old-price">$30.00</span>
+                                </div>
+                            </div>
+                        </a>
+                        <button class="add-to-cart-btn">Add to Cart</button>
+                    </div>
+                </div>
+            </div>
+        </section>
+        
+        <!-- About Section -->
+        <section class="about-section">
+            <div class="max-w-7xl mx-auto px-4">
+                <div class="grid md:grid-cols-2 gap-12 items-center">
+                    <div>
+                        <h2 class="text-3xl md:text-4xl font-bold mb-6">Your Ultimate Tool Destination</h2>
+                        <p class="text-gray-300 mb-6">
+                            Welcome to Tools In A Box, where quality meets performance. We're committed to providing you with the best tools and equipment at competitive prices, backed by exceptional customer service.
+                        </p>
+                        <ul class="about-list">
+                            <li>
+                                <span class="check-icon">✓</span>
+                                <span>Premium Quality Tools</span>
+                            </li>
+                            <li>
+                                <span class="check-icon">✓</span>
+                                <span>Fast & Reliable Shipping</span>
+                            </li>
+                            <li>
+                                <span class="check-icon">✓</span>
+                                <span>30-Day Money Back Guarantee</span>
+                            </li>
+                            <li>
+                                <span class="check-icon">✓</span>
+                                <span>24/7 Customer Support</span>
+                            </li>
+                        </ul>
+                    </div>
+                    <div class="about-image">
+                        <img src="https://images.unsplash.com/photo-1504148455328-c376907d081c?w=600&h=400&fit=crop" alt="About Us">
+                    </div>
                 </div>
             </div>
         </section>
