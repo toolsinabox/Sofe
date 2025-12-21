@@ -14,7 +14,11 @@ import {
   LogOut,
   ChevronLeft,
   ChevronRight,
-  ExternalLink
+  ExternalLink,
+  FolderOpen,
+  Image,
+  Code,
+  Store
 } from 'lucide-react';
 
 const MerchantSidebar = ({ collapsed, setCollapsed }) => {
@@ -22,8 +26,12 @@ const MerchantSidebar = ({ collapsed, setCollapsed }) => {
     { path: '/merchant', icon: LayoutDashboard, label: 'Dashboard', exact: true },
     { path: '/merchant/orders', icon: ShoppingCart, label: 'Orders' },
     { path: '/merchant/products', icon: Package, label: 'Products' },
+    { path: '/merchant/categories', icon: FolderOpen, label: 'Categories' },
     { path: '/merchant/inventory', icon: Boxes, label: 'Inventory' },
     { path: '/merchant/customers', icon: Users, label: 'Customers' },
+    { path: '/merchant/banners', icon: Image, label: 'Banners' },
+    { path: '/merchant/theme-editor', icon: Code, label: 'Theme Editor' },
+    { path: '/merchant/store-settings', icon: Store, label: 'Store Settings' },
     { path: '/merchant/discounts', icon: Tag, label: 'Discounts' },
     { path: '/merchant/analytics', icon: BarChart3, label: 'Analytics' },
     { path: '/merchant/payments', icon: CreditCard, label: 'Payments' },
