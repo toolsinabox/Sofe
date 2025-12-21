@@ -1,4 +1,5 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import axios from 'axios';
 import {
   Search,
   Filter,
@@ -8,7 +9,6 @@ import {
   Package,
   Printer,
   X,
-  Check,
   Clock,
   Truck,
   CheckCircle,
@@ -23,24 +23,50 @@ import {
   DropdownMenuTrigger,
 } from '../../components/ui/dropdown-menu';
 import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '../../components/ui/select';
-import {
   Dialog,
   DialogContent,
   DialogHeader,
   DialogTitle,
 } from '../../components/ui/dialog';
-import { orders } from '../../data/mock';
+
+const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
+const API = `${BACKEND_URL}/api`;
 
 const MerchantOrders = () => {
+  const [orders, setOrders] = useState([]);
+  const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState('');
   const [statusFilter, setStatusFilter] = useState('all');
   const [selectedOrder, setSelectedOrder] = useState(null);
+
+  useEffect(() => {
+    fetchOrders();
+  }, [statusFilter]);
+
+  const fetchOrders = async () => {
+    setLoading(true);
+    try {
+      let url = `${API}/orders?limit=50`;
+      if (statusFilter !== 'all') {
+        url += `&status=${statusFilter}`;
+      }
+      const response = await axios.get(url);
+      setOrders(response.data);
+    } catch (error) {
+      console.error('Error fetching orders:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const updateOrderStatus = async (orderId, status) => {
+    try {
+      await axios.put(`${API}/orders/${orderId}/status?status=${status}`);
+      fetchOrders();
+    } catch (error) {
+      console.error('Error updating order status:', error);
+    }
+  };
 
   const formatCurrency = (value) => {
     return new Intl.NumberFormat('en-US', {
@@ -82,20 +108,10 @@ const MerchantOrders = () => {
     }
   };
 
-  const getPaymentColor = (status) => {
-    switch (status) {
-      case 'paid': return 'bg-emerald-500/20 text-emerald-400';
-      case 'pending': return 'bg-yellow-500/20 text-yellow-400';
-      case 'refunded': return 'bg-red-500/20 text-red-400';
-      default: return 'bg-gray-500/20 text-gray-400';
-    }
-  };
-
   const filteredOrders = orders.filter(order => {
-    const matchesSearch = order.id.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      order.customer.toLowerCase().includes(searchQuery.toLowerCase());
-    const matchesStatus = statusFilter === 'all' || order.status === statusFilter;
-    return matchesSearch && matchesStatus;
+    const matchesSearch = order.order_number?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      order.customer_name?.toLowerCase().includes(searchQuery.toLowerCase());
+    return matchesSearch;
   });
 
   const orderCounts = {
@@ -150,83 +166,92 @@ const MerchantOrders = () => {
       {/* Orders Table */}
       <Card className="bg-[#151b28] border-gray-800">
         <CardContent className="p-0">
-          <div className="overflow-x-auto">
-            <table className="w-full">
-              <thead>
-                <tr className="border-b border-gray-800">
-                  <th className="text-left py-4 px-6 text-gray-400 font-medium text-sm">Order</th>
-                  <th className="text-left py-4 px-6 text-gray-400 font-medium text-sm">Customer</th>
-                  <th className="text-left py-4 px-6 text-gray-400 font-medium text-sm">Items</th>
-                  <th className="text-left py-4 px-6 text-gray-400 font-medium text-sm">Total</th>
-                  <th className="text-left py-4 px-6 text-gray-400 font-medium text-sm">Status</th>
-                  <th className="text-left py-4 px-6 text-gray-400 font-medium text-sm">Payment</th>
-                  <th className="text-left py-4 px-6 text-gray-400 font-medium text-sm">Date</th>
-                  <th className="text-right py-4 px-6 text-gray-400 font-medium text-sm">Actions</th>
-                </tr>
-              </thead>
-              <tbody>
-                {filteredOrders.map((order) => (
-                  <tr key={order.id} className="border-b border-gray-800/50 hover:bg-gray-800/30 transition-colors">
-                    <td className="py-4 px-6">
-                      <span className="text-white font-medium">{order.id}</span>
-                    </td>
-                    <td className="py-4 px-6">
-                      <div>
-                        <p className="text-white font-medium">{order.customer}</p>
-                        <p className="text-gray-500 text-sm">{order.email}</p>
-                      </div>
-                    </td>
-                    <td className="py-4 px-6 text-gray-300">
-                      {order.items} items
-                    </td>
-                    <td className="py-4 px-6 text-white font-medium">
-                      {formatCurrency(order.total)}
-                    </td>
-                    <td className="py-4 px-6">
-                      <span className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium border ${getStatusColor(order.status)}`}>
-                        {getStatusIcon(order.status)}
-                        {order.status.charAt(0).toUpperCase() + order.status.slice(1)}
-                      </span>
-                    </td>
-                    <td className="py-4 px-6">
-                      <span className={`px-2.5 py-1 rounded-full text-xs font-medium ${getPaymentColor(order.paymentStatus)}`}>
-                        {order.paymentStatus.charAt(0).toUpperCase() + order.paymentStatus.slice(1)}
-                      </span>
-                    </td>
-                    <td className="py-4 px-6 text-gray-400 text-sm">
-                      {formatDate(order.date)}
-                    </td>
-                    <td className="py-4 px-6 text-right">
-                      <DropdownMenu>
-                        <DropdownMenuTrigger asChild>
-                          <button className="p-2 rounded hover:bg-gray-800 text-gray-400 hover:text-white transition-colors">
-                            <MoreVertical size={18} />
-                          </button>
-                        </DropdownMenuTrigger>
-                        <DropdownMenuContent align="end" className="bg-[#1a1f2e] border-gray-700">
-                          <DropdownMenuItem 
-                            className="text-gray-300 hover:text-white hover:bg-gray-700/50 cursor-pointer"
-                            onClick={() => setSelectedOrder(order)}
-                          >
-                            <Eye size={16} className="mr-2" /> View Details
-                          </DropdownMenuItem>
-                          <DropdownMenuItem className="text-gray-300 hover:text-white hover:bg-gray-700/50 cursor-pointer">
-                            <Package size={16} className="mr-2" /> Update Status
-                          </DropdownMenuItem>
-                          <DropdownMenuItem className="text-gray-300 hover:text-white hover:bg-gray-700/50 cursor-pointer">
-                            <Printer size={16} className="mr-2" /> Print Invoice
-                          </DropdownMenuItem>
-                          <DropdownMenuItem className="text-red-400 hover:text-red-300 hover:bg-red-500/10 cursor-pointer">
-                            <X size={16} className="mr-2" /> Cancel Order
-                          </DropdownMenuItem>
-                        </DropdownMenuContent>
-                      </DropdownMenu>
-                    </td>
+          {loading ? (
+            <div className="p-8 text-center text-gray-500">Loading orders...</div>
+          ) : filteredOrders.length === 0 ? (
+            <div className="p-8 text-center text-gray-500">No orders found</div>
+          ) : (
+            <div className="overflow-x-auto">
+              <table className="w-full">
+                <thead>
+                  <tr className="border-b border-gray-800">
+                    <th className="text-left py-4 px-6 text-gray-400 font-medium text-sm">Order</th>
+                    <th className="text-left py-4 px-6 text-gray-400 font-medium text-sm">Customer</th>
+                    <th className="text-left py-4 px-6 text-gray-400 font-medium text-sm">Items</th>
+                    <th className="text-left py-4 px-6 text-gray-400 font-medium text-sm">Total</th>
+                    <th className="text-left py-4 px-6 text-gray-400 font-medium text-sm">Status</th>
+                    <th className="text-left py-4 px-6 text-gray-400 font-medium text-sm">Date</th>
+                    <th className="text-right py-4 px-6 text-gray-400 font-medium text-sm">Actions</th>
                   </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
+                </thead>
+                <tbody>
+                  {filteredOrders.map((order) => (
+                    <tr key={order.id} className="border-b border-gray-800/50 hover:bg-gray-800/30 transition-colors">
+                      <td className="py-4 px-6">
+                        <span className="text-white font-medium">{order.order_number}</span>
+                      </td>
+                      <td className="py-4 px-6">
+                        <div>
+                          <p className="text-white font-medium">{order.customer_name}</p>
+                          <p className="text-gray-500 text-sm">{order.customer_email}</p>
+                        </div>
+                      </td>
+                      <td className="py-4 px-6 text-gray-300">
+                        {order.items?.length || 0} items
+                      </td>
+                      <td className="py-4 px-6 text-white font-medium">
+                        {formatCurrency(order.total)}
+                      </td>
+                      <td className="py-4 px-6">
+                        <span className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium border ${getStatusColor(order.status)}`}>
+                          {getStatusIcon(order.status)}
+                          {order.status.charAt(0).toUpperCase() + order.status.slice(1)}
+                        </span>
+                      </td>
+                      <td className="py-4 px-6 text-gray-400 text-sm">
+                        {formatDate(order.created_at)}
+                      </td>
+                      <td className="py-4 px-6 text-right">
+                        <DropdownMenu>
+                          <DropdownMenuTrigger asChild>
+                            <button className="p-2 rounded hover:bg-gray-800 text-gray-400 hover:text-white transition-colors">
+                              <MoreVertical size={18} />
+                            </button>
+                          </DropdownMenuTrigger>
+                          <DropdownMenuContent align="end" className="bg-[#1a1f2e] border-gray-700">
+                            <DropdownMenuItem 
+                              className="text-gray-300 hover:text-white hover:bg-gray-700/50 cursor-pointer"
+                              onClick={() => setSelectedOrder(order)}
+                            >
+                              <Eye size={16} className="mr-2" /> View Details
+                            </DropdownMenuItem>
+                            <DropdownMenuItem 
+                              className="text-gray-300 hover:text-white hover:bg-gray-700/50 cursor-pointer"
+                              onClick={() => updateOrderStatus(order.id, 'processing')}
+                            >
+                              <Package size={16} className="mr-2" /> Mark Processing
+                            </DropdownMenuItem>
+                            <DropdownMenuItem 
+                              className="text-gray-300 hover:text-white hover:bg-gray-700/50 cursor-pointer"
+                              onClick={() => updateOrderStatus(order.id, 'shipped')}
+                            >
+                              <Truck size={16} className="mr-2" /> Mark Shipped
+                            </DropdownMenuItem>
+                            <DropdownMenuItem 
+                              className="text-gray-300 hover:text-white hover:bg-gray-700/50 cursor-pointer"
+                              onClick={() => updateOrderStatus(order.id, 'delivered')}
+                            >
+                              <CheckCircle size={16} className="mr-2" /> Mark Delivered
+                            </DropdownMenuItem>
+                          </DropdownMenuContent>
+                        </DropdownMenu>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          )}
         </CardContent>
       </Card>
 
@@ -234,47 +259,47 @@ const MerchantOrders = () => {
       <Dialog open={!!selectedOrder} onOpenChange={() => setSelectedOrder(null)}>
         <DialogContent className="bg-[#151b28] border-gray-800 text-white max-w-2xl">
           <DialogHeader>
-            <DialogTitle className="text-xl font-semibold">Order {selectedOrder?.id}</DialogTitle>
+            <DialogTitle className="text-xl font-semibold">Order {selectedOrder?.order_number}</DialogTitle>
           </DialogHeader>
           {selectedOrder && (
             <div className="space-y-6 mt-4">
               <div className="grid grid-cols-2 gap-4">
                 <div className="p-4 bg-gray-800/30 rounded-lg">
                   <p className="text-gray-400 text-sm mb-1">Customer</p>
-                  <p className="text-white font-medium">{selectedOrder.customer}</p>
-                  <p className="text-gray-500 text-sm">{selectedOrder.email}</p>
+                  <p className="text-white font-medium">{selectedOrder.customer_name}</p>
+                  <p className="text-gray-500 text-sm">{selectedOrder.customer_email}</p>
                 </div>
                 <div className="p-4 bg-gray-800/30 rounded-lg">
                   <p className="text-gray-400 text-sm mb-1">Shipping Address</p>
-                  <p className="text-white text-sm">{selectedOrder.shippingAddress}</p>
+                  <p className="text-white text-sm">{selectedOrder.shipping_address}</p>
+                </div>
+              </div>
+              <div className="p-4 bg-gray-800/30 rounded-lg">
+                <p className="text-gray-400 text-sm mb-3">Items</p>
+                <div className="space-y-2">
+                  {selectedOrder.items?.map((item, index) => (
+                    <div key={index} className="flex items-center justify-between">
+                      <div className="flex items-center gap-3">
+                        <img src={item.image || 'https://via.placeholder.com/40'} alt="" className="w-10 h-10 rounded object-cover" />
+                        <span className="text-white">{item.product_name} x{item.quantity}</span>
+                      </div>
+                      <span className="text-white font-medium">{formatCurrency(item.price * item.quantity)}</span>
+                    </div>
+                  ))}
                 </div>
               </div>
               <div className="flex items-center justify-between p-4 bg-gray-800/30 rounded-lg">
                 <div>
-                  <p className="text-gray-400 text-sm">Order Status</p>
+                  <p className="text-gray-400 text-sm">Status</p>
                   <span className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium mt-1 ${getStatusColor(selectedOrder.status)}`}>
                     {getStatusIcon(selectedOrder.status)}
                     {selectedOrder.status.charAt(0).toUpperCase() + selectedOrder.status.slice(1)}
                   </span>
                 </div>
                 <div>
-                  <p className="text-gray-400 text-sm">Payment</p>
-                  <span className={`px-2.5 py-1 rounded-full text-xs font-medium ${getPaymentColor(selectedOrder.paymentStatus)}`}>
-                    {selectedOrder.paymentStatus.charAt(0).toUpperCase() + selectedOrder.paymentStatus.slice(1)}
-                  </span>
-                </div>
-                <div>
                   <p className="text-gray-400 text-sm">Total</p>
                   <p className="text-white font-bold text-lg">{formatCurrency(selectedOrder.total)}</p>
                 </div>
-              </div>
-              <div className="flex justify-end gap-3">
-                <Button variant="outline" className="border-gray-700 text-gray-300 hover:bg-gray-800">
-                  <Printer size={16} className="mr-2" /> Print Invoice
-                </Button>
-                <Button className="bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-600 hover:to-teal-700 text-white">
-                  Update Status
-                </Button>
               </div>
             </div>
           )}
