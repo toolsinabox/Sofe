@@ -2609,6 +2609,42 @@ async def render_partial_product_detail(product_id: str):
 
 # ==================== MAROPOST TEMPLATE ENGINE V2 ====================
 
+@api_router.get("/render/v2-info")
+async def get_render_v2_info():
+    """Get information about the template rendering system"""
+    active_theme = await get_active_theme_name()
+    theme_path = THEMES_DIR / active_theme
+    
+    # Check which files exist
+    files_status = {
+        "template.html": (theme_path / "template.html").exists(),
+        "checkout.template.html": (theme_path / "checkout.template.html").exists(),
+        "empty.template.html": (theme_path / "empty.template.html").exists(),
+        "print.template.html": (theme_path / "print.template.html").exists(),
+        "headers/template.html": (theme_path / "templates" / "headers" / "template.html").exists(),
+        "headers/includes/head.template.html": (theme_path / "templates" / "headers" / "includes" / "head.template.html").exists(),
+        "footers/template.html": (theme_path / "templates" / "footers" / "template.html").exists(),
+        "cms/home.template.html": (theme_path / "templates" / "cms" / "home.template.html").exists(),
+        "products/template.html": (theme_path / "templates" / "products" / "template.html").exists(),
+    }
+    
+    return {
+        "active_theme": active_theme,
+        "theme_path": str(theme_path),
+        "files": files_status,
+        "supported_page_types": [pt.value for pt in PageType],
+        "wrapper_contexts": [wc.value for wc in WrapperContext],
+        "endpoints": {
+            "render_home": "/api/render/v2/home",
+            "render_product": "/api/render/v2/product/{product_id}",
+            "render_category": "/api/render/v2/category/{category_id}",
+            "render_checkout": "/api/render/v2/checkout",
+            "render_with_debug": "/api/render/v2/home?debug=true",
+            "render_print": "/api/render/v2/product/{id}?print=true"
+        }
+    }
+
+
 @api_router.get("/render/v2/{path:path}")
 async def render_page_v2(
     path: str,
@@ -2681,23 +2717,6 @@ async def render_page_v2(
     except Exception as e:
         logger.error(f"Render error: {e}")
         raise HTTPException(status_code=500, detail=f"Render error: {str(e)}")
-
-
-@api_router.get("/render/v2-info")
-async def get_render_v2_info():
-    """Get information about the template rendering system"""
-    active_theme = await get_active_theme_name()
-    theme_path = THEMES_DIR / active_theme
-    
-    # Check which files exist
-    files_status = {
-        "template.html": (theme_path / "template.html").exists(),
-        "checkout.template.html": (theme_path / "checkout.template.html").exists(),
-        "empty.template.html": (theme_path / "empty.template.html").exists(),
-        "print.template.html": (theme_path / "print.template.html").exists(),
-        "headers/template.html": (theme_path / "templates" / "headers" / "template.html").exists(),
-        "headers/includes/head.template.html": (theme_path / "templates" / "headers" / "includes" / "head.template.html").exists(),
-        "footers/template.html": (theme_path / "templates" / "footers" / "template.html").exists(),
         "cms/home.template.html": (theme_path / "templates" / "cms" / "home.template.html").exists(),
         "products/template.html": (theme_path / "templates" / "products" / "template.html").exists(),
     }
