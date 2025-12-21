@@ -118,9 +118,6 @@ export const ThemeHero = ({ className = '', onBannersLoad = null }) => {
   }
 
   // If we have banner data, render our own carousel with proper interactivity
-  // Filter banners that should show on desktop
-  const visibleBanners = banners.filter(b => b.show_on_desktop !== false && b.is_active !== false);
-  
   if (visibleBanners.length > 0) {
     return (
       <div className={`relative overflow-hidden ${className}`}>
