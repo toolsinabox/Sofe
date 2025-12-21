@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>[@page_title@] | [@store_name@]</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            font-size: 12pt;
+            line-height: 1.5;
+            color: #000;
+            background: #fff;
+            margin: 0;
+            padding: 20px;
+        }
+        
+        .print-header {
+            border-bottom: 2px solid #000;
+            padding-bottom: 20px;
+            margin-bottom: 20px;
+        }
+        
+        .print-header h1 {
+            margin: 0;
+            font-size: 24pt;
+        }
+        
+        .print-content {
+            min-height: 500px;
+        }
+        
+        .print-footer {
+            border-top: 1px solid #ccc;
+            padding-top: 20px;
+            margin-top: 20px;
+            font-size: 10pt;
+            color: #666;
+        }
+        
+        @media print {
+            body { margin: 0; padding: 0; }
+            .no-print { display: none; }
+        }
+    </style>
+</head>
+<body>
+    <div class="print-header">
+        <h1>[@store_name@]</h1>
+        <p>[@store_address@] | [@store_phone@] | [@store_email@]</p>
+    </div>
+    
+    <div class="print-content">
+        [%content%]
+    </div>
+    
+    <div class="print-footer">
+        <p>Printed on [@current_date@] | © [@current_year@] [@store_name@]</p>
+    </div>
+    
+    <div class="no-print" style="margin-top: 30px;">
+        <button onclick="window.print()">Print this page</button>
+        <button onclick="window.close()">Close</button>
+    </div>
+</body>
+</html>

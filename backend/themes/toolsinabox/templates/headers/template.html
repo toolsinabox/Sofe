@@ -1,30 +1,13 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Tools In A Box | Quality Tools for Every Job</title>
-    <meta name="description" content="Your trusted source for quality tools and equipment. Fast delivery, secure payment, and 30-day returns.">
-    
-    <!-- Google Fonts -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
-    
-    <!-- Theme CSS -->
-    <link rel="stylesheet" href="css/style.css">
-</head>
-<body>
     <!-- Top Bar -->
     <div class="top-bar">
         <div class="max-w-7xl mx-auto px-4">
             <div class="flex items-center justify-between py-2">
                 <div class="flex items-center gap-4">
-                    <a href="tel:1800123456" class="flex items-center gap-2 text-white text-sm">
+                    <a href="tel:[@store_phone@]" class="flex items-center gap-2 text-white text-sm">
                         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"></path>
                         </svg>
-                        <span>1800 123 456</span>
+                        <span>[@store_phone@]</span>
                     </a>
                 </div>
                 <div class="hidden md:block">
@@ -49,21 +32,20 @@
                         <span>TIB</span>
                     </div>
                     <div class="hidden sm:block">
-                        <span class="text-2xl font-bold text-gray-900">TOOLS IN</span>
-                        <span class="block text-xs text-gray-500 -mt-1">A BOX STORE</span>
+                        <span class="text-2xl font-bold text-gray-900">[@store_name@]</span>
                     </div>
                 </a>
                 
                 <!-- Search Bar -->
                 <div class="hidden md:flex flex-1 max-w-xl mx-8">
-                    <div class="relative w-full">
-                        <input type="text" placeholder="I am looking for..." class="search-input">
-                        <button class="search-btn">
+                    <form action="/live/search" method="GET" class="relative w-full">
+                        <input type="text" name="q" placeholder="I am looking for..." class="search-input">
+                        <button type="submit" class="search-btn">
                             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
                             </svg>
                         </button>
-                    </div>
+                    </form>
                 </div>
                 
                 <!-- Right Icons -->
@@ -85,7 +67,7 @@
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z"></path>
                         </svg>
                         <span class="text-xs mt-1">Cart</span>
-                        <span class="cart-badge">0</span>
+                        <span class="cart-badge" id="cart-count">[@mini_cart_count@]</span>
                     </a>
                 </div>
             </div>
@@ -96,17 +78,11 @@
             <div class="max-w-7xl mx-auto px-4">
                 <div class="flex items-center gap-1 overflow-x-auto">
                     <a href="/live/products" class="nav-link">ALL PRODUCTS</a>
-                    <a href="/live/category/black-series" class="nav-link">BLACK SERIES</a>
-                    <a href="/live/category/white-series" class="nav-link">WHITE SERIES</a>
-                    <a href="/live/category/dog-boxes" class="nav-link">DOG BOXES</a>
-                    <a href="/live/category/sports" class="nav-link">SPORTS</a>
-                    <a href="/live/category/accessories" class="nav-link">ACCESSORIES</a>
-                    <a href="/live/category/beauty" class="nav-link">BEAUTY</a>
+                    [%category_list limit:'6'%]
+                    <a href="/live/category/[@category_id@]" class="nav-link">[@category_name@]</a>
+                    [%/category_list%]
                     <a href="/live/sale" class="nav-link sale">ON SALE</a>
                 </div>
             </div>
         </nav>
     </header>
-    
-    <!-- Main Content -->
-    <main>

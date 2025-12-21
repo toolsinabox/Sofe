@@ -52,48 +52,15 @@
             <div class="max-w-7xl mx-auto px-4">
                 <h2 class="section-title">POPULAR CATEGORIES</h2>
                 <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
-                    <a href="/live/category/black-series" class="category-card">
+                    [%category_list limit:'6'%]
+                    <a href="/live/category/[@category_id@]" class="category-card">
                         <div class="category-image">
-                            <img src="https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=200&h=200&fit=crop" alt="Black Series">
+                            <img src="[@category_image@]" alt="[@category_name@]" onerror="this.src='https://via.placeholder.com/200?text=[@category_name@]'">
                         </div>
-                        <h3>Black Series</h3>
-                        <p>45 products</p>
+                        <h3>[@category_name@]</h3>
+                        <p>[@category_product_count@] products</p>
                     </a>
-                    <a href="/live/category/white-series" class="category-card">
-                        <div class="category-image">
-                            <img src="https://images.unsplash.com/photo-1572981779307-38b8cabb2407?w=200&h=200&fit=crop" alt="White Series">
-                        </div>
-                        <h3>White Series</h3>
-                        <p>32 products</p>
-                    </a>
-                    <a href="/live/category/dog-boxes" class="category-card">
-                        <div class="category-image">
-                            <img src="https://images.unsplash.com/photo-1587300003388-59208cc962cb?w=200&h=200&fit=crop" alt="Dog Boxes">
-                        </div>
-                        <h3>Dog Boxes</h3>
-                        <p>18 products</p>
-                    </a>
-                    <a href="/live/category/sports" class="category-card">
-                        <div class="category-image">
-                            <img src="https://images.unsplash.com/photo-1461896836934- voices?w=200&h=200&fit=crop" alt="Sports">
-                        </div>
-                        <h3>Sports</h3>
-                        <p>27 products</p>
-                    </a>
-                    <a href="/live/category/accessories" class="category-card">
-                        <div class="category-image">
-                            <img src="https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=200&h=200&fit=crop" alt="Accessories">
-                        </div>
-                        <h3>Accessories</h3>
-                        <p>56 products</p>
-                    </a>
-                    <a href="/live/category/beauty" class="category-card">
-                        <div class="category-image">
-                            <img src="https://images.unsplash.com/photo-1596462502278-27bfdc403348?w=200&h=200&fit=crop" alt="Beauty">
-                        </div>
-                        <h3>Beauty</h3>
-                        <p>41 products</p>
-                    </a>
+                    [%/category_list%]
                 </div>
             </div>
         </section>
@@ -111,66 +78,28 @@
                     </a>
                 </div>
                 <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+                    [%product_list limit:'8'%]
                     <div class="product-card">
-                        <a href="/live/product/1">
+                        <a href="/live/product/[@product_id@]">
                             <div class="product-image">
-                                <img src="https://images.unsplash.com/photo-1504148455328-c376907d081c?w=400&h=400&fit=crop" alt="Black Series Toolbox">
-                            </div>
-                            <div class="product-info">
-                                <h3>Black Series Toolbox</h3>
-                                <div class="product-price">
-                                    <span class="current-price">$299.00</span>
-                                    <span class="old-price">$399.00</span>
-                                </div>
-                            </div>
-                        </a>
-                        <button class="add-to-cart-btn">Add to Cart</button>
-                    </div>
-                    <div class="product-card">
-                        <a href="/live/product/2">
-                            <div class="product-image">
+                                [%if [@product_sale@] == 'y'%]
                                 <span class="sale-badge">SALE</span>
-                                <img src="https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=400&h=400&fit=crop" alt="Power Drill Pro">
+                                [%/if%]
+                                <img src="[@product_image@]" alt="[@product_name@]" onerror="this.src='https://via.placeholder.com/400?text=Product'">
                             </div>
                             <div class="product-info">
-                                <h3>Power Drill Pro</h3>
+                                <h3>[@product_name@]</h3>
                                 <div class="product-price">
-                                    <span class="current-price">$149.00</span>
-                                    <span class="old-price">$199.00</span>
+                                    <span class="current-price">[@product_price_formatted@]</span>
+                                    [%if [@product_compare_price@]%]
+                                    <span class="old-price">[@product_compare_price_formatted@]</span>
+                                    [%/if%]
                                 </div>
                             </div>
                         </a>
-                        <button class="add-to-cart-btn">Add to Cart</button>
+                        <button class="add-to-cart-btn" data-product-id="[@product_id@]">Add to Cart</button>
                     </div>
-                    <div class="product-card">
-                        <a href="/live/product/3">
-                            <div class="product-image">
-                                <img src="https://images.unsplash.com/photo-1572981779307-38b8cabb2407?w=400&h=400&fit=crop" alt="Safety Helmet">
-                            </div>
-                            <div class="product-info">
-                                <h3>Safety Helmet</h3>
-                                <div class="product-price">
-                                    <span class="current-price">$49.00</span>
-                                </div>
-                            </div>
-                        </a>
-                        <button class="add-to-cart-btn">Add to Cart</button>
-                    </div>
-                    <div class="product-card">
-                        <a href="/live/product/4">
-                            <div class="product-image">
-                                <span class="new-badge">NEW</span>
-                                <img src="https://images.unsplash.com/photo-1581147036324-c17ac41f3604?w=400&h=400&fit=crop" alt="Work Gloves">
-                            </div>
-                            <div class="product-info">
-                                <h3>Work Gloves</h3>
-                                <div class="product-price">
-                                    <span class="current-price">$29.00</span>
-                                </div>
-                            </div>
-                        </a>
-                        <button class="add-to-cart-btn">Add to Cart</button>
-                    </div>
+                    [%/product_list%]
                 </div>
             </div>
         </section>
@@ -189,87 +118,6 @@
             </div>
         </section>
         
-        <!-- More Products -->
-        <section class="products-section">
-            <div class="max-w-7xl mx-auto px-4">
-                <div class="flex items-center justify-between mb-8">
-                    <h2 class="section-title mb-0">ON SALE</h2>
-                    <a href="/live/sale" class="view-all-link">
-                        View All
-                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"></path>
-                        </svg>
-                    </a>
-                </div>
-                <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-                    <div class="product-card">
-                        <a href="/live/product/5">
-                            <div class="product-image">
-                                <span class="sale-badge">-25%</span>
-                                <img src="https://images.unsplash.com/photo-1590920296939-e1c25e55c6b4?w=400&h=400&fit=crop" alt="Tool Belt">
-                            </div>
-                            <div class="product-info">
-                                <h3>Tool Belt Premium</h3>
-                                <div class="product-price">
-                                    <span class="current-price">$59.00</span>
-                                    <span class="old-price">$79.00</span>
-                                </div>
-                            </div>
-                        </a>
-                        <button class="add-to-cart-btn">Add to Cart</button>
-                    </div>
-                    <div class="product-card">
-                        <a href="/live/product/6">
-                            <div class="product-image">
-                                <span class="sale-badge">-30%</span>
-                                <img src="https://images.unsplash.com/photo-1530124566582-a618bc2615dc?w=400&h=400&fit=crop" alt="Measuring Tape">
-                            </div>
-                            <div class="product-info">
-                                <h3>Measuring Tape Pro</h3>
-                                <div class="product-price">
-                                    <span class="current-price">$19.00</span>
-                                    <span class="old-price">$29.00</span>
-                                </div>
-                            </div>
-                        </a>
-                        <button class="add-to-cart-btn">Add to Cart</button>
-                    </div>
-                    <div class="product-card">
-                        <a href="/live/product/7">
-                            <div class="product-image">
-                                <span class="sale-badge">-40%</span>
-                                <img src="https://images.unsplash.com/photo-1581244277943-fe4a9c777189?w=400&h=400&fit=crop" alt="Wrench Set">
-                            </div>
-                            <div class="product-info">
-                                <h3>Wrench Set (12pc)</h3>
-                                <div class="product-price">
-                                    <span class="current-price">$89.00</span>
-                                    <span class="old-price">$149.00</span>
-                                </div>
-                            </div>
-                        </a>
-                        <button class="add-to-cart-btn">Add to Cart</button>
-                    </div>
-                    <div class="product-card">
-                        <a href="/live/product/8">
-                            <div class="product-image">
-                                <span class="sale-badge">-20%</span>
-                                <img src="https://images.unsplash.com/photo-1527770218965-c4ce80bfc8fc?w=400&h=400&fit=crop" alt="Safety Goggles">
-                            </div>
-                            <div class="product-info">
-                                <h3>Safety Goggles</h3>
-                                <div class="product-price">
-                                    <span class="current-price">$24.00</span>
-                                    <span class="old-price">$30.00</span>
-                                </div>
-                            </div>
-                        </a>
-                        <button class="add-to-cart-btn">Add to Cart</button>
-                    </div>
-                </div>
-            </div>
-        </section>
-        
         <!-- About Section -->
         <section class="about-section">
             <div class="max-w-7xl mx-auto px-4">
@@ -277,7 +125,7 @@
                     <div>
                         <h2 class="text-3xl md:text-4xl font-bold mb-6">Your Ultimate Tool Destination</h2>
                         <p class="text-gray-300 mb-6">
-                            Welcome to Tools In A Box, where quality meets performance. We're committed to providing you with the best tools and equipment at competitive prices, backed by exceptional customer service.
+                            Welcome to [@store_name@], where quality meets performance. We're committed to providing you with the best tools and equipment at competitive prices, backed by exceptional customer service.
                         </p>
                         <ul class="about-list">
                             <li>
