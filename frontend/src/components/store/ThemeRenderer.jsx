@@ -123,7 +123,12 @@ export const ThemeHero = ({ className = '', onBannersLoad = null }) => {
           style={{ transform: `translateX(-${currentSlide * 100}%)` }}
         >
           {banners.map((banner, idx) => {
-            const imgUrl = banner.image_url_desktop || banner.image_url || '';
+            // Support both naming conventions
+            const imgUrl = banner.image_desktop || banner.image_url_desktop || banner.image || banner.image_url || '';
+            const isVisible = banner.show_on_desktop !== false; // default to true
+            
+            if (!isVisible) return null;
+            
             return (
               <div 
                 key={banner.id || idx}
@@ -131,21 +136,21 @@ export const ThemeHero = ({ className = '', onBannersLoad = null }) => {
               >
                 <img 
                   src={imgUrl.startsWith('/api') ? `${API_URL}${imgUrl}` : imgUrl}
-                  alt={banner.title || `Slide ${idx + 1}`}
+                  alt={banner.title || banner.name || `Slide ${idx + 1}`}
                   className="w-full h-[400px] md:h-[500px] object-cover"
                 />
-                {(banner.show_title !== false && banner.title) || banner.subtitle || banner.button_text ? (
+                {(banner.show_title !== false && (banner.title || banner.name)) || banner.subtitle || (banner.show_button !== false && banner.button_text) ? (
                   <div className="absolute inset-0 bg-black/30 flex items-center justify-center">
                     <div className="text-center text-white p-8">
-                      {banner.show_title !== false && banner.title && (
-                        <h1 className="text-3xl md:text-5xl font-bold mb-4">{banner.title}</h1>
+                      {banner.show_title !== false && (banner.title || banner.name) && (
+                        <h1 className="text-3xl md:text-5xl font-bold mb-4">{banner.title || banner.name}</h1>
                       )}
                       {banner.show_subtitle !== false && banner.subtitle && (
                         <p className="text-lg md:text-xl mb-6">{banner.subtitle}</p>
                       )}
                       {banner.show_button !== false && banner.button_text && (
                         <a 
-                          href={banner.link_url || '#'}
+                          href={banner.link || banner.link_url || '#'}
                           className="inline-block bg-white text-black px-8 py-3 rounded-lg font-semibold hover:bg-gray-100 transition"
                         >
                           {banner.button_text}
