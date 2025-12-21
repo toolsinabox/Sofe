@@ -410,17 +410,16 @@ const MerchantBanners = () => {
             </div>
             
             <form onSubmit={handleSubmit} className="p-4 space-y-4">
-              {/* Banner Name (Required) */}
+              {/* Banner Name (Optional) */}
               <div className="bg-gray-700/50 rounded-lg p-4">
-                <Label className="text-gray-300 mb-2 block">Banner Name <span className="text-red-400">*</span></Label>
+                <Label className="text-gray-300 mb-2 block">Banner Name</Label>
                 <Input
                   value={formData.name}
                   onChange={(e) => setFormData(prev => ({ ...prev, name: e.target.value }))}
                   placeholder="e.g., Summer Sale 2025, Homepage Hero"
-                  required
                   className="bg-gray-700 border-gray-600 text-white"
                 />
-                <p className="text-xs text-gray-500 mt-1">Internal name for identification (not shown on storefront)</p>
+                <p className="text-xs text-gray-500 mt-1">Internal name for identification (optional - will use title if empty)</p>
               </div>
 
               {/* Section Tabs */}
