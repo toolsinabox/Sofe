@@ -2246,6 +2246,14 @@ async def render_full_page(page_type: str, category_id: Optional[str] = None, pr
     rendered = re.sub(r'\[%/ntheme_asset%\]', '', rendered)
     rendered = re.sub(r'/assets/themes/skeletal/', f'/api/themes/{active_theme}/assets/', rendered)
     
+    # Fix relative CSS/JS paths - these need to have the full path
+    # Replace href="css/ with full path
+    rendered = re.sub(r'href="css/', f'href="/api/themes/{active_theme}/assets/css/', rendered)
+    rendered = re.sub(r'href="js/', f'href="/api/themes/{active_theme}/assets/js/', rendered)
+    rendered = re.sub(r'src="js/', f'src="/api/themes/{active_theme}/assets/js/', rendered)
+    rendered = re.sub(r'src="images/', f'src="/api/themes/{active_theme}/assets/images/', rendered)
+    rendered = re.sub(r'src="img/', f'src="/api/themes/{active_theme}/assets/img/', rendered)
+    
     return StreamingResponse(
         io.BytesIO(rendered.encode('utf-8')),
         media_type='text/html'
