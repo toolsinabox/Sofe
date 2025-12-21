@@ -160,21 +160,36 @@ const MerchantBanners = () => {
     }
   };
 
-  const createDropzone = (deviceType) => {
-    return useDropzone({
-      onDrop: (acceptedFiles) => {
-        if (acceptedFiles.length > 0) {
-          uploadImage(acceptedFiles[0], deviceType);
-        }
-      },
-      accept: { 'image/*': ['.png', '.jpg', '.jpeg', '.webp'] },
-      maxFiles: 1
-    });
-  };
+  // Create dropzone hooks at component level
+  const desktopDropzone = useDropzone({
+    onDrop: (acceptedFiles) => {
+      if (acceptedFiles.length > 0) {
+        uploadImage(acceptedFiles[0], 'desktop');
+      }
+    },
+    accept: { 'image/*': ['.png', '.jpg', '.jpeg', '.webp'] },
+    maxFiles: 1
+  });
 
-  const desktopDropzone = createDropzone('desktop');
-  const tabletDropzone = createDropzone('tablet');
-  const mobileDropzone = createDropzone('mobile');
+  const tabletDropzone = useDropzone({
+    onDrop: (acceptedFiles) => {
+      if (acceptedFiles.length > 0) {
+        uploadImage(acceptedFiles[0], 'tablet');
+      }
+    },
+    accept: { 'image/*': ['.png', '.jpg', '.jpeg', '.webp'] },
+    maxFiles: 1
+  });
+
+  const mobileDropzone = useDropzone({
+    onDrop: (acceptedFiles) => {
+      if (acceptedFiles.length > 0) {
+        uploadImage(acceptedFiles[0], 'mobile');
+      }
+    },
+    accept: { 'image/*': ['.png', '.jpg', '.jpeg', '.webp'] },
+    maxFiles: 1
+  });
 
   const getDeviceIcon = (device) => {
     switch (device) {
