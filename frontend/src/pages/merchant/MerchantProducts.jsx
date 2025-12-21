@@ -1,4 +1,5 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import axios from 'axios';
 import {
   Search,
   Plus,
@@ -36,13 +37,81 @@ import {
   SelectTrigger,
   SelectValue,
 } from '../../components/ui/select';
-import { products, categories } from '../../data/mock';
+
+const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
+const API = `${BACKEND_URL}/api`;
 
 const MerchantProducts = () => {
+  const [products, setProducts] = useState([]);
+  const [categories, setCategories] = useState([]);
+  const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState('');
   const [categoryFilter, setCategoryFilter] = useState('all');
   const [viewMode, setViewMode] = useState('grid');
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
+  const [newProduct, setNewProduct] = useState({
+    name: '',
+    description: '',
+    price: '',
+    compare_price: '',
+    sku: '',
+    category_id: '',
+    stock: '',
+    images: []
+  });
+
+  useEffect(() => {
+    fetchData();
+  }, [categoryFilter]);
+
+  const fetchData = async () => {
+    setLoading(true);
+    try {
+      let productsUrl = `${API}/products?limit=100`;
+      if (categoryFilter !== 'all') {
+        productsUrl += `&category_id=${categoryFilter}`;
+      }
+      const [productsRes, categoriesRes] = await Promise.all([
+        axios.get(productsUrl),
+        axios.get(`${API}/categories`)
+      ]);
+      setProducts(productsRes.data);
+      setCategories(categoriesRes.data);
+    } catch (error) {
+      console.error('Error fetching data:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleCreateProduct = async () => {
+    try {
+      const productData = {
+        ...newProduct,
+        price: parseFloat(newProduct.price) || 0,
+        compare_price: newProduct.compare_price ? parseFloat(newProduct.compare_price) : null,
+        stock: parseInt(newProduct.stock) || 0,
+        images: newProduct.images.length > 0 ? newProduct.images : ['https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=500']
+      };
+      await axios.post(`${API}/products`, productData);
+      setIsAddModalOpen(false);
+      setNewProduct({ name: '', description: '', price: '', compare_price: '', sku: '', category_id: '', stock: '', images: [] });
+      fetchData();
+    } catch (error) {
+      console.error('Error creating product:', error);
+    }
+  };
+
+  const handleDeleteProduct = async (productId) => {
+    if (window.confirm('Are you sure you want to delete this product?')) {
+      try {
+        await axios.delete(`${API}/products/${productId}`);
+        fetchData();
+      } catch (error) {
+        console.error('Error deleting product:', error);
+      }
+    }
+  };
 
   const formatCurrency = (value) => {
     return new Intl.NumberFormat('en-US', {
@@ -52,20 +121,16 @@ const MerchantProducts = () => {
     }).format(value);
   };
 
-  const getStatusColor = (status) => {
-    switch (status) {
-      case 'active': return 'bg-emerald-500/20 text-emerald-400';
-      case 'low_stock': return 'bg-yellow-500/20 text-yellow-400';
-      case 'out_of_stock': return 'bg-red-500/20 text-red-400';
-      default: return 'bg-gray-500/20 text-gray-400';
-    }
+  const getStatusColor = (product) => {
+    if (product.stock === 0) return 'bg-red-500/20 text-red-400';
+    if (product.stock <= 10) return 'bg-yellow-500/20 text-yellow-400';
+    return 'bg-emerald-500/20 text-emerald-400';
   };
 
   const filteredProducts = products.filter(product => {
     const matchesSearch = product.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
       product.sku.toLowerCase().includes(searchQuery.toLowerCase());
-    const matchesCategory = categoryFilter === 'all' || product.category === categoryFilter;
-    return matchesSearch && matchesCategory;
+    return matchesSearch;
   });
 
   return (
@@ -80,7 +145,7 @@ const MerchantProducts = () => {
               placeholder="Search products..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full bg-gray-800/50 border border-gray-700 rounded-lg pl-10 pr-4 py-2.5 text-sm text-white placeholder-gray-500 focus:outline-none focus:border-emerald-500/50 focus:ring-1 focus:ring-emerald-500/50 transition-all"
+              className="w-full bg-gray-800/50 border border-gray-700 rounded-lg pl-10 pr-4 py-2.5 text-sm text-white placeholder-gray-500 focus:outline-none focus:border-emerald-500/50"
             />
           </div>
           <Select value={categoryFilter} onValueChange={setCategoryFilter}>
@@ -90,7 +155,7 @@ const MerchantProducts = () => {
             <SelectContent className="bg-[#1a1f2e] border-gray-700">
               <SelectItem value="all" className="text-gray-300">All Categories</SelectItem>
               {categories.map(cat => (
-                <SelectItem key={cat.id} value={cat.name} className="text-gray-300">{cat.name}</SelectItem>
+                <SelectItem key={cat.id} value={cat.id} className="text-gray-300">{cat.name}</SelectItem>
               ))}
             </SelectContent>
           </Select>
@@ -123,58 +188,97 @@ const MerchantProducts = () => {
               </DialogHeader>
               <div className="space-y-4 mt-4">
                 <div className="space-y-2">
-                  <Label className="text-gray-300">Product Name</Label>
-                  <Input className="bg-gray-800/50 border-gray-700 text-white" placeholder="Enter product name" />
+                  <Label className="text-gray-300">Product Name *</Label>
+                  <Input 
+                    className="bg-gray-800/50 border-gray-700 text-white" 
+                    placeholder="Enter product name"
+                    value={newProduct.name}
+                    onChange={(e) => setNewProduct({...newProduct, name: e.target.value})}
+                  />
                 </div>
                 <div className="space-y-2">
                   <Label className="text-gray-300">Description</Label>
-                  <Textarea className="bg-gray-800/50 border-gray-700 text-white min-h-24" placeholder="Enter product description" />
+                  <Textarea 
+                    className="bg-gray-800/50 border-gray-700 text-white min-h-24" 
+                    placeholder="Enter product description"
+                    value={newProduct.description}
+                    onChange={(e) => setNewProduct({...newProduct, description: e.target.value})}
+                  />
                 </div>
                 <div className="grid grid-cols-2 gap-4">
                   <div className="space-y-2">
-                    <Label className="text-gray-300">Price</Label>
-                    <Input type="number" className="bg-gray-800/50 border-gray-700 text-white" placeholder="0.00" />
+                    <Label className="text-gray-300">Price *</Label>
+                    <Input 
+                      type="number" 
+                      className="bg-gray-800/50 border-gray-700 text-white" 
+                      placeholder="0.00"
+                      value={newProduct.price}
+                      onChange={(e) => setNewProduct({...newProduct, price: e.target.value})}
+                    />
                   </div>
                   <div className="space-y-2">
-                    <Label className="text-gray-300">Compare Price</Label>
-                    <Input type="number" className="bg-gray-800/50 border-gray-700 text-white" placeholder="0.00" />
+                    <Label className="text-gray-300">Compare Price (RRP)</Label>
+                    <Input 
+                      type="number" 
+                      className="bg-gray-800/50 border-gray-700 text-white" 
+                      placeholder="0.00"
+                      value={newProduct.compare_price}
+                      onChange={(e) => setNewProduct({...newProduct, compare_price: e.target.value})}
+                    />
                   </div>
                 </div>
                 <div className="grid grid-cols-2 gap-4">
                   <div className="space-y-2">
                     <Label className="text-gray-300">Category</Label>
-                    <Select>
+                    <Select value={newProduct.category_id} onValueChange={(val) => setNewProduct({...newProduct, category_id: val})}>
                       <SelectTrigger className="bg-gray-800/50 border-gray-700 text-gray-300">
                         <SelectValue placeholder="Select category" />
                       </SelectTrigger>
                       <SelectContent className="bg-[#1a1f2e] border-gray-700">
                         {categories.map(cat => (
-                          <SelectItem key={cat.id} value={cat.name} className="text-gray-300">{cat.name}</SelectItem>
+                          <SelectItem key={cat.id} value={cat.id} className="text-gray-300">{cat.name}</SelectItem>
                         ))}
                       </SelectContent>
                     </Select>
                   </div>
                   <div className="space-y-2">
-                    <Label className="text-gray-300">SKU</Label>
-                    <Input className="bg-gray-800/50 border-gray-700 text-white" placeholder="SKU-001" />
+                    <Label className="text-gray-300">SKU *</Label>
+                    <Input 
+                      className="bg-gray-800/50 border-gray-700 text-white" 
+                      placeholder="SKU-001"
+                      value={newProduct.sku}
+                      onChange={(e) => setNewProduct({...newProduct, sku: e.target.value})}
+                    />
                   </div>
                 </div>
                 <div className="space-y-2">
-                  <Label className="text-gray-300">Stock Quantity</Label>
-                  <Input type="number" className="bg-gray-800/50 border-gray-700 text-white" placeholder="0" />
+                  <Label className="text-gray-300">Stock Quantity *</Label>
+                  <Input 
+                    type="number" 
+                    className="bg-gray-800/50 border-gray-700 text-white" 
+                    placeholder="0"
+                    value={newProduct.stock}
+                    onChange={(e) => setNewProduct({...newProduct, stock: e.target.value})}
+                  />
                 </div>
                 <div className="space-y-2">
-                  <Label className="text-gray-300">Product Images</Label>
-                  <div className="border-2 border-dashed border-gray-700 rounded-lg p-8 text-center hover:border-emerald-500/50 transition-colors cursor-pointer">
-                    <ImageIcon size={40} className="mx-auto text-gray-500 mb-2" />
-                    <p className="text-gray-400 text-sm">Drop images here or click to upload</p>
-                  </div>
+                  <Label className="text-gray-300">Image URL</Label>
+                  <Input 
+                    className="bg-gray-800/50 border-gray-700 text-white" 
+                    placeholder="https://example.com/image.jpg"
+                    value={newProduct.images[0] || ''}
+                    onChange={(e) => setNewProduct({...newProduct, images: [e.target.value]})}
+                  />
                 </div>
                 <div className="flex justify-end gap-3 mt-6">
                   <Button variant="ghost" onClick={() => setIsAddModalOpen(false)} className="text-gray-400 hover:text-white hover:bg-gray-800">
                     Cancel
                   </Button>
-                  <Button className="bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-600 hover:to-teal-700 text-white">
+                  <Button 
+                    onClick={handleCreateProduct}
+                    disabled={!newProduct.name || !newProduct.price || !newProduct.sku}
+                    className="bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-600 hover:to-teal-700 text-white"
+                  >
                     Create Product
                   </Button>
                 </div>
@@ -185,13 +289,25 @@ const MerchantProducts = () => {
       </div>
 
       {/* Products Grid */}
-      {viewMode === 'grid' ? (
+      {loading ? (
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+          {[...Array(8)].map((_, i) => (
+            <div key={i} className="bg-[#151b28] border-gray-800 rounded-lg animate-pulse">
+              <div className="aspect-square bg-gray-800" />
+              <div className="p-4">
+                <div className="h-4 bg-gray-800 rounded mb-2" />
+                <div className="h-6 bg-gray-800 rounded w-1/2" />
+              </div>
+            </div>
+          ))}
+        </div>
+      ) : viewMode === 'grid' ? (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
           {filteredProducts.map((product) => (
             <Card key={product.id} className="bg-[#151b28] border-gray-800 hover:border-gray-700 transition-all duration-300 group overflow-hidden">
               <div className="relative aspect-square bg-gray-800/50">
                 <img
-                  src={product.images[0]}
+                  src={product.images?.[0] || 'https://via.placeholder.com/400'}
                   alt={product.name}
                   className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
                 />
@@ -204,41 +320,37 @@ const MerchantProducts = () => {
                     </DropdownMenuTrigger>
                     <DropdownMenuContent align="end" className="bg-[#1a1f2e] border-gray-700">
                       <DropdownMenuItem className="text-gray-300 hover:text-white hover:bg-gray-700/50 cursor-pointer">
-                        <Eye size={16} className="mr-2" /> View
-                      </DropdownMenuItem>
-                      <DropdownMenuItem className="text-gray-300 hover:text-white hover:bg-gray-700/50 cursor-pointer">
                         <Edit size={16} className="mr-2" /> Edit
                       </DropdownMenuItem>
-                      <DropdownMenuItem className="text-gray-300 hover:text-white hover:bg-gray-700/50 cursor-pointer">
-                        <Copy size={16} className="mr-2" /> Duplicate
-                      </DropdownMenuItem>
-                      <DropdownMenuItem className="text-red-400 hover:text-red-300 hover:bg-red-500/10 cursor-pointer">
+                      <DropdownMenuItem 
+                        className="text-red-400 hover:text-red-300 hover:bg-red-500/10 cursor-pointer"
+                        onClick={() => handleDeleteProduct(product.id)}
+                      >
                         <Trash2 size={16} className="mr-2" /> Delete
                       </DropdownMenuItem>
                     </DropdownMenuContent>
                   </DropdownMenu>
                 </div>
-                {product.comparePrice && (
+                {product.compare_price && product.compare_price > product.price && (
                   <span className="absolute top-3 left-3 px-2 py-1 bg-red-500 text-white text-xs font-medium rounded">
                     Sale
                   </span>
                 )}
               </div>
               <CardContent className="p-4">
-                <div className="flex items-start justify-between gap-2 mb-2">
-                  <h3 className="text-white font-medium text-sm line-clamp-2">{product.name}</h3>
-                </div>
+                <p className="text-gray-500 text-xs mb-1">{product.sku}</p>
+                <h3 className="text-white font-medium text-sm line-clamp-2 mb-2">{product.name}</h3>
                 <div className="flex items-center gap-2 mb-3">
                   <span className="text-emerald-400 font-bold">{formatCurrency(product.price)}</span>
-                  {product.comparePrice && (
-                    <span className="text-gray-500 text-sm line-through">{formatCurrency(product.comparePrice)}</span>
+                  {product.compare_price && product.compare_price > product.price && (
+                    <span className="text-gray-500 text-sm line-through">{formatCurrency(product.compare_price)}</span>
                   )}
                 </div>
                 <div className="flex items-center justify-between">
-                  <span className={`px-2 py-0.5 rounded text-xs font-medium ${getStatusColor(product.status)}`}>
+                  <span className={`px-2 py-0.5 rounded text-xs font-medium ${getStatusColor(product)}`}>
                     {product.stock > 0 ? `${product.stock} in stock` : 'Out of stock'}
                   </span>
-                  <span className="text-gray-500 text-xs">{product.sku}</span>
+                  <span className="text-gray-500 text-xs">{product.sales_count || 0} sold</span>
                 </div>
               </CardContent>
             </Card>
@@ -265,7 +377,7 @@ const MerchantProducts = () => {
                       <td className="py-4 px-6">
                         <div className="flex items-center gap-3">
                           <img
-                            src={product.images[0]}
+                            src={product.images?.[0] || 'https://via.placeholder.com/40'}
                             alt={product.name}
                             className="w-12 h-12 rounded-lg object-cover"
                           />
@@ -275,16 +387,18 @@ const MerchantProducts = () => {
                           </div>
                         </div>
                       </td>
-                      <td className="py-4 px-6 text-gray-300">{product.category}</td>
+                      <td className="py-4 px-6 text-gray-300">
+                        {categories.find(c => c.id === product.category_id)?.name || '-'}
+                      </td>
                       <td className="py-4 px-6">
                         <span className="text-white font-medium">{formatCurrency(product.price)}</span>
                       </td>
                       <td className="py-4 px-6">
-                        <span className={`px-2 py-0.5 rounded text-xs font-medium ${getStatusColor(product.status)}`}>
+                        <span className={`px-2 py-0.5 rounded text-xs font-medium ${getStatusColor(product)}`}>
                           {product.stock > 0 ? `${product.stock} units` : 'Out of stock'}
                         </span>
                       </td>
-                      <td className="py-4 px-6 text-gray-300">{product.sales.toLocaleString()}</td>
+                      <td className="py-4 px-6 text-gray-300">{product.sales_count || 0}</td>
                       <td className="py-4 px-6 text-right">
                         <DropdownMenu>
                           <DropdownMenuTrigger asChild>
@@ -296,10 +410,10 @@ const MerchantProducts = () => {
                             <DropdownMenuItem className="text-gray-300 hover:text-white hover:bg-gray-700/50 cursor-pointer">
                               <Edit size={16} className="mr-2" /> Edit
                             </DropdownMenuItem>
-                            <DropdownMenuItem className="text-gray-300 hover:text-white hover:bg-gray-700/50 cursor-pointer">
-                              <Copy size={16} className="mr-2" /> Duplicate
-                            </DropdownMenuItem>
-                            <DropdownMenuItem className="text-red-400 hover:text-red-300 hover:bg-red-500/10 cursor-pointer">
+                            <DropdownMenuItem 
+                              className="text-red-400 hover:text-red-300 hover:bg-red-500/10 cursor-pointer"
+                              onClick={() => handleDeleteProduct(product.id)}
+                            >
                               <Trash2 size={16} className="mr-2" /> Delete
                             </DropdownMenuItem>
                           </DropdownMenuContent>
@@ -312,6 +426,12 @@ const MerchantProducts = () => {
             </div>
           </CardContent>
         </Card>
+      )}
+
+      {!loading && filteredProducts.length === 0 && (
+        <div className="text-center py-16 bg-[#151b28] rounded-lg border border-gray-800">
+          <p className="text-gray-500 text-lg">No products found</p>
+        </div>
       )}
     </div>
   );

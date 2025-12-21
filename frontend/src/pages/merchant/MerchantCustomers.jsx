@@ -1,4 +1,5 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import axios from 'axios';
 import {
   Search,
   Filter,
@@ -26,11 +27,34 @@ import {
   SelectTrigger,
   SelectValue,
 } from '../../components/ui/select';
-import { customers } from '../../data/mock';
+
+const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
+const API = `${BACKEND_URL}/api`;
 
 const MerchantCustomers = () => {
+  const [customers, setCustomers] = useState([]);
+  const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState('');
   const [statusFilter, setStatusFilter] = useState('all');
+
+  useEffect(() => {
+    fetchCustomers();
+  }, [statusFilter]);
+
+  const fetchCustomers = async () => {
+    try {
+      let url = `${API}/customers?limit=50`;
+      if (statusFilter !== 'all') {
+        url += `&status=${statusFilter}`;
+      }
+      const response = await axios.get(url);
+      setCustomers(response.data);
+    } catch (error) {
+      console.error('Error fetching customers:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const formatCurrency = (value) => {
     return new Intl.NumberFormat('en-US', {
@@ -50,16 +74,16 @@ const MerchantCustomers = () => {
   };
 
   const filteredCustomers = customers.filter(customer => {
-    const matchesSearch = customer.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      customer.email.toLowerCase().includes(searchQuery.toLowerCase());
-    const matchesStatus = statusFilter === 'all' || customer.status === statusFilter;
-    return matchesSearch && matchesStatus;
+    const matchesSearch = customer.name?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      customer.email?.toLowerCase().includes(searchQuery.toLowerCase());
+    return matchesSearch;
   });
 
   const totalCustomers = customers.length;
   const vipCustomers = customers.filter(c => c.status === 'vip').length;
-  const totalRevenue = customers.reduce((sum, c) => sum + c.totalSpent, 0);
-  const avgOrderValue = totalRevenue / customers.reduce((sum, c) => sum + c.totalOrders, 0);
+  const totalRevenue = customers.reduce((sum, c) => sum + (c.total_spent || 0), 0);
+  const totalOrders = customers.reduce((sum, c) => sum + (c.total_orders || 0), 0);
+  const avgOrderValue = totalOrders > 0 ? totalRevenue / totalOrders : 0;
 
   return (
     <div className="space-y-6">
@@ -119,7 +143,7 @@ const MerchantCustomers = () => {
         </Card>
       </div>
 
-      {/* Search and Actions */}
+      {/* Search and Filters */}
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div className="flex items-center gap-3 flex-1">
           <div className="relative flex-1 max-w-md">
@@ -129,7 +153,7 @@ const MerchantCustomers = () => {
               placeholder="Search customers..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full bg-gray-800/50 border border-gray-700 rounded-lg pl-10 pr-4 py-2.5 text-sm text-white placeholder-gray-500 focus:outline-none focus:border-emerald-500/50 focus:ring-1 focus:ring-emerald-500/50 transition-all"
+              className="w-full bg-gray-800/50 border border-gray-700 rounded-lg pl-10 pr-4 py-2.5 text-sm text-white placeholder-gray-500 focus:outline-none focus:border-emerald-500/50"
             />
           </div>
           <Select value={statusFilter} onValueChange={setStatusFilter}>
@@ -154,78 +178,78 @@ const MerchantCustomers = () => {
       {/* Customers Table */}
       <Card className="bg-[#151b28] border-gray-800">
         <CardContent className="p-0">
-          <div className="overflow-x-auto">
-            <table className="w-full">
-              <thead>
-                <tr className="border-b border-gray-800">
-                  <th className="text-left py-4 px-6 text-gray-400 font-medium text-sm">Customer</th>
-                  <th className="text-left py-4 px-6 text-gray-400 font-medium text-sm">Contact</th>
-                  <th className="text-left py-4 px-6 text-gray-400 font-medium text-sm">Orders</th>
-                  <th className="text-left py-4 px-6 text-gray-400 font-medium text-sm">Total Spent</th>
-                  <th className="text-left py-4 px-6 text-gray-400 font-medium text-sm">Last Order</th>
-                  <th className="text-left py-4 px-6 text-gray-400 font-medium text-sm">Status</th>
-                  <th className="text-right py-4 px-6 text-gray-400 font-medium text-sm">Actions</th>
-                </tr>
-              </thead>
-              <tbody>
-                {filteredCustomers.map((customer) => (
-                  <tr key={customer.id} className="border-b border-gray-800/50 hover:bg-gray-800/30 transition-colors">
-                    <td className="py-4 px-6">
-                      <div className="flex items-center gap-3">
-                        <img
-                          src={customer.avatar}
-                          alt={customer.name}
-                          className="w-10 h-10 rounded-full object-cover"
-                        />
-                        <div>
-                          <p className="text-white font-medium">{customer.name}</p>
-                          <p className="text-gray-500 text-sm">ID: {customer.id}</p>
-                        </div>
-                      </div>
-                    </td>
-                    <td className="py-4 px-6">
-                      <p className="text-gray-300">{customer.email}</p>
-                      <p className="text-gray-500 text-sm">{customer.phone}</p>
-                    </td>
-                    <td className="py-4 px-6 text-white font-medium">
-                      {customer.totalOrders}
-                    </td>
-                    <td className="py-4 px-6 text-emerald-400 font-medium">
-                      {formatCurrency(customer.totalSpent)}
-                    </td>
-                    <td className="py-4 px-6 text-gray-400">
-                      {customer.lastOrder}
-                    </td>
-                    <td className="py-4 px-6">
-                      <span className={`px-2.5 py-1 rounded-full text-xs font-medium ${getStatusColor(customer.status)}`}>
-                        {customer.status.toUpperCase()}
-                      </span>
-                    </td>
-                    <td className="py-4 px-6 text-right">
-                      <DropdownMenu>
-                        <DropdownMenuTrigger asChild>
-                          <button className="p-2 rounded hover:bg-gray-800 text-gray-400 hover:text-white transition-colors">
-                            <MoreVertical size={18} />
-                          </button>
-                        </DropdownMenuTrigger>
-                        <DropdownMenuContent align="end" className="bg-[#1a1f2e] border-gray-700">
-                          <DropdownMenuItem className="text-gray-300 hover:text-white hover:bg-gray-700/50 cursor-pointer">
-                            <Eye size={16} className="mr-2" /> View Profile
-                          </DropdownMenuItem>
-                          <DropdownMenuItem className="text-gray-300 hover:text-white hover:bg-gray-700/50 cursor-pointer">
-                            <ShoppingBag size={16} className="mr-2" /> View Orders
-                          </DropdownMenuItem>
-                          <DropdownMenuItem className="text-gray-300 hover:text-white hover:bg-gray-700/50 cursor-pointer">
-                            <Mail size={16} className="mr-2" /> Send Email
-                          </DropdownMenuItem>
-                        </DropdownMenuContent>
-                      </DropdownMenu>
-                    </td>
+          {loading ? (
+            <div className="p-8 text-center text-gray-500">Loading customers...</div>
+          ) : filteredCustomers.length === 0 ? (
+            <div className="p-8 text-center text-gray-500">No customers found</div>
+          ) : (
+            <div className="overflow-x-auto">
+              <table className="w-full">
+                <thead>
+                  <tr className="border-b border-gray-800">
+                    <th className="text-left py-4 px-6 text-gray-400 font-medium text-sm">Customer</th>
+                    <th className="text-left py-4 px-6 text-gray-400 font-medium text-sm">Contact</th>
+                    <th className="text-left py-4 px-6 text-gray-400 font-medium text-sm">Orders</th>
+                    <th className="text-left py-4 px-6 text-gray-400 font-medium text-sm">Total Spent</th>
+                    <th className="text-left py-4 px-6 text-gray-400 font-medium text-sm">Status</th>
+                    <th className="text-right py-4 px-6 text-gray-400 font-medium text-sm">Actions</th>
                   </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
+                </thead>
+                <tbody>
+                  {filteredCustomers.map((customer) => (
+                    <tr key={customer.id} className="border-b border-gray-800/50 hover:bg-gray-800/30 transition-colors">
+                      <td className="py-4 px-6">
+                        <div className="flex items-center gap-3">
+                          <div className="w-10 h-10 bg-gradient-to-br from-emerald-500 to-teal-600 rounded-full flex items-center justify-center text-white font-semibold">
+                            {customer.name?.charAt(0).toUpperCase() || '?'}
+                          </div>
+                          <div>
+                            <p className="text-white font-medium">{customer.name}</p>
+                            <p className="text-gray-500 text-sm">ID: {customer.id.substring(0, 8)}</p>
+                          </div>
+                        </div>
+                      </td>
+                      <td className="py-4 px-6">
+                        <p className="text-gray-300">{customer.email}</p>
+                        <p className="text-gray-500 text-sm">{customer.phone || 'No phone'}</p>
+                      </td>
+                      <td className="py-4 px-6 text-white font-medium">
+                        {customer.total_orders || 0}
+                      </td>
+                      <td className="py-4 px-6 text-emerald-400 font-medium">
+                        {formatCurrency(customer.total_spent || 0)}
+                      </td>
+                      <td className="py-4 px-6">
+                        <span className={`px-2.5 py-1 rounded-full text-xs font-medium ${getStatusColor(customer.status)}`}>
+                          {customer.status?.toUpperCase() || 'ACTIVE'}
+                        </span>
+                      </td>
+                      <td className="py-4 px-6 text-right">
+                        <DropdownMenu>
+                          <DropdownMenuTrigger asChild>
+                            <button className="p-2 rounded hover:bg-gray-800 text-gray-400 hover:text-white transition-colors">
+                              <MoreVertical size={18} />
+                            </button>
+                          </DropdownMenuTrigger>
+                          <DropdownMenuContent align="end" className="bg-[#1a1f2e] border-gray-700">
+                            <DropdownMenuItem className="text-gray-300 hover:text-white hover:bg-gray-700/50 cursor-pointer">
+                              <Eye size={16} className="mr-2" /> View Profile
+                            </DropdownMenuItem>
+                            <DropdownMenuItem className="text-gray-300 hover:text-white hover:bg-gray-700/50 cursor-pointer">
+                              <ShoppingBag size={16} className="mr-2" /> View Orders
+                            </DropdownMenuItem>
+                            <DropdownMenuItem className="text-gray-300 hover:text-white hover:bg-gray-700/50 cursor-pointer">
+                              <Mail size={16} className="mr-2" /> Send Email
+                            </DropdownMenuItem>
+                          </DropdownMenuContent>
+                        </DropdownMenu>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          )}
         </CardContent>
       </Card>
     </div>
