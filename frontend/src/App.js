@@ -183,51 +183,64 @@ const LandingPage = () => {
 function App() {
   return (
     <div className="App">
-      <BrowserRouter>
-        <Routes>
-          {/* Landing Page */}
-          <Route path="/" element={<LandingPage />} />
+      <AuthProvider>
+        <BrowserRouter>
+          <Routes>
+            {/* Landing Page */}
+            <Route path="/" element={<LandingPage />} />
 
-          {/* Admin Routes */}
-          <Route path="/admin" element={<AdminLayout />}>
-            <Route index element={<AdminDashboard />} />
-            <Route path="merchants" element={<AdminMerchants />} />
-            <Route path="users" element={<AdminDashboard />} />
-            <Route path="billing" element={<AdminDashboard />} />
-            <Route path="analytics" element={<AdminDashboard />} />
-            <Route path="settings" element={<AdminDashboard />} />
-          </Route>
+            {/* Auth Routes */}
+            <Route path="/merchant/login" element={<MerchantLogin />} />
+            <Route path="/admin/login" element={<AdminLogin />} />
 
-          {/* Merchant Routes */}
-          <Route path="/merchant" element={<MerchantLayout />}>
-            <Route index element={<MerchantDashboard />} />
-            <Route path="orders" element={<MerchantOrders />} />
-            <Route path="products" element={<MerchantProducts />} />
-            <Route path="categories" element={<MerchantCategories />} />
-            <Route path="inventory" element={<MerchantInventory />} />
-            <Route path="customers" element={<MerchantCustomers />} />
-            <Route path="banners" element={<MerchantBanners />} />
-            <Route path="theme-editor" element={<MerchantThemeEditor />} />
-            <Route path="store-settings" element={<MerchantStoreSettings />} />
-            <Route path="discounts" element={<MerchantDashboard />} />
-            <Route path="analytics" element={<MerchantDashboard />} />
-            <Route path="payments" element={<MerchantDashboard />} />
-            <Route path="settings" element={<MerchantDashboard />} />
-          </Route>
+            {/* Admin Routes - Protected */}
+            <Route path="/admin" element={
+              <ProtectedRoute requiredRole="admin">
+                <AdminLayout />
+              </ProtectedRoute>
+            }>
+              <Route index element={<AdminDashboard />} />
+              <Route path="merchants" element={<AdminMerchants />} />
+              <Route path="users" element={<AdminDashboard />} />
+              <Route path="billing" element={<AdminDashboard />} />
+              <Route path="analytics" element={<AdminDashboard />} />
+              <Route path="settings" element={<AdminDashboard />} />
+            </Route>
 
-          {/* Store Routes */}
-          <Route path="/store" element={<StoreLayout />}>
-            <Route index element={<StoreFront />} />
-            <Route path="products" element={<ProductListing />} />
-            <Route path="product/:id" element={<ProductDetail />} />
-            <Route path="category/:id" element={<ProductListing />} />
-            <Route path="cart" element={<Cart />} />
-            <Route path="checkout" element={<Checkout />} />
-            <Route path="new-arrivals" element={<ProductListing />} />
-            <Route path="sale" element={<ProductListing />} />
-          </Route>
+            {/* Merchant Routes - Protected */}
+            <Route path="/merchant" element={
+              <ProtectedRoute>
+                <MerchantLayout />
+              </ProtectedRoute>
+            }>
+              <Route index element={<MerchantDashboard />} />
+              <Route path="orders" element={<MerchantOrders />} />
+              <Route path="products" element={<MerchantProducts />} />
+              <Route path="categories" element={<MerchantCategories />} />
+              <Route path="inventory" element={<MerchantInventory />} />
+              <Route path="customers" element={<MerchantCustomers />} />
+              <Route path="banners" element={<MerchantBanners />} />
+              <Route path="theme-editor" element={<MerchantThemeEditor />} />
+              <Route path="store-settings" element={<MerchantStoreSettings />} />
+              <Route path="discounts" element={<MerchantDashboard />} />
+              <Route path="analytics" element={<MerchantDashboard />} />
+              <Route path="payments" element={<MerchantDashboard />} />
+              <Route path="settings" element={<MerchantDashboard />} />
+            </Route>
 
-          {/* Catch all redirect */}
+            {/* Store Routes */}
+            <Route path="/store" element={<StoreLayout />}>
+              <Route index element={<StoreFront />} />
+              <Route path="products" element={<ProductListing />} />
+              <Route path="product/:id" element={<ProductDetail />} />
+              <Route path="category/:id" element={<ProductListing />} />
+              <Route path="cart" element={<Cart />} />
+              <Route path="checkout" element={<Checkout />} />
+              <Route path="new-arrivals" element={<ProductListing />} />
+              <Route path="sale" element={<ProductListing />} />
+            </Route>
+
+            {/* Catch all redirect */}
           <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
       </BrowserRouter>
