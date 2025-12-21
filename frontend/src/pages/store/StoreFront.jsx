@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import axios from 'axios';
 import { ArrowRight, Truck, Shield, RotateCcw, ThumbsUp } from 'lucide-react';
-import HeroCarousel from '../../components/store/HeroCarousel';
+import { ThemeHero, ThemeProducts } from '../../components/store/ThemeRenderer';
 import ProductCarousel from '../../components/store/ProductCarousel';
 import { useCart } from './StoreLayout';
 
