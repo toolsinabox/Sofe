@@ -1,0 +1,20 @@
+[%load_template file:'headers/template.html'/%]
+
+<section class="hero">
+    <h1>Welcome to [@store_name@]</h1>
+</section>
+
+<section class="featured-products">
+    <h2>Featured Products</h2>
+    [%thumb_list type:'products' limit:'8'%]
+    <div class="product-card">
+        <a href="[@url@]">
+            <img src="[@thumb@]" alt="[@name@]">
+            <h3>[@name@]</h3>
+            <p class="price">[@price_formatted@]</p>
+        </a>
+    </div>
+    [%/thumb_list%]
+</section>
+
+[%load_template file:'footers/template.html'/%]
