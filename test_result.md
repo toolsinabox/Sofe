@@ -92,3 +92,9 @@ agent_communication:
     - message: "Implemented full Maropost-style template rendering engine. Features: layout wrapper selection (default/checkout/print/empty), page template selection based on routing, include directive processing, data binding with [@tag@] and [%loop%] tags, conditional processing [%if%], template caching, debug headers. New theme structure with template.html wrapper, headers/includes/head.template.html, separate checkout/print/empty wrappers. All acceptance tests passing."
     - agent: "fork-main-3"
     - message: "Integrated backend cart API with storefront. Features: 1) Full cart CRUD API (get/add/update/remove/clear), 2) Mini cart dropdown on hover showing cart items, 3) Add to Cart modal popup with Continue Shopping/Go to Cart options, 4) Cart persists in database (not just localStorage), 5) Removed /store route, /live is now primary storefront, 6) Landing page updated with Tools In A Box branding. All cart operations sync with backend."
+    - agent: "fork-main-4"
+    - message: "FIXED stray [%/if%] tag bug on homepage banner. Root cause: The _process_inline_conditionals method used a regex pattern that couldn't handle nested [%if%] blocks correctly. When banner title was empty, the outer conditional wasn't being processed properly because the non-greedy regex was matching the first [%/if%] from an inner block. Solution: Rewrote both _process_inline_conditionals and process_conditionals methods to use a new approach that processes innermost conditionals first using negative lookahead patterns. This ensures nested conditionals are handled correctly from inside-out. Verified fix with curl (no stray tags in HTML output) and screenshot (clean homepage render)."
+
+Incorporate User Feedback:
+  - Current priority: Full regression testing of Admin, Merchant, and Storefront flows
+  - Test areas: Admin Dashboard, Merchant Dashboard with Theme Editor, Storefront (/live) including cart functionality
