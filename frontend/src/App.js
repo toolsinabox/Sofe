@@ -14,6 +14,10 @@ import MerchantOrders from "./pages/merchant/MerchantOrders";
 import MerchantProducts from "./pages/merchant/MerchantProducts";
 import MerchantInventory from "./pages/merchant/MerchantInventory";
 import MerchantCustomers from "./pages/merchant/MerchantCustomers";
+import MerchantCategories from "./pages/merchant/MerchantCategories";
+import MerchantBanners from "./pages/merchant/MerchantBanners";
+import MerchantThemeEditor from "./pages/merchant/MerchantThemeEditor";
+import MerchantStoreSettings from "./pages/merchant/MerchantStoreSettings";
 
 // Store Pages
 import StoreLayout from "./pages/store/StoreLayout";
