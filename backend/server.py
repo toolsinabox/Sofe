@@ -249,6 +249,80 @@ class StoreSettingsUpdate(BaseModel):
     meta_description: Optional[str] = None
     google_analytics_id: Optional[str] = None
 
+# ==================== AUTH MODELS ====================
+
+class UserBase(BaseModel):
+    email: str
+    name: str
+    role: str = "merchant"  # admin, merchant
+
+class UserCreate(UserBase):
+    password: str
+
+class UserLogin(BaseModel):
+    email: str
+    password: str
+
+class User(UserBase):
+    id: str = Field(default_factory=lambda: str(uuid.uuid4()))
+    hashed_password: str
+    is_active: bool = True
+    created_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
+    updated_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
+
+class Token(BaseModel):
+    access_token: str
+    token_type: str = "bearer"
+    user: dict
+
+# ==================== AUTH HELPERS ====================
+
+def verify_password(plain_password: str, hashed_password: str) -> bool:
+    return pwd_context.verify(plain_password, hashed_password)
+
+def get_password_hash(password: str) -> str:
+    return pwd_context.hash(password)
+
+def create_access_token(data: dict, expires_delta: Optional[timedelta] = None) -> str:
+    to_encode = data.copy()
+    if expires_delta:
+        expire = datetime.now(timezone.utc) + expires_delta
+    else:
+        expire = datetime.now(timezone.utc) + timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
+    to_encode.update({"exp": expire})
+    encoded_jwt = jwt.encode(to_encode, SECRET_KEY, algorithm=ALGORITHM)
+    return encoded_jwt
+
+async def get_current_user(credentials: HTTPAuthorizationCredentials = Depends(security)) -> dict:
+    """Verify JWT token and return current user"""
+    credentials_exception = HTTPException(
+        status_code=401,
+        detail="Could not validate credentials",
+        headers={"WWW-Authenticate": "Bearer"},
+    )
+    try:
+        token = credentials.credentials
+        payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
+        user_id: str = payload.get("sub")
+        if user_id is None:
+            raise credentials_exception
+    except JWTError:
+        raise credentials_exception
+    
+    user = await db.users.find_one({"id": user_id})
+    if user is None:
+        raise credentials_exception
+    
+    return {
+        "id": user["id"],
+        "email": user["email"],
+        "name": user["name"],
+        "role": user["role"]
+    }
+
+async def get_current_active_user(current_user: dict = Depends(get_current_user)) -> dict:
+    return current_user
+
 # ==================== THEME TEMPLATES ====================
 
 class ThemeTemplate(BaseModel):
