@@ -115,19 +115,19 @@ export const ThemeHero = ({ className = '', onBannersLoad = null }) => {
   }
 
   // If we have banner data, render our own carousel with proper interactivity
-  if (banners.length > 0) {
+  // Filter banners that should show on desktop
+  const visibleBanners = banners.filter(b => b.show_on_desktop !== false && b.is_active !== false);
+  
+  if (visibleBanners.length > 0) {
     return (
       <div className={`relative overflow-hidden ${className}`}>
         <div 
           className="flex transition-transform duration-500 ease-in-out"
           style={{ transform: `translateX(-${currentSlide * 100}%)` }}
         >
-          {banners.map((banner, idx) => {
+          {visibleBanners.map((banner, idx) => {
             // Support both naming conventions
             const imgUrl = banner.image_desktop || banner.image_url_desktop || banner.image || banner.image_url || '';
-            const isVisible = banner.show_on_desktop !== false; // default to true
-            
-            if (!isVisible) return null;
             
             return (
               <div 
