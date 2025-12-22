@@ -898,8 +898,8 @@ const ProductEditor = ({ product, categories, onSave, onClose, templateTags }) =
                               <p className="font-semibold text-blue-400">How Pre-Order Works</p>
                               <div className="space-y-2 text-gray-300">
                                 <p><strong>1. When to use:</strong> Enable pre-order when your stock is 0 or low, but you have new inventory arriving soon.</p>
-                                <p><strong>2. Customer experience:</strong> Customers see a "Pre-Order" button instead of "Add to Cart" when stock is 0.</p>
-                                <p><strong>3. Pre-Order Qty:</strong> This is the quantity you're expecting to receive. It does NOT add to current stock until arrival date.</p>
+                                <p><strong>2. Customer experience:</strong> Customers see a &quot;Pre-Order&quot; button instead of &quot;Add to Cart&quot; when stock is 0.</p>
+                                <p><strong>3. Pre-Order Qty:</strong> This is the quantity you&apos;re expecting to receive. It does NOT add to current stock until arrival date.</p>
                                 <p><strong>4. Auto-conversion:</strong> When the arrival date passes, the system automatically:</p>
                                 <ul className="list-disc list-inside pl-2 text-gray-400">
                                   <li>Disables pre-order mode</li>
@@ -918,7 +918,7 @@ const ProductEditor = ({ product, categories, onSave, onClose, templateTags }) =
                       <div className="flex items-start gap-3">
                         <Info size={20} className="text-blue-400 mt-0.5 flex-shrink-0" />
                         <div className="text-sm text-gray-400">
-                          <p className="mb-2">Pre-order allows customers to purchase products before they're in stock. Use this when:</p>
+                          <p className="mb-2">Pre-order allows customers to purchase products before they&apos;re in stock. Use this when:</p>
                           <ul className="list-disc list-inside space-y-1 text-gray-500">
                             <li>You have a new shipment arriving on a specific date</li>
                             <li>A product is temporarily out of stock</li>
