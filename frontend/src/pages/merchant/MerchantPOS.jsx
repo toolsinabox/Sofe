@@ -2090,21 +2090,35 @@ const MerchantPOS = () => {
             </div>
           )}
           
-          <DialogFooter className="gap-2">
+          <DialogFooter className="gap-2 flex-col sm:flex-row">
             <Button
               variant="outline"
               onClick={printReceipt}
-              className="border-gray-700 text-gray-300"
+              className="border-gray-700 text-gray-300 w-full sm:w-auto"
             >
               <Printer className="w-4 h-4 mr-2" />
               Print
             </Button>
+            {lastTransaction?.customer_email && (
+              <Button
+                variant="outline"
+                onClick={handleSendEmailReceipt}
+                disabled={sendingEmail}
+                className="border-blue-600 text-blue-400 hover:bg-blue-600/10 w-full sm:w-auto"
+              >
+                {sendingEmail ? (
+                  <><Loader2 className="w-4 h-4 mr-2 animate-spin" /> Sending...</>
+                ) : (
+                  <><Mail className="w-4 h-4 mr-2" /> Email Tax Invoice</>
+                )}
+              </Button>
+            )}
             <Button
               onClick={() => {
                 setShowReceipt(false);
                 searchInputRef.current?.focus();
               }}
-              className="bg-emerald-600 hover:bg-emerald-700 text-white"
+              className="bg-emerald-600 hover:bg-emerald-700 text-white w-full sm:w-auto"
             >
               New Sale
             </Button>
