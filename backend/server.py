@@ -723,6 +723,8 @@ class CMSPage(BaseModel):
     is_homepage: bool = False
     is_system: bool = False  # System pages can't be deleted
     is_active: bool = True
+    visible_on_menu: bool = False
+    visible_on_sitemap: bool = True
     
     # SEO Settings
     seo_title: str = ""  # Browser tab title
@@ -735,7 +737,12 @@ class CMSPage(BaseModel):
     content: str = ""  # HTML content
     template: str = "default"  # Template to use
     
+    # Images
+    main_image: Optional[str] = None
+    alt_image: Optional[str] = None
+    
     # Meta
+    sort_order: int = 0
     created_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
     updated_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
 
