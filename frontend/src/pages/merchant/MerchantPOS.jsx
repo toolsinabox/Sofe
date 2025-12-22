@@ -2289,12 +2289,24 @@ const MerchantPOS = () => {
                     placeholder="City"
                     className="bg-gray-800 border-gray-700 text-white"
                   />
-                  <Input
-                    value={newCustomer.billingState}
-                    onChange={(e) => setNewCustomer(prev => ({ ...prev, billingState: e.target.value }))}
-                    placeholder="State"
-                    className="bg-gray-800 border-gray-700 text-white"
-                  />
+                  <Select 
+                    value={newCustomer.billingState} 
+                    onValueChange={(value) => setNewCustomer(prev => ({ ...prev, billingState: value }))}
+                  >
+                    <SelectTrigger className="bg-gray-800 border-gray-700 text-white">
+                      <SelectValue placeholder="State" />
+                    </SelectTrigger>
+                    <SelectContent className="bg-gray-800 border-gray-700">
+                      <SelectItem value="NSW" className="text-white hover:bg-gray-700">NSW</SelectItem>
+                      <SelectItem value="VIC" className="text-white hover:bg-gray-700">VIC</SelectItem>
+                      <SelectItem value="QLD" className="text-white hover:bg-gray-700">QLD</SelectItem>
+                      <SelectItem value="WA" className="text-white hover:bg-gray-700">WA</SelectItem>
+                      <SelectItem value="SA" className="text-white hover:bg-gray-700">SA</SelectItem>
+                      <SelectItem value="TAS" className="text-white hover:bg-gray-700">TAS</SelectItem>
+                      <SelectItem value="ACT" className="text-white hover:bg-gray-700">ACT</SelectItem>
+                      <SelectItem value="NT" className="text-white hover:bg-gray-700">NT</SelectItem>
+                    </SelectContent>
+                  </Select>
                   <Input
                     value={newCustomer.billingPostcode}
                     onChange={(e) => setNewCustomer(prev => ({ ...prev, billingPostcode: e.target.value }))}
@@ -2337,12 +2349,24 @@ const MerchantPOS = () => {
                       placeholder="City"
                       className="bg-gray-800 border-gray-700 text-white"
                     />
-                    <Input
-                      value={newCustomer.deliveryState}
-                      onChange={(e) => setNewCustomer(prev => ({ ...prev, deliveryState: e.target.value }))}
-                      placeholder="State"
-                      className="bg-gray-800 border-gray-700 text-white"
-                    />
+                    <Select 
+                      value={newCustomer.deliveryState} 
+                      onValueChange={(value) => setNewCustomer(prev => ({ ...prev, deliveryState: value }))}
+                    >
+                      <SelectTrigger className="bg-gray-800 border-gray-700 text-white">
+                        <SelectValue placeholder="State" />
+                      </SelectTrigger>
+                      <SelectContent className="bg-gray-800 border-gray-700">
+                        <SelectItem value="NSW" className="text-white hover:bg-gray-700">NSW</SelectItem>
+                        <SelectItem value="VIC" className="text-white hover:bg-gray-700">VIC</SelectItem>
+                        <SelectItem value="QLD" className="text-white hover:bg-gray-700">QLD</SelectItem>
+                        <SelectItem value="WA" className="text-white hover:bg-gray-700">WA</SelectItem>
+                        <SelectItem value="SA" className="text-white hover:bg-gray-700">SA</SelectItem>
+                        <SelectItem value="TAS" className="text-white hover:bg-gray-700">TAS</SelectItem>
+                        <SelectItem value="ACT" className="text-white hover:bg-gray-700">ACT</SelectItem>
+                        <SelectItem value="NT" className="text-white hover:bg-gray-700">NT</SelectItem>
+                      </SelectContent>
+                    </Select>
                     <Input
                       value={newCustomer.deliveryPostcode}
                       onChange={(e) => setNewCustomer(prev => ({ ...prev, deliveryPostcode: e.target.value }))}
