@@ -258,8 +258,8 @@ const MerchantShipping = () => {
     }));
   }, []);
 
-  // Stable handler for numeric service form fields - uses name attribute
-  const handleServiceFormNumericChange = useCallback((e) => {
+  // Stable handler for numeric service form fields - uses name attribute, syncs on blur
+  const handleServiceFormNumericBlur = useCallback((e) => {
     const { name, value } = e.target;
     setServiceForm(prev => ({
       ...prev,
