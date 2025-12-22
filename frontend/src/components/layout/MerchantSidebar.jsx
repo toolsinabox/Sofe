@@ -141,21 +141,21 @@ const MerchantSidebar = ({ collapsed, setCollapsed }) => {
       </div>
 
       {/* Navigation */}
-      <nav className="flex-1 py-4 px-3 space-y-1 overflow-y-auto">
+      <nav className="flex-1 py-4 px-3 space-y-1 overflow-y-auto scrollbar-thin scrollbar-thumb-gray-700 scrollbar-track-transparent">
         {navItems.map((item) => (
           <NavLink
             key={item.path}
             to={item.path}
             end={item.exact}
             className={({ isActive }) =>
-              `flex items-center gap-3 px-3 py-2.5 rounded-lg transition-all duration-200 group ${
+              `flex items-center gap-3 px-3 py-2 rounded-lg transition-all duration-200 group ${
                 isActive
                   ? 'bg-gradient-to-r from-emerald-500/20 to-teal-600/20 text-emerald-400 border border-emerald-500/30'
                   : 'text-gray-400 hover:text-white hover:bg-gray-800/50'
               }`
             }
           >
-            <item.icon size={20} className="flex-shrink-0" />
+            <item.icon size={18} className="flex-shrink-0" />
             {!collapsed && (
               <span className="font-medium text-sm">{item.label}</span>
             )}
@@ -165,11 +165,11 @@ const MerchantSidebar = ({ collapsed, setCollapsed }) => {
 
       {/* View Store Button */}
       {!collapsed && (
-        <div className="px-3 pb-2">
+        <div className="px-3 py-2 border-t border-gray-800">
           <NavLink
-            to="/store"
+            to="/live"
             target="_blank"
-            className="flex items-center justify-center gap-2 w-full px-4 py-2.5 bg-gradient-to-r from-emerald-500 to-teal-600 rounded-lg text-white font-medium text-sm hover:from-emerald-600 hover:to-teal-700 transition-all"
+            className="flex items-center justify-center gap-2 w-full px-4 py-2 bg-gradient-to-r from-emerald-500 to-teal-600 rounded-lg text-white font-medium text-sm hover:from-emerald-600 hover:to-teal-700 transition-all"
           >
             <ExternalLink size={16} />
             View Store
