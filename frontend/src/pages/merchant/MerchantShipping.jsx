@@ -544,13 +544,12 @@ const MerchantShipping = () => {
       const file = event.target.files?.[0];
       if (!file) return;
       
-      setSelectedFile(file);
-      setImporting(true);
-      setImportResult(null);
-      setUploadProgress(0);
+      setZoneImporting(true);
+      setZoneImportResult(null);
+      setZoneUploadProgress(0);
       
       // Show the modal immediately with upload progress
-      setShowImportModal(true);
+      setShowZoneImportModal(true);
       
       try {
         const formData = new FormData();
@@ -558,25 +557,25 @@ const MerchantShipping = () => {
         
         // Simulate progress for better UX
         const progressInterval = setInterval(() => {
-          setUploadProgress(prev => Math.min(prev + 10, 90));
+          setZoneUploadProgress(prev => Math.min(prev + 10, 90));
         }, 100);
         
         const response = await axios.post(
-          `${API}/shipping/zones/import/csv?mode=${importMode}`,
+          `${API}/shipping/zones/import/csv?mode=${zoneImportMode}`,
           formData,
           {
             headers: { 'Content-Type': 'multipart/form-data' },
             onUploadProgress: (progressEvent) => {
               const progress = Math.round((progressEvent.loaded * 100) / progressEvent.total);
-              setUploadProgress(progress);
+              setZoneUploadProgress(progress);
             }
           }
         );
         
         clearInterval(progressInterval);
-        setUploadProgress(100);
+        setZoneUploadProgress(100);
         
-        setImportResult({
+        setZoneImportResult({
           success: true,
           ...response.data
         });
@@ -584,25 +583,23 @@ const MerchantShipping = () => {
         await fetchAllData();
       } catch (error) {
         console.error('Error importing zones:', error);
-        setImportResult({
+        setZoneImportResult({
           success: false,
           error: error.response?.data?.detail || 'Failed to import zones'
         });
       } finally {
-        setImporting(false);
-        setSelectedFile(null);
-        if (fileInputRef.current) {
-          fileInputRef.current.value = '';
+        setZoneImporting(false);
+        if (zoneFileInputRef.current) {
+          zoneFileInputRef.current.value = '';
         }
       }
     };
 
     // Open import modal without file (for settings)
     const openImportModal = () => {
-      setImportResult(null);
-      setSelectedFile(null);
-      setUploadProgress(0);
-      setShowImportModal(true);
+      setZoneImportResult(null);
+      setZoneUploadProgress(0);
+      setShowZoneImportModal(true);
     };
 
     // Delete all zones
@@ -613,7 +610,7 @@ const MerchantShipping = () => {
       try {
         await axios.delete(`${API}/shipping/zones/bulk`);
         await fetchAllData();
-        setImportResult({ success: true, message: 'All zones deleted successfully', zones_created: 0, zones_updated: 0 });
+        setZoneImportResult({ success: true, message: 'All zones deleted successfully', zones_created: 0, zones_updated: 0 });
       } catch (error) {
         console.error('Error deleting all zones:', error);
         alert('Failed to delete zones');
@@ -622,7 +619,7 @@ const MerchantShipping = () => {
 
     // Trigger file input click
     const triggerFileUpload = () => {
-      fileInputRef.current?.click();
+      zoneFileInputRef.current?.click();
     };
 
     return (
