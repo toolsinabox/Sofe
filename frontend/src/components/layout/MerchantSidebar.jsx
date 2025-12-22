@@ -87,6 +87,7 @@ const MerchantSidebar = ({ collapsed, setCollapsed }) => {
     { path: '/merchant/content-zones', icon: LayoutGrid, label: 'Content Zones' },
     { path: '/merchant/mega-menu', icon: Menu, label: 'Mega Menu' },
     { path: '/merchant/theme-editor', icon: Code, label: 'Theme Editor' },
+    { path: '/merchant/invoice-settings', icon: FileText, label: 'Invoice Settings' },
     { path: '/merchant/store-settings', icon: Store, label: 'Store Settings' },
     { path: '/merchant/shipping', icon: Truck, label: 'Shipping' },
     { path: '/merchant/discounts', icon: Tag, label: 'Discounts' },
