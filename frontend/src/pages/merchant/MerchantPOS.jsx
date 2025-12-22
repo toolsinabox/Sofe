@@ -1190,26 +1190,44 @@ const MerchantPOS = () => {
         <div className="w-full lg:w-80 xl:w-96 flex flex-col gap-3">
           {/* Customer */}
           <Card className="bg-[#151b28] border-gray-800">
-            <CardContent className="p-3 sm:p-4">
-              <button
-                onClick={() => setShowCustomerSearch(true)}
-                className="w-full flex items-center gap-2 sm:gap-3 p-2 sm:p-3 bg-gray-800/50 rounded-lg hover:bg-gray-800 transition-colors"
-              >
-                <div className="w-8 h-8 sm:w-10 sm:h-10 bg-gray-700 rounded-full flex items-center justify-center">
-                  <User className="w-4 h-4 sm:w-5 sm:h-5 text-gray-400" />
+            <CardContent className="p-3 sm:p-4 space-y-2">
+              {customer ? (
+                <button
+                  onClick={() => setShowCustomerSearch(true)}
+                  className="w-full flex items-center gap-2 sm:gap-3 p-2 sm:p-3 bg-gray-800/50 rounded-lg hover:bg-gray-800 transition-colors"
+                >
+                  <div className="w-8 h-8 sm:w-10 sm:h-10 bg-emerald-600 rounded-full flex items-center justify-center">
+                    <User className="w-4 h-4 sm:w-5 sm:h-5 text-white" />
+                  </div>
+                  <div className="flex-1 text-left min-w-0">
+                    <p className="text-white font-medium text-xs sm:text-sm truncate">{customer.name}</p>
+                    <p className="text-gray-500 text-[10px] sm:text-xs truncate">{customer.email}</p>
+                  </div>
+                  <button
+                    onClick={(e) => { e.stopPropagation(); setCustomer(null); }}
+                    className="p-1 text-gray-400 hover:text-red-400"
+                  >
+                    <X className="w-4 h-4" />
+                  </button>
+                </button>
+              ) : (
+                <div className="flex gap-2">
+                  <button
+                    onClick={() => setShowCustomerSearch(true)}
+                    className="flex-1 flex items-center gap-2 p-2 sm:p-3 bg-gray-800/50 rounded-lg hover:bg-gray-800 transition-colors"
+                  >
+                    <User className="w-4 h-4 text-gray-400" />
+                    <span className="text-gray-400 text-xs sm:text-sm">Search Customer</span>
+                  </button>
+                  <Button
+                    onClick={() => setShowAddCustomer(true)}
+                    size="sm"
+                    className="bg-emerald-600 hover:bg-emerald-700 text-white px-3"
+                  >
+                    <UserPlus className="w-4 h-4" />
+                  </Button>
                 </div>
-                <div className="flex-1 text-left min-w-0">
-                  {customer ? (
-                    <>
-                      <p className="text-white font-medium text-xs sm:text-sm truncate">{customer.name}</p>
-                      <p className="text-gray-500 text-[10px] sm:text-xs truncate">{customer.email}</p>
-                    </>
-                  ) : (
-                    <p className="text-gray-400 text-xs sm:text-sm">Add Customer (Optional)</p>
-                  )}
-                </div>
-                <ChevronRight className="w-4 h-4 text-gray-500" />
-              </button>
+              )}
             </CardContent>
           </Card>
 
