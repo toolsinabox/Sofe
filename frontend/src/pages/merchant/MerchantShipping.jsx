@@ -40,6 +40,26 @@ const TABS = [
   { id: 'options', label: 'Options', icon: Settings },
 ];
 
+// Memoized service form input component to prevent focus loss
+const ServiceFormInput = React.memo(({ label, name, value, onChange, placeholder, type = 'text', step, className = '', prefix, suffix }) => (
+  <div>
+    <Label className="text-gray-300 text-sm">{label}</Label>
+    <div className={`flex items-center gap-1 mt-1 ${prefix || suffix ? '' : ''}`}>
+      {prefix && <span className="text-gray-400">{prefix}</span>}
+      <Input
+        type={type}
+        step={step}
+        name={name}
+        value={value}
+        onChange={onChange}
+        placeholder={placeholder}
+        className={`bg-gray-700 border-gray-600 text-white ${className}`}
+      />
+      {suffix && <span className="text-gray-400 text-sm whitespace-nowrap">{suffix}</span>}
+    </div>
+  </div>
+));
+
 const MerchantShipping = () => {
   const [activeTab, setActiveTab] = useState('overview');
   const [loading, setLoading] = useState(true);
