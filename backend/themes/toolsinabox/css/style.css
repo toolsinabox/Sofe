@@ -1422,3 +1422,145 @@ ul {
   margin-bottom: 0.5rem;
 }
 
+
+/* ================================
+   PRODUCT PAGE STYLES
+   ================================ */
+.product-page-container {
+  background-color: var(--white);
+}
+
+/* Breadcrumb */
+.product-page-container .breadcrumb a:hover {
+  color: var(--primary);
+}
+
+/* Product Gallery */
+.product-gallery .main-image-container {
+  background: var(--white);
+}
+
+.product-gallery .thumbnail-gallery {
+  scrollbar-width: thin;
+  scrollbar-color: var(--gray-300) transparent;
+}
+
+.product-gallery .product-thumb {
+  transition: border-color 0.2s ease;
+}
+
+.product-gallery .product-thumb:hover {
+  border-color: var(--primary);
+}
+
+/* Pricing */
+.pricing-section .text-red-600 {
+  color: var(--primary);
+}
+
+/* Payment Options */
+.payment-options {
+  border: 1px solid var(--gray-200);
+}
+
+/* Quantity Selector */
+.quantity-selector {
+  background: var(--white);
+}
+
+.quantity-selector input:focus {
+  outline: none;
+}
+
+.quantity-selector .qty-btn:hover {
+  background-color: var(--gray-100);
+}
+
+/* Add to Cart Button */
+.add-to-cart-btn {
+  background-color: var(--primary);
+  transition: background-color 0.2s ease, transform 0.1s ease;
+}
+
+.add-to-cart-btn:hover {
+  background-color: var(--primary-dark);
+}
+
+.add-to-cart-btn:active {
+  transform: scale(0.98);
+}
+
+/* Action Buttons */
+.action-buttons button:hover {
+  background-color: var(--gray-100);
+}
+
+/* Tab Navigation */
+.product-tabs .tab-btn {
+  transition: color 0.2s ease, border-color 0.2s ease;
+  border-bottom: 2px solid transparent;
+  margin-bottom: -1px;
+}
+
+.product-tabs .tab-btn:hover {
+  color: var(--primary);
+}
+
+.product-tabs .tab-btn.active {
+  color: var(--primary);
+  border-bottom-color: var(--primary);
+}
+
+/* Tab Content */
+.tab-panel table {
+  border-collapse: collapse;
+}
+
+.tab-panel table tr:hover {
+  background-color: var(--gray-50);
+}
+
+/* Related Products */
+.related-products .product-card {
+  transition: box-shadow 0.2s ease, transform 0.2s ease;
+}
+
+.related-products .product-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1);
+}
+
+/* Trust Features */
+.trust-features > div {
+  transition: transform 0.2s ease;
+}
+
+.trust-features > div:hover {
+  transform: translateY(-2px);
+}
+
+/* Responsive Adjustments */
+@media (max-width: 1023px) {
+  .product-info h1 {
+    font-size: 1.5rem;
+  }
+  
+  .pricing-section .text-4xl {
+    font-size: 2rem;
+  }
+}
+
+@media (max-width: 640px) {
+  .product-tabs .tab-nav {
+    gap: 0;
+  }
+  
+  .product-tabs .tab-btn {
+    padding: 0.75rem 1rem;
+    font-size: 0.875rem;
+  }
+  
+  .trust-features {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
