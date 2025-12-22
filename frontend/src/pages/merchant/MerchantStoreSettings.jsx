@@ -166,6 +166,18 @@ const MerchantStoreSettings = () => {
                 onChange={handleChange}
                 className="bg-gray-700 border-gray-600 text-white"
               />
+              <p className="text-xs text-gray-500 mt-1">Appears in the browser tab after page title</p>
+            </div>
+            <div>
+              <Label className="text-gray-300">Homepage Title</Label>
+              <Input
+                name="homepage_title"
+                value={settings.homepage_title || 'Home'}
+                onChange={handleChange}
+                placeholder="Home"
+                className="bg-gray-700 border-gray-600 text-white"
+              />
+              <p className="text-xs text-gray-500 mt-1">Browser tab title for homepage (e.g., "Welcome" or "Home")</p>
             </div>
             <div>
               <Label className="text-gray-300">Store URL</Label>
