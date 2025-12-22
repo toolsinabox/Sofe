@@ -230,18 +230,18 @@ const MerchantDashboard = () => {
                         <img
                           src={product.images?.[0] || 'https://via.placeholder.com/40'}
                           alt={product.name}
-                          className="w-9 h-9 sm:w-10 sm:h-10 rounded-lg object-cover flex-shrink-0"
+                          className="w-7 h-7 sm:w-9 sm:h-9 rounded object-cover flex-shrink-0"
                         />
                         <div className="min-w-0 flex-1">
-                          <p className="text-white font-medium text-xs sm:text-sm line-clamp-1">{product.name}</p>
-                          <p className="text-gray-500 text-xs">{product.sales_count || 0} sales</p>
+                          <p className="text-white font-medium text-[11px] sm:text-xs line-clamp-1">{product.name}</p>
+                          <p className="text-gray-500 text-[10px] sm:text-xs">{product.sales_count || 0} sales</p>
                         </div>
                       </div>
                     </div>
-                    <div className="text-right flex-shrink-0 ml-2">
-                      <p className="text-white font-medium text-xs sm:text-sm">{formatCurrency(product.price)}</p>
-                      <span className={`text-xs ${product.stock > 0 ? 'text-emerald-400' : 'text-red-400'}`}>
-                        {product.stock > 0 ? `${product.stock} in stock` : 'Out of stock'}
+                    <div className="text-right flex-shrink-0 ml-1.5">
+                      <p className="text-white font-medium text-[11px] sm:text-xs">{formatCurrency(product.price)}</p>
+                      <span className={`text-[10px] sm:text-xs ${product.stock > 0 ? 'text-emerald-400' : 'text-red-400'}`}>
+                        {product.stock > 0 ? `${product.stock} stock` : 'No stock'}
                       </span>
                     </div>
                   </div>
