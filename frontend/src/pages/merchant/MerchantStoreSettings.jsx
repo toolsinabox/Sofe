@@ -380,6 +380,44 @@ const MerchantStoreSettings = () => {
           </div>
         </div>
 
+        {/* Order Number Settings */}
+        <div className="bg-gray-800 rounded-lg border border-gray-700 p-6">
+          <h2 className="text-lg font-semibold text-white mb-4">Order Number Settings</h2>
+          <p className="text-gray-400 text-sm mb-4">
+            Configure how order numbers are generated. The order number will be: <span className="text-emerald-400 font-mono">{settings.order_prefix || 'ORD'}-{settings.order_number_start || 1001}</span>
+          </p>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div>
+              <Label className="text-gray-300">Order Prefix</Label>
+              <Input
+                name="order_prefix"
+                value={settings.order_prefix || ''}
+                onChange={handleChange}
+                placeholder="ORD"
+                className="bg-gray-700 border-gray-600 text-white font-mono"
+              />
+              <p className="text-gray-500 text-xs mt-1">e.g., ORD, INV, TOOLS, etc.</p>
+            </div>
+            <div>
+              <Label className="text-gray-300">Starting Number</Label>
+              <Input
+                name="order_number_start"
+                type="number"
+                min="1"
+                value={settings.order_number_start || 1001}
+                onChange={(e) => setSettings(prev => ({ ...prev, order_number_start: parseInt(e.target.value) || 1001 }))}
+                className="bg-gray-700 border-gray-600 text-white font-mono"
+              />
+              <p className="text-gray-500 text-xs mt-1">Order numbers will increment from this value</p>
+            </div>
+          </div>
+          <div className="mt-4 p-3 bg-blue-500/10 border border-blue-500/30 rounded-lg">
+            <p className="text-blue-400 text-sm">
+              <strong>Note:</strong> Changing these settings will only affect new orders. Existing order numbers will remain unchanged.
+            </p>
+          </div>
+        </div>
+
         {/* SEO */}
         <div className="bg-gray-800 rounded-lg border border-gray-700 p-6">
           <h2 className="text-lg font-semibold text-white mb-4">SEO Settings</h2>
