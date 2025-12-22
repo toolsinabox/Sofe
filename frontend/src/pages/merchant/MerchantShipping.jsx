@@ -1835,11 +1835,11 @@ const MerchantShipping = () => {
                   <div>
                     <Label className="text-gray-300 text-sm">Maximum Length</Label>
                     <div className="flex items-center gap-2 mt-1">
-                      <Input
+                      <StableInput
                         type="number"
                         step="0.1"
                         name="max_length"
-                        value={serviceForm.max_length || ''}
+                        defaultValue={serviceForm.max_length || ''}
                         onChange={handleServiceFormNumericChange}
                         placeholder="1.4"
                         className="bg-gray-700 border-gray-600 text-white"
