@@ -664,6 +664,13 @@ class MaropostTemplateEngine:
                 {"_id": 0}
             ).sort("sort_order", 1).to_list(20)
             context['banners'] = banners
+            
+            # Get content zones for home page
+            content_zones = await self.db.content_zones.find(
+                {"is_active": True, "page": "home"},
+                {"_id": 0}
+            ).to_list(50)
+            context['content_zones'] = {zone['name']: zone for zone in content_zones}
         
         elif page_type == PageType.SEARCH:
             query = model_data.get('query', '')
