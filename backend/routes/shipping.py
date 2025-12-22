@@ -1011,13 +1011,23 @@ async def calculate_shipping(request: ShippingCalculationRequest):
         if not rate:
             continue
         
+        # Calculate total quantity across all items
+        total_qty = sum(item.get("quantity", 1) for item in request.items)
+        
         # Calculate base price - use first_parcel if available, otherwise fall back to base_rate
         first_parcel = rate.get("first_parcel", rate.get("base_rate", 0))
         per_kg = rate.get("per_kg_rate", 0)
-        per_subsequent = rate.get("per_subsequent", 0)
+        per_subsequent = rate.get("per_subsequent", first_parcel)  # Default to first_parcel if not set
         
-        # Always use chargeable weight (greater of actual vs cubic)
-        base_price = first_parcel
+        # Calculate price based on number of parcels
+        # 1st parcel uses first_parcel rate, additional parcels use per_subsequent rate
+        if total_qty <= 1:
+            base_price = first_parcel
+        else:
+            # First parcel + (subsequent parcels × per_subsequent rate)
+            base_price = first_parcel + ((total_qty - 1) * per_subsequent)
+        
+        # Add per kg charge if applicable (based on chargeable weight)
         if chargeable_weight > 0 and per_kg > 0:
             base_price += chargeable_weight * per_kg
         
