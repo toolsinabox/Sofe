@@ -2204,32 +2204,44 @@ const MerchantPOS = () => {
           </DialogHeader>
           
           <div className="py-4 space-y-4">
-            {/* Basic Info */}
+            {/* Basic Info - Names */}
             <div className="grid grid-cols-2 gap-3">
               <div className="space-y-2">
-                <Label className="text-gray-300 text-sm">Full Name *</Label>
+                <Label className="text-gray-300 text-sm">First Name *</Label>
                 <Input
-                  value={newCustomer.name}
-                  onChange={(e) => setNewCustomer(prev => ({ ...prev, name: e.target.value }))}
-                  placeholder="John Smith"
+                  value={newCustomer.firstName}
+                  onChange={(e) => setNewCustomer(prev => ({ ...prev, firstName: e.target.value }))}
+                  placeholder="John"
                   className="bg-gray-800 border-gray-700 text-white"
                 />
               </div>
               
               <div className="space-y-2">
-                <Label className="text-gray-300 text-sm">Company Name</Label>
-                <div className="relative">
-                  <Building2 className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-500" />
-                  <Input
-                    value={newCustomer.company}
-                    onChange={(e) => setNewCustomer(prev => ({ ...prev, company: e.target.value }))}
-                    placeholder="Company Pty Ltd"
-                    className="bg-gray-800 border-gray-700 text-white pl-10"
-                  />
-                </div>
+                <Label className="text-gray-300 text-sm">Last Name *</Label>
+                <Input
+                  value={newCustomer.lastName}
+                  onChange={(e) => setNewCustomer(prev => ({ ...prev, lastName: e.target.value }))}
+                  placeholder="Smith"
+                  className="bg-gray-800 border-gray-700 text-white"
+                />
               </div>
             </div>
             
+            {/* Company */}
+            <div className="space-y-2">
+              <Label className="text-gray-300 text-sm">Company Name</Label>
+              <div className="relative">
+                <Building2 className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-500" />
+                <Input
+                  value={newCustomer.company}
+                  onChange={(e) => setNewCustomer(prev => ({ ...prev, company: e.target.value }))}
+                  placeholder="Company Pty Ltd"
+                  className="bg-gray-800 border-gray-700 text-white pl-10"
+                />
+              </div>
+            </div>
+            
+            {/* Email & Phone */}
             <div className="grid grid-cols-2 gap-3">
               <div className="space-y-2">
                 <Label className="text-gray-300 text-sm">Email *</Label>
