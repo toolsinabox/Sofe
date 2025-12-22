@@ -43,19 +43,20 @@ const TABS = [
 // Uncontrolled input wrapper to prevent focus loss
 const StableInput = React.memo(({ name, defaultValue, onChange, ...props }) => {
   const inputRef = React.useRef(null);
+  const initialValueRef = React.useRef(defaultValue);
   
-  // Update ref value when defaultValue changes (e.g., when editing)
-  React.useEffect(() => {
-    if (inputRef.current && inputRef.current.value !== defaultValue) {
-      inputRef.current.value = defaultValue || '';
+  // Only update on initial render or when component remounts with new key
+  React.useLayoutEffect(() => {
+    if (inputRef.current) {
+      inputRef.current.value = initialValueRef.current || '';
     }
-  }, [defaultValue]);
+  }, []);
   
   return (
     <Input
       ref={inputRef}
       name={name}
-      defaultValue={defaultValue}
+      defaultValue={initialValueRef.current}
       onChange={onChange}
       {...props}
     />
