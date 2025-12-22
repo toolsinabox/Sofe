@@ -1990,7 +1990,7 @@
                 suburbSelect.innerHTML = '<option value="">Loading...</option>';
                 suburbSelect.disabled = true;
                 
-                const response = await fetch(`${API_BASE}/shipping/suburbs?postcode=${postcode}`);
+                const response = await fetch(`${SHIPPING_API_BASE}/shipping/suburbs?postcode=${postcode}`);
                 const data = await response.json();
                 
                 currentSuburbs = data.suburbs || [];
