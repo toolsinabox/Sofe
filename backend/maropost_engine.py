@@ -1285,6 +1285,14 @@ class MaropostTemplateEngine:
         match = re.match(r'\[@(\w+)@\]', path)
         if match:
             path = match.group(1)
+        else:
+            # If it's not a tag, it might be a literal value (already resolved)
+            # Check if it looks like a URL, number, or other literal
+            if path.startswith(('http://', 'https://', '/', '#')) or path.startswith('"') or path.startswith("'"):
+                return path.strip('"\'')
+            # If it contains special characters that aren't in typical context paths, treat as literal
+            if any(c in path for c in [':', '//', '?', '&', '=']):
+                return path
         
         parts = path.split('.')
         value = context
