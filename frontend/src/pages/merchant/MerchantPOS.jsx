@@ -98,6 +98,22 @@ const MerchantPOS = () => {
   const [laybyDueDate, setLaybyDueDate] = useState('');
   const [laybyDuePeriod, setLaybyDuePeriod] = useState(''); // 4_weeks, 8_weeks, custom
   
+  // Shipping State (Phase 3)
+  const [shipToCustomer, setShipToCustomer] = useState(false);
+  const [selectedShipping, setSelectedShipping] = useState(null);
+  const [signatureRequired, setSignatureRequired] = useState(false);
+  const [deliveryInstructions, setDeliveryInstructions] = useState('');
+  const [showShippingOptions, setShowShippingOptions] = useState(false);
+  
+  // Default shipping methods (can be configured in store settings later)
+  const shippingMethods = [
+    { id: 'pickup', name: 'Pickup - In Store', price: 0, description: 'Collect from store' },
+    { id: 'standard', name: 'Standard Delivery', price: 15.00, description: '3-5 business days' },
+    { id: 'express', name: 'Express Delivery', price: 25.00, description: '1-2 business days' },
+    { id: 'same_day', name: 'Same Day Delivery', price: 50.00, description: 'Delivered today' },
+    { id: 'depot', name: 'Depot Delivery', price: 35.00, description: 'Deliver to nearest depot' }
+  ];
+  
   // All products for browsing
   const [allProducts, setAllProducts] = useState([]);
   const [loadingProducts, setLoadingProducts] = useState(false);
