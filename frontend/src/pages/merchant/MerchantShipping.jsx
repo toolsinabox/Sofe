@@ -446,14 +446,6 @@ const MerchantShipping = () => {
         <p className="text-gray-500 text-xs mb-4">
           Cubic Weight = (L × W × H) / 1,000,000 × 250. Charges use the greater of actual or cubic weight.
         </p>
-              disabled={calculating || !calcPostcode}
-              className="w-full bg-emerald-600 hover:bg-emerald-700"
-            >
-              {calculating ? <Loader2 className="w-4 h-4 animate-spin mr-2" /> : <Calculator className="w-4 h-4 mr-2" />}
-              Calculate
-            </Button>
-          </div>
-        </div>
 
         {/* Calculator Results */}
         {calcResult && (
