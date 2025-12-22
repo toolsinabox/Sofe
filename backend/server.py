@@ -2573,9 +2573,9 @@ async def get_order_invoice(order_id: str, format: str = "html"):
             </div>
             <div class="details-box">
                 <h3>Ship To</h3>
-                <p>{order.get('shipping_address', {}).get('street', '')}</p>
-                <p>{order.get('shipping_address', {}).get('city', '')}, {order.get('shipping_address', {}).get('state', '')} {order.get('shipping_address', {}).get('postcode', '')}</p>
-                <p>{order.get('shipping_address', {}).get('country', 'Australia')}</p>
+                <p>{ship_street}</p>
+                <p>{ship_city_state}</p>
+                <p>{ship_country}</p>
             </div>
         </div>
         
