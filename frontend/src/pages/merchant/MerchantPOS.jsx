@@ -580,15 +580,18 @@ const MerchantPOS = () => {
 
   // Quick add customer
   const handleQuickAddCustomer = async () => {
-    if (!newCustomer.name || !newCustomer.email) {
-      alert('Name and email are required');
+    if (!newCustomer.firstName || !newCustomer.lastName || !newCustomer.email) {
+      alert('First name, last name, and email are required');
       return;
     }
     
     setAddingCustomer(true);
     try {
+      // Combine first and last name for the API
+      const fullName = `${newCustomer.firstName} ${newCustomer.lastName}`.trim();
+      
       const params = {
-        name: newCustomer.name,
+        name: fullName,
         email: newCustomer.email,
         phone: newCustomer.phone || null,
         company: newCustomer.company || null,
@@ -612,7 +615,8 @@ const MerchantPOS = () => {
       setShowAddCustomer(false);
       setShowCustomerSearch(false);
       setNewCustomer({ 
-        name: '', 
+        firstName: '',
+        lastName: '', 
         company: '',
         email: '', 
         phone: '',
