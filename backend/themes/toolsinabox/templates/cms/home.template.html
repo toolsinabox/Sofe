@@ -114,7 +114,11 @@
                                 [%if [@product_sale@] == 'y'%]
                                 <span class="sale-badge">On Sale</span>
                                 [%/if%]
-                                <span class="stock-badge">In Stock</span>
+                                [%if [@product_stock@] le '0'%]
+                                <span class="stock-badge out-of-stock">Out of Stock</span>
+                                [%else%]
+                                <span class="stock-badge in-stock">In Stock</span>
+                                [%/if%]
                                 <img src="[@product_image@]" alt="[@product_name@]" onerror="this.onerror=null;this.src='data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 width=%27400%27 height=%27400%27 viewBox=%270 0 400 400%27%3E%3Crect fill=%27%23374151%27 width=%27400%27 height=%27400%27/%3E%3Ctext x=%27200%27 y=%27205%27 fill=%27%239CA3AF%27 font-size=%2718%27 text-anchor=%27middle%27%3ENo Image%3C/text%3E%3C/svg%3E'">
                             </div>
                             <div class="product-info">
@@ -130,6 +134,11 @@
                         </a>
                         <div class="product-actions">
                             <a href="/live/product/[@product_id@]" class="btn-view-more">View More</a>
+                            [%if [@product_stock@] le '0'%]
+                            <button class="add-to-cart-btn out-of-stock-btn" disabled>
+                                Out of Stock
+                            </button>
+                            [%else%]
                             <button class="add-to-cart-btn" 
                                     data-product-id="[@product_id@]"
                                     data-product-name="[@product_name@]"
@@ -138,6 +147,7 @@
                                     onclick="addToCart(this)">
                                 Add to Cart
                             </button>
+                            [%/if%]
                         </div>
                     </div>
                     [%/product_list%]
