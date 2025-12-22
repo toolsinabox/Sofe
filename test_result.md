@@ -310,3 +310,26 @@ Integrated shipping rate calculation into the shopping cart page, allowing custo
 - Cart navigation buttons work from `/live/cart`
 
 ### Status: COMPLETE
+
+## Test Cases for Frontend Testing Agent
+
+### Checkout Flow Test Cases
+1. Navigate to `/live/checkout` - verify page loads with minimal header
+2. Verify form sections: Contact Info, Shipping, Billing, Payment
+3. Fill out checkout form with test data
+4. Select "Bank Transfer" payment method
+5. Submit the form and verify success modal appears
+
+### Quote Flow Test Cases
+1. Navigate to `/live/quote` - verify page loads with minimal header
+2. Verify "Request a Quote" title and orange theme
+3. Verify "How Quotes Work" info box is displayed
+4. Fill out quote form with test data
+5. Submit the form and verify success modal appears
+
+### Cart Navigation Test
+1. Navigate to `/live/cart` - verify page loads
+2. Verify "Checkout Now" and "Request a Quote" buttons are visible
+
+### Credentials
+- Not required for storefront pages (guest checkout)
