@@ -937,6 +937,179 @@ class MaropostTemplateEngine:
         
         return result
     
+    def _render_content_zone(self, zone: Dict, context: Dict) -> str:
+        """Render a content zone with all its blocks to HTML."""
+        if not zone or not zone.get('is_active', True):
+            return ''
+        
+        blocks = zone.get('blocks', [])
+        sorted_blocks = sorted(blocks, key=lambda x: x.get('sort_order', 0))
+        
+        html_parts = []
+        for block in sorted_blocks:
+            if not block.get('is_active', True):
+                continue
+            
+            block_html = self._render_content_block(block, context)
+            if block_html:
+                html_parts.append(block_html)
+        
+        # Wrap in a content zone container
+        zone_name = zone.get('name', '')
+        device_classes = []
+        if not zone.get('show_on_desktop', True):
+            device_classes.append('hide-desktop')
+        if not zone.get('show_on_tablet', True):
+            device_classes.append('hide-tablet')
+        if not zone.get('show_on_mobile', True):
+            device_classes.append('hide-mobile')
+        
+        class_str = f"content-zone content-zone-{zone_name} {' '.join(device_classes)}".strip()
+        
+        return f'<div class="{class_str}" data-zone="{zone_name}">\n{"".join(html_parts)}\n</div>'
+    
+    def _render_content_block(self, block: Dict, context: Dict) -> str:
+        """Render a single content block to HTML."""
+        block_type = block.get('type', 'html')
+        content = block.get('content', '')
+        settings = block.get('settings', {})
+        block_id = block.get('id', '')
+        
+        if block_type == 'html':
+            return f'<div class="content-block content-block-html" data-block-id="{block_id}">{content}</div>'
+        
+        elif block_type == 'text':
+            return f'<div class="content-block content-block-text" data-block-id="{block_id}"><p>{content}</p></div>'
+        
+        elif block_type == 'image':
+            src = settings.get('src', '')
+            alt = settings.get('alt', '')
+            link = settings.get('link', '')
+            width = settings.get('width', '100%')
+            alignment = settings.get('alignment', 'center')
+            
+            img_html = f'<img src="{src}" alt="{alt}" style="max-width:{width}">'
+            if link:
+                img_html = f'<a href="{link}">{img_html}</a>'
+            return f'<div class="content-block content-block-image" style="text-align:{alignment}" data-block-id="{block_id}">{img_html}</div>'
+        
+        elif block_type == 'video':
+            src = settings.get('src', '')
+            # Convert YouTube URLs to embed
+            if 'youtube.com/watch' in src:
+                video_id = src.split('v=')[1].split('&')[0] if 'v=' in src else ''
+                src = f'https://www.youtube.com/embed/{video_id}'
+            elif 'youtu.be/' in src:
+                video_id = src.split('youtu.be/')[1].split('?')[0]
+                src = f'https://www.youtube.com/embed/{video_id}'
+            
+            return f'''<div class="content-block content-block-video" data-block-id="{block_id}">
+                <div style="position:relative;padding-bottom:56.25%;height:0;overflow:hidden">
+                    <iframe src="{src}" style="position:absolute;top:0;left:0;width:100%;height:100%" frameborder="0" allowfullscreen></iframe>
+                </div>
+            </div>'''
+        
+        elif block_type == 'spacer':
+            height = settings.get('height', '50px')
+            return f'<div class="content-block content-block-spacer" style="height:{height}" data-block-id="{block_id}"></div>'
+        
+        elif block_type == 'divider':
+            style = settings.get('style', 'solid')
+            color = settings.get('color', '#e5e7eb')
+            thickness = settings.get('thickness', '1px')
+            width = settings.get('width', '100%')
+            return f'<div class="content-block content-block-divider" data-block-id="{block_id}"><hr style="border:none;border-top:{thickness} {style} {color};width:{width};margin:1rem auto"></div>'
+        
+        elif block_type == 'product_grid':
+            limit = settings.get('limit', 4)
+            columns = settings.get('columns', 4)
+            category_id = settings.get('category_id', '')
+            show_price = settings.get('show_price', True)
+            
+            products = context.get('products', [])
+            if category_id:
+                products = [p for p in products if p.get('category_id') == category_id]
+            products = products[:limit]
+            
+            if not products:
+                return ''
+            
+            store = context.get('store', {})
+            currency = store.get('currency_symbol', '$')
+            
+            grid_html = f'<div class="content-block content-block-product-grid" data-block-id="{block_id}">'
+            grid_html += f'<div class="product-grid" style="display:grid;grid-template-columns:repeat({columns},1fr);gap:1.5rem">'
+            
+            for p in products:
+                img = p.get('images', [''])[0] if p.get('images') else ''
+                name = p.get('name', '')
+                price = p.get('price', 0)
+                pid = p.get('id', '')
+                
+                grid_html += f'''
+                <div class="product-card-mini">
+                    <a href="/live/product/{pid}">
+                        <img src="{img}" alt="{name}" style="width:100%;aspect-ratio:1;object-fit:cover;border-radius:8px">
+                        <h4 style="margin:0.5rem 0 0.25rem;font-size:0.9rem">{name}</h4>
+                        {'<p style="font-weight:bold;color:#dc2626">' + currency + f'{price:.2f}</p>' if show_price else ''}
+                    </a>
+                </div>
+                '''
+            
+            grid_html += '</div></div>'
+            return grid_html
+        
+        elif block_type == 'category_grid':
+            limit = settings.get('limit', 6)
+            columns = settings.get('columns', 3)
+            
+            categories = context.get('categories', [])[:limit]
+            
+            if not categories:
+                return ''
+            
+            grid_html = f'<div class="content-block content-block-category-grid" data-block-id="{block_id}">'
+            grid_html += f'<div class="category-grid" style="display:grid;grid-template-columns:repeat({columns},1fr);gap:1.5rem">'
+            
+            for c in categories:
+                img = c.get('image', '')
+                name = c.get('name', '')
+                cid = c.get('id', '')
+                
+                grid_html += f'''
+                <a href="/live/category/{cid}" class="category-card-mini" style="display:block;text-align:center">
+                    <img src="{img}" alt="{name}" style="width:100%;aspect-ratio:1;object-fit:cover;border-radius:8px" onerror="this.style.display='none'">
+                    <h4 style="margin:0.5rem 0;font-size:0.9rem">{name}</h4>
+                </a>
+                '''
+            
+            grid_html += '</div></div>'
+            return grid_html
+        
+        elif block_type == 'banner':
+            banner_id = settings.get('banner_id', '')
+            banners = context.get('banners', [])
+            
+            banner = next((b for b in banners if b.get('id') == banner_id), None)
+            if not banner:
+                return ''
+            
+            img = banner.get('image', '')
+            link = banner.get('link', '#')
+            title = banner.get('title', '')
+            
+            return f'''<div class="content-block content-block-banner" data-block-id="{block_id}">
+                <a href="{link}">
+                    <img src="{img}" alt="{title}" style="width:100%;display:block">
+                </a>
+            </div>'''
+        
+        elif block_type == 'custom':
+            # Custom block - just render the content with potential tag processing
+            return f'<div class="content-block content-block-custom" data-block-id="{block_id}">{content}</div>'
+        
+        return ''
+    
     def _replace_product_item_tags(self, content: str, product: Dict, store: Dict) -> str:
         """Replace product item tags within a loop."""
         currency = store.get('currency_symbol', '$')
