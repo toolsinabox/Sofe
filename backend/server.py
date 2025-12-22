@@ -2499,6 +2499,17 @@ async def get_order_invoice(order_id: str, format: str = "html"):
     currency = store_settings.get('currency_symbol', '$') if store_settings else '$'
     store_name = store_settings.get('store_name', 'TOOLS IN A BOX') if store_settings else 'TOOLS IN A BOX'
     
+    # Handle shipping address (can be string or dict)
+    shipping_addr = order.get('shipping_address', {})
+    if isinstance(shipping_addr, str):
+        ship_street = shipping_addr
+        ship_city_state = ''
+        ship_country = ''
+    else:
+        ship_street = shipping_addr.get('street', '')
+        ship_city_state = f"{shipping_addr.get('city', '')}, {shipping_addr.get('state', '')} {shipping_addr.get('postcode', '')}"
+        ship_country = shipping_addr.get('country', 'Australia')
+    
     items_html = ""
     for item in order.get('items', []):
         qty = item.get('quantity', 1)
