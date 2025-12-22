@@ -131,53 +131,50 @@ const MerchantDashboard = () => {
       {/* Alerts */}
       {stats && (stats.low_stock_products > 0 || stats.out_of_stock_products > 0) && (
         <Card className="bg-yellow-500/10 border-yellow-500/30">
-          <CardContent className="p-3 sm:p-4">
-            <div className="flex items-start sm:items-center gap-2 sm:gap-3">
-              <AlertTriangle className="text-yellow-400 flex-shrink-0 mt-0.5 sm:mt-0" size={20} />
-              <div>
-                <p className="text-yellow-400 font-medium text-sm sm:text-base">Inventory Alert</p>
-                <p className="text-yellow-400/70 text-xs sm:text-sm">
-                  {stats.low_stock_products} {stats.low_stock_products === 1 ? 'item' : 'items'} low on stock, {stats.out_of_stock_products} out of stock.
-                </p>
-              </div>
+          <CardContent className="p-2.5 sm:p-3">
+            <div className="flex items-center gap-2">
+              <AlertTriangle className="text-yellow-400 flex-shrink-0 w-4 h-4 sm:w-5 sm:h-5" />
+              <p className="text-yellow-400 text-xs sm:text-sm">
+                <span className="font-medium">Alert:</span> {stats.low_stock_products} low stock, {stats.out_of_stock_products} out of stock
+              </p>
             </div>
           </CardContent>
         </Card>
       )}
 
       {/* Recent Orders and Top Products - Stack on mobile */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-5 md:gap-6">
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-3 sm:gap-4 md:gap-5">
         {/* Recent Orders */}
         <Card className="bg-[#151b28] border-gray-800">
-          <CardHeader className="p-4 sm:pb-2">
+          <CardHeader className="p-3 sm:p-4 pb-2">
             <div className="flex items-center justify-between">
-              <CardTitle className="text-white text-base sm:text-lg font-semibold">Recent Orders</CardTitle>
-              <Link to="/merchant/orders" className="text-emerald-400 text-xs sm:text-sm hover:text-emerald-300 flex items-center gap-1">
-                View All <ArrowRight size={14} />
+              <CardTitle className="text-white text-sm sm:text-base font-semibold">Recent Orders</CardTitle>
+              <Link to="/merchant/orders" className="text-emerald-400 text-[10px] sm:text-xs hover:text-emerald-300 flex items-center gap-0.5">
+                View All <ArrowRight size={12} />
               </Link>
             </div>
           </CardHeader>
-          <CardContent className="p-3 sm:p-4 pt-0 sm:pt-0">
+          <CardContent className="p-2 sm:p-3 pt-0">
             {loading ? (
-              <div className="space-y-2 sm:space-y-3">
+              <div className="space-y-1.5 sm:space-y-2">
                 {[...Array(5)].map((_, i) => (
-                  <div key={i} className="h-14 sm:h-16 bg-gray-800 rounded-lg animate-pulse" />
+                  <div key={i} className="h-11 sm:h-14 bg-gray-800 rounded animate-pulse" />
                 ))}
               </div>
             ) : orders.length === 0 ? (
-              <div className="text-center py-6 sm:py-8 text-gray-500">
-                <ShoppingBag size={32} className="sm:w-10 sm:h-10 mx-auto mb-2 opacity-30" />
-                <p className="text-sm">No orders yet</p>
+              <div className="text-center py-4 sm:py-6 text-gray-500">
+                <ShoppingBag className="w-6 h-6 sm:w-8 sm:h-8 mx-auto mb-1.5 opacity-30" />
+                <p className="text-xs sm:text-sm">No orders yet</p>
               </div>
             ) : (
-              <div className="space-y-2 sm:space-y-3">
+              <div className="space-y-1.5 sm:space-y-2">
                 {orders.map((order) => (
                   <Link 
                     key={order.id} 
                     to={`/merchant/orders/${order.id}`}
-                    className="flex items-center justify-between p-2.5 sm:p-3 bg-gray-800/30 rounded-lg hover:bg-gray-800/50 transition-colors"
+                    className="flex items-center justify-between p-2 sm:p-2.5 bg-gray-800/30 rounded-lg hover:bg-gray-800/50 transition-colors"
                   >
-                    <div className="flex items-center gap-2 sm:gap-3 min-w-0 flex-1">
+                    <div className="flex items-center gap-2 min-w-0 flex-1">
                       <div className="w-9 h-9 sm:w-10 sm:h-10 bg-gradient-to-br from-emerald-500/20 to-teal-600/20 rounded-lg flex items-center justify-center flex-shrink-0">
                         <ShoppingBag size={16} className="sm:w-[18px] sm:h-[18px] text-emerald-400" />
                       </div>
