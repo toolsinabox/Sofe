@@ -274,7 +274,7 @@ const BlockEditor = ({ block, onUpdate, onDelete, onMoveUp, onMoveDown, isFirst,
                 <TemplateTagsPanel isOpen={showTagsPanel} onClose={() => setShowTagsPanel(false)} />
               </div>
               <p className="text-xs text-gray-500 mt-2">
-                Use Maropost-style template tags for dynamic content. Click "Show Tags" to see available tags.
+                Use Maropost-style template tags for dynamic content. Click &quot;Show Tags&quot; to see available tags.
               </p>
             </div>
           )}
