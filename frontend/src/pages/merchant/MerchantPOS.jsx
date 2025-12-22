@@ -1031,48 +1031,19 @@ const MerchantPOS = () => {
             <Input
               ref={searchInputRef}
               type="text"
-              placeholder="Search products or scan barcode..."
+              placeholder="Search by name, SKU, or barcode..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              onKeyDown={handleSearchKeyDown}
-              className="pl-9 sm:pl-10 pr-4 py-2.5 sm:py-3 bg-gray-800 border-gray-700 text-white text-sm sm:text-base placeholder-gray-500 focus:border-emerald-500"
+              className="pl-9 sm:pl-10 pr-10 py-2.5 sm:py-3 bg-gray-800 border-gray-700 text-white text-sm sm:text-base placeholder-gray-500 focus:border-emerald-500"
               autoFocus
             />
-            {searching && (
-              <Loader2 className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 animate-spin text-gray-500" />
-            )}
-            
-            {/* Search Results Dropdown */}
-            {searchResults.length > 0 && (
-              <div className="absolute top-full left-0 right-0 mt-1 bg-gray-800 border border-gray-700 rounded-lg shadow-xl z-50 max-h-64 sm:max-h-80 overflow-y-auto">
-                {searchResults.map((product) => (
-                  <button
-                    key={product.id}
-                    onClick={() => addToCart(product)}
-                    className="w-full flex items-center gap-2 sm:gap-3 p-2 sm:p-3 hover:bg-gray-700 transition-colors text-left"
-                  >
-                    <div className="w-10 h-10 sm:w-12 sm:h-12 bg-gray-700 rounded-lg overflow-hidden flex-shrink-0">
-                      {product.image ? (
-                        <img src={product.image} alt={product.name} className="w-full h-full object-cover" />
-                      ) : (
-                        <div className="w-full h-full flex items-center justify-center">
-                          <Package className="w-5 h-5 sm:w-6 sm:h-6 text-gray-500" />
-                        </div>
-                      )}
-                    </div>
-                    <div className="flex-1 min-w-0">
-                      <p className="text-white font-medium text-xs sm:text-sm truncate">{product.name}</p>
-                      <p className="text-gray-500 text-[10px] sm:text-xs">{product.sku}</p>
-                    </div>
-                    <div className="text-right flex-shrink-0">
-                      <p className="text-emerald-400 font-semibold text-sm sm:text-base">${product.price.toFixed(2)}</p>
-                      <p className={`text-[10px] sm:text-xs ${product.stock > 0 ? 'text-gray-500' : 'text-red-400'}`}>
-                        {product.stock > 0 ? `${product.stock} in stock` : 'Out of stock'}
-                      </p>
-                    </div>
-                  </button>
-                ))}
-              </div>
+            {searchQuery && (
+              <button
+                onClick={() => setSearchQuery('')}
+                className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-white"
+              >
+                <X className="w-4 h-4" />
+              </button>
             )}
           </div>
 
