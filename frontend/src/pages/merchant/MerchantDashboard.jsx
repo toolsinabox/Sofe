@@ -26,19 +26,19 @@ const StatCard = ({ title, value, subValue, icon: Icon, color, loading }) => {
 
   return (
     <Card className="bg-[#151b28] border-gray-800 hover:border-gray-700 transition-all duration-300">
-      <CardContent className="p-6">
+      <CardContent className="p-4 sm:p-5 md:p-6">
         <div className="flex items-start justify-between">
-          <div>
-            <p className="text-gray-400 text-sm font-medium mb-1">{title}</p>
+          <div className="flex-1 min-w-0">
+            <p className="text-gray-400 text-xs sm:text-sm font-medium mb-1">{title}</p>
             {loading ? (
-              <div className="h-8 w-24 bg-gray-700 rounded animate-pulse" />
+              <div className="h-6 sm:h-8 w-20 sm:w-24 bg-gray-700 rounded animate-pulse" />
             ) : (
-              <p className="text-2xl font-bold text-white">{value}</p>
+              <p className="text-lg sm:text-xl md:text-2xl font-bold text-white truncate">{value}</p>
             )}
-            {subValue && <p className="text-gray-500 text-sm mt-1">{subValue}</p>}
+            {subValue && <p className="text-gray-500 text-xs sm:text-sm mt-0.5 sm:mt-1 truncate">{subValue}</p>}
           </div>
-          <div className={`w-12 h-12 rounded-xl bg-gradient-to-br ${colors[color]} flex items-center justify-center`}>
-            <Icon size={24} className="text-white" />
+          <div className={`w-10 h-10 sm:w-11 sm:h-11 md:w-12 md:h-12 rounded-lg sm:rounded-xl bg-gradient-to-br ${colors[color]} flex items-center justify-center flex-shrink-0 ml-2`}>
+            <Icon size={20} className="sm:w-6 sm:h-6 text-white" />
           </div>
         </div>
       </CardContent>
@@ -93,13 +93,13 @@ const MerchantDashboard = () => {
   };
 
   return (
-    <div className="space-y-6">
-      {/* Stats Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+    <div className="space-y-4 sm:space-y-5 md:space-y-6">
+      {/* Stats Grid - 2 columns on mobile, 4 on larger screens */}
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4 md:gap-6">
         <StatCard
           title="Total Revenue"
           value={stats ? formatCurrency(stats.total_revenue) : '$0.00'}
-          subValue={`${stats?.pending_orders || 0} orders pending`}
+          subValue={`${stats?.pending_orders || 0} pending`}
           icon={DollarSign}
           color="emerald"
           loading={loading}
@@ -112,14 +112,14 @@ const MerchantDashboard = () => {
           loading={loading}
         />
         <StatCard
-          title="Total Customers"
+          title="Customers"
           value={stats?.total_customers?.toLocaleString() || '0'}
           icon={Users}
           color="purple"
           loading={loading}
         />
         <StatCard
-          title="Total Products"
+          title="Products"
           value={stats?.total_products?.toLocaleString() || '0'}
           subValue={`${stats?.low_stock_products || 0} low stock`}
           icon={Package}
@@ -131,13 +131,13 @@ const MerchantDashboard = () => {
       {/* Alerts */}
       {stats && (stats.low_stock_products > 0 || stats.out_of_stock_products > 0) && (
         <Card className="bg-yellow-500/10 border-yellow-500/30">
-          <CardContent className="p-4">
-            <div className="flex items-center gap-3">
-              <AlertTriangle className="text-yellow-400" size={24} />
+          <CardContent className="p-3 sm:p-4">
+            <div className="flex items-start sm:items-center gap-2 sm:gap-3">
+              <AlertTriangle className="text-yellow-400 flex-shrink-0 mt-0.5 sm:mt-0" size={20} />
               <div>
-                <p className="text-yellow-400 font-medium">Inventory Alert</p>
-                <p className="text-yellow-400/70 text-sm">
-                  {stats.low_stock_products} {stats.low_stock_products === 1 ? 'item' : 'items'} low on stock, {stats.out_of_stock_products} {stats.out_of_stock_products === 1 ? 'item' : 'items'} out of stock.
+                <p className="text-yellow-400 font-medium text-sm sm:text-base">Inventory Alert</p>
+                <p className="text-yellow-400/70 text-xs sm:text-sm">
+                  {stats.low_stock_products} {stats.low_stock_products === 1 ? 'item' : 'items'} low on stock, {stats.out_of_stock_products} out of stock.
                 </p>
               </div>
             </div>
@@ -145,50 +145,54 @@ const MerchantDashboard = () => {
         </Card>
       )}
 
-      {/* Recent Orders and Top Products */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+      {/* Recent Orders and Top Products - Stack on mobile */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-5 md:gap-6">
         {/* Recent Orders */}
         <Card className="bg-[#151b28] border-gray-800">
-          <CardHeader className="pb-2">
+          <CardHeader className="p-4 sm:pb-2">
             <div className="flex items-center justify-between">
-              <CardTitle className="text-white text-lg font-semibold">Recent Orders</CardTitle>
-              <Link to="/merchant/orders" className="text-emerald-400 text-sm hover:text-emerald-300 flex items-center gap-1">
+              <CardTitle className="text-white text-base sm:text-lg font-semibold">Recent Orders</CardTitle>
+              <Link to="/merchant/orders" className="text-emerald-400 text-xs sm:text-sm hover:text-emerald-300 flex items-center gap-1">
                 View All <ArrowRight size={14} />
               </Link>
             </div>
           </CardHeader>
-          <CardContent>
+          <CardContent className="p-3 sm:p-4 pt-0 sm:pt-0">
             {loading ? (
-              <div className="space-y-3">
+              <div className="space-y-2 sm:space-y-3">
                 {[...Array(5)].map((_, i) => (
-                  <div key={i} className="h-16 bg-gray-800 rounded-lg animate-pulse" />
+                  <div key={i} className="h-14 sm:h-16 bg-gray-800 rounded-lg animate-pulse" />
                 ))}
               </div>
             ) : orders.length === 0 ? (
-              <div className="text-center py-8 text-gray-500">
-                <ShoppingBag size={40} className="mx-auto mb-2 opacity-30" />
-                <p>No orders yet</p>
+              <div className="text-center py-6 sm:py-8 text-gray-500">
+                <ShoppingBag size={32} className="sm:w-10 sm:h-10 mx-auto mb-2 opacity-30" />
+                <p className="text-sm">No orders yet</p>
               </div>
             ) : (
-              <div className="space-y-3">
+              <div className="space-y-2 sm:space-y-3">
                 {orders.map((order) => (
-                  <div key={order.id} className="flex items-center justify-between p-3 bg-gray-800/30 rounded-lg hover:bg-gray-800/50 transition-colors">
-                    <div className="flex items-center gap-3">
-                      <div className="w-10 h-10 bg-gradient-to-br from-emerald-500/20 to-teal-600/20 rounded-lg flex items-center justify-center">
-                        <ShoppingBag size={18} className="text-emerald-400" />
+                  <Link 
+                    key={order.id} 
+                    to={`/merchant/orders/${order.id}`}
+                    className="flex items-center justify-between p-2.5 sm:p-3 bg-gray-800/30 rounded-lg hover:bg-gray-800/50 transition-colors"
+                  >
+                    <div className="flex items-center gap-2 sm:gap-3 min-w-0 flex-1">
+                      <div className="w-9 h-9 sm:w-10 sm:h-10 bg-gradient-to-br from-emerald-500/20 to-teal-600/20 rounded-lg flex items-center justify-center flex-shrink-0">
+                        <ShoppingBag size={16} className="sm:w-[18px] sm:h-[18px] text-emerald-400" />
                       </div>
-                      <div>
-                        <p className="text-white font-medium text-sm">{order.order_number}</p>
-                        <p className="text-gray-500 text-xs">{order.customer_name}</p>
+                      <div className="min-w-0 flex-1">
+                        <p className="text-white font-medium text-xs sm:text-sm truncate">{order.order_number}</p>
+                        <p className="text-gray-500 text-xs truncate">{order.customer_name}</p>
                       </div>
                     </div>
-                    <div className="text-right">
-                      <p className="text-white font-medium text-sm">{formatCurrency(order.total)}</p>
-                      <span className={`text-xs px-2 py-0.5 rounded-full ${getStatusColor(order.status)}`}>
+                    <div className="text-right flex-shrink-0 ml-2">
+                      <p className="text-white font-medium text-xs sm:text-sm">{formatCurrency(order.total)}</p>
+                      <span className={`text-xs px-1.5 sm:px-2 py-0.5 rounded-full ${getStatusColor(order.status)}`}>
                         {order.status.charAt(0).toUpperCase() + order.status.slice(1)}
                       </span>
                     </div>
-                  </div>
+                  </Link>
                 ))}
               </div>
             )}
@@ -197,48 +201,48 @@ const MerchantDashboard = () => {
 
         {/* Top Products */}
         <Card className="bg-[#151b28] border-gray-800">
-          <CardHeader className="pb-2">
+          <CardHeader className="p-4 sm:pb-2">
             <div className="flex items-center justify-between">
-              <CardTitle className="text-white text-lg font-semibold">Top Products</CardTitle>
-              <Link to="/merchant/products" className="text-emerald-400 text-sm hover:text-emerald-300 flex items-center gap-1">
+              <CardTitle className="text-white text-base sm:text-lg font-semibold">Top Products</CardTitle>
+              <Link to="/merchant/products" className="text-emerald-400 text-xs sm:text-sm hover:text-emerald-300 flex items-center gap-1">
                 View All <ArrowRight size={14} />
               </Link>
             </div>
           </CardHeader>
-          <CardContent>
+          <CardContent className="p-3 sm:p-4 pt-0 sm:pt-0">
             {loading ? (
-              <div className="space-y-3">
+              <div className="space-y-2 sm:space-y-3">
                 {[...Array(5)].map((_, i) => (
-                  <div key={i} className="h-16 bg-gray-800 rounded-lg animate-pulse" />
+                  <div key={i} className="h-14 sm:h-16 bg-gray-800 rounded-lg animate-pulse" />
                 ))}
               </div>
             ) : products.length === 0 ? (
-              <div className="text-center py-8 text-gray-500">
-                <Package size={40} className="mx-auto mb-2 opacity-30" />
-                <p>No products yet</p>
+              <div className="text-center py-6 sm:py-8 text-gray-500">
+                <Package size={32} className="sm:w-10 sm:h-10 mx-auto mb-2 opacity-30" />
+                <p className="text-sm">No products yet</p>
               </div>
             ) : (
-              <div className="space-y-3">
+              <div className="space-y-2 sm:space-y-3">
                 {products.map((product, index) => (
-                  <div key={product.id} className="flex items-center justify-between p-3 bg-gray-800/30 rounded-lg hover:bg-gray-800/50 transition-colors">
-                    <div className="flex items-center gap-3">
-                      <div className="w-8 h-8 bg-gray-700 rounded-lg flex items-center justify-center text-white font-semibold text-sm">
+                  <div key={product.id} className="flex items-center justify-between p-2.5 sm:p-3 bg-gray-800/30 rounded-lg hover:bg-gray-800/50 transition-colors">
+                    <div className="flex items-center gap-2 sm:gap-3 min-w-0 flex-1">
+                      <div className="w-7 h-7 sm:w-8 sm:h-8 bg-gray-700 rounded-lg flex items-center justify-center text-white font-semibold text-xs sm:text-sm flex-shrink-0">
                         {index + 1}
                       </div>
-                      <div className="flex items-center gap-3">
+                      <div className="flex items-center gap-2 sm:gap-3 min-w-0 flex-1">
                         <img
                           src={product.images?.[0] || 'https://via.placeholder.com/40'}
                           alt={product.name}
-                          className="w-10 h-10 rounded-lg object-cover"
+                          className="w-9 h-9 sm:w-10 sm:h-10 rounded-lg object-cover flex-shrink-0"
                         />
-                        <div>
-                          <p className="text-white font-medium text-sm line-clamp-1">{product.name}</p>
-                          <p className="text-gray-500 text-xs">{product.sales_count} sales</p>
+                        <div className="min-w-0 flex-1">
+                          <p className="text-white font-medium text-xs sm:text-sm line-clamp-1">{product.name}</p>
+                          <p className="text-gray-500 text-xs">{product.sales_count || 0} sales</p>
                         </div>
                       </div>
                     </div>
-                    <div className="text-right">
-                      <p className="text-white font-medium text-sm">{formatCurrency(product.price)}</p>
+                    <div className="text-right flex-shrink-0 ml-2">
+                      <p className="text-white font-medium text-xs sm:text-sm">{formatCurrency(product.price)}</p>
                       <span className={`text-xs ${product.stock > 0 ? 'text-emerald-400' : 'text-red-400'}`}>
                         {product.stock > 0 ? `${product.stock} in stock` : 'Out of stock'}
                       </span>
