@@ -198,35 +198,35 @@ const MerchantDashboard = () => {
 
         {/* Top Products */}
         <Card className="bg-[#151b28] border-gray-800">
-          <CardHeader className="p-4 sm:pb-2">
+          <CardHeader className="p-3 sm:p-4 pb-2">
             <div className="flex items-center justify-between">
-              <CardTitle className="text-white text-base sm:text-lg font-semibold">Top Products</CardTitle>
-              <Link to="/merchant/products" className="text-emerald-400 text-xs sm:text-sm hover:text-emerald-300 flex items-center gap-1">
-                View All <ArrowRight size={14} />
+              <CardTitle className="text-white text-sm sm:text-base font-semibold">Top Products</CardTitle>
+              <Link to="/merchant/products" className="text-emerald-400 text-[10px] sm:text-xs hover:text-emerald-300 flex items-center gap-0.5">
+                View All <ArrowRight size={12} />
               </Link>
             </div>
           </CardHeader>
-          <CardContent className="p-3 sm:p-4 pt-0 sm:pt-0">
+          <CardContent className="p-2 sm:p-3 pt-0">
             {loading ? (
-              <div className="space-y-2 sm:space-y-3">
+              <div className="space-y-1.5 sm:space-y-2">
                 {[...Array(5)].map((_, i) => (
-                  <div key={i} className="h-14 sm:h-16 bg-gray-800 rounded-lg animate-pulse" />
+                  <div key={i} className="h-11 sm:h-14 bg-gray-800 rounded animate-pulse" />
                 ))}
               </div>
             ) : products.length === 0 ? (
-              <div className="text-center py-6 sm:py-8 text-gray-500">
-                <Package size={32} className="sm:w-10 sm:h-10 mx-auto mb-2 opacity-30" />
-                <p className="text-sm">No products yet</p>
+              <div className="text-center py-4 sm:py-6 text-gray-500">
+                <Package className="w-6 h-6 sm:w-8 sm:h-8 mx-auto mb-1.5 opacity-30" />
+                <p className="text-xs sm:text-sm">No products yet</p>
               </div>
             ) : (
-              <div className="space-y-2 sm:space-y-3">
+              <div className="space-y-1.5 sm:space-y-2">
                 {products.map((product, index) => (
-                  <div key={product.id} className="flex items-center justify-between p-2.5 sm:p-3 bg-gray-800/30 rounded-lg hover:bg-gray-800/50 transition-colors">
-                    <div className="flex items-center gap-2 sm:gap-3 min-w-0 flex-1">
-                      <div className="w-7 h-7 sm:w-8 sm:h-8 bg-gray-700 rounded-lg flex items-center justify-center text-white font-semibold text-xs sm:text-sm flex-shrink-0">
+                  <div key={product.id} className="flex items-center justify-between p-2 sm:p-2.5 bg-gray-800/30 rounded-lg hover:bg-gray-800/50 transition-colors">
+                    <div className="flex items-center gap-1.5 sm:gap-2 min-w-0 flex-1">
+                      <div className="w-5 h-5 sm:w-6 sm:h-6 bg-gray-700 rounded flex items-center justify-center text-white font-medium text-[10px] sm:text-xs flex-shrink-0">
                         {index + 1}
                       </div>
-                      <div className="flex items-center gap-2 sm:gap-3 min-w-0 flex-1">
+                      <div className="flex items-center gap-1.5 sm:gap-2 min-w-0 flex-1">
                         <img
                           src={product.images?.[0] || 'https://via.placeholder.com/40'}
                           alt={product.name}
