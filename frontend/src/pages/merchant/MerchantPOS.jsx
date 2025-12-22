@@ -899,6 +899,15 @@ const MerchantPOS = () => {
             <Button
               variant="ghost"
               size="sm"
+              onClick={() => setShowReturns(true)}
+              className="text-orange-400 hover:text-orange-300 hover:bg-orange-500/10 h-7 px-2 text-xs"
+            >
+              <RotateCcw className="w-3.5 h-3.5 mr-1" />
+              <span className="hidden sm:inline">Returns</span>
+            </Button>
+            <Button
+              variant="ghost"
+              size="sm"
               onClick={() => setShowCashMovement(true)}
               className="text-gray-400 hover:text-white h-7 px-2 text-xs"
             >
