@@ -1,343 +1,1771 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import { Plus, Edit, Trash2, X, Save, Truck, MapPin, Package, DollarSign } from 'lucide-react';
+import { 
+  Plus, Edit, Trash2, X, Save, Truck, MapPin, Package, DollarSign, 
+  Globe, Settings, Box, Tag, Loader2, CheckCircle, AlertCircle, 
+  ChevronDown, ChevronUp, RefreshCw, Search, MoreHorizontal, Eye,
+  Layers, Calculator, FileText, Copy, ArrowUpDown
+} from 'lucide-react';
 import { Button } from '../../components/ui/button';
 import { Input } from '../../components/ui/input';
 import { Label } from '../../components/ui/label';
 import { Switch } from '../../components/ui/switch';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '../../components/ui/select';
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from '../../components/ui/dialog';
 
 const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
 const API = `${BACKEND_URL}/api`;
 
-const MerchantShipping = () => {
-  const [zones, setZones] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [showModal, setShowModal] = useState(false);
-  const [editingZone, setEditingZone] = useState(null);
-  const [formData, setFormData] = useState({
-    name: '',
-    countries: [],
-    states: [],
-    postcodes: [],
-    rates: [],
-    is_active: true
-  });
+// Tab components
+const TABS = [
+  { id: 'overview', label: 'Overview', icon: Truck },
+  { id: 'zones', label: 'Shipping Zones', icon: MapPin },
+  { id: 'services', label: 'Services & Rates', icon: DollarSign },
+  { id: 'categories', label: 'Categories', icon: Tag },
+  { id: 'packages', label: 'Packages', icon: Box },
+  { id: 'options', label: 'Options', icon: Settings },
+];
 
+const MerchantShipping = () => {
+  const [activeTab, setActiveTab] = useState('overview');
+  const [loading, setLoading] = useState(true);
+  
+  // Data states
+  const [zones, setZones] = useState([]);
+  const [services, setServices] = useState([]);
+  const [categories, setCategories] = useState([]);
+  const [packages, setPackages] = useState([]);
+  const [options, setOptions] = useState([]);
+  
+  // Modal states
+  const [showZoneModal, setShowZoneModal] = useState(false);
+  const [showServiceModal, setShowServiceModal] = useState(false);
+  const [showCategoryModal, setShowCategoryModal] = useState(false);
+  const [showPackageModal, setShowPackageModal] = useState(false);
+  const [showOptionModal, setShowOptionModal] = useState(false);
+  
+  // Editing states
+  const [editingItem, setEditingItem] = useState(null);
+  const [saving, setSaving] = useState(false);
+  
+  // Calculator state
+  const [calcPostcode, setCalcPostcode] = useState('');
+  const [calcWeight, setCalcWeight] = useState('1');
+  const [calcTotal, setCalcTotal] = useState('100');
+  const [calcResult, setCalcResult] = useState(null);
+  const [calculating, setCalculating] = useState(false);
+
+  // Fetch all data on mount
   useEffect(() => {
-    fetchZones();
+    fetchAllData();
   }, []);
 
-  const fetchZones = async () => {
+  const fetchAllData = async () => {
+    setLoading(true);
     try {
-      const response = await axios.get(`${API}/shipping/zones`);
-      setZones(response.data);
+      const [zonesRes, servicesRes, categoriesRes, packagesRes, optionsRes] = await Promise.all([
+        axios.get(`${API}/shipping/zones`),
+        axios.get(`${API}/shipping/services`),
+        axios.get(`${API}/shipping/categories`),
+        axios.get(`${API}/shipping/packages`),
+        axios.get(`${API}/shipping/options`),
+      ]);
+      setZones(zonesRes.data || []);
+      setServices(servicesRes.data || []);
+      setCategories(categoriesRes.data || []);
+      setPackages(packagesRes.data || []);
+      setOptions(optionsRes.data || []);
     } catch (error) {
-      console.error('Error fetching zones:', error);
+      console.error('Error fetching shipping data:', error);
     } finally {
       setLoading(false);
     }
   };
 
-  const openModal = (zone = null) => {
-    if (zone) {
-      setEditingZone(zone);
-      setFormData(zone);
-    } else {
-      setEditingZone(null);
-      setFormData({
-        name: '',
-        countries: [],
-        states: [],
-        postcodes: [],
-        rates: [{ id: Date.now().toString(), name: 'Standard Shipping', price: 9.95, estimated_days: '3-5 business days', is_active: true }],
-        is_active: true
+  // Calculate shipping
+  const handleCalculateShipping = async () => {
+    if (!calcPostcode) return;
+    setCalculating(true);
+    try {
+      const response = await axios.post(`${API}/shipping/calculate`, {
+        postcode: calcPostcode,
+        country: 'AU',
+        items: [{ weight: parseFloat(calcWeight) || 1, quantity: 1 }],
+        cart_total: parseFloat(calcTotal) || 100
       });
-    }
-    setShowModal(true);
-  };
-
-  const handleSave = async () => {
-    try {
-      if (editingZone) {
-        await axios.put(`${API}/shipping/zones/${editingZone.id}`, formData);
-      } else {
-        await axios.post(`${API}/shipping/zones`, formData);
-      }
-      fetchZones();
-      setShowModal(false);
+      setCalcResult(response.data);
     } catch (error) {
-      console.error('Error saving zone:', error);
+      console.error('Error calculating shipping:', error);
+      setCalcResult({ error: 'Failed to calculate shipping' });
+    } finally {
+      setCalculating(false);
     }
   };
 
-  const deleteZone = async (zoneId) => {
-    if (!window.confirm('Are you sure you want to delete this shipping zone?')) return;
-    try {
-      await axios.delete(`${API}/shipping/zones/${zoneId}`);
-      fetchZones();
-    } catch (error) {
-      console.error('Error deleting zone:', error);
-    }
-  };
-
-  const addRate = () => {
-    setFormData({
-      ...formData,
-      rates: [...formData.rates, {
-        id: Date.now().toString(),
-        name: 'New Rate',
-        price: 0,
-        min_weight: 0,
-        max_weight: null,
-        estimated_days: '3-5 business days',
-        is_active: true
-      }]
-    });
-  };
-
-  const updateRate = (index, field, value) => {
-    const newRates = [...formData.rates];
-    newRates[index] = { ...newRates[index], [field]: value };
-    setFormData({ ...formData, rates: newRates });
-  };
-
-  const removeRate = (index) => {
-    setFormData({
-      ...formData,
-      rates: formData.rates.filter((_, i) => i !== index)
-    });
-  };
-
-  return (
-    <div className="p-6">
-      <div className="flex justify-between items-center mb-6">
-        <div>
-          <h1 className="text-2xl font-bold text-white">Shipping Zones & Rates</h1>
-          <p className="text-gray-400 text-sm mt-1">Configure shipping costs by region</p>
+  // ============== OVERVIEW TAB ==============
+  const OverviewTab = () => (
+    <div className="space-y-6">
+      {/* Stats Cards */}
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+        <div className="bg-gray-800 rounded-xl p-5 border border-gray-700">
+          <div className="flex items-center gap-3">
+            <div className="w-12 h-12 rounded-lg bg-blue-500/20 flex items-center justify-center">
+              <MapPin className="w-6 h-6 text-blue-400" />
+            </div>
+            <div>
+              <p className="text-gray-400 text-sm">Shipping Zones</p>
+              <p className="text-2xl font-bold text-white">{zones.length}</p>
+            </div>
+          </div>
         </div>
-        <Button onClick={() => openModal()} className="bg-blue-600 hover:bg-blue-700">
-          <Plus size={16} className="mr-2" /> Add Zone
-        </Button>
+        <div className="bg-gray-800 rounded-xl p-5 border border-gray-700">
+          <div className="flex items-center gap-3">
+            <div className="w-12 h-12 rounded-lg bg-emerald-500/20 flex items-center justify-center">
+              <Truck className="w-6 h-6 text-emerald-400" />
+            </div>
+            <div>
+              <p className="text-gray-400 text-sm">Shipping Services</p>
+              <p className="text-2xl font-bold text-white">{services.length}</p>
+            </div>
+          </div>
+        </div>
+        <div className="bg-gray-800 rounded-xl p-5 border border-gray-700">
+          <div className="flex items-center gap-3">
+            <div className="w-12 h-12 rounded-lg bg-purple-500/20 flex items-center justify-center">
+              <Tag className="w-6 h-6 text-purple-400" />
+            </div>
+            <div>
+              <p className="text-gray-400 text-sm">Categories</p>
+              <p className="text-2xl font-bold text-white">{categories.length}</p>
+            </div>
+          </div>
+        </div>
+        <div className="bg-gray-800 rounded-xl p-5 border border-gray-700">
+          <div className="flex items-center gap-3">
+            <div className="w-12 h-12 rounded-lg bg-orange-500/20 flex items-center justify-center">
+              <Box className="w-6 h-6 text-orange-400" />
+            </div>
+            <div>
+              <p className="text-gray-400 text-sm">Package Types</p>
+              <p className="text-2xl font-bold text-white">{packages.length}</p>
+            </div>
+          </div>
+        </div>
       </div>
 
-      {/* Zones Grid */}
-      <div className="grid gap-4">
-        {zones.length === 0 ? (
-          <div className="bg-gray-800 rounded-lg p-8 text-center">
-            <Truck size={48} className="mx-auto text-gray-600 mb-4" />
-            <p className="text-gray-400">No shipping zones configured</p>
-            <Button onClick={() => openModal()} className="mt-4">
-              Create Your First Zone
+      {/* Shipping Calculator */}
+      <div className="bg-gray-800 rounded-xl p-6 border border-gray-700">
+        <h3 className="text-lg font-semibold text-white mb-4 flex items-center gap-2">
+          <Calculator className="w-5 h-5 text-emerald-400" />
+          Shipping Rate Calculator
+        </h3>
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+          <div>
+            <Label className="text-gray-400 text-sm">Postcode</Label>
+            <Input 
+              placeholder="e.g., 2000"
+              value={calcPostcode}
+              onChange={(e) => setCalcPostcode(e.target.value)}
+              className="bg-gray-700 border-gray-600 text-white mt-1"
+            />
+          </div>
+          <div>
+            <Label className="text-gray-400 text-sm">Weight (kg)</Label>
+            <Input 
+              type="number"
+              placeholder="1"
+              value={calcWeight}
+              onChange={(e) => setCalcWeight(e.target.value)}
+              className="bg-gray-700 border-gray-600 text-white mt-1"
+            />
+          </div>
+          <div>
+            <Label className="text-gray-400 text-sm">Cart Total ($)</Label>
+            <Input 
+              type="number"
+              placeholder="100"
+              value={calcTotal}
+              onChange={(e) => setCalcTotal(e.target.value)}
+              className="bg-gray-700 border-gray-600 text-white mt-1"
+            />
+          </div>
+          <div className="flex items-end">
+            <Button 
+              onClick={handleCalculateShipping}
+              disabled={calculating || !calcPostcode}
+              className="w-full bg-emerald-600 hover:bg-emerald-700"
+            >
+              {calculating ? <Loader2 className="w-4 h-4 animate-spin mr-2" /> : <Calculator className="w-4 h-4 mr-2" />}
+              Calculate
             </Button>
           </div>
-        ) : (
-          zones.map((zone) => (
-            <div key={zone.id} className={`bg-gray-800 rounded-lg p-6 border ${
-              zone.is_active ? 'border-gray-700' : 'border-gray-700/50 opacity-60'
-            }`}>
-              <div className="flex items-start justify-between mb-4">
-                <div>
-                  <h3 className="text-lg font-semibold text-white flex items-center gap-2">
-                    <MapPin size={18} className="text-blue-400" />
-                    {zone.name}
-                    {!zone.is_active && (
-                      <span className="text-xs bg-gray-700 text-gray-400 px-2 py-0.5 rounded">Inactive</span>
-                    )}
-                  </h3>
-                  <p className="text-sm text-gray-400 mt-1">
-                    {zone.countries?.length > 0 && `Countries: ${zone.countries.join(', ')}`}
-                    {zone.states?.length > 0 && ` | States: ${zone.states.join(', ')}`}
-                    {zone.postcodes?.length > 0 && ` | Postcodes: ${zone.postcodes.join(', ')}`}
+        </div>
+
+        {/* Calculator Results */}
+        {calcResult && (
+          <div className="mt-4 p-4 bg-gray-900 rounded-lg">
+            {calcResult.error ? (
+              <p className="text-red-400">{calcResult.error}</p>
+            ) : (
+              <>
+                {calcResult.zone && (
+                  <p className="text-gray-400 text-sm mb-3">
+                    Zone: <span className="text-white font-medium">{calcResult.zone.name}</span> ({calcResult.zone.code})
                   </p>
-                </div>
-                <div className="flex gap-2">
-                  <button
-                    onClick={() => openModal(zone)}
-                    className="p-2 rounded hover:bg-gray-700 text-gray-400 hover:text-white"
-                  >
-                    <Edit size={16} />
-                  </button>
-                  <button
-                    onClick={() => deleteZone(zone.id)}
-                    className="p-2 rounded hover:bg-gray-700 text-gray-400 hover:text-red-400"
-                  >
-                    <Trash2 size={16} />
-                  </button>
-                </div>
-              </div>
-
-              {/* Rates */}
-              <div className="space-y-2">
-                {zone.rates?.map((rate, i) => (
-                  <div key={i} className="flex items-center justify-between bg-gray-900 rounded-lg p-3">
-                    <div className="flex items-center gap-4">
-                      <Package size={16} className="text-gray-500" />
-                      <div>
-                        <p className="text-white font-medium">{rate.name}</p>
-                        <p className="text-xs text-gray-500">{rate.estimated_days}</p>
-                      </div>
-                    </div>
-                    <div className="text-right">
-                      <p className="text-green-400 font-bold">${rate.price?.toFixed(2)}</p>
-                      {(rate.min_weight > 0 || rate.max_weight) && (
-                        <p className="text-xs text-gray-500">
-                          {rate.min_weight}kg - {rate.max_weight || '∞'}kg
-                        </p>
-                      )}
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </div>
-          ))
-        )}
-      </div>
-
-      {/* Modal */}
-      {showModal && (
-        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 overflow-y-auto py-8">
-          <div className="bg-gray-800 rounded-lg w-full max-w-2xl mx-4">
-            <div className="flex justify-between items-center p-6 border-b border-gray-700">
-              <h2 className="text-xl font-bold text-white">
-                {editingZone ? 'Edit Shipping Zone' : 'Create Shipping Zone'}
-              </h2>
-              <button onClick={() => setShowModal(false)} className="text-gray-400 hover:text-white">
-                <X size={20} />
-              </button>
-            </div>
-
-            <div className="p-6 space-y-6 max-h-[70vh] overflow-y-auto">
-              {/* Zone Name */}
-              <div>
-                <Label className="text-gray-300">Zone Name</Label>
-                <Input
-                  value={formData.name}
-                  onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                  placeholder="e.g., Australia, International"
-                  className="bg-gray-700 border-gray-600 text-white mt-1"
-                />
-              </div>
-
-              {/* Countries */}
-              <div>
-                <Label className="text-gray-300">Countries (ISO codes, comma-separated)</Label>
-                <Input
-                  value={formData.countries?.join(', ') || ''}
-                  onChange={(e) => setFormData({ ...formData, countries: e.target.value.split(',').map(s => s.trim()).filter(Boolean) })}
-                  placeholder="AU, NZ, US"
-                  className="bg-gray-700 border-gray-600 text-white mt-1"
-                />
-              </div>
-
-              {/* States */}
-              <div>
-                <Label className="text-gray-300">States/Regions (comma-separated)</Label>
-                <Input
-                  value={formData.states?.join(', ') || ''}
-                  onChange={(e) => setFormData({ ...formData, states: e.target.value.split(',').map(s => s.trim()).filter(Boolean) })}
-                  placeholder="VIC, NSW, QLD"
-                  className="bg-gray-700 border-gray-600 text-white mt-1"
-                />
-              </div>
-
-              {/* Postcodes */}
-              <div>
-                <Label className="text-gray-300">Postcodes (comma-separated, ranges supported)</Label>
-                <Input
-                  value={formData.postcodes?.join(', ') || ''}
-                  onChange={(e) => setFormData({ ...formData, postcodes: e.target.value.split(',').map(s => s.trim()).filter(Boolean) })}
-                  placeholder="3000-3999, 4000-4999"
-                  className="bg-gray-700 border-gray-600 text-white mt-1"
-                />
-              </div>
-
-              {/* Rates */}
-              <div>
-                <div className="flex items-center justify-between mb-3">
-                  <Label className="text-gray-300">Shipping Rates</Label>
-                  <Button variant="outline" size="sm" onClick={addRate} className="border-gray-600">
-                    <Plus size={14} className="mr-1" /> Add Rate
-                  </Button>
-                </div>
-                <div className="space-y-3">
-                  {formData.rates?.map((rate, i) => (
-                    <div key={i} className="bg-gray-900 rounded-lg p-4">
-                      <div className="grid grid-cols-4 gap-3">
-                        <div className="col-span-2">
-                          <Input
-                            value={rate.name}
-                            onChange={(e) => updateRate(i, 'name', e.target.value)}
-                            placeholder="Rate name"
-                            className="bg-gray-700 border-gray-600 text-white text-sm"
-                          />
-                        </div>
+                )}
+                <div className="space-y-2">
+                  {calcResult.options?.map((option, i) => (
+                    <div key={i} className="flex items-center justify-between p-3 bg-gray-800 rounded-lg">
+                      <div className="flex items-center gap-3">
+                        <Truck className="w-5 h-5 text-gray-400" />
                         <div>
-                          <Input
-                            type="number"
-                            step="0.01"
-                            value={rate.price}
-                            onChange={(e) => updateRate(i, 'price', parseFloat(e.target.value) || 0)}
-                            placeholder="Price"
-                            className="bg-gray-700 border-gray-600 text-white text-sm"
-                          />
-                        </div>
-                        <div className="flex justify-end">
-                          <button
-                            onClick={() => removeRate(i)}
-                            className="p-2 rounded hover:bg-gray-700 text-gray-400 hover:text-red-400"
-                          >
-                            <Trash2 size={16} />
-                          </button>
+                          <p className="text-white font-medium">{option.name}</p>
+                          <p className="text-gray-500 text-sm">{option.description}</p>
                         </div>
                       </div>
-                      <div className="grid grid-cols-3 gap-3 mt-3">
-                        <Input
-                          value={rate.estimated_days}
-                          onChange={(e) => updateRate(i, 'estimated_days', e.target.value)}
-                          placeholder="Estimated days"
-                          className="bg-gray-700 border-gray-600 text-white text-sm"
-                        />
-                        <Input
-                          type="number"
-                          value={rate.min_weight || ''}
-                          onChange={(e) => updateRate(i, 'min_weight', parseFloat(e.target.value) || 0)}
-                          placeholder="Min weight (kg)"
-                          className="bg-gray-700 border-gray-600 text-white text-sm"
-                        />
-                        <Input
-                          type="number"
-                          value={rate.max_weight || ''}
-                          onChange={(e) => updateRate(i, 'max_weight', e.target.value ? parseFloat(e.target.value) : null)}
-                          placeholder="Max weight (kg)"
-                          className="bg-gray-700 border-gray-600 text-white text-sm"
-                        />
+                      <div className="text-right">
+                        <p className={`font-bold ${option.is_free ? 'text-emerald-400' : 'text-white'}`}>
+                          {option.is_free ? 'FREE' : `$${option.price.toFixed(2)}`}
+                        </p>
+                        {option.delivery_days > 0 && (
+                          <p className="text-gray-500 text-sm">{option.delivery_days} days</p>
+                        )}
                       </div>
                     </div>
                   ))}
                 </div>
-              </div>
+              </>
+            )}
+          </div>
+        )}
+      </div>
 
-              {/* Active */}
+      {/* Quick Actions */}
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+        <button 
+          onClick={() => { setActiveTab('zones'); }}
+          className="bg-gray-800 rounded-xl p-6 border border-gray-700 hover:border-blue-500/50 transition-all text-left group"
+        >
+          <div className="flex items-center justify-between">
+            <div>
+              <h4 className="text-white font-semibold mb-1">Manage Zones</h4>
+              <p className="text-gray-500 text-sm">Configure shipping regions and postcodes</p>
+            </div>
+            <MapPin className="w-8 h-8 text-blue-400 group-hover:scale-110 transition-transform" />
+          </div>
+        </button>
+        <button 
+          onClick={() => { setActiveTab('services'); }}
+          className="bg-gray-800 rounded-xl p-6 border border-gray-700 hover:border-emerald-500/50 transition-all text-left group"
+        >
+          <div className="flex items-center justify-between">
+            <div>
+              <h4 className="text-white font-semibold mb-1">Configure Services</h4>
+              <p className="text-gray-500 text-sm">Set up shipping rates and carriers</p>
+            </div>
+            <DollarSign className="w-8 h-8 text-emerald-400 group-hover:scale-110 transition-transform" />
+          </div>
+        </button>
+        <button 
+          onClick={() => { setActiveTab('options'); }}
+          className="bg-gray-800 rounded-xl p-6 border border-gray-700 hover:border-orange-500/50 transition-all text-left group"
+        >
+          <div className="flex items-center justify-between">
+            <div>
+              <h4 className="text-white font-semibold mb-1">Shipping Options</h4>
+              <p className="text-gray-500 text-sm">Free shipping thresholds & rules</p>
+            </div>
+            <Settings className="w-8 h-8 text-orange-400 group-hover:scale-110 transition-transform" />
+          </div>
+        </button>
+      </div>
+
+      {/* Recent Zones Preview */}
+      <div className="bg-gray-800 rounded-xl p-6 border border-gray-700">
+        <div className="flex items-center justify-between mb-4">
+          <h3 className="text-lg font-semibold text-white">Active Shipping Zones</h3>
+          <Button variant="outline" size="sm" onClick={() => setActiveTab('zones')} className="border-gray-600">
+            View All
+          </Button>
+        </div>
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
+          {zones.slice(0, 6).map(zone => (
+            <div key={zone.id} className="bg-gray-900 rounded-lg p-4 border border-gray-700">
+              <div className="flex items-center gap-2 mb-2">
+                <MapPin className="w-4 h-4 text-blue-400" />
+                <span className="text-white font-medium">{zone.name}</span>
+              </div>
+              <p className="text-gray-500 text-sm">{zone.postcodes?.slice(0, 3).join(', ')}{zone.postcodes?.length > 3 ? '...' : ''}</p>
+              <div className="flex items-center gap-2 mt-2">
+                <span className={`px-2 py-0.5 rounded text-xs ${zone.is_active ? 'bg-emerald-500/20 text-emerald-400' : 'bg-gray-700 text-gray-400'}`}>
+                  {zone.is_active ? 'Active' : 'Inactive'}
+                </span>
+                <span className="text-gray-600 text-xs">{zone.code}</span>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+    </div>
+  );
+
+  // ============== ZONES TAB ==============
+  const ZonesTab = () => {
+    const [zoneForm, setZoneForm] = useState({
+      code: '',
+      name: '',
+      country: 'AU',
+      postcodes: [],
+      is_active: true,
+      sort_order: 0
+    });
+    const [postcodesInput, setPostcodesInput] = useState('');
+
+    const openZoneModal = (zone = null) => {
+      if (zone) {
+        setEditingItem(zone);
+        setZoneForm({
+          code: zone.code || '',
+          name: zone.name || '',
+          country: zone.country || 'AU',
+          postcodes: zone.postcodes || [],
+          is_active: zone.is_active !== false,
+          sort_order: zone.sort_order || 0
+        });
+        setPostcodesInput(zone.postcodes?.join(', ') || '');
+      } else {
+        setEditingItem(null);
+        setZoneForm({
+          code: '',
+          name: '',
+          country: 'AU',
+          postcodes: [],
+          is_active: true,
+          sort_order: zones.length
+        });
+        setPostcodesInput('');
+      }
+      setShowZoneModal(true);
+    };
+
+    const handleSaveZone = async () => {
+      setSaving(true);
+      try {
+        const data = {
+          ...zoneForm,
+          postcodes: postcodesInput.split(',').map(p => p.trim()).filter(Boolean)
+        };
+        
+        if (editingItem) {
+          await axios.put(`${API}/shipping/zones/${editingItem.id}`, data);
+        } else {
+          await axios.post(`${API}/shipping/zones`, data);
+        }
+        await fetchAllData();
+        setShowZoneModal(false);
+      } catch (error) {
+        console.error('Error saving zone:', error);
+        alert(error.response?.data?.detail || 'Failed to save zone');
+      } finally {
+        setSaving(false);
+      }
+    };
+
+    const handleDeleteZone = async (zoneId) => {
+      if (!window.confirm('Are you sure you want to delete this zone?')) return;
+      try {
+        await axios.delete(`${API}/shipping/zones/${zoneId}`);
+        await fetchAllData();
+      } catch (error) {
+        console.error('Error deleting zone:', error);
+      }
+    };
+
+    return (
+      <div className="space-y-4">
+        <div className="flex justify-between items-center">
+          <div>
+            <h2 className="text-xl font-bold text-white">Shipping Zones</h2>
+            <p className="text-gray-400 text-sm">Define geographic regions for shipping rates</p>
+          </div>
+          <Button onClick={() => openZoneModal()} className="bg-blue-600 hover:bg-blue-700">
+            <Plus className="w-4 h-4 mr-2" /> Add Zone
+          </Button>
+        </div>
+
+        {/* Zones List */}
+        <div className="grid gap-4">
+          {zones.length === 0 ? (
+            <div className="bg-gray-800 rounded-xl p-8 text-center border border-gray-700">
+              <MapPin className="w-12 h-12 text-gray-600 mx-auto mb-3" />
+              <p className="text-gray-400 mb-4">No shipping zones configured</p>
+              <Button onClick={() => openZoneModal()}>Create Your First Zone</Button>
+            </div>
+          ) : (
+            zones.map(zone => (
+              <div 
+                key={zone.id} 
+                className={`bg-gray-800 rounded-xl p-5 border ${zone.is_active ? 'border-gray-700' : 'border-gray-700/50 opacity-60'}`}
+              >
+                <div className="flex items-start justify-between">
+                  <div className="flex-1">
+                    <div className="flex items-center gap-3 mb-2">
+                      <MapPin className="w-5 h-5 text-blue-400" />
+                      <h3 className="text-lg font-semibold text-white">{zone.name}</h3>
+                      <span className="px-2 py-0.5 bg-gray-700 text-gray-300 text-xs rounded font-mono">{zone.code}</span>
+                      {!zone.is_active && (
+                        <span className="px-2 py-0.5 bg-gray-700 text-gray-400 text-xs rounded">Inactive</span>
+                      )}
+                    </div>
+                    <div className="flex flex-wrap gap-2 mb-2">
+                      <span className="flex items-center gap-1 text-gray-400 text-sm">
+                        <Globe className="w-4 h-4" /> {zone.country}
+                      </span>
+                    </div>
+                    <div className="flex flex-wrap gap-1">
+                      {zone.postcodes?.slice(0, 8).map((pc, i) => (
+                        <span key={i} className="px-2 py-1 bg-gray-900 text-gray-300 text-xs rounded">
+                          {pc}
+                        </span>
+                      ))}
+                      {zone.postcodes?.length > 8 && (
+                        <span className="px-2 py-1 bg-gray-900 text-gray-500 text-xs rounded">
+                          +{zone.postcodes.length - 8} more
+                        </span>
+                      )}
+                    </div>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <button
+                      onClick={() => openZoneModal(zone)}
+                      className="p-2 rounded-lg hover:bg-gray-700 text-gray-400 hover:text-white transition-colors"
+                    >
+                      <Edit className="w-4 h-4" />
+                    </button>
+                    <button
+                      onClick={() => handleDeleteZone(zone.id)}
+                      className="p-2 rounded-lg hover:bg-gray-700 text-gray-400 hover:text-red-400 transition-colors"
+                    >
+                      <Trash2 className="w-4 h-4" />
+                    </button>
+                  </div>
+                </div>
+              </div>
+            ))
+          )}
+        </div>
+
+        {/* Zone Modal */}
+        <Dialog open={showZoneModal} onOpenChange={setShowZoneModal}>
+          <DialogContent className="bg-gray-800 border-gray-700 text-white max-w-lg">
+            <DialogHeader>
+              <DialogTitle>{editingItem ? 'Edit Shipping Zone' : 'Create Shipping Zone'}</DialogTitle>
+              <DialogDescription className="text-gray-400">
+                Define a geographic region for shipping rates
+              </DialogDescription>
+            </DialogHeader>
+            <div className="space-y-4 py-4">
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <Label className="text-gray-300">Zone Code</Label>
+                  <Input
+                    value={zoneForm.code}
+                    onChange={(e) => setZoneForm({...zoneForm, code: e.target.value.toUpperCase()})}
+                    placeholder="e.g., SYD_METRO"
+                    className="bg-gray-700 border-gray-600 text-white mt-1"
+                  />
+                </div>
+                <div>
+                  <Label className="text-gray-300">Zone Name</Label>
+                  <Input
+                    value={zoneForm.name}
+                    onChange={(e) => setZoneForm({...zoneForm, name: e.target.value})}
+                    placeholder="e.g., Sydney Metro"
+                    className="bg-gray-700 border-gray-600 text-white mt-1"
+                  />
+                </div>
+              </div>
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <Label className="text-gray-300">Country Code</Label>
+                  <Select value={zoneForm.country} onValueChange={(v) => setZoneForm({...zoneForm, country: v})}>
+                    <SelectTrigger className="bg-gray-700 border-gray-600 text-white mt-1">
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent className="bg-gray-800 border-gray-700">
+                      <SelectItem value="AU">Australia (AU)</SelectItem>
+                      <SelectItem value="NZ">New Zealand (NZ)</SelectItem>
+                      <SelectItem value="US">United States (US)</SelectItem>
+                      <SelectItem value="GB">United Kingdom (GB)</SelectItem>
+                      <SelectItem value="CA">Canada (CA)</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+                <div>
+                  <Label className="text-gray-300">Sort Order</Label>
+                  <Input
+                    type="number"
+                    value={zoneForm.sort_order}
+                    onChange={(e) => setZoneForm({...zoneForm, sort_order: parseInt(e.target.value) || 0})}
+                    className="bg-gray-700 border-gray-600 text-white mt-1"
+                  />
+                </div>
+              </div>
+              <div>
+                <Label className="text-gray-300">Postcodes (comma-separated, ranges supported)</Label>
+                <textarea
+                  value={postcodesInput}
+                  onChange={(e) => setPostcodesInput(e.target.value)}
+                  placeholder="e.g., 2000-2234, 2555-2574, 2740-2786"
+                  rows={3}
+                  className="w-full mt-1 px-3 py-2 bg-gray-700 border border-gray-600 rounded-md text-white text-sm placeholder:text-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                />
+                <p className="text-gray-500 text-xs mt-1">Use ranges like "2000-2234" or individual postcodes</p>
+              </div>
               <div className="flex items-center justify-between">
-                <span className="text-gray-300">Zone Active</span>
+                <Label className="text-gray-300">Zone Active</Label>
                 <Switch
-                  checked={formData.is_active}
-                  onCheckedChange={(checked) => setFormData({ ...formData, is_active: checked })}
+                  checked={zoneForm.is_active}
+                  onCheckedChange={(checked) => setZoneForm({...zoneForm, is_active: checked})}
                 />
               </div>
             </div>
-
-            <div className="flex justify-end gap-3 p-6 border-t border-gray-700">
-              <Button variant="outline" onClick={() => setShowModal(false)} className="border-gray-600">
+            <DialogFooter>
+              <Button variant="outline" onClick={() => setShowZoneModal(false)} className="border-gray-600">
                 Cancel
               </Button>
-              <Button onClick={handleSave} className="bg-blue-600 hover:bg-blue-700">
-                <Save size={16} className="mr-2" /> {editingZone ? 'Update' : 'Create'}
+              <Button onClick={handleSaveZone} disabled={saving} className="bg-blue-600 hover:bg-blue-700">
+                {saving ? <Loader2 className="w-4 h-4 mr-2 animate-spin" /> : <Save className="w-4 h-4 mr-2" />}
+                {editingItem ? 'Update' : 'Create'}
               </Button>
-            </div>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
+      </div>
+    );
+  };
+
+  // ============== SERVICES TAB ==============
+  const ServicesTab = () => {
+    const [serviceForm, setServiceForm] = useState({
+      name: '',
+      code: '',
+      carrier: 'custom',
+      charge_type: 'weight',
+      min_charge: 0,
+      max_charge: null,
+      handling_fee: 0,
+      fuel_levy_percent: 0,
+      cubic_weight_modifier: 250,
+      categories: [],
+      is_active: true,
+      sort_order: 0,
+      rates: []
+    });
+    const [expandedService, setExpandedService] = useState(null);
+
+    const openServiceModal = (service = null) => {
+      if (service) {
+        setEditingItem(service);
+        setServiceForm({
+          name: service.name || '',
+          code: service.code || '',
+          carrier: service.carrier || 'custom',
+          charge_type: service.charge_type || 'weight',
+          min_charge: service.min_charge || 0,
+          max_charge: service.max_charge || null,
+          handling_fee: service.handling_fee || 0,
+          fuel_levy_percent: service.fuel_levy_percent || 0,
+          cubic_weight_modifier: service.cubic_weight_modifier || 250,
+          categories: service.categories || [],
+          is_active: service.is_active !== false,
+          sort_order: service.sort_order || 0,
+          rates: service.rates || []
+        });
+      } else {
+        setEditingItem(null);
+        setServiceForm({
+          name: '',
+          code: '',
+          carrier: 'custom',
+          charge_type: 'weight',
+          min_charge: 0,
+          max_charge: null,
+          handling_fee: 0,
+          fuel_levy_percent: 0,
+          cubic_weight_modifier: 250,
+          categories: ['default'],
+          is_active: true,
+          sort_order: services.length,
+          rates: []
+        });
+      }
+      setShowServiceModal(true);
+    };
+
+    const addRateRow = () => {
+      setServiceForm({
+        ...serviceForm,
+        rates: [...serviceForm.rates, {
+          zone_code: zones[0]?.code || '',
+          zone_name: zones[0]?.name || '',
+          min_weight: 0,
+          max_weight: 999,
+          base_rate: 0,
+          per_kg_rate: 0,
+          delivery_days: 3,
+          is_active: true
+        }]
+      });
+    };
+
+    const updateRate = (index, field, value) => {
+      const newRates = [...serviceForm.rates];
+      newRates[index] = { ...newRates[index], [field]: value };
+      
+      // Auto-fill zone name when zone_code changes
+      if (field === 'zone_code') {
+        const zone = zones.find(z => z.code === value);
+        newRates[index].zone_name = zone?.name || value;
+      }
+      
+      setServiceForm({ ...serviceForm, rates: newRates });
+    };
+
+    const removeRate = (index) => {
+      setServiceForm({
+        ...serviceForm,
+        rates: serviceForm.rates.filter((_, i) => i !== index)
+      });
+    };
+
+    const handleSaveService = async () => {
+      setSaving(true);
+      try {
+        if (editingItem) {
+          await axios.put(`${API}/shipping/services/${editingItem.id}`, serviceForm);
+        } else {
+          await axios.post(`${API}/shipping/services`, serviceForm);
+        }
+        await fetchAllData();
+        setShowServiceModal(false);
+      } catch (error) {
+        console.error('Error saving service:', error);
+        alert(error.response?.data?.detail || 'Failed to save service');
+      } finally {
+        setSaving(false);
+      }
+    };
+
+    const handleDeleteService = async (serviceId) => {
+      if (!window.confirm('Are you sure you want to delete this service?')) return;
+      try {
+        await axios.delete(`${API}/shipping/services/${serviceId}`);
+        await fetchAllData();
+      } catch (error) {
+        console.error('Error deleting service:', error);
+      }
+    };
+
+    return (
+      <div className="space-y-4">
+        <div className="flex justify-between items-center">
+          <div>
+            <h2 className="text-xl font-bold text-white">Shipping Services & Rates</h2>
+            <p className="text-gray-400 text-sm">Configure shipping methods and pricing</p>
           </div>
+          <Button onClick={() => openServiceModal()} className="bg-emerald-600 hover:bg-emerald-700">
+            <Plus className="w-4 h-4 mr-2" /> Add Service
+          </Button>
         </div>
-      )}
+
+        {/* Services List */}
+        <div className="space-y-4">
+          {services.length === 0 ? (
+            <div className="bg-gray-800 rounded-xl p-8 text-center border border-gray-700">
+              <Truck className="w-12 h-12 text-gray-600 mx-auto mb-3" />
+              <p className="text-gray-400 mb-4">No shipping services configured</p>
+              <Button onClick={() => openServiceModal()}>Create Your First Service</Button>
+            </div>
+          ) : (
+            services.map(service => (
+              <div 
+                key={service.id} 
+                className={`bg-gray-800 rounded-xl border ${service.is_active ? 'border-gray-700' : 'border-gray-700/50 opacity-60'}`}
+              >
+                <div 
+                  className="p-5 cursor-pointer"
+                  onClick={() => setExpandedService(expandedService === service.id ? null : service.id)}
+                >
+                  <div className="flex items-start justify-between">
+                    <div className="flex-1">
+                      <div className="flex items-center gap-3 mb-2">
+                        <Truck className="w-5 h-5 text-emerald-400" />
+                        <h3 className="text-lg font-semibold text-white">{service.name}</h3>
+                        <span className="px-2 py-0.5 bg-gray-700 text-gray-300 text-xs rounded font-mono">{service.code}</span>
+                        {!service.is_active && (
+                          <span className="px-2 py-0.5 bg-gray-700 text-gray-400 text-xs rounded">Inactive</span>
+                        )}
+                      </div>
+                      <div className="flex flex-wrap gap-3 text-sm text-gray-400">
+                        <span>Carrier: {service.carrier}</span>
+                        <span>Type: {service.charge_type}</span>
+                        <span>Min: ${service.min_charge?.toFixed(2)}</span>
+                        <span>{service.rates?.length || 0} rate(s)</span>
+                      </div>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <button
+                        onClick={(e) => { e.stopPropagation(); openServiceModal(service); }}
+                        className="p-2 rounded-lg hover:bg-gray-700 text-gray-400 hover:text-white transition-colors"
+                      >
+                        <Edit className="w-4 h-4" />
+                      </button>
+                      <button
+                        onClick={(e) => { e.stopPropagation(); handleDeleteService(service.id); }}
+                        className="p-2 rounded-lg hover:bg-gray-700 text-gray-400 hover:text-red-400 transition-colors"
+                      >
+                        <Trash2 className="w-4 h-4" />
+                      </button>
+                      {expandedService === service.id ? (
+                        <ChevronUp className="w-5 h-5 text-gray-400" />
+                      ) : (
+                        <ChevronDown className="w-5 h-5 text-gray-400" />
+                      )}
+                    </div>
+                  </div>
+                </div>
+
+                {/* Expanded Rates Table */}
+                {expandedService === service.id && service.rates?.length > 0 && (
+                  <div className="px-5 pb-5 border-t border-gray-700">
+                    <div className="overflow-x-auto mt-4">
+                      <table className="w-full text-sm">
+                        <thead>
+                          <tr className="text-gray-400 text-left">
+                            <th className="pb-2 font-medium">Zone</th>
+                            <th className="pb-2 font-medium">Weight Range</th>
+                            <th className="pb-2 font-medium">Base Rate</th>
+                            <th className="pb-2 font-medium">Per kg</th>
+                            <th className="pb-2 font-medium">Days</th>
+                            <th className="pb-2 font-medium">Status</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          {service.rates.map((rate, i) => (
+                            <tr key={i} className="border-t border-gray-700/50">
+                              <td className="py-2 text-white">{rate.zone_name}</td>
+                              <td className="py-2 text-gray-300">{rate.min_weight}kg - {rate.max_weight}kg</td>
+                              <td className="py-2 text-emerald-400">${rate.base_rate?.toFixed(2)}</td>
+                              <td className="py-2 text-gray-300">${rate.per_kg_rate?.toFixed(2)}</td>
+                              <td className="py-2 text-gray-300">{rate.delivery_days}</td>
+                              <td className="py-2">
+                                <span className={`px-2 py-0.5 rounded text-xs ${rate.is_active ? 'bg-emerald-500/20 text-emerald-400' : 'bg-gray-700 text-gray-400'}`}>
+                                  {rate.is_active ? 'Active' : 'Inactive'}
+                                </span>
+                              </td>
+                            </tr>
+                          ))}
+                        </tbody>
+                      </table>
+                    </div>
+                  </div>
+                )}
+              </div>
+            ))
+          )}
+        </div>
+
+        {/* Service Modal */}
+        <Dialog open={showServiceModal} onOpenChange={setShowServiceModal}>
+          <DialogContent className="bg-gray-800 border-gray-700 text-white max-w-4xl max-h-[90vh] overflow-y-auto">
+            <DialogHeader>
+              <DialogTitle>{editingItem ? 'Edit Shipping Service' : 'Create Shipping Service'}</DialogTitle>
+              <DialogDescription className="text-gray-400">
+                Configure shipping method and zone-based rates
+              </DialogDescription>
+            </DialogHeader>
+            <div className="space-y-6 py-4">
+              {/* Basic Info */}
+              <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+                <div>
+                  <Label className="text-gray-300">Service Name</Label>
+                  <Input
+                    value={serviceForm.name}
+                    onChange={(e) => setServiceForm({...serviceForm, name: e.target.value})}
+                    placeholder="e.g., Standard Delivery"
+                    className="bg-gray-700 border-gray-600 text-white mt-1"
+                  />
+                </div>
+                <div>
+                  <Label className="text-gray-300">Service Code</Label>
+                  <Input
+                    value={serviceForm.code}
+                    onChange={(e) => setServiceForm({...serviceForm, code: e.target.value.toLowerCase()})}
+                    placeholder="e.g., standard"
+                    className="bg-gray-700 border-gray-600 text-white mt-1"
+                  />
+                </div>
+                <div>
+                  <Label className="text-gray-300">Carrier</Label>
+                  <Select value={serviceForm.carrier} onValueChange={(v) => setServiceForm({...serviceForm, carrier: v})}>
+                    <SelectTrigger className="bg-gray-700 border-gray-600 text-white mt-1">
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent className="bg-gray-800 border-gray-700">
+                      <SelectItem value="custom">Custom</SelectItem>
+                      <SelectItem value="australia_post">Australia Post</SelectItem>
+                      <SelectItem value="startrack">StarTrack</SelectItem>
+                      <SelectItem value="tnt">TNT</SelectItem>
+                      <SelectItem value="fedex">FedEx</SelectItem>
+                      <SelectItem value="dhl">DHL</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+              </div>
+
+              {/* Charge Settings */}
+              <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                <div>
+                  <Label className="text-gray-300">Charge Type</Label>
+                  <Select value={serviceForm.charge_type} onValueChange={(v) => setServiceForm({...serviceForm, charge_type: v})}>
+                    <SelectTrigger className="bg-gray-700 border-gray-600 text-white mt-1">
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent className="bg-gray-800 border-gray-700">
+                      <SelectItem value="weight">Weight-based</SelectItem>
+                      <SelectItem value="cubic">Cubic weight</SelectItem>
+                      <SelectItem value="fixed">Fixed price</SelectItem>
+                      <SelectItem value="flat">Flat rate</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+                <div>
+                  <Label className="text-gray-300">Min Charge ($)</Label>
+                  <Input
+                    type="number"
+                    step="0.01"
+                    value={serviceForm.min_charge}
+                    onChange={(e) => setServiceForm({...serviceForm, min_charge: parseFloat(e.target.value) || 0})}
+                    className="bg-gray-700 border-gray-600 text-white mt-1"
+                  />
+                </div>
+                <div>
+                  <Label className="text-gray-300">Handling Fee ($)</Label>
+                  <Input
+                    type="number"
+                    step="0.01"
+                    value={serviceForm.handling_fee}
+                    onChange={(e) => setServiceForm({...serviceForm, handling_fee: parseFloat(e.target.value) || 0})}
+                    className="bg-gray-700 border-gray-600 text-white mt-1"
+                  />
+                </div>
+                <div>
+                  <Label className="text-gray-300">Fuel Levy (%)</Label>
+                  <Input
+                    type="number"
+                    step="0.1"
+                    value={serviceForm.fuel_levy_percent}
+                    onChange={(e) => setServiceForm({...serviceForm, fuel_levy_percent: parseFloat(e.target.value) || 0})}
+                    className="bg-gray-700 border-gray-600 text-white mt-1"
+                  />
+                </div>
+              </div>
+
+              {/* Zone Rates */}
+              <div>
+                <div className="flex items-center justify-between mb-3">
+                  <Label className="text-gray-300 text-base">Zone Rates</Label>
+                  <Button variant="outline" size="sm" onClick={addRateRow} className="border-gray-600">
+                    <Plus className="w-4 h-4 mr-1" /> Add Rate
+                  </Button>
+                </div>
+                
+                {serviceForm.rates.length === 0 ? (
+                  <div className="bg-gray-900 rounded-lg p-6 text-center border border-dashed border-gray-700">
+                    <p className="text-gray-500 mb-2">No rates configured</p>
+                    <Button variant="outline" size="sm" onClick={addRateRow} className="border-gray-600">
+                      Add First Rate
+                    </Button>
+                  </div>
+                ) : (
+                  <div className="space-y-3 max-h-64 overflow-y-auto">
+                    {serviceForm.rates.map((rate, i) => (
+                      <div key={i} className="bg-gray-900 rounded-lg p-4 border border-gray-700">
+                        <div className="grid grid-cols-6 gap-3">
+                          <div className="col-span-2">
+                            <Label className="text-gray-500 text-xs">Zone</Label>
+                            <Select value={rate.zone_code} onValueChange={(v) => updateRate(i, 'zone_code', v)}>
+                              <SelectTrigger className="bg-gray-700 border-gray-600 text-white mt-1 h-9">
+                                <SelectValue placeholder="Select zone" />
+                              </SelectTrigger>
+                              <SelectContent className="bg-gray-800 border-gray-700">
+                                {zones.map(z => (
+                                  <SelectItem key={z.code} value={z.code}>{z.name}</SelectItem>
+                                ))}
+                              </SelectContent>
+                            </Select>
+                          </div>
+                          <div>
+                            <Label className="text-gray-500 text-xs">Base Rate ($)</Label>
+                            <Input
+                              type="number"
+                              step="0.01"
+                              value={rate.base_rate}
+                              onChange={(e) => updateRate(i, 'base_rate', parseFloat(e.target.value) || 0)}
+                              className="bg-gray-700 border-gray-600 text-white mt-1 h-9"
+                            />
+                          </div>
+                          <div>
+                            <Label className="text-gray-500 text-xs">Per kg ($)</Label>
+                            <Input
+                              type="number"
+                              step="0.01"
+                              value={rate.per_kg_rate}
+                              onChange={(e) => updateRate(i, 'per_kg_rate', parseFloat(e.target.value) || 0)}
+                              className="bg-gray-700 border-gray-600 text-white mt-1 h-9"
+                            />
+                          </div>
+                          <div>
+                            <Label className="text-gray-500 text-xs">Days</Label>
+                            <Input
+                              type="number"
+                              value={rate.delivery_days}
+                              onChange={(e) => updateRate(i, 'delivery_days', parseInt(e.target.value) || 0)}
+                              className="bg-gray-700 border-gray-600 text-white mt-1 h-9"
+                            />
+                          </div>
+                          <div className="flex items-end justify-end">
+                            <button
+                              onClick={() => removeRate(i)}
+                              className="p-2 rounded hover:bg-gray-700 text-gray-400 hover:text-red-400"
+                            >
+                              <Trash2 className="w-4 h-4" />
+                            </button>
+                          </div>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
+
+              {/* Active Toggle */}
+              <div className="flex items-center justify-between pt-2 border-t border-gray-700">
+                <Label className="text-gray-300">Service Active</Label>
+                <Switch
+                  checked={serviceForm.is_active}
+                  onCheckedChange={(checked) => setServiceForm({...serviceForm, is_active: checked})}
+                />
+              </div>
+            </div>
+            <DialogFooter>
+              <Button variant="outline" onClick={() => setShowServiceModal(false)} className="border-gray-600">
+                Cancel
+              </Button>
+              <Button onClick={handleSaveService} disabled={saving} className="bg-emerald-600 hover:bg-emerald-700">
+                {saving ? <Loader2 className="w-4 h-4 mr-2 animate-spin" /> : <Save className="w-4 h-4 mr-2" />}
+                {editingItem ? 'Update' : 'Create'}
+              </Button>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
+      </div>
+    );
+  };
+
+  // ============== CATEGORIES TAB ==============
+  const CategoriesTab = () => {
+    const [categoryForm, setCategoryForm] = useState({
+      code: '',
+      name: '',
+      description: '',
+      is_default: false,
+      is_active: true
+    });
+
+    const openCategoryModal = (category = null) => {
+      if (category) {
+        setEditingItem(category);
+        setCategoryForm({
+          code: category.code || '',
+          name: category.name || '',
+          description: category.description || '',
+          is_default: category.is_default || false,
+          is_active: category.is_active !== false
+        });
+      } else {
+        setEditingItem(null);
+        setCategoryForm({
+          code: '',
+          name: '',
+          description: '',
+          is_default: false,
+          is_active: true
+        });
+      }
+      setShowCategoryModal(true);
+    };
+
+    const handleSaveCategory = async () => {
+      setSaving(true);
+      try {
+        if (editingItem) {
+          await axios.put(`${API}/shipping/categories/${editingItem.id}`, categoryForm);
+        } else {
+          await axios.post(`${API}/shipping/categories`, categoryForm);
+        }
+        await fetchAllData();
+        setShowCategoryModal(false);
+      } catch (error) {
+        console.error('Error saving category:', error);
+        alert(error.response?.data?.detail || 'Failed to save category');
+      } finally {
+        setSaving(false);
+      }
+    };
+
+    const handleDeleteCategory = async (categoryId) => {
+      if (!window.confirm('Are you sure you want to delete this category?')) return;
+      try {
+        await axios.delete(`${API}/shipping/categories/${categoryId}`);
+        await fetchAllData();
+      } catch (error) {
+        console.error('Error deleting category:', error);
+      }
+    };
+
+    return (
+      <div className="space-y-4">
+        <div className="flex justify-between items-center">
+          <div>
+            <h2 className="text-xl font-bold text-white">Shipping Categories</h2>
+            <p className="text-gray-400 text-sm">Categorize products for different shipping rules</p>
+          </div>
+          <Button onClick={() => openCategoryModal()} className="bg-purple-600 hover:bg-purple-700">
+            <Plus className="w-4 h-4 mr-2" /> Add Category
+          </Button>
+        </div>
+
+        {/* Categories Grid */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+          {categories.length === 0 ? (
+            <div className="col-span-full bg-gray-800 rounded-xl p-8 text-center border border-gray-700">
+              <Tag className="w-12 h-12 text-gray-600 mx-auto mb-3" />
+              <p className="text-gray-400 mb-4">No shipping categories configured</p>
+              <Button onClick={() => openCategoryModal()}>Create Your First Category</Button>
+            </div>
+          ) : (
+            categories.map(category => (
+              <div 
+                key={category.id} 
+                className={`bg-gray-800 rounded-xl p-5 border ${category.is_active ? 'border-gray-700' : 'border-gray-700/50 opacity-60'}`}
+              >
+                <div className="flex items-start justify-between mb-3">
+                  <div className="flex items-center gap-2">
+                    <Tag className="w-5 h-5 text-purple-400" />
+                    <h3 className="text-white font-semibold">{category.name}</h3>
+                  </div>
+                  <div className="flex items-center gap-1">
+                    <button
+                      onClick={() => openCategoryModal(category)}
+                      className="p-1.5 rounded hover:bg-gray-700 text-gray-400 hover:text-white"
+                    >
+                      <Edit className="w-4 h-4" />
+                    </button>
+                    <button
+                      onClick={() => handleDeleteCategory(category.id)}
+                      className="p-1.5 rounded hover:bg-gray-700 text-gray-400 hover:text-red-400"
+                    >
+                      <Trash2 className="w-4 h-4" />
+                    </button>
+                  </div>
+                </div>
+                <p className="text-gray-500 text-sm mb-3">{category.description || 'No description'}</p>
+                <div className="flex items-center gap-2">
+                  <span className="px-2 py-0.5 bg-gray-700 text-gray-300 text-xs rounded font-mono">{category.code}</span>
+                  {category.is_default && (
+                    <span className="px-2 py-0.5 bg-purple-500/20 text-purple-400 text-xs rounded">Default</span>
+                  )}
+                  {!category.is_active && (
+                    <span className="px-2 py-0.5 bg-gray-700 text-gray-400 text-xs rounded">Inactive</span>
+                  )}
+                </div>
+              </div>
+            ))
+          )}
+        </div>
+
+        {/* Category Modal */}
+        <Dialog open={showCategoryModal} onOpenChange={setShowCategoryModal}>
+          <DialogContent className="bg-gray-800 border-gray-700 text-white max-w-md">
+            <DialogHeader>
+              <DialogTitle>{editingItem ? 'Edit Category' : 'Create Category'}</DialogTitle>
+              <DialogDescription className="text-gray-400">
+                Categorize products for specific shipping rules
+              </DialogDescription>
+            </DialogHeader>
+            <div className="space-y-4 py-4">
+              <div>
+                <Label className="text-gray-300">Category Code</Label>
+                <Input
+                  value={categoryForm.code}
+                  onChange={(e) => setCategoryForm({...categoryForm, code: e.target.value.toLowerCase()})}
+                  placeholder="e.g., bulky"
+                  className="bg-gray-700 border-gray-600 text-white mt-1"
+                />
+              </div>
+              <div>
+                <Label className="text-gray-300">Category Name</Label>
+                <Input
+                  value={categoryForm.name}
+                  onChange={(e) => setCategoryForm({...categoryForm, name: e.target.value})}
+                  placeholder="e.g., Bulky Items"
+                  className="bg-gray-700 border-gray-600 text-white mt-1"
+                />
+              </div>
+              <div>
+                <Label className="text-gray-300">Description</Label>
+                <textarea
+                  value={categoryForm.description}
+                  onChange={(e) => setCategoryForm({...categoryForm, description: e.target.value})}
+                  placeholder="Optional description..."
+                  rows={2}
+                  className="w-full mt-1 px-3 py-2 bg-gray-700 border border-gray-600 rounded-md text-white text-sm placeholder:text-gray-500 focus:outline-none focus:ring-2 focus:ring-purple-500"
+                />
+              </div>
+              <div className="flex items-center justify-between">
+                <Label className="text-gray-300">Default Category</Label>
+                <Switch
+                  checked={categoryForm.is_default}
+                  onCheckedChange={(checked) => setCategoryForm({...categoryForm, is_default: checked})}
+                />
+              </div>
+              <div className="flex items-center justify-between">
+                <Label className="text-gray-300">Category Active</Label>
+                <Switch
+                  checked={categoryForm.is_active}
+                  onCheckedChange={(checked) => setCategoryForm({...categoryForm, is_active: checked})}
+                />
+              </div>
+            </div>
+            <DialogFooter>
+              <Button variant="outline" onClick={() => setShowCategoryModal(false)} className="border-gray-600">
+                Cancel
+              </Button>
+              <Button onClick={handleSaveCategory} disabled={saving} className="bg-purple-600 hover:bg-purple-700">
+                {saving ? <Loader2 className="w-4 h-4 mr-2 animate-spin" /> : <Save className="w-4 h-4 mr-2" />}
+                {editingItem ? 'Update' : 'Create'}
+              </Button>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
+      </div>
+    );
+  };
+
+  // ============== PACKAGES TAB ==============
+  const PackagesTab = () => {
+    const [packageForm, setPackageForm] = useState({
+      code: '',
+      name: '',
+      package_type: 'box',
+      length: 0,
+      width: 0,
+      height: 0,
+      max_weight: 0,
+      tare_weight: 0,
+      is_active: true
+    });
+
+    const openPackageModal = (pkg = null) => {
+      if (pkg) {
+        setEditingItem(pkg);
+        setPackageForm({
+          code: pkg.code || '',
+          name: pkg.name || '',
+          package_type: pkg.package_type || 'box',
+          length: pkg.length || 0,
+          width: pkg.width || 0,
+          height: pkg.height || 0,
+          max_weight: pkg.max_weight || 0,
+          tare_weight: pkg.tare_weight || 0,
+          is_active: pkg.is_active !== false
+        });
+      } else {
+        setEditingItem(null);
+        setPackageForm({
+          code: '',
+          name: '',
+          package_type: 'box',
+          length: 0,
+          width: 0,
+          height: 0,
+          max_weight: 0,
+          tare_weight: 0,
+          is_active: true
+        });
+      }
+      setShowPackageModal(true);
+    };
+
+    const handleSavePackage = async () => {
+      setSaving(true);
+      try {
+        if (editingItem) {
+          await axios.put(`${API}/shipping/packages/${editingItem.id}`, packageForm);
+        } else {
+          await axios.post(`${API}/shipping/packages`, packageForm);
+        }
+        await fetchAllData();
+        setShowPackageModal(false);
+      } catch (error) {
+        console.error('Error saving package:', error);
+        alert(error.response?.data?.detail || 'Failed to save package');
+      } finally {
+        setSaving(false);
+      }
+    };
+
+    const handleDeletePackage = async (packageId) => {
+      if (!window.confirm('Are you sure you want to delete this package?')) return;
+      try {
+        await axios.delete(`${API}/shipping/packages/${packageId}`);
+        await fetchAllData();
+      } catch (error) {
+        console.error('Error deleting package:', error);
+      }
+    };
+
+    return (
+      <div className="space-y-4">
+        <div className="flex justify-between items-center">
+          <div>
+            <h2 className="text-xl font-bold text-white">Predefined Packages</h2>
+            <p className="text-gray-400 text-sm">Define standard package sizes for shipping calculations</p>
+          </div>
+          <Button onClick={() => openPackageModal()} className="bg-orange-600 hover:bg-orange-700">
+            <Plus className="w-4 h-4 mr-2" /> Add Package
+          </Button>
+        </div>
+
+        {/* Packages Grid */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+          {packages.length === 0 ? (
+            <div className="col-span-full bg-gray-800 rounded-xl p-8 text-center border border-gray-700">
+              <Box className="w-12 h-12 text-gray-600 mx-auto mb-3" />
+              <p className="text-gray-400 mb-4">No package types configured</p>
+              <Button onClick={() => openPackageModal()}>Create Your First Package</Button>
+            </div>
+          ) : (
+            packages.map(pkg => (
+              <div 
+                key={pkg.id} 
+                className={`bg-gray-800 rounded-xl p-5 border ${pkg.is_active ? 'border-gray-700' : 'border-gray-700/50 opacity-60'}`}
+              >
+                <div className="flex items-start justify-between mb-3">
+                  <div className="flex items-center gap-2">
+                    <Box className="w-5 h-5 text-orange-400" />
+                    <h3 className="text-white font-semibold">{pkg.name}</h3>
+                  </div>
+                  <div className="flex items-center gap-1">
+                    <button
+                      onClick={() => openPackageModal(pkg)}
+                      className="p-1.5 rounded hover:bg-gray-700 text-gray-400 hover:text-white"
+                    >
+                      <Edit className="w-4 h-4" />
+                    </button>
+                    <button
+                      onClick={() => handleDeletePackage(pkg.id)}
+                      className="p-1.5 rounded hover:bg-gray-700 text-gray-400 hover:text-red-400"
+                    >
+                      <Trash2 className="w-4 h-4" />
+                    </button>
+                  </div>
+                </div>
+                <div className="space-y-2 text-sm">
+                  <div className="flex justify-between">
+                    <span className="text-gray-500">Dimensions:</span>
+                    <span className="text-white">{pkg.length} x {pkg.width} x {pkg.height} cm</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-gray-500">Max Weight:</span>
+                    <span className="text-white">{pkg.max_weight} kg</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-gray-500">Tare Weight:</span>
+                    <span className="text-white">{pkg.tare_weight} kg</span>
+                  </div>
+                </div>
+                <div className="flex items-center gap-2 mt-3">
+                  <span className="px-2 py-0.5 bg-gray-700 text-gray-300 text-xs rounded font-mono">{pkg.code}</span>
+                  <span className="px-2 py-0.5 bg-orange-500/20 text-orange-400 text-xs rounded capitalize">{pkg.package_type}</span>
+                </div>
+              </div>
+            ))
+          )}
+        </div>
+
+        {/* Package Modal */}
+        <Dialog open={showPackageModal} onOpenChange={setShowPackageModal}>
+          <DialogContent className="bg-gray-800 border-gray-700 text-white max-w-md">
+            <DialogHeader>
+              <DialogTitle>{editingItem ? 'Edit Package' : 'Create Package'}</DialogTitle>
+              <DialogDescription className="text-gray-400">
+                Define a standard package size
+              </DialogDescription>
+            </DialogHeader>
+            <div className="space-y-4 py-4">
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <Label className="text-gray-300">Package Code</Label>
+                  <Input
+                    value={packageForm.code}
+                    onChange={(e) => setPackageForm({...packageForm, code: e.target.value.toLowerCase()})}
+                    placeholder="e.g., small_box"
+                    className="bg-gray-700 border-gray-600 text-white mt-1"
+                  />
+                </div>
+                <div>
+                  <Label className="text-gray-300">Package Name</Label>
+                  <Input
+                    value={packageForm.name}
+                    onChange={(e) => setPackageForm({...packageForm, name: e.target.value})}
+                    placeholder="e.g., Small Box"
+                    className="bg-gray-700 border-gray-600 text-white mt-1"
+                  />
+                </div>
+              </div>
+              <div>
+                <Label className="text-gray-300">Package Type</Label>
+                <Select value={packageForm.package_type} onValueChange={(v) => setPackageForm({...packageForm, package_type: v})}>
+                  <SelectTrigger className="bg-gray-700 border-gray-600 text-white mt-1">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent className="bg-gray-800 border-gray-700">
+                    <SelectItem value="satchel">Satchel</SelectItem>
+                    <SelectItem value="box">Box</SelectItem>
+                    <SelectItem value="pallet">Pallet</SelectItem>
+                    <SelectItem value="tube">Tube</SelectItem>
+                    <SelectItem value="custom">Custom</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+              <div>
+                <Label className="text-gray-300">Dimensions (cm)</Label>
+                <div className="grid grid-cols-3 gap-2 mt-1">
+                  <Input
+                    type="number"
+                    placeholder="Length"
+                    value={packageForm.length}
+                    onChange={(e) => setPackageForm({...packageForm, length: parseFloat(e.target.value) || 0})}
+                    className="bg-gray-700 border-gray-600 text-white"
+                  />
+                  <Input
+                    type="number"
+                    placeholder="Width"
+                    value={packageForm.width}
+                    onChange={(e) => setPackageForm({...packageForm, width: parseFloat(e.target.value) || 0})}
+                    className="bg-gray-700 border-gray-600 text-white"
+                  />
+                  <Input
+                    type="number"
+                    placeholder="Height"
+                    value={packageForm.height}
+                    onChange={(e) => setPackageForm({...packageForm, height: parseFloat(e.target.value) || 0})}
+                    className="bg-gray-700 border-gray-600 text-white"
+                  />
+                </div>
+              </div>
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <Label className="text-gray-300">Max Weight (kg)</Label>
+                  <Input
+                    type="number"
+                    step="0.1"
+                    value={packageForm.max_weight}
+                    onChange={(e) => setPackageForm({...packageForm, max_weight: parseFloat(e.target.value) || 0})}
+                    className="bg-gray-700 border-gray-600 text-white mt-1"
+                  />
+                </div>
+                <div>
+                  <Label className="text-gray-300">Tare Weight (kg)</Label>
+                  <Input
+                    type="number"
+                    step="0.01"
+                    value={packageForm.tare_weight}
+                    onChange={(e) => setPackageForm({...packageForm, tare_weight: parseFloat(e.target.value) || 0})}
+                    className="bg-gray-700 border-gray-600 text-white mt-1"
+                  />
+                </div>
+              </div>
+              <div className="flex items-center justify-between">
+                <Label className="text-gray-300">Package Active</Label>
+                <Switch
+                  checked={packageForm.is_active}
+                  onCheckedChange={(checked) => setPackageForm({...packageForm, is_active: checked})}
+                />
+              </div>
+            </div>
+            <DialogFooter>
+              <Button variant="outline" onClick={() => setShowPackageModal(false)} className="border-gray-600">
+                Cancel
+              </Button>
+              <Button onClick={handleSavePackage} disabled={saving} className="bg-orange-600 hover:bg-orange-700">
+                {saving ? <Loader2 className="w-4 h-4 mr-2 animate-spin" /> : <Save className="w-4 h-4 mr-2" />}
+                {editingItem ? 'Update' : 'Create'}
+              </Button>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
+      </div>
+    );
+  };
+
+  // ============== OPTIONS TAB ==============
+  const OptionsTab = () => {
+    const [optionForm, setOptionForm] = useState({
+      name: '',
+      description: '',
+      service_ids: [],
+      countries: ['AU'],
+      free_shipping_threshold: null,
+      free_shipping_zones: [],
+      is_active: true,
+      sort_order: 0
+    });
+
+    const openOptionModal = (option = null) => {
+      if (option) {
+        setEditingItem(option);
+        setOptionForm({
+          name: option.name || '',
+          description: option.description || '',
+          service_ids: option.service_ids || [],
+          countries: option.countries || ['AU'],
+          free_shipping_threshold: option.free_shipping_threshold || null,
+          free_shipping_zones: option.free_shipping_zones || [],
+          is_active: option.is_active !== false,
+          sort_order: option.sort_order || 0
+        });
+      } else {
+        setEditingItem(null);
+        setOptionForm({
+          name: '',
+          description: '',
+          service_ids: [],
+          countries: ['AU'],
+          free_shipping_threshold: null,
+          free_shipping_zones: [],
+          is_active: true,
+          sort_order: options.length
+        });
+      }
+      setShowOptionModal(true);
+    };
+
+    const handleSaveOption = async () => {
+      setSaving(true);
+      try {
+        if (editingItem) {
+          await axios.put(`${API}/shipping/options/${editingItem.id}`, optionForm);
+        } else {
+          await axios.post(`${API}/shipping/options`, optionForm);
+        }
+        await fetchAllData();
+        setShowOptionModal(false);
+      } catch (error) {
+        console.error('Error saving option:', error);
+        alert(error.response?.data?.detail || 'Failed to save option');
+      } finally {
+        setSaving(false);
+      }
+    };
+
+    const handleDeleteOption = async (optionId) => {
+      if (!window.confirm('Are you sure you want to delete this option?')) return;
+      try {
+        await axios.delete(`${API}/shipping/options/${optionId}`);
+        await fetchAllData();
+      } catch (error) {
+        console.error('Error deleting option:', error);
+      }
+    };
+
+    const toggleServiceId = (serviceId) => {
+      if (optionForm.service_ids.includes(serviceId)) {
+        setOptionForm({
+          ...optionForm,
+          service_ids: optionForm.service_ids.filter(id => id !== serviceId)
+        });
+      } else {
+        setOptionForm({
+          ...optionForm,
+          service_ids: [...optionForm.service_ids, serviceId]
+        });
+      }
+    };
+
+    const toggleFreeZone = (zoneCode) => {
+      if (optionForm.free_shipping_zones.includes(zoneCode)) {
+        setOptionForm({
+          ...optionForm,
+          free_shipping_zones: optionForm.free_shipping_zones.filter(code => code !== zoneCode)
+        });
+      } else {
+        setOptionForm({
+          ...optionForm,
+          free_shipping_zones: [...optionForm.free_shipping_zones, zoneCode]
+        });
+      }
+    };
+
+    return (
+      <div className="space-y-4">
+        <div className="flex justify-between items-center">
+          <div>
+            <h2 className="text-xl font-bold text-white">Shipping Options</h2>
+            <p className="text-gray-400 text-sm">Configure free shipping and checkout options</p>
+          </div>
+          <Button onClick={() => openOptionModal()} className="bg-teal-600 hover:bg-teal-700">
+            <Plus className="w-4 h-4 mr-2" /> Add Option
+          </Button>
+        </div>
+
+        {/* Options List */}
+        <div className="space-y-4">
+          {options.length === 0 ? (
+            <div className="bg-gray-800 rounded-xl p-8 text-center border border-gray-700">
+              <Settings className="w-12 h-12 text-gray-600 mx-auto mb-3" />
+              <p className="text-gray-400 mb-4">No shipping options configured</p>
+              <Button onClick={() => openOptionModal()}>Create Your First Option</Button>
+            </div>
+          ) : (
+            options.map(option => (
+              <div 
+                key={option.id} 
+                className={`bg-gray-800 rounded-xl p-5 border ${option.is_active ? 'border-gray-700' : 'border-gray-700/50 opacity-60'}`}
+              >
+                <div className="flex items-start justify-between">
+                  <div className="flex-1">
+                    <div className="flex items-center gap-3 mb-2">
+                      <Settings className="w-5 h-5 text-teal-400" />
+                      <h3 className="text-lg font-semibold text-white">{option.name}</h3>
+                      {!option.is_active && (
+                        <span className="px-2 py-0.5 bg-gray-700 text-gray-400 text-xs rounded">Inactive</span>
+                      )}
+                    </div>
+                    <p className="text-gray-500 text-sm mb-3">{option.description || 'No description'}</p>
+                    <div className="flex flex-wrap gap-2">
+                      {option.free_shipping_threshold && (
+                        <span className="px-2 py-1 bg-emerald-500/20 text-emerald-400 text-xs rounded flex items-center gap-1">
+                          <DollarSign className="w-3 h-3" />
+                          Free over ${option.free_shipping_threshold}
+                        </span>
+                      )}
+                      {option.free_shipping_zones?.length > 0 && (
+                        <span className="px-2 py-1 bg-blue-500/20 text-blue-400 text-xs rounded">
+                          {option.free_shipping_zones.length} free zones
+                        </span>
+                      )}
+                      <span className="px-2 py-1 bg-gray-700 text-gray-300 text-xs rounded">
+                        {option.service_ids?.length || 0} service(s)
+                      </span>
+                    </div>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <button
+                      onClick={() => openOptionModal(option)}
+                      className="p-2 rounded-lg hover:bg-gray-700 text-gray-400 hover:text-white transition-colors"
+                    >
+                      <Edit className="w-4 h-4" />
+                    </button>
+                    <button
+                      onClick={() => handleDeleteOption(option.id)}
+                      className="p-2 rounded-lg hover:bg-gray-700 text-gray-400 hover:text-red-400 transition-colors"
+                    >
+                      <Trash2 className="w-4 h-4" />
+                    </button>
+                  </div>
+                </div>
+              </div>
+            ))
+          )}
+        </div>
+
+        {/* Option Modal */}
+        <Dialog open={showOptionModal} onOpenChange={setShowOptionModal}>
+          <DialogContent className="bg-gray-800 border-gray-700 text-white max-w-lg max-h-[90vh] overflow-y-auto">
+            <DialogHeader>
+              <DialogTitle>{editingItem ? 'Edit Shipping Option' : 'Create Shipping Option'}</DialogTitle>
+              <DialogDescription className="text-gray-400">
+                Configure checkout shipping options and free shipping rules
+              </DialogDescription>
+            </DialogHeader>
+            <div className="space-y-4 py-4">
+              <div>
+                <Label className="text-gray-300">Option Name</Label>
+                <Input
+                  value={optionForm.name}
+                  onChange={(e) => setOptionForm({...optionForm, name: e.target.value})}
+                  placeholder="e.g., Standard Shipping"
+                  className="bg-gray-700 border-gray-600 text-white mt-1"
+                />
+              </div>
+              <div>
+                <Label className="text-gray-300">Description</Label>
+                <textarea
+                  value={optionForm.description}
+                  onChange={(e) => setOptionForm({...optionForm, description: e.target.value})}
+                  placeholder="Shown at checkout..."
+                  rows={2}
+                  className="w-full mt-1 px-3 py-2 bg-gray-700 border border-gray-600 rounded-md text-white text-sm placeholder:text-gray-500 focus:outline-none focus:ring-2 focus:ring-teal-500"
+                />
+              </div>
+              
+              {/* Linked Services */}
+              <div>
+                <Label className="text-gray-300 mb-2 block">Linked Services</Label>
+                <div className="space-y-2 max-h-32 overflow-y-auto">
+                  {services.map(service => (
+                    <label key={service.id} className="flex items-center gap-2 p-2 bg-gray-900 rounded cursor-pointer hover:bg-gray-700">
+                      <input
+                        type="checkbox"
+                        checked={optionForm.service_ids.includes(service.id)}
+                        onChange={() => toggleServiceId(service.id)}
+                        className="rounded border-gray-600"
+                      />
+                      <span className="text-white text-sm">{service.name}</span>
+                      <span className="text-gray-500 text-xs">({service.code})</span>
+                    </label>
+                  ))}
+                </div>
+              </div>
+
+              {/* Free Shipping Threshold */}
+              <div>
+                <Label className="text-gray-300">Free Shipping Threshold ($)</Label>
+                <Input
+                  type="number"
+                  step="0.01"
+                  value={optionForm.free_shipping_threshold || ''}
+                  onChange={(e) => setOptionForm({...optionForm, free_shipping_threshold: e.target.value ? parseFloat(e.target.value) : null})}
+                  placeholder="e.g., 150.00 (leave empty for none)"
+                  className="bg-gray-700 border-gray-600 text-white mt-1"
+                />
+              </div>
+
+              {/* Free Shipping Zones */}
+              <div>
+                <Label className="text-gray-300 mb-2 block">Free Shipping Zones (if threshold met)</Label>
+                <div className="flex flex-wrap gap-2 max-h-24 overflow-y-auto">
+                  {zones.map(zone => (
+                    <button
+                      key={zone.code}
+                      onClick={() => toggleFreeZone(zone.code)}
+                      className={`px-2 py-1 rounded text-xs transition-colors ${
+                        optionForm.free_shipping_zones.includes(zone.code)
+                          ? 'bg-emerald-500/30 text-emerald-400 border border-emerald-500/50'
+                          : 'bg-gray-700 text-gray-300 border border-gray-600 hover:bg-gray-600'
+                      }`}
+                    >
+                      {zone.name}
+                    </button>
+                  ))}
+                </div>
+                {optionForm.free_shipping_zones.length === 0 && optionForm.free_shipping_threshold && (
+                  <p className="text-gray-500 text-xs mt-1">All zones will be eligible if none selected</p>
+                )}
+              </div>
+
+              <div className="flex items-center justify-between pt-2 border-t border-gray-700">
+                <Label className="text-gray-300">Option Active</Label>
+                <Switch
+                  checked={optionForm.is_active}
+                  onCheckedChange={(checked) => setOptionForm({...optionForm, is_active: checked})}
+                />
+              </div>
+            </div>
+            <DialogFooter>
+              <Button variant="outline" onClick={() => setShowOptionModal(false)} className="border-gray-600">
+                Cancel
+              </Button>
+              <Button onClick={handleSaveOption} disabled={saving} className="bg-teal-600 hover:bg-teal-700">
+                {saving ? <Loader2 className="w-4 h-4 mr-2 animate-spin" /> : <Save className="w-4 h-4 mr-2" />}
+                {editingItem ? 'Update' : 'Create'}
+              </Button>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
+      </div>
+    );
+  };
+
+  // ============== RENDER ==============
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center h-64">
+        <Loader2 className="w-8 h-8 text-emerald-400 animate-spin" />
+      </div>
+    );
+  }
+
+  return (
+    <div className="p-6">
+      {/* Header */}
+      <div className="flex items-center justify-between mb-6">
+        <div>
+          <h1 className="text-2xl font-bold text-white flex items-center gap-2">
+            <Truck className="w-7 h-7 text-emerald-400" />
+            Shipping Management
+          </h1>
+          <p className="text-gray-400 text-sm mt-1">Configure zones, services, rates, and shipping rules</p>
+        </div>
+        <Button variant="outline" onClick={fetchAllData} className="border-gray-600">
+          <RefreshCw className="w-4 h-4 mr-2" /> Refresh
+        </Button>
+      </div>
+
+      {/* Tabs */}
+      <div className="flex gap-1 mb-6 overflow-x-auto pb-2">
+        {TABS.map(tab => (
+          <button
+            key={tab.id}
+            onClick={() => setActiveTab(tab.id)}
+            className={`flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium whitespace-nowrap transition-all ${
+              activeTab === tab.id
+                ? 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/30'
+                : 'text-gray-400 hover:text-white hover:bg-gray-800'
+            }`}
+          >
+            <tab.icon className="w-4 h-4" />
+            {tab.label}
+          </button>
+        ))}
+      </div>
+
+      {/* Tab Content */}
+      <div>
+        {activeTab === 'overview' && <OverviewTab />}
+        {activeTab === 'zones' && <ZonesTab />}
+        {activeTab === 'services' && <ServicesTab />}
+        {activeTab === 'categories' && <CategoriesTab />}
+        {activeTab === 'packages' && <PackagesTab />}
+        {activeTab === 'options' && <OptionsTab />}
+      </div>
     </div>
   );
 };
