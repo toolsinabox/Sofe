@@ -1411,6 +1411,505 @@ async def get_shipping_matrix():
         "services": services,
         "categories": categories,
         "options": options,
+
+
+# ============== SUBURB LOOKUP SYSTEM ==============
+
+# Australian postcode-suburb mapping (comprehensive data for major areas)
+AUSTRALIAN_SUBURBS = {
+    # NSW - Sydney Metro
+    "2000": [{"suburb": "Sydney", "state": "NSW"}, {"suburb": "The Rocks", "state": "NSW"}, {"suburb": "Barangaroo", "state": "NSW"}, {"suburb": "Dawes Point", "state": "NSW"}, {"suburb": "Haymarket", "state": "NSW"}, {"suburb": "Millers Point", "state": "NSW"}],
+    "2001": [{"suburb": "Sydney", "state": "NSW"}],
+    "2006": [{"suburb": "The University Of Sydney", "state": "NSW"}],
+    "2007": [{"suburb": "Broadway", "state": "NSW"}, {"suburb": "Ultimo", "state": "NSW"}],
+    "2008": [{"suburb": "Chippendale", "state": "NSW"}, {"suburb": "Darlington", "state": "NSW"}],
+    "2009": [{"suburb": "Pyrmont", "state": "NSW"}],
+    "2010": [{"suburb": "Darlinghurst", "state": "NSW"}, {"suburb": "Surry Hills", "state": "NSW"}],
+    "2011": [{"suburb": "Elizabeth Bay", "state": "NSW"}, {"suburb": "Potts Point", "state": "NSW"}, {"suburb": "Rushcutters Bay", "state": "NSW"}, {"suburb": "Woolloomooloo", "state": "NSW"}],
+    "2015": [{"suburb": "Alexandria", "state": "NSW"}, {"suburb": "Beaconsfield", "state": "NSW"}, {"suburb": "Eveleigh", "state": "NSW"}],
+    "2016": [{"suburb": "Redfern", "state": "NSW"}],
+    "2017": [{"suburb": "Waterloo", "state": "NSW"}, {"suburb": "Zetland", "state": "NSW"}],
+    "2018": [{"suburb": "Rosebery", "state": "NSW"}, {"suburb": "Eastlakes", "state": "NSW"}],
+    "2019": [{"suburb": "Botany", "state": "NSW"}, {"suburb": "Banksmeadow", "state": "NSW"}, {"suburb": "Pagewood", "state": "NSW"}],
+    "2020": [{"suburb": "Mascot", "state": "NSW"}, {"suburb": "Sydney Airport", "state": "NSW"}],
+    "2021": [{"suburb": "Centennial Park", "state": "NSW"}, {"suburb": "Moore Park", "state": "NSW"}, {"suburb": "Paddington", "state": "NSW"}],
+    "2022": [{"suburb": "Bondi Junction", "state": "NSW"}, {"suburb": "Queens Park", "state": "NSW"}],
+    "2023": [{"suburb": "Bellevue Hill", "state": "NSW"}],
+    "2024": [{"suburb": "Bronte", "state": "NSW"}, {"suburb": "Waverley", "state": "NSW"}],
+    "2025": [{"suburb": "Woollahra", "state": "NSW"}],
+    "2026": [{"suburb": "Bondi", "state": "NSW"}, {"suburb": "Bondi Beach", "state": "NSW"}, {"suburb": "Tamarama", "state": "NSW"}],
+    "2027": [{"suburb": "Darling Point", "state": "NSW"}, {"suburb": "Edgecliff", "state": "NSW"}, {"suburb": "Point Piper", "state": "NSW"}],
+    "2028": [{"suburb": "Double Bay", "state": "NSW"}],
+    "2029": [{"suburb": "Rose Bay", "state": "NSW"}],
+    "2030": [{"suburb": "Dover Heights", "state": "NSW"}, {"suburb": "Rose Bay North", "state": "NSW"}, {"suburb": "Vaucluse", "state": "NSW"}, {"suburb": "Watsons Bay", "state": "NSW"}],
+    "2031": [{"suburb": "Clovelly", "state": "NSW"}, {"suburb": "Clovelly West", "state": "NSW"}, {"suburb": "Randwick", "state": "NSW"}],
+    "2032": [{"suburb": "Daceyville", "state": "NSW"}, {"suburb": "Kingsford", "state": "NSW"}],
+    "2033": [{"suburb": "Kensington", "state": "NSW"}],
+    "2034": [{"suburb": "Coogee", "state": "NSW"}, {"suburb": "South Coogee", "state": "NSW"}],
+    "2035": [{"suburb": "Maroubra", "state": "NSW"}, {"suburb": "Maroubra South", "state": "NSW"}, {"suburb": "Pagewood", "state": "NSW"}],
+    "2036": [{"suburb": "Chifley", "state": "NSW"}, {"suburb": "Eastgardens", "state": "NSW"}, {"suburb": "Hillsdale", "state": "NSW"}, {"suburb": "La Perouse", "state": "NSW"}, {"suburb": "Little Bay", "state": "NSW"}, {"suburb": "Malabar", "state": "NSW"}, {"suburb": "Matraville", "state": "NSW"}, {"suburb": "Phillip Bay", "state": "NSW"}, {"suburb": "Port Botany", "state": "NSW"}],
+    "2037": [{"suburb": "Forest Lodge", "state": "NSW"}, {"suburb": "Glebe", "state": "NSW"}],
+    "2038": [{"suburb": "Annandale", "state": "NSW"}],
+    "2039": [{"suburb": "Rozelle", "state": "NSW"}],
+    "2040": [{"suburb": "Leichhardt", "state": "NSW"}, {"suburb": "Lilyfield", "state": "NSW"}],
+    "2041": [{"suburb": "Balmain", "state": "NSW"}, {"suburb": "Balmain East", "state": "NSW"}, {"suburb": "Birchgrove", "state": "NSW"}],
+    "2042": [{"suburb": "Enmore", "state": "NSW"}, {"suburb": "Newtown", "state": "NSW"}],
+    "2043": [{"suburb": "Erskineville", "state": "NSW"}],
+    "2044": [{"suburb": "St Peters", "state": "NSW"}, {"suburb": "Sydenham", "state": "NSW"}, {"suburb": "Tempe", "state": "NSW"}],
+    "2045": [{"suburb": "Haberfield", "state": "NSW"}],
+    "2046": [{"suburb": "Abbotsford", "state": "NSW"}, {"suburb": "Canada Bay", "state": "NSW"}, {"suburb": "Chiswick", "state": "NSW"}, {"suburb": "Five Dock", "state": "NSW"}, {"suburb": "Rodd Point", "state": "NSW"}, {"suburb": "Russell Lea", "state": "NSW"}, {"suburb": "Wareemba", "state": "NSW"}],
+    "2047": [{"suburb": "Drummoyne", "state": "NSW"}],
+    "2048": [{"suburb": "Stanmore", "state": "NSW"}, {"suburb": "Westgate", "state": "NSW"}],
+    "2049": [{"suburb": "Lewisham", "state": "NSW"}, {"suburb": "Petersham", "state": "NSW"}, {"suburb": "Petersham North", "state": "NSW"}],
+    "2050": [{"suburb": "Camperdown", "state": "NSW"}, {"suburb": "Missenden Road", "state": "NSW"}],
+    
+    # NSW - Greater Sydney
+    "2060": [{"suburb": "North Sydney", "state": "NSW"}, {"suburb": "Lavender Bay", "state": "NSW"}, {"suburb": "McMahons Point", "state": "NSW"}, {"suburb": "Waverton", "state": "NSW"}],
+    "2061": [{"suburb": "Kirribilli", "state": "NSW"}, {"suburb": "Milsons Point", "state": "NSW"}],
+    "2062": [{"suburb": "Cammeray", "state": "NSW"}],
+    "2063": [{"suburb": "Northbridge", "state": "NSW"}],
+    "2064": [{"suburb": "Artarmon", "state": "NSW"}],
+    "2065": [{"suburb": "Crows Nest", "state": "NSW"}, {"suburb": "Greenwich", "state": "NSW"}, {"suburb": "Naremburn", "state": "NSW"}, {"suburb": "St Leonards", "state": "NSW"}, {"suburb": "Wollstonecraft", "state": "NSW"}],
+    "2066": [{"suburb": "Lane Cove", "state": "NSW"}, {"suburb": "Lane Cove North", "state": "NSW"}, {"suburb": "Lane Cove West", "state": "NSW"}, {"suburb": "Linley Point", "state": "NSW"}, {"suburb": "Longueville", "state": "NSW"}, {"suburb": "Northwood", "state": "NSW"}, {"suburb": "Riverview", "state": "NSW"}],
+    "2067": [{"suburb": "Chatswood", "state": "NSW"}, {"suburb": "Chatswood West", "state": "NSW"}],
+    "2068": [{"suburb": "Castlecrag", "state": "NSW"}, {"suburb": "Middle Cove", "state": "NSW"}, {"suburb": "Willoughby", "state": "NSW"}, {"suburb": "Willoughby East", "state": "NSW"}, {"suburb": "Willoughby North", "state": "NSW"}],
+    "2069": [{"suburb": "Castle Cove", "state": "NSW"}, {"suburb": "Roseville", "state": "NSW"}, {"suburb": "Roseville Chase", "state": "NSW"}],
+    "2070": [{"suburb": "Lindfield", "state": "NSW"}, {"suburb": "Lindfield West", "state": "NSW"}],
+    "2071": [{"suburb": "East Killara", "state": "NSW"}, {"suburb": "Killara", "state": "NSW"}],
+    "2072": [{"suburb": "Gordon", "state": "NSW"}],
+    "2073": [{"suburb": "Pymble", "state": "NSW"}, {"suburb": "West Pymble", "state": "NSW"}],
+    "2074": [{"suburb": "South Turramurra", "state": "NSW"}, {"suburb": "Turramurra", "state": "NSW"}, {"suburb": "Warrawee", "state": "NSW"}],
+    "2075": [{"suburb": "St Ives", "state": "NSW"}, {"suburb": "St Ives Chase", "state": "NSW"}],
+    "2076": [{"suburb": "Normanhurst", "state": "NSW"}, {"suburb": "North Wahroonga", "state": "NSW"}, {"suburb": "Wahroonga", "state": "NSW"}],
+    "2077": [{"suburb": "Asquith", "state": "NSW"}, {"suburb": "Hornsby", "state": "NSW"}, {"suburb": "Hornsby Heights", "state": "NSW"}, {"suburb": "Waitara", "state": "NSW"}],
+    "2085": [{"suburb": "Belrose", "state": "NSW"}, {"suburb": "Belrose West", "state": "NSW"}, {"suburb": "Davidson", "state": "NSW"}],
+    "2086": [{"suburb": "Frenchs Forest", "state": "NSW"}, {"suburb": "Frenchs Forest East", "state": "NSW"}],
+    "2087": [{"suburb": "Forestville", "state": "NSW"}, {"suburb": "Killarney Heights", "state": "NSW"}],
+    "2088": [{"suburb": "Mosman", "state": "NSW"}, {"suburb": "Spit Junction", "state": "NSW"}],
+    "2089": [{"suburb": "Neutral Bay", "state": "NSW"}, {"suburb": "Neutral Bay Junction", "state": "NSW"}],
+    "2090": [{"suburb": "Cremorne", "state": "NSW"}, {"suburb": "Cremorne Junction", "state": "NSW"}, {"suburb": "Cremorne Point", "state": "NSW"}],
+    "2092": [{"suburb": "Seaforth", "state": "NSW"}],
+    "2093": [{"suburb": "Balgowlah", "state": "NSW"}, {"suburb": "Balgowlah Heights", "state": "NSW"}, {"suburb": "Clontarf", "state": "NSW"}, {"suburb": "Manly Vale", "state": "NSW"}, {"suburb": "North Balgowlah", "state": "NSW"}],
+    "2094": [{"suburb": "Fairlight", "state": "NSW"}],
+    "2095": [{"suburb": "Manly", "state": "NSW"}, {"suburb": "Manly East", "state": "NSW"}],
+    "2096": [{"suburb": "Curl Curl", "state": "NSW"}, {"suburb": "Freshwater", "state": "NSW"}, {"suburb": "Queenscliff", "state": "NSW"}],
+    "2097": [{"suburb": "Collaroy", "state": "NSW"}, {"suburb": "Collaroy Beach", "state": "NSW"}, {"suburb": "Collaroy Plateau", "state": "NSW"}, {"suburb": "Wheeler Heights", "state": "NSW"}],
+    "2099": [{"suburb": "Cromer", "state": "NSW"}, {"suburb": "Dee Why", "state": "NSW"}, {"suburb": "Narraweena", "state": "NSW"}, {"suburb": "North Curl Curl", "state": "NSW"}],
+    "2100": [{"suburb": "Allambie Heights", "state": "NSW"}, {"suburb": "Beacon Hill", "state": "NSW"}, {"suburb": "Brookvale", "state": "NSW"}, {"suburb": "North Manly", "state": "NSW"}, {"suburb": "Warringah Mall", "state": "NSW"}],
+    
+    # NSW - Western Sydney
+    "2113": [{"suburb": "East Ryde", "state": "NSW"}, {"suburb": "Macquarie Park", "state": "NSW"}, {"suburb": "North Ryde", "state": "NSW"}],
+    "2114": [{"suburb": "Denistone", "state": "NSW"}, {"suburb": "Denistone East", "state": "NSW"}, {"suburb": "Denistone West", "state": "NSW"}, {"suburb": "Ryde", "state": "NSW"}, {"suburb": "West Ryde", "state": "NSW"}],
+    "2115": [{"suburb": "Ermington", "state": "NSW"}],
+    "2116": [{"suburb": "Rydalmere", "state": "NSW"}],
+    "2117": [{"suburb": "Dundas", "state": "NSW"}, {"suburb": "Dundas Valley", "state": "NSW"}, {"suburb": "Oatlands", "state": "NSW"}, {"suburb": "Telopea", "state": "NSW"}],
+    "2118": [{"suburb": "Carlingford", "state": "NSW"}, {"suburb": "Carlingford Court", "state": "NSW"}, {"suburb": "Kingsdene", "state": "NSW"}],
+    "2119": [{"suburb": "Beecroft", "state": "NSW"}, {"suburb": "Cheltenham", "state": "NSW"}],
+    "2120": [{"suburb": "Pennant Hills", "state": "NSW"}, {"suburb": "Thornleigh", "state": "NSW"}, {"suburb": "Westleigh", "state": "NSW"}],
+    "2121": [{"suburb": "Epping", "state": "NSW"}, {"suburb": "North Epping", "state": "NSW"}],
+    "2122": [{"suburb": "Eastwood", "state": "NSW"}, {"suburb": "Marsfield", "state": "NSW"}],
+    "2125": [{"suburb": "West Pennant Hills", "state": "NSW"}],
+    "2126": [{"suburb": "Cherrybrook", "state": "NSW"}],
+    "2127": [{"suburb": "Newington", "state": "NSW"}, {"suburb": "Sydney Olympic Park", "state": "NSW"}, {"suburb": "Wentworth Point", "state": "NSW"}],
+    "2128": [{"suburb": "Silverwater", "state": "NSW"}],
+    "2129": [{"suburb": "Homebush West", "state": "NSW"}],
+    "2130": [{"suburb": "Summer Hill", "state": "NSW"}],
+    "2131": [{"suburb": "Ashfield", "state": "NSW"}],
+    "2132": [{"suburb": "Croydon", "state": "NSW"}, {"suburb": "Croydon Park", "state": "NSW"}],
+    "2133": [{"suburb": "Burwood Heights", "state": "NSW"}, {"suburb": "Enfield South", "state": "NSW"}],
+    "2134": [{"suburb": "Burwood", "state": "NSW"}],
+    "2135": [{"suburb": "Strathfield", "state": "NSW"}],
+    "2136": [{"suburb": "Burwood Heights", "state": "NSW"}, {"suburb": "Enfield", "state": "NSW"}, {"suburb": "Strathfield South", "state": "NSW"}],
+    "2137": [{"suburb": "Concord", "state": "NSW"}, {"suburb": "Concord West", "state": "NSW"}, {"suburb": "Liberty Grove", "state": "NSW"}, {"suburb": "North Strathfield", "state": "NSW"}],
+    "2138": [{"suburb": "Concord West", "state": "NSW"}, {"suburb": "Rhodes", "state": "NSW"}],
+    "2140": [{"suburb": "Homebush", "state": "NSW"}, {"suburb": "Homebush South", "state": "NSW"}],
+    "2141": [{"suburb": "Berala", "state": "NSW"}, {"suburb": "Lidcombe", "state": "NSW"}, {"suburb": "Lidcombe North", "state": "NSW"}, {"suburb": "Rookwood", "state": "NSW"}],
+    "2142": [{"suburb": "Blaxcell", "state": "NSW"}, {"suburb": "Camellia", "state": "NSW"}, {"suburb": "Clyde", "state": "NSW"}, {"suburb": "Granville", "state": "NSW"}, {"suburb": "Holroyd", "state": "NSW"}, {"suburb": "South Granville", "state": "NSW"}],
+    "2143": [{"suburb": "Birrong", "state": "NSW"}, {"suburb": "Potts Hill", "state": "NSW"}, {"suburb": "Regents Park", "state": "NSW"}],
+    "2144": [{"suburb": "Auburn", "state": "NSW"}],
+    "2145": [{"suburb": "Constitution Hill", "state": "NSW"}, {"suburb": "Girraween", "state": "NSW"}, {"suburb": "Greystanes", "state": "NSW"}, {"suburb": "Mays Hill", "state": "NSW"}, {"suburb": "Pendle Hill", "state": "NSW"}, {"suburb": "South Wentworthville", "state": "NSW"}, {"suburb": "Wentworthville", "state": "NSW"}, {"suburb": "Westmead", "state": "NSW"}],
+    "2146": [{"suburb": "Old Toongabbie", "state": "NSW"}, {"suburb": "Toongabbie", "state": "NSW"}, {"suburb": "Toongabbie East", "state": "NSW"}],
+    "2147": [{"suburb": "Kings Langley", "state": "NSW"}, {"suburb": "Lalor Park", "state": "NSW"}, {"suburb": "Seven Hills", "state": "NSW"}, {"suburb": "Seven Hills West", "state": "NSW"}],
+    "2148": [{"suburb": "Arndell Park", "state": "NSW"}, {"suburb": "Blacktown", "state": "NSW"}, {"suburb": "Blacktown Westpoint", "state": "NSW"}, {"suburb": "Huntingwood", "state": "NSW"}, {"suburb": "Kings Park", "state": "NSW"}, {"suburb": "Marayong", "state": "NSW"}, {"suburb": "Prospect", "state": "NSW"}],
+    "2150": [{"suburb": "Harris Park", "state": "NSW"}, {"suburb": "Parramatta", "state": "NSW"}, {"suburb": "Parramatta Westfield", "state": "NSW"}],
+    "2151": [{"suburb": "North Parramatta", "state": "NSW"}, {"suburb": "North Rocks", "state": "NSW"}],
+    "2152": [{"suburb": "Northmead", "state": "NSW"}],
+    "2153": [{"suburb": "Baulkham Hills", "state": "NSW"}, {"suburb": "Bella Vista", "state": "NSW"}, {"suburb": "Winston Hills", "state": "NSW"}],
+    "2154": [{"suburb": "Castle Hill", "state": "NSW"}],
+    "2155": [{"suburb": "Beaumont Hills", "state": "NSW"}, {"suburb": "Kellyville", "state": "NSW"}, {"suburb": "Kellyville Ridge", "state": "NSW"}, {"suburb": "Rouse Hill", "state": "NSW"}],
+    "2156": [{"suburb": "Annangrove", "state": "NSW"}, {"suburb": "Glenhaven", "state": "NSW"}, {"suburb": "Kenthurst", "state": "NSW"}],
+    "2157": [{"suburb": "Forest Glen", "state": "NSW"}, {"suburb": "Glenorie", "state": "NSW"}],
+    "2158": [{"suburb": "Dural", "state": "NSW"}, {"suburb": "Middle Dural", "state": "NSW"}, {"suburb": "Round Corner", "state": "NSW"}],
+    "2160": [{"suburb": "Merrylands", "state": "NSW"}, {"suburb": "Merrylands West", "state": "NSW"}],
+    "2161": [{"suburb": "Guildford", "state": "NSW"}, {"suburb": "Guildford West", "state": "NSW"}, {"suburb": "Old Guildford", "state": "NSW"}, {"suburb": "Yennora", "state": "NSW"}],
+    "2162": [{"suburb": "Chester Hill", "state": "NSW"}, {"suburb": "Sefton", "state": "NSW"}],
+    "2163": [{"suburb": "Carramar", "state": "NSW"}, {"suburb": "Lansdowne", "state": "NSW"}, {"suburb": "Villawood", "state": "NSW"}],
+    "2164": [{"suburb": "Smithfield", "state": "NSW"}, {"suburb": "Smithfield West", "state": "NSW"}, {"suburb": "Wetherill Park", "state": "NSW"}, {"suburb": "Woodpark", "state": "NSW"}],
+    "2165": [{"suburb": "Fairfield", "state": "NSW"}, {"suburb": "Fairfield East", "state": "NSW"}, {"suburb": "Fairfield Heights", "state": "NSW"}, {"suburb": "Fairfield West", "state": "NSW"}],
+    "2166": [{"suburb": "Cabramatta", "state": "NSW"}, {"suburb": "Cabramatta West", "state": "NSW"}, {"suburb": "Canley Heights", "state": "NSW"}, {"suburb": "Canley Vale", "state": "NSW"}, {"suburb": "Lansvale", "state": "NSW"}],
+    "2167": [{"suburb": "Glenfield", "state": "NSW"}],
+    "2168": [{"suburb": "Ashcroft", "state": "NSW"}, {"suburb": "Busby", "state": "NSW"}, {"suburb": "Cartwright", "state": "NSW"}, {"suburb": "Green Valley", "state": "NSW"}, {"suburb": "Heckenberg", "state": "NSW"}, {"suburb": "Hinchinbrook", "state": "NSW"}, {"suburb": "Miller", "state": "NSW"}, {"suburb": "Sadleir", "state": "NSW"}],
+    "2170": [{"suburb": "Casula", "state": "NSW"}, {"suburb": "Liverpool", "state": "NSW"}, {"suburb": "Liverpool South", "state": "NSW"}, {"suburb": "Liverpool Westfield", "state": "NSW"}, {"suburb": "Lurnea", "state": "NSW"}, {"suburb": "Moorebank", "state": "NSW"}, {"suburb": "Mount Pritchard", "state": "NSW"}, {"suburb": "Warwick Farm", "state": "NSW"}],
+    
+    # NSW - South Sydney
+    "2190": [{"suburb": "Chullora", "state": "NSW"}, {"suburb": "Greenacre", "state": "NSW"}, {"suburb": "Mount Lewis", "state": "NSW"}],
+    "2191": [{"suburb": "Belfield", "state": "NSW"}, {"suburb": "Belmore", "state": "NSW"}],
+    "2192": [{"suburb": "Belmore", "state": "NSW"}],
+    "2193": [{"suburb": "Ashbury", "state": "NSW"}, {"suburb": "Canterbury", "state": "NSW"}, {"suburb": "Hurlstone Park", "state": "NSW"}],
+    "2194": [{"suburb": "Campsie", "state": "NSW"}],
+    "2195": [{"suburb": "Lakemba", "state": "NSW"}, {"suburb": "Wiley Park", "state": "NSW"}],
+    "2196": [{"suburb": "Punchbowl", "state": "NSW"}, {"suburb": "Roselands", "state": "NSW"}],
+    "2197": [{"suburb": "Bass Hill", "state": "NSW"}, {"suburb": "Georges Hall", "state": "NSW"}],
+    "2198": [{"suburb": "Condell Park", "state": "NSW"}],
+    "2199": [{"suburb": "Yagoona", "state": "NSW"}, {"suburb": "Yagoona West", "state": "NSW"}],
+    "2200": [{"suburb": "Bankstown", "state": "NSW"}, {"suburb": "Bankstown Aerodrome", "state": "NSW"}, {"suburb": "Bankstown North", "state": "NSW"}, {"suburb": "Bankstown Square", "state": "NSW"}],
+    "2203": [{"suburb": "Dulwich Hill", "state": "NSW"}],
+    "2204": [{"suburb": "Marrickville", "state": "NSW"}, {"suburb": "Marrickville South", "state": "NSW"}],
+    "2205": [{"suburb": "Arncliffe", "state": "NSW"}, {"suburb": "Turrella", "state": "NSW"}, {"suburb": "Wolli Creek", "state": "NSW"}],
+    "2206": [{"suburb": "Clemton Park", "state": "NSW"}, {"suburb": "Earlwood", "state": "NSW"}],
+    "2207": [{"suburb": "Bardwell Park", "state": "NSW"}, {"suburb": "Bardwell Valley", "state": "NSW"}, {"suburb": "Bexley", "state": "NSW"}, {"suburb": "Bexley North", "state": "NSW"}, {"suburb": "Bexley South", "state": "NSW"}, {"suburb": "Kingsgrove", "state": "NSW"}],
+    "2208": [{"suburb": "Kingsgrove", "state": "NSW"}, {"suburb": "Kingsway West", "state": "NSW"}, {"suburb": "Roselands", "state": "NSW"}],
+    "2209": [{"suburb": "Beverly Hills", "state": "NSW"}, {"suburb": "Narwee", "state": "NSW"}],
+    "2210": [{"suburb": "Lugarno", "state": "NSW"}, {"suburb": "Peakhurst", "state": "NSW"}, {"suburb": "Peakhurst Heights", "state": "NSW"}, {"suburb": "Riverwood", "state": "NSW"}],
+    "2211": [{"suburb": "Padstow", "state": "NSW"}, {"suburb": "Padstow Heights", "state": "NSW"}, {"suburb": "Revesby", "state": "NSW"}, {"suburb": "Revesby Heights", "state": "NSW"}, {"suburb": "Revesby North", "state": "NSW"}],
+    "2212": [{"suburb": "East Hills", "state": "NSW"}, {"suburb": "Panania", "state": "NSW"}, {"suburb": "Picnic Point", "state": "NSW"}],
+    "2213": [{"suburb": "Milperra", "state": "NSW"}],
+    "2214": [{"suburb": "Milperra", "state": "NSW"}],
+    "2216": [{"suburb": "Banksia", "state": "NSW"}, {"suburb": "Brighton-Le-Sands", "state": "NSW"}, {"suburb": "Kyeemagh", "state": "NSW"}, {"suburb": "Rockdale", "state": "NSW"}],
+    "2217": [{"suburb": "Beverley Park", "state": "NSW"}, {"suburb": "Kogarah", "state": "NSW"}, {"suburb": "Kogarah Bay", "state": "NSW"}, {"suburb": "Monterey", "state": "NSW"}, {"suburb": "Ramsgate", "state": "NSW"}, {"suburb": "Ramsgate Beach", "state": "NSW"}],
+    "2218": [{"suburb": "Allawah", "state": "NSW"}, {"suburb": "Carlton", "state": "NSW"}, {"suburb": "Hurstville Grove", "state": "NSW"}],
+    "2219": [{"suburb": "Dolls Point", "state": "NSW"}, {"suburb": "Sans Souci", "state": "NSW"}, {"suburb": "Sandringham", "state": "NSW"}],
+    "2220": [{"suburb": "Hurstville", "state": "NSW"}, {"suburb": "Hurstville Westfield", "state": "NSW"}],
+    "2221": [{"suburb": "Blakehurst", "state": "NSW"}, {"suburb": "Carss Park", "state": "NSW"}, {"suburb": "Connells Point", "state": "NSW"}, {"suburb": "Kyle Bay", "state": "NSW"}, {"suburb": "South Hurstville", "state": "NSW"}],
+    "2222": [{"suburb": "Penshurst", "state": "NSW"}],
+    "2223": [{"suburb": "Mortdale", "state": "NSW"}, {"suburb": "Oatley", "state": "NSW"}],
+    "2224": [{"suburb": "Kangaroo Point", "state": "NSW"}, {"suburb": "Sylvania", "state": "NSW"}, {"suburb": "Sylvania Waters", "state": "NSW"}],
+    "2225": [{"suburb": "Oyster Bay", "state": "NSW"}],
+    "2226": [{"suburb": "Bonnet Bay", "state": "NSW"}, {"suburb": "Como", "state": "NSW"}, {"suburb": "Jannali", "state": "NSW"}],
+    "2227": [{"suburb": "Gymea", "state": "NSW"}, {"suburb": "Gymea Bay", "state": "NSW"}],
+    "2228": [{"suburb": "Miranda", "state": "NSW"}, {"suburb": "Yowie Bay", "state": "NSW"}],
+    "2229": [{"suburb": "Caringbah", "state": "NSW"}, {"suburb": "Caringbah South", "state": "NSW"}, {"suburb": "Dolans Bay", "state": "NSW"}, {"suburb": "Lilli Pilli", "state": "NSW"}, {"suburb": "Port Hacking", "state": "NSW"}, {"suburb": "Taren Point", "state": "NSW"}],
+    "2230": [{"suburb": "Bundeena", "state": "NSW"}, {"suburb": "Burraneer", "state": "NSW"}, {"suburb": "Cronulla", "state": "NSW"}, {"suburb": "Maianbar", "state": "NSW"}, {"suburb": "Woolooware", "state": "NSW"}],
+    "2231": [{"suburb": "Kurnell", "state": "NSW"}],
+    "2232": [{"suburb": "Audley", "state": "NSW"}, {"suburb": "Grays Point", "state": "NSW"}, {"suburb": "Kareela", "state": "NSW"}, {"suburb": "Kirrawee", "state": "NSW"}, {"suburb": "Loftus", "state": "NSW"}, {"suburb": "Sutherland", "state": "NSW"}, {"suburb": "Woronora", "state": "NSW"}],
+    "2233": [{"suburb": "Engadine", "state": "NSW"}, {"suburb": "Heathcote", "state": "NSW"}, {"suburb": "Waterfall", "state": "NSW"}, {"suburb": "Woronora Heights", "state": "NSW"}, {"suburb": "Yarrawarrah", "state": "NSW"}],
+    "2234": [{"suburb": "Alfords Point", "state": "NSW"}, {"suburb": "Bangor", "state": "NSW"}, {"suburb": "Barden Ridge", "state": "NSW"}, {"suburb": "Illawong", "state": "NSW"}, {"suburb": "Lucas Heights", "state": "NSW"}, {"suburb": "Menai", "state": "NSW"}, {"suburb": "Menai Central", "state": "NSW"}],
+    
+    # VIC - Melbourne Metro
+    "3000": [{"suburb": "Melbourne", "state": "VIC"}],
+    "3001": [{"suburb": "Melbourne", "state": "VIC"}],
+    "3002": [{"suburb": "East Melbourne", "state": "VIC"}],
+    "3003": [{"suburb": "West Melbourne", "state": "VIC"}],
+    "3004": [{"suburb": "Melbourne", "state": "VIC"}, {"suburb": "St Kilda Road", "state": "VIC"}],
+    "3006": [{"suburb": "Southbank", "state": "VIC"}],
+    "3008": [{"suburb": "Docklands", "state": "VIC"}],
+    "3011": [{"suburb": "Footscray", "state": "VIC"}, {"suburb": "Seddon", "state": "VIC"}, {"suburb": "Seddon West", "state": "VIC"}],
+    "3012": [{"suburb": "Brooklyn", "state": "VIC"}, {"suburb": "Kingsville", "state": "VIC"}, {"suburb": "Maidstone", "state": "VIC"}, {"suburb": "Tottenham", "state": "VIC"}, {"suburb": "West Footscray", "state": "VIC"}],
+    "3013": [{"suburb": "Yarraville", "state": "VIC"}, {"suburb": "Yarraville West", "state": "VIC"}],
+    "3015": [{"suburb": "Newport", "state": "VIC"}, {"suburb": "South Kingsville", "state": "VIC"}, {"suburb": "Spotswood", "state": "VIC"}],
+    "3016": [{"suburb": "Williamstown", "state": "VIC"}, {"suburb": "Williamstown North", "state": "VIC"}],
+    "3018": [{"suburb": "Altona", "state": "VIC"}, {"suburb": "Seaholme", "state": "VIC"}],
+    "3019": [{"suburb": "Braybrook", "state": "VIC"}, {"suburb": "Robinson", "state": "VIC"}],
+    "3020": [{"suburb": "Albion", "state": "VIC"}, {"suburb": "Sunshine", "state": "VIC"}, {"suburb": "Sunshine North", "state": "VIC"}, {"suburb": "Sunshine West", "state": "VIC"}],
+    "3021": [{"suburb": "Albanvale", "state": "VIC"}, {"suburb": "Kealba", "state": "VIC"}, {"suburb": "Kings Park", "state": "VIC"}, {"suburb": "St Albans", "state": "VIC"}],
+    "3022": [{"suburb": "Ardeer", "state": "VIC"}, {"suburb": "Deer Park", "state": "VIC"}, {"suburb": "Deer Park East", "state": "VIC"}, {"suburb": "Deer Park North", "state": "VIC"}],
+    "3023": [{"suburb": "Burnside", "state": "VIC"}, {"suburb": "Burnside Heights", "state": "VIC"}, {"suburb": "Caroline Springs", "state": "VIC"}, {"suburb": "Ravenhall", "state": "VIC"}],
+    "3024": [{"suburb": "Fraser Rise", "state": "VIC"}, {"suburb": "Plumpton", "state": "VIC"}, {"suburb": "Taylors Hill", "state": "VIC"}, {"suburb": "Truganina", "state": "VIC"}],
+    "3025": [{"suburb": "Altona North", "state": "VIC"}],
+    "3026": [{"suburb": "Laverton", "state": "VIC"}, {"suburb": "Laverton North", "state": "VIC"}],
+    "3028": [{"suburb": "Altona Meadows", "state": "VIC"}, {"suburb": "Laverton", "state": "VIC"}, {"suburb": "Seabrook", "state": "VIC"}],
+    "3029": [{"suburb": "Hoppers Crossing", "state": "VIC"}, {"suburb": "Tarneit", "state": "VIC"}, {"suburb": "Truganina", "state": "VIC"}],
+    "3030": [{"suburb": "Cocoroc", "state": "VIC"}, {"suburb": "Derrimut", "state": "VIC"}, {"suburb": "Point Cook", "state": "VIC"}, {"suburb": "Quandong", "state": "VIC"}, {"suburb": "Werribee", "state": "VIC"}, {"suburb": "Werribee South", "state": "VIC"}],
+    "3031": [{"suburb": "Flemington", "state": "VIC"}, {"suburb": "Kensington", "state": "VIC"}],
+    "3032": [{"suburb": "Ascot Vale", "state": "VIC"}, {"suburb": "Highpoint City", "state": "VIC"}, {"suburb": "Maribyrnong", "state": "VIC"}, {"suburb": "Travancore", "state": "VIC"}],
+    "3033": [{"suburb": "Keilor East", "state": "VIC"}],
+    "3034": [{"suburb": "Avondale Heights", "state": "VIC"}],
+    "3036": [{"suburb": "Keilor", "state": "VIC"}, {"suburb": "Keilor North", "state": "VIC"}],
+    "3037": [{"suburb": "Delahey", "state": "VIC"}, {"suburb": "Hillside", "state": "VIC"}, {"suburb": "Sydenham", "state": "VIC"}, {"suburb": "Taylors Lakes", "state": "VIC"}],
+    "3038": [{"suburb": "Keilor Downs", "state": "VIC"}, {"suburb": "Keilor Lodge", "state": "VIC"}, {"suburb": "Watergardens", "state": "VIC"}],
+    "3039": [{"suburb": "Moonee Ponds", "state": "VIC"}],
+    "3040": [{"suburb": "Aberfeldie", "state": "VIC"}, {"suburb": "Essendon", "state": "VIC"}, {"suburb": "Essendon West", "state": "VIC"}],
+    "3041": [{"suburb": "Essendon North", "state": "VIC"}, {"suburb": "Strathmore", "state": "VIC"}, {"suburb": "Strathmore Heights", "state": "VIC"}],
+    "3042": [{"suburb": "Airport West", "state": "VIC"}, {"suburb": "Keilor Park", "state": "VIC"}, {"suburb": "Niddrie", "state": "VIC"}, {"suburb": "Niddrie North", "state": "VIC"}],
+    "3043": [{"suburb": "Gladstone Park", "state": "VIC"}, {"suburb": "Gowanbrae", "state": "VIC"}, {"suburb": "Tullamarine", "state": "VIC"}],
+    "3044": [{"suburb": "Pascoe Vale", "state": "VIC"}, {"suburb": "Pascoe Vale South", "state": "VIC"}],
+    "3046": [{"suburb": "Glenroy", "state": "VIC"}, {"suburb": "Hadfield", "state": "VIC"}, {"suburb": "Oak Park", "state": "VIC"}],
+    "3047": [{"suburb": "Broadmeadows", "state": "VIC"}, {"suburb": "Dallas", "state": "VIC"}, {"suburb": "Jacana", "state": "VIC"}],
+    "3048": [{"suburb": "Coolaroo", "state": "VIC"}, {"suburb": "Meadow Heights", "state": "VIC"}],
+    "3049": [{"suburb": "Attwood", "state": "VIC"}, {"suburb": "Westmeadows", "state": "VIC"}],
+    "3050": [{"suburb": "Royal Melbourne Hospital", "state": "VIC"}],
+    "3051": [{"suburb": "North Melbourne", "state": "VIC"}],
+    "3052": [{"suburb": "Melbourne University", "state": "VIC"}, {"suburb": "Parkville", "state": "VIC"}],
+    "3053": [{"suburb": "Carlton", "state": "VIC"}],
+    "3054": [{"suburb": "Carlton North", "state": "VIC"}, {"suburb": "Princes Hill", "state": "VIC"}],
+    "3055": [{"suburb": "Brunswick South", "state": "VIC"}, {"suburb": "Brunswick West", "state": "VIC"}, {"suburb": "Moonee Vale", "state": "VIC"}, {"suburb": "Moreland West", "state": "VIC"}],
+    "3056": [{"suburb": "Brunswick", "state": "VIC"}, {"suburb": "Brunswick Lower", "state": "VIC"}],
+    "3057": [{"suburb": "Brunswick East", "state": "VIC"}, {"suburb": "Sumner", "state": "VIC"}],
+    "3058": [{"suburb": "Coburg", "state": "VIC"}, {"suburb": "Coburg North", "state": "VIC"}, {"suburb": "Moreland", "state": "VIC"}],
+    "3060": [{"suburb": "Fawkner", "state": "VIC"}],
+    "3061": [{"suburb": "Campbellfield", "state": "VIC"}],
+    
+    # QLD - Brisbane Metro
+    "4000": [{"suburb": "Brisbane City", "state": "QLD"}, {"suburb": "Brisbane", "state": "QLD"}, {"suburb": "Petrie Terrace", "state": "QLD"}, {"suburb": "Spring Hill", "state": "QLD"}],
+    "4005": [{"suburb": "New Farm", "state": "QLD"}, {"suburb": "Teneriffe", "state": "QLD"}],
+    "4006": [{"suburb": "Bowen Hills", "state": "QLD"}, {"suburb": "Fortitude Valley", "state": "QLD"}, {"suburb": "Herston", "state": "QLD"}, {"suburb": "Newstead", "state": "QLD"}],
+    "4007": [{"suburb": "Ascot", "state": "QLD"}, {"suburb": "Hamilton", "state": "QLD"}],
+    "4008": [{"suburb": "Pinkenba", "state": "QLD"}],
+    "4009": [{"suburb": "Brisbane Airport", "state": "QLD"}, {"suburb": "Eagle Farm", "state": "QLD"}],
+    "4010": [{"suburb": "Albion", "state": "QLD"}, {"suburb": "Breakfast Creek", "state": "QLD"}, {"suburb": "Lutwyche", "state": "QLD"}, {"suburb": "Windsor", "state": "QLD"}, {"suburb": "Wooloowin", "state": "QLD"}],
+    "4011": [{"suburb": "Clayfield", "state": "QLD"}, {"suburb": "Hendra", "state": "QLD"}],
+    "4012": [{"suburb": "Nundah", "state": "QLD"}, {"suburb": "Toombul", "state": "QLD"}],
+    "4013": [{"suburb": "Northgate", "state": "QLD"}, {"suburb": "Virginia", "state": "QLD"}],
+    "4014": [{"suburb": "Banyo", "state": "QLD"}, {"suburb": "Nudgee", "state": "QLD"}, {"suburb": "Nudgee Beach", "state": "QLD"}],
+    "4017": [{"suburb": "Bracken Ridge", "state": "QLD"}, {"suburb": "Brighton", "state": "QLD"}, {"suburb": "Deagon", "state": "QLD"}, {"suburb": "Sandgate", "state": "QLD"}, {"suburb": "Shorncliffe", "state": "QLD"}],
+    "4018": [{"suburb": "Fitzgibbon", "state": "QLD"}, {"suburb": "Taigum", "state": "QLD"}],
+    "4019": [{"suburb": "Clontarf", "state": "QLD"}, {"suburb": "Margate", "state": "QLD"}, {"suburb": "Woody Point", "state": "QLD"}],
+    "4020": [{"suburb": "Newport", "state": "QLD"}, {"suburb": "Redcliffe", "state": "QLD"}, {"suburb": "Scarborough", "state": "QLD"}],
+    "4030": [{"suburb": "Gordon Park", "state": "QLD"}, {"suburb": "Kedron", "state": "QLD"}, {"suburb": "Wooloowin", "state": "QLD"}],
+    "4031": [{"suburb": "Gordon Park", "state": "QLD"}, {"suburb": "Kedron", "state": "QLD"}],
+    "4032": [{"suburb": "Chermside", "state": "QLD"}, {"suburb": "Chermside South", "state": "QLD"}, {"suburb": "Chermside West", "state": "QLD"}],
+    "4034": [{"suburb": "Aspley", "state": "QLD"}, {"suburb": "Boondall", "state": "QLD"}, {"suburb": "Carseldine", "state": "QLD"}, {"suburb": "Geebung", "state": "QLD"}, {"suburb": "Zillmere", "state": "QLD"}],
+    "4051": [{"suburb": "Alderley", "state": "QLD"}, {"suburb": "Enoggera", "state": "QLD"}, {"suburb": "Gaythorne", "state": "QLD"}, {"suburb": "Grange", "state": "QLD"}, {"suburb": "Newmarket", "state": "QLD"}, {"suburb": "Wilston", "state": "QLD"}],
+    "4053": [{"suburb": "Brookside Centre", "state": "QLD"}, {"suburb": "Enoggera Reservoir", "state": "QLD"}, {"suburb": "Everton Hills", "state": "QLD"}, {"suburb": "Everton Park", "state": "QLD"}, {"suburb": "McDowall", "state": "QLD"}, {"suburb": "Mitchelton", "state": "QLD"}, {"suburb": "Stafford", "state": "QLD"}, {"suburb": "Stafford Heights", "state": "QLD"}],
+    "4059": [{"suburb": "Kelvin Grove", "state": "QLD"}, {"suburb": "Red Hill", "state": "QLD"}],
+    "4060": [{"suburb": "Ashgrove", "state": "QLD"}],
+    "4061": [{"suburb": "The Gap", "state": "QLD"}],
+    "4064": [{"suburb": "Milton", "state": "QLD"}, {"suburb": "Paddington", "state": "QLD"}],
+    "4065": [{"suburb": "Bardon", "state": "QLD"}],
+    "4066": [{"suburb": "Auchenflower", "state": "QLD"}, {"suburb": "Milton", "state": "QLD"}, {"suburb": "Toowong", "state": "QLD"}],
+    "4067": [{"suburb": "St Lucia", "state": "QLD"}],
+    "4068": [{"suburb": "Chelmer", "state": "QLD"}, {"suburb": "Indooroopilly", "state": "QLD"}, {"suburb": "Indooroopilly Centre", "state": "QLD"}, {"suburb": "Taringa", "state": "QLD"}],
+    "4069": [{"suburb": "Brookfield", "state": "QLD"}, {"suburb": "Chapel Hill", "state": "QLD"}, {"suburb": "Fig Tree Pocket", "state": "QLD"}, {"suburb": "Kenmore", "state": "QLD"}, {"suburb": "Kenmore Hills", "state": "QLD"}, {"suburb": "Pinjarra Hills", "state": "QLD"}, {"suburb": "Pullenvale", "state": "QLD"}, {"suburb": "Upper Brookfield", "state": "QLD"}],
+    "4070": [{"suburb": "Anstead", "state": "QLD"}, {"suburb": "Bellbowrie", "state": "QLD"}, {"suburb": "Moggill", "state": "QLD"}],
+    "4072": [{"suburb": "University Of Queensland", "state": "QLD"}],
+    "4073": [{"suburb": "Seventeen Mile Rocks", "state": "QLD"}, {"suburb": "Sinnamon Park", "state": "QLD"}],
+    "4074": [{"suburb": "Jamboree Heights", "state": "QLD"}, {"suburb": "Jindalee", "state": "QLD"}, {"suburb": "Middle Park", "state": "QLD"}, {"suburb": "Mount Ommaney", "state": "QLD"}, {"suburb": "Riverhills", "state": "QLD"}, {"suburb": "Sumner", "state": "QLD"}, {"suburb": "Westlake", "state": "QLD"}],
+    "4075": [{"suburb": "Corinda", "state": "QLD"}, {"suburb": "Graceville", "state": "QLD"}, {"suburb": "Graceville East", "state": "QLD"}, {"suburb": "Oxley", "state": "QLD"}, {"suburb": "Sherwood", "state": "QLD"}],
+    "4076": [{"suburb": "Darra", "state": "QLD"}, {"suburb": "Wacol", "state": "QLD"}],
+    
+    # WA - Perth Metro
+    "6000": [{"suburb": "Perth", "state": "WA"}],
+    "6003": [{"suburb": "Highgate", "state": "WA"}, {"suburb": "Northbridge", "state": "WA"}],
+    "6004": [{"suburb": "East Perth", "state": "WA"}],
+    "6005": [{"suburb": "Kings Park", "state": "WA"}, {"suburb": "West Perth", "state": "WA"}],
+    "6006": [{"suburb": "North Perth", "state": "WA"}],
+    "6007": [{"suburb": "Leederville", "state": "WA"}, {"suburb": "West Leederville", "state": "WA"}],
+    "6008": [{"suburb": "Shenton Park", "state": "WA"}, {"suburb": "Subiaco", "state": "WA"}],
+    "6009": [{"suburb": "Crawley", "state": "WA"}, {"suburb": "Nedlands", "state": "WA"}],
+    "6010": [{"suburb": "Claremont", "state": "WA"}, {"suburb": "Swanbourne", "state": "WA"}],
+    "6011": [{"suburb": "Cottesloe", "state": "WA"}, {"suburb": "Peppermint Grove", "state": "WA"}],
+    "6012": [{"suburb": "Mosman Park", "state": "WA"}],
+    "6014": [{"suburb": "Floreat", "state": "WA"}, {"suburb": "Jolimont", "state": "WA"}, {"suburb": "Wembley", "state": "WA"}],
+    "6015": [{"suburb": "City Beach", "state": "WA"}],
+    "6016": [{"suburb": "Glendalough", "state": "WA"}, {"suburb": "Mount Hawthorn", "state": "WA"}],
+    "6017": [{"suburb": "Osborne Park", "state": "WA"}, {"suburb": "Tuart Hill", "state": "WA"}],
+    "6018": [{"suburb": "Churchlands", "state": "WA"}, {"suburb": "Doubleview", "state": "WA"}, {"suburb": "Gwelup", "state": "WA"}, {"suburb": "Innaloo", "state": "WA"}, {"suburb": "Karrinyup", "state": "WA"}, {"suburb": "Woodlands", "state": "WA"}],
+    "6019": [{"suburb": "Scarborough", "state": "WA"}, {"suburb": "Wembley Downs", "state": "WA"}],
+    "6020": [{"suburb": "Carine", "state": "WA"}, {"suburb": "Marmion", "state": "WA"}, {"suburb": "North Beach", "state": "WA"}, {"suburb": "Sorrento", "state": "WA"}, {"suburb": "Trigg", "state": "WA"}, {"suburb": "Watermans Bay", "state": "WA"}],
+    "6021": [{"suburb": "Balcatta", "state": "WA"}, {"suburb": "Stirling", "state": "WA"}],
+    "6022": [{"suburb": "Hamersley", "state": "WA"}],
+    "6023": [{"suburb": "Duncraig", "state": "WA"}],
+    "6024": [{"suburb": "Greenwood", "state": "WA"}, {"suburb": "Warwick", "state": "WA"}],
+    "6025": [{"suburb": "Craigie", "state": "WA"}, {"suburb": "Hillarys", "state": "WA"}, {"suburb": "Kallaroo", "state": "WA"}, {"suburb": "Padbury", "state": "WA"}],
+    "6026": [{"suburb": "Kingsley", "state": "WA"}, {"suburb": "Woodvale", "state": "WA"}],
+    "6027": [{"suburb": "Beldon", "state": "WA"}, {"suburb": "Connolly", "state": "WA"}, {"suburb": "Edgewater", "state": "WA"}, {"suburb": "Heathridge", "state": "WA"}, {"suburb": "Joondalup", "state": "WA"}, {"suburb": "Ocean Reef", "state": "WIA"}],
+    "6028": [{"suburb": "Currambine", "state": "WA"}, {"suburb": "Iluka", "state": "WA"}, {"suburb": "Kinross", "state": "WA"}],
+    "6050": [{"suburb": "Mount Lawley", "state": "WA"}],
+    "6051": [{"suburb": "Maylands", "state": "WA"}],
+    "6052": [{"suburb": "Inglewood", "state": "WA"}, {"suburb": "Mount Lawley", "state": "WA"}],
+    "6053": [{"suburb": "Bayswater", "state": "WA"}],
+    "6054": [{"suburb": "Ashfield", "state": "WA"}, {"suburb": "Bassendean", "state": "WA"}],
+    "6055": [{"suburb": "Bedford", "state": "WA"}, {"suburb": "Embleton", "state": "WA"}, {"suburb": "Morley", "state": "WA"}],
+    "6056": [{"suburb": "Beechboro", "state": "WA"}, {"suburb": "Caversham", "state": "WA"}, {"suburb": "Hazelmere", "state": "WA"}, {"suburb": "Kiara", "state": "WA"}, {"suburb": "Lockridge", "state": "WA"}, {"suburb": "Middle Swan", "state": "WA"}, {"suburb": "Swan View", "state": "WA"}],
+    
+    # SA - Adelaide Metro
+    "5000": [{"suburb": "Adelaide", "state": "SA"}],
+    "5006": [{"suburb": "North Adelaide", "state": "SA"}],
+    "5007": [{"suburb": "Bowden", "state": "SA"}, {"suburb": "Brompton", "state": "SA"}, {"suburb": "Hindmarsh", "state": "SA"}, {"suburb": "Welland", "state": "SA"}, {"suburb": "West Hindmarsh", "state": "SA"}],
+    "5008": [{"suburb": "Croydon", "state": "SA"}, {"suburb": "Devon Park", "state": "SA"}, {"suburb": "Dudley Park", "state": "SA"}, {"suburb": "Renown Park", "state": "SA"}, {"suburb": "Ridleyton", "state": "SA"}, {"suburb": "West Croydon", "state": "SA"}],
+    "5009": [{"suburb": "Allenby Gardens", "state": "SA"}, {"suburb": "Beverley", "state": "SA"}, {"suburb": "Kilkenny", "state": "SA"}],
+    "5010": [{"suburb": "Angle Park", "state": "SA"}, {"suburb": "Ferryden Park", "state": "SA"}, {"suburb": "Regency Park", "state": "SA"}],
+    "5011": [{"suburb": "Woodville", "state": "SA"}, {"suburb": "Woodville North", "state": "SA"}, {"suburb": "Woodville Park", "state": "SA"}, {"suburb": "Woodville South", "state": "SA"}, {"suburb": "Woodville West", "state": "SA"}],
+    "5012": [{"suburb": "Athol Park", "state": "SA"}, {"suburb": "Cheltenham", "state": "SA"}, {"suburb": "Pennington", "state": "SA"}, {"suburb": "Rosewater", "state": "SA"}, {"suburb": "Rosewater East", "state": "SA"}],
+    "5013": [{"suburb": "Gillman", "state": "SA"}, {"suburb": "Ottoway", "state": "SA"}, {"suburb": "Wingfield", "state": "SA"}],
+    "5014": [{"suburb": "Albert Park", "state": "SA"}, {"suburb": "Alberton", "state": "SA"}, {"suburb": "Hendon", "state": "SA"}, {"suburb": "Royal Park", "state": "SA"}],
+    "5015": [{"suburb": "Birkenhead", "state": "SA"}, {"suburb": "Ethelton", "state": "SA"}, {"suburb": "Glanville", "state": "SA"}, {"suburb": "New Port", "state": "SA"}, {"suburb": "Peterhead", "state": "SA"}, {"suburb": "Port Adelaide", "state": "SA"}],
+    "5016": [{"suburb": "Exeter", "state": "SA"}, {"suburb": "Largs Bay", "state": "SA"}, {"suburb": "Largs North", "state": "SA"}, {"suburb": "Taperoo", "state": "SA"}],
+    "5017": [{"suburb": "North Haven", "state": "SA"}, {"suburb": "Osborne", "state": "SA"}],
+    "5018": [{"suburb": "Outer Harbor", "state": "SA"}],
+    "5019": [{"suburb": "Semaphore", "state": "SA"}, {"suburb": "Semaphore Park", "state": "SA"}, {"suburb": "Semaphore South", "state": "SA"}],
+    "5020": [{"suburb": "West Lakes", "state": "SA"}, {"suburb": "West Lakes Shore", "state": "SA"}],
+    "5021": [{"suburb": "West Beach", "state": "SA"}],
+    "5022": [{"suburb": "Grange", "state": "SA"}, {"suburb": "Henley Beach", "state": "SA"}, {"suburb": "Henley Beach South", "state": "SA"}, {"suburb": "Tennyson", "state": "SA"}],
+    "5023": [{"suburb": "Findon", "state": "SA"}, {"suburb": "Seaton", "state": "SA"}],
+    "5024": [{"suburb": "Fulham", "state": "SA"}, {"suburb": "Fulham Gardens", "state": "SA"}],
+    "5025": [{"suburb": "Flinders Park", "state": "SA"}, {"suburb": "Kidman Park", "state": "SA"}],
+    "5031": [{"suburb": "Mile End", "state": "SA"}, {"suburb": "Mile End South", "state": "SA"}, {"suburb": "Thebarton", "state": "SA"}, {"suburb": "Torrensville", "state": "SA"}],
+    "5032": [{"suburb": "Brooklyn Park", "state": "SA"}, {"suburb": "Lockleys", "state": "SA"}, {"suburb": "Underdale", "state": "SA"}],
+    "5033": [{"suburb": "Cowandilla", "state": "SA"}, {"suburb": "Hilton", "state": "SA"}, {"suburb": "Marleston", "state": "SA"}, {"suburb": "Richmond", "state": "SA"}, {"suburb": "West Richmond", "state": "SA"}],
+    "5034": [{"suburb": "Goodwood", "state": "SA"}, {"suburb": "Kings Park", "state": "SA"}, {"suburb": "Millswood", "state": "SA"}, {"suburb": "Wayville", "state": "SA"}],
+    "5035": [{"suburb": "Ashford", "state": "SA"}, {"suburb": "Everard Park", "state": "SA"}, {"suburb": "Keswick", "state": "SA"}, {"suburb": "Keswick Terminal", "state": "SA"}],
+    "5037": [{"suburb": "Black Forest", "state": "SA"}, {"suburb": "Clarence Park", "state": "SA"}, {"suburb": "Cumberland Park", "state": "SA"}],
+    "5038": [{"suburb": "Glandore", "state": "SA"}, {"suburb": "Kurralta Park", "state": "SA"}, {"suburb": "Netley", "state": "SA"}, {"suburb": "North Plympton", "state": "SA"}, {"suburb": "Plympton", "state": "SA"}, {"suburb": "Plympton Park", "state": "SA"}, {"suburb": "South Plympton", "state": "SA"}],
+    "5039": [{"suburb": "Edwardstown", "state": "SA"}, {"suburb": "Melrose Park", "state": "SA"}],
+    "5040": [{"suburb": "Novar Gardens", "state": "SA"}],
+    "5041": [{"suburb": "Colonel Light Gardens", "state": "SA"}, {"suburb": "Daw Park", "state": "SA"}, {"suburb": "Westbourne Park", "state": "SA"}],
+    "5042": [{"suburb": "Bedford Park", "state": "SA"}, {"suburb": "Clovelly Park", "state": "SA"}, {"suburb": "Pasadena", "state": "SA"}, {"suburb": "St Marys", "state": "SA"}, {"suburb": "Tonsley", "state": "SA"}],
+    "5043": [{"suburb": "Ascot Park", "state": "SA"}, {"suburb": "Marion", "state": "SA"}, {"suburb": "Mitchell Park", "state": "SA"}, {"suburb": "Morphettville", "state": "SA"}, {"suburb": "Park Holme", "state": "SA"}, {"suburb": "Sturt", "state": "SA"}],
+    "5044": [{"suburb": "Glengowrie", "state": "SA"}, {"suburb": "Glenelg", "state": "SA"}, {"suburb": "Glenelg East", "state": "SA"}, {"suburb": "Glenelg North", "state": "SA"}, {"suburb": "Glenelg South", "state": "SA"}, {"suburb": "Somerton Park", "state": "SA"}],
+    "5045": [{"suburb": "Brighton", "state": "SA"}, {"suburb": "Hove", "state": "SA"}, {"suburb": "North Brighton", "state": "SA"}, {"suburb": "South Brighton", "state": "SA"}]
+}
+
+
+@router.get("/suburbs")
+async def get_suburbs_by_postcode(postcode: str = Query(..., description="Postcode to lookup suburbs for")):
+    """
+    Get all suburbs for a given postcode.
+    Returns a list of suburbs with their state.
+    """
+    postcode = postcode.strip()
+    
+    # First check the static data
+    if postcode in AUSTRALIAN_SUBURBS:
+        suburbs = AUSTRALIAN_SUBURBS[postcode]
+        return {
+            "postcode": postcode,
+            "suburbs": suburbs,
+            "count": len(suburbs)
+        }
+    
+    # Check the database for custom suburb data
+    db_suburbs = await db.postcode_suburbs.find(
+        {"postcode": postcode},
+        {"_id": 0}
+    ).to_list(100)
+    
+    if db_suburbs:
+        return {
+            "postcode": postcode,
+            "suburbs": db_suburbs,
+            "count": len(db_suburbs)
+        }
+    
+    # No suburbs found for this postcode
+    return {
+        "postcode": postcode,
+        "suburbs": [],
+        "count": 0,
+        "message": "No suburbs found for this postcode. The postcode may be valid but not in our database yet."
+    }
+
+
+@router.post("/suburbs/import")
+async def import_suburbs(
+    file: UploadFile = File(...),
+    mode: str = Query("merge", description="Import mode: 'merge' or 'replace'")
+):
+    """
+    Import postcode-suburb mappings from CSV.
+    CSV format: postcode, suburb, state, country
+    """
+    if not file.filename.endswith('.csv'):
+        raise HTTPException(status_code=400, detail="File must be a CSV")
+    
+    try:
+        content = await file.read()
+        decoded = content.decode('utf-8-sig')
+        reader = csv.DictReader(io.StringIO(decoded))
+        
+        if mode == "replace":
+            await db.postcode_suburbs.delete_many({})
+        
+        imported = 0
+        for row in reader:
+            postcode = row.get("postcode", "").strip()
+            suburb = row.get("suburb", "").strip()
+            state = row.get("state", "").strip()
+            country = row.get("country", "AU").strip()
+            
+            if not postcode or not suburb:
+                continue
+            
+            # Upsert the suburb entry
+            await db.postcode_suburbs.update_one(
+                {"postcode": postcode, "suburb": suburb},
+                {"$set": {
+                    "postcode": postcode,
+                    "suburb": suburb,
+                    "state": state,
+                    "country": country
+                }},
+                upsert=True
+            )
+            imported += 1
+        
+        return {
+            "message": "Suburbs imported successfully",
+            "imported": imported,
+            "mode": mode
+        }
+        
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Import error: {str(e)}")
+
+
+@router.get("/suburbs/search")
+async def search_suburbs(
+    q: str = Query(..., min_length=2, description="Search term (suburb name or postcode)")
+):
+    """
+    Search for suburbs by name or postcode prefix.
+    Useful for autocomplete functionality.
+    """
+    q = q.strip().lower()
+    results = []
+    
+    # Search in static data
+    for postcode, suburbs in AUSTRALIAN_SUBURBS.items():
+        # Match by postcode prefix
+        if postcode.startswith(q):
+            for s in suburbs:
+                results.append({
+                    "postcode": postcode,
+                    "suburb": s["suburb"],
+                    "state": s["state"]
+                })
+        # Match by suburb name
+        else:
+            for s in suburbs:
+                if q in s["suburb"].lower():
+                    results.append({
+                        "postcode": postcode,
+                        "suburb": s["suburb"],
+                        "state": s["state"]
+                    })
+    
+    # Also search in database
+    db_results = await db.postcode_suburbs.find(
+        {"$or": [
+            {"postcode": {"$regex": f"^{q}", "$options": "i"}},
+            {"suburb": {"$regex": q, "$options": "i"}}
+        ]},
+        {"_id": 0}
+    ).to_list(50)
+    
+    results.extend(db_results)
+    
+    # Remove duplicates and limit results
+    seen = set()
+    unique_results = []
+    for r in results:
+        key = f"{r['postcode']}-{r['suburb']}"
+        if key not in seen:
+            seen.add(key)
+            unique_results.append(r)
+    
+    return {
+        "query": q,
+        "results": unique_results[:50],  # Limit to 50 results
+        "count": len(unique_results)
+    }
+
         "packages": packages,
         "summary": {
             "total_zones": len(zones),
