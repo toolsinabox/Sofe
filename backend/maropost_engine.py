@@ -1286,6 +1286,35 @@ class MaropostTemplateEngine:
         
         return content
     
+    def _replace_cart_item_tags(self, content: str, item: Dict, store: Dict) -> str:
+        """Replace cart item tags within a loop."""
+        currency = store.get('currency_symbol', '$')
+        price = item.get('price', 0) or 0
+        quantity = item.get('quantity', 1) or 1
+        line_total = item.get('line_total', price * quantity) or (price * quantity)
+        
+        replacements = {
+            '[@item_id@]': item.get('product_id', item.get('id', '')),
+            '[@item_product_id@]': item.get('product_id', item.get('id', '')),
+            '[@item_name@]': item.get('name', ''),
+            '[@item_sku@]': item.get('sku', ''),
+            '[@item_image@]': item.get('image', ''),
+            '[@item_price@]': f"{price:.2f}",
+            '[@item_price_formatted@]': f"{currency}{price:.2f}",
+            '[@item_quantity@]': str(quantity),
+            '[@item_qty@]': str(quantity),
+            '[@item_total@]': f"{line_total:.2f}",
+            '[@item_total_formatted@]': f"{currency}{line_total:.2f}",
+            '[@item_line_total@]': f"{line_total:.2f}",
+            '[@item_line_total_formatted@]': f"{currency}{line_total:.2f}",
+            '[@item_url@]': f"/live/product/{item.get('product_id', item.get('id', ''))}",
+        }
+        
+        for tag, value in replacements.items():
+            content = content.replace(tag, str(value))
+        
+        return content
+    
     async def process_conditionals(self, content: str, context: Dict) -> str:
         """
         Process [%if condition%]...[%else%]...[%/if%] tags.
