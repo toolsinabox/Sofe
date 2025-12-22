@@ -1190,7 +1190,7 @@
             const container = document.getElementById('lightbox-thumbs');
             container.innerHTML = galleryItems.map((item, index) => `
                 <button class="lightbox-thumb ${item.type === 'video' ? 'video' : ''} ${index === currentIndex ? 'active' : ''}" 
-                        onclick="goToSlide(${index})">
+                        onclick="goToLightboxSlide(${index})">
                     <img src="${item.thumb}" alt="Thumbnail ${index + 1}">
                 </button>
             `).join('');
