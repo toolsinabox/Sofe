@@ -1896,6 +1896,289 @@ async def update_order_status(order_id: str, status: str):
     
     return {"message": f"Order status updated to {status}"}
 
+# ==================== CHECKOUT & PAYMENT ====================
+
+class CheckoutRequest(BaseModel):
+    customer_name: str
+    customer_email: str
+    customer_phone: Optional[str] = None
+    company_name: Optional[str] = None
+    shipping_address: str
+    shipping_city: str
+    shipping_state: str
+    shipping_postcode: str
+    shipping_country: str = "AU"
+    billing_same_as_shipping: bool = True
+    billing_address: Optional[str] = None
+    billing_city: Optional[str] = None
+    billing_state: Optional[str] = None
+    billing_postcode: Optional[str] = None
+    billing_country: Optional[str] = None
+    cart_id: str
+    shipping_method: Optional[str] = None
+    shipping_cost: float = 0
+    payment_method: str = "card"  # card, bank_transfer, pay_later
+    notes: Optional[str] = None
+    purchase_order: Optional[str] = None
+
+@api_router.post("/checkout/create-payment-intent")
+async def create_payment_intent(amount: float, currency: str = "aud"):
+    """Create a Stripe payment intent for checkout"""
+    try:
+        if not stripe.api_key:
+            raise HTTPException(status_code=500, detail="Stripe not configured")
+        
+        intent = stripe.PaymentIntent.create(
+            amount=int(amount * 100),  # Stripe uses cents
+            currency=currency.lower(),
+            automatic_payment_methods={"enabled": True},
+        )
+        return {"client_secret": intent.client_secret, "payment_intent_id": intent.id}
+    except stripe.error.StripeError as e:
+        raise HTTPException(status_code=400, detail=str(e))
+
+@api_router.post("/checkout/process")
+async def process_checkout(checkout: CheckoutRequest):
+    """Process checkout - creates order and handles payment"""
+    # Get cart
+    cart = await db.carts.find_one({"id": checkout.cart_id})
+    if not cart or not cart.get("items"):
+        raise HTTPException(status_code=400, detail="Cart is empty or not found")
+    
+    # Calculate totals
+    subtotal = sum(item["price"] * item["quantity"] for item in cart["items"])
+    tax = subtotal * 0.1  # 10% GST
+    total = subtotal + checkout.shipping_cost + tax
+    
+    # Build shipping address string
+    shipping_full = f"{checkout.shipping_address}, {checkout.shipping_city}, {checkout.shipping_state} {checkout.shipping_postcode}, {checkout.shipping_country}"
+    
+    # Build billing address
+    if checkout.billing_same_as_shipping:
+        billing_full = shipping_full
+    else:
+        billing_full = f"{checkout.billing_address}, {checkout.billing_city}, {checkout.billing_state} {checkout.billing_postcode}, {checkout.billing_country}"
+    
+    # Create order items
+    order_items = [
+        OrderItemBase(
+            product_id=item["product_id"],
+            product_name=item["name"],
+            price=item["price"],
+            quantity=item["quantity"],
+            image=item.get("image")
+        ) for item in cart["items"]
+    ]
+    
+    # Create order
+    new_order = Order(
+        customer_name=checkout.customer_name,
+        customer_email=checkout.customer_email,
+        customer_phone=checkout.customer_phone,
+        shipping_address=shipping_full,
+        items=[item.dict() for item in order_items],
+        subtotal=subtotal,
+        shipping=checkout.shipping_cost,
+        tax=tax,
+        total=total,
+        payment_method=checkout.payment_method,
+        status="pending" if checkout.payment_method != "card" else "processing",
+        payment_status="pending" if checkout.payment_method != "card" else "paid",
+        notes=checkout.notes
+    )
+    
+    await db.orders.insert_one(new_order.dict())
+    
+    # Deduct stock for each item
+    for item in cart["items"]:
+        await db.products.update_one(
+            {"id": item["product_id"]},
+            {"$inc": {"stock": -item["quantity"], "sales_count": item["quantity"]}}
+        )
+    
+    # Update or create customer
+    customer = await db.customers.find_one({"email": checkout.customer_email})
+    if customer:
+        await db.customers.update_one(
+            {"email": checkout.customer_email},
+            {
+                "$inc": {"total_orders": 1, "total_spent": total},
+                "$set": {"updated_at": datetime.now(timezone.utc)}
+            }
+        )
+    else:
+        new_customer = Customer(
+            name=checkout.customer_name,
+            email=checkout.customer_email,
+            phone=checkout.customer_phone,
+            total_orders=1,
+            total_spent=total
+        )
+        await db.customers.insert_one(new_customer.dict())
+    
+    # Clear cart
+    await db.carts.delete_one({"id": checkout.cart_id})
+    
+    return {
+        "success": True,
+        "order_id": new_order.id,
+        "order_number": new_order.order_number,
+        "total": total,
+        "message": "Order placed successfully!"
+    }
+
+@api_router.post("/checkout/confirm-payment/{order_id}")
+async def confirm_payment(order_id: str, payment_intent_id: str):
+    """Confirm payment for an order after Stripe payment"""
+    order = await db.orders.find_one({"id": order_id})
+    if not order:
+        raise HTTPException(status_code=404, detail="Order not found")
+    
+    # Update order with payment info
+    await db.orders.update_one(
+        {"id": order_id},
+        {
+            "$set": {
+                "payment_status": "paid",
+                "payment_intent_id": payment_intent_id,
+                "status": "processing",
+                "updated_at": datetime.now(timezone.utc)
+            }
+        }
+    )
+    
+    return {"success": True, "message": "Payment confirmed"}
+
+# ==================== QUOTE ENDPOINTS ====================
+
+@api_router.post("/quotes", response_model=Quote)
+async def create_quote(quote: QuoteCreate):
+    """Create a new quote request - does NOT deduct stock"""
+    new_quote = Quote(**quote.dict())
+    new_quote.valid_until = datetime.now(timezone.utc) + timedelta(days=30)  # 30 day validity
+    await db.quotes.insert_one(new_quote.dict())
+    return new_quote
+
+@api_router.get("/quotes")
+async def get_quotes(
+    status: Optional[str] = None,
+    limit: int = Query(default=50, le=100),
+    skip: int = 0
+):
+    """Get all quotes"""
+    query = {}
+    if status:
+        query["status"] = status
+    quotes = await db.quotes.find(query, {"_id": 0}).sort("created_at", -1).skip(skip).limit(limit).to_list(limit)
+    return quotes
+
+@api_router.get("/quotes/{quote_id}")
+async def get_quote(quote_id: str):
+    """Get a single quote"""
+    quote = await db.quotes.find_one({"id": quote_id}, {"_id": 0})
+    if not quote:
+        raise HTTPException(status_code=404, detail="Quote not found")
+    return quote
+
+@api_router.put("/quotes/{quote_id}")
+async def update_quote(quote_id: str, update: QuoteUpdate):
+    """Update a quote"""
+    update_data = {k: v for k, v in update.dict().items() if v is not None}
+    update_data["updated_at"] = datetime.now(timezone.utc)
+    
+    result = await db.quotes.update_one(
+        {"id": quote_id},
+        {"$set": update_data}
+    )
+    if result.matched_count == 0:
+        raise HTTPException(status_code=404, detail="Quote not found")
+    
+    quote = await db.quotes.find_one({"id": quote_id}, {"_id": 0})
+    return quote
+
+@api_router.post("/quotes/{quote_id}/convert-to-order")
+async def convert_quote_to_order(quote_id: str):
+    """Convert a quote to an order - NOW deducts stock"""
+    quote = await db.quotes.find_one({"id": quote_id})
+    if not quote:
+        raise HTTPException(status_code=404, detail="Quote not found")
+    
+    if quote.get("status") == "converted":
+        raise HTTPException(status_code=400, detail="Quote already converted to order")
+    
+    # Create order from quote
+    new_order = Order(
+        customer_name=quote["customer_name"],
+        customer_email=quote["customer_email"],
+        customer_phone=quote.get("customer_phone"),
+        shipping_address=quote["shipping_address"],
+        items=quote["items"],
+        subtotal=quote["subtotal"],
+        shipping=quote["shipping"],
+        tax=quote["tax"],
+        total=quote["total"],
+        payment_method="quote",
+        status="pending",
+        payment_status="pending",
+        notes=f"Converted from Quote #{quote['quote_number']}"
+    )
+    
+    await db.orders.insert_one(new_order.dict())
+    
+    # Deduct stock NOW (not when quote was created)
+    for item in quote["items"]:
+        await db.products.update_one(
+            {"id": item["product_id"]},
+            {"$inc": {"stock": -item["quantity"], "sales_count": item["quantity"]}}
+        )
+    
+    # Update quote status
+    await db.quotes.update_one(
+        {"id": quote_id},
+        {
+            "$set": {
+                "status": "converted",
+                "converted_order_id": new_order.id,
+                "updated_at": datetime.now(timezone.utc)
+            }
+        }
+    )
+    
+    # Update customer stats
+    customer = await db.customers.find_one({"email": quote["customer_email"]})
+    if customer:
+        await db.customers.update_one(
+            {"email": quote["customer_email"]},
+            {
+                "$inc": {"total_orders": 1, "total_spent": quote["total"]},
+                "$set": {"updated_at": datetime.now(timezone.utc)}
+            }
+        )
+    else:
+        new_customer = Customer(
+            name=quote["customer_name"],
+            email=quote["customer_email"],
+            phone=quote.get("customer_phone"),
+            total_orders=1,
+            total_spent=quote["total"]
+        )
+        await db.customers.insert_one(new_customer.dict())
+    
+    return {
+        "success": True,
+        "order_id": new_order.id,
+        "order_number": new_order.order_number,
+        "message": "Quote converted to order successfully"
+    }
+
+@api_router.delete("/quotes/{quote_id}")
+async def delete_quote(quote_id: str):
+    """Delete a quote"""
+    result = await db.quotes.delete_one({"id": quote_id})
+    if result.deleted_count == 0:
+        raise HTTPException(status_code=404, detail="Quote not found")
+    return {"message": "Quote deleted"}
+
 # ==================== CUSTOMER ENDPOINTS ====================
 
 @api_router.post("/customers", response_model=Customer)
