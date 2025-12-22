@@ -723,67 +723,85 @@ const ProductEditor = ({ product, categories, onSave, onClose, templateTags }) =
               
               {/* Images Tab */}
               {activeTab === 'images' && (
-                <div className="space-y-6 max-w-3xl">
-                  <div className="space-y-2">
-                    <Label className="text-gray-300 flex items-center gap-2">
-                      Product Images
-                      <span className="text-xs text-gray-500 font-mono">[@product_image@]</span>
-                    </Label>
-                    <div className="flex gap-2">
-                      <Input
-                        className="bg-gray-800/50 border-gray-700 text-white flex-1"
-                        placeholder="Enter image URL"
-                        value={newImageUrl}
-                        onChange={(e) => setNewImageUrl(e.target.value)}
-                        onKeyPress={(e) => e.key === 'Enter' && (e.preventDefault(), addImage())}
-                      />
-                      <Button onClick={addImage} variant="outline" className="border-gray-700 text-gray-300">
-                        <Plus size={16} className="mr-2" /> Add
-                      </Button>
+                <div className="space-y-6">
+                  {/* Header with info */}
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <Label className="text-gray-300 text-lg">Product Images</Label>
+                      <p className="text-xs text-gray-500 mt-1">
+                        Drag images to reorder. Each slot has its own template tag ([@image1@] to [@image12@])
+                      </p>
                     </div>
-                    
-                    {formData.images.length > 0 ? (
-                      <div className="grid grid-cols-4 gap-4 mt-4">
-                        {formData.images.map((img, idx) => (
-                          <div key={idx} className="relative group aspect-square bg-gray-800 rounded-lg overflow-hidden">
-                            <img src={img} alt={`Product ${idx + 1}`} className="w-full h-full object-cover" />
-                            <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-2">
-                              <button
-                                onClick={() => removeImage(idx)}
-                                className="p-2 bg-red-500 rounded-full text-white hover:bg-red-600"
-                              >
-                                <Trash2 size={16} />
-                              </button>
-                            </div>
-                            {idx === 0 && (
-                              <span className="absolute top-2 left-2 px-2 py-0.5 bg-emerald-500 text-white text-xs rounded">
-                                Primary
-                              </span>
-                            )}
-                          </div>
-                        ))}
-                      </div>
-                    ) : (
-                      <div className="mt-4 p-8 border-2 border-dashed border-gray-700 rounded-lg text-center">
-                        <ImageIcon className="w-12 h-12 mx-auto text-gray-600 mb-2" />
-                        <p className="text-gray-500">No images added yet</p>
-                        <p className="text-gray-600 text-sm">Add image URLs above</p>
-                      </div>
-                    )}
+                    <div className="text-xs text-gray-500">
+                      {formData.images.filter(Boolean).length} / 12 images
+                    </div>
                   </div>
                   
+                  {/* URL Input for quick add */}
+                  <div className="flex gap-2">
+                    <Input
+                      className="bg-gray-800/50 border-gray-700 text-white flex-1"
+                      placeholder="Enter image URL and press Enter or click Add"
+                      value={newImageUrl}
+                      onChange={(e) => setNewImageUrl(e.target.value)}
+                      onKeyPress={(e) => e.key === 'Enter' && (e.preventDefault(), addImage())}
+                    />
+                    <Button onClick={addImage} variant="outline" className="border-gray-700 text-gray-300">
+                      <Plus size={16} className="mr-2" /> Add to Next Slot
+                    </Button>
+                  </div>
+                  
+                  {/* 12-Slot Image Grid */}
+                  <div className="grid grid-cols-4 md:grid-cols-6 gap-3">
+                    {formData.images.map((image, index) => (
+                      <ImageSlot
+                        key={index}
+                        index={index}
+                        image={image}
+                        onImageChange={handleImageChange}
+                        onImageRemove={handleImageRemove}
+                        onDragStart={handleDragStart}
+                        onDragOver={handleDragOver}
+                        onDrop={handleDrop}
+                        isDragging={draggedIndex === index}
+                      />
+                    ))}
+                  </div>
+                  
+                  {/* Template Tags Reference */}
+                  <div className="p-4 bg-gray-800/30 rounded-lg">
+                    <div className="flex items-center gap-2 mb-3">
+                      <Code size={16} className="text-emerald-400" />
+                      <span className="text-sm font-medium text-gray-300">Image Template Tags</span>
+                    </div>
+                    <div className="grid grid-cols-4 md:grid-cols-6 gap-2 text-xs">
+                      {Array(12).fill(null).map((_, i) => (
+                        <div key={i} className="flex items-center gap-1">
+                          <span className={`font-mono px-1.5 py-0.5 rounded ${formData.images[i] ? 'bg-emerald-500/20 text-emerald-400' : 'bg-gray-700 text-gray-500'}`}>
+                            [@image{i + 1}@]
+                          </span>
+                          {formData.images[i] && <Check size={12} className="text-emerald-400" />}
+                        </div>
+                      ))}
+                    </div>
+                    <p className="text-xs text-gray-500 mt-3">
+                      <strong>[@product_image@]</strong> returns the first available image. 
+                      Use specific tags like <strong>[@image1@]</strong> to <strong>[@image12@]</strong> for precise control.
+                    </p>
+                  </div>
+                  
+                  {/* Thumbnail Override */}
                   <div className="space-y-2">
                     <Label className="text-gray-300 flex items-center gap-2">
-                      Thumbnail URL
+                      Custom Thumbnail URL
                       <span className="text-xs text-gray-500 font-mono">[@product_thumbnail@]</span>
                     </Label>
                     <Input
                       className="bg-gray-800/50 border-gray-700 text-white"
-                      placeholder="Custom thumbnail URL (optional)"
+                      placeholder="Custom thumbnail URL (optional - defaults to image 1)"
                       value={formData.thumbnail || ''}
                       onChange={(e) => handleChange('thumbnail', e.target.value)}
                     />
-                    <p className="text-xs text-gray-500">Leave empty to use first product image</p>
                   </div>
                 </div>
               )}
