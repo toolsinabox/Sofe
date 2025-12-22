@@ -871,6 +871,77 @@ const ProductEditor = ({ product, categories, onSave, onClose, templateTags }) =
                       </div>
                     </>
                   )}
+                  
+                  {/* Pre-Order Section */}
+                  <div className="border-t border-gray-700 pt-6 mt-6">
+                    <h3 className="text-lg font-medium text-white mb-4 flex items-center gap-2">
+                      <Package size={20} className="text-blue-400" />
+                      Pre-Order Settings
+                    </h3>
+                    
+                    <div className="flex items-center justify-between p-4 bg-blue-900/20 border border-blue-800/50 rounded-lg mb-4">
+                      <div>
+                        <Label className="text-gray-300">Enable Pre-Order</Label>
+                        <p className="text-xs text-gray-500">Allow customers to pre-order when out of stock</p>
+                      </div>
+                      <Switch
+                        checked={formData.preorder_enabled}
+                        onCheckedChange={(v) => handleChange('preorder_enabled', v)}
+                      />
+                    </div>
+                    
+                    {formData.preorder_enabled && (
+                      <div className="space-y-4 pl-4 border-l-2 border-blue-600">
+                        <div className="grid grid-cols-2 gap-4">
+                          <div className="space-y-2">
+                            <Label className="text-gray-300 flex items-center gap-2">
+                              Pre-Order Quantity
+                              <span className="text-xs text-gray-500 font-mono">[@preorder_qty@]</span>
+                            </Label>
+                            <Input
+                              type="number"
+                              className="bg-gray-800/50 border-gray-700 text-white"
+                              placeholder="Qty arriving"
+                              value={formData.preorder_qty}
+                              onChange={(e) => handleChange('preorder_qty', e.target.value)}
+                            />
+                            <p className="text-xs text-gray-500">How many units are arriving</p>
+                          </div>
+                          
+                          <div className="space-y-2">
+                            <Label className="text-gray-300 flex items-center gap-2">
+                              Arrival Date
+                              <span className="text-xs text-gray-500 font-mono">[@preorder_date@]</span>
+                            </Label>
+                            <Input
+                              type="date"
+                              className="bg-gray-800/50 border-gray-700 text-white"
+                              value={formData.preorder_arrival_date || ''}
+                              onChange={(e) => handleChange('preorder_arrival_date', e.target.value)}
+                            />
+                            <p className="text-xs text-gray-500">Auto-disables pre-order when date passes</p>
+                          </div>
+                        </div>
+                        
+                        <div className="space-y-2">
+                          <Label className="text-gray-300 flex items-center gap-2">
+                            Pre-Order Message
+                            <span className="text-xs text-gray-500 font-mono">[@preorder_message@]</span>
+                          </Label>
+                          <Input
+                            className="bg-gray-800/50 border-gray-700 text-white"
+                            placeholder="e.g., Expected to ship by December 2025"
+                            value={formData.preorder_message || ''}
+                            onChange={(e) => handleChange('preorder_message', e.target.value)}
+                          />
+                        </div>
+                        
+                        <div className="p-3 bg-blue-900/30 rounded-lg text-sm text-blue-200">
+                          <strong>How it works:</strong> When stock is 0 and pre-order is enabled, customers will see a "Pre-Order" button instead of "Add to Cart". When the arrival date passes, pre-order will automatically disable and the pre-order quantity will be added to stock.
+                        </div>
+                      </div>
+                    )}
+                  </div>
                 </div>
               )}
               
