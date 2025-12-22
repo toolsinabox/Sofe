@@ -1,10 +1,11 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import axios from 'axios';
 import { 
   Plus, Edit, Trash2, X, Save, Truck, MapPin, Package, DollarSign, 
   Globe, Settings, Box, Tag, Loader2, CheckCircle, AlertCircle, 
   ChevronDown, ChevronUp, RefreshCw, Search, MoreHorizontal, Eye,
-  Layers, Calculator, FileText, Copy, ArrowUpDown
+  Layers, Calculator, FileText, Copy, ArrowUpDown, Upload, Download,
+  FileUp, FileDown, AlertTriangle
 } from 'lucide-react';
 import { Button } from '../../components/ui/button';
 import { Input } from '../../components/ui/input';
