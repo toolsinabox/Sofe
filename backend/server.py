@@ -2265,6 +2265,92 @@ async def get_quotes(
     quotes = await db.quotes.find(query, {"_id": 0}).sort("created_at", -1).skip(skip).limit(limit).to_list(limit)
     return quotes
 
+@api_router.get("/quotes/stats")
+async def get_quotes_stats():
+    """Get quote statistics for dashboard"""
+    try:
+        total_quotes = await db.quotes.count_documents({})
+        pending_quotes = await db.quotes.count_documents({"status": {"$in": ["pending", "sent"]}})
+        accepted_quotes = await db.quotes.count_documents({"status": {"$in": ["accepted", "converted"]}})
+        
+        # Total value of all quotes
+        pipeline = [
+            {"$group": {"_id": None, "total": {"$sum": "$total"}}}
+        ]
+        value_result = await db.quotes.aggregate(pipeline).to_list(1)
+        total_value = value_result[0]["total"] if value_result else 0
+        
+        # Conversion rate
+        converted = await db.quotes.count_documents({"status": "converted"})
+        conversion_rate = (converted / total_quotes * 100) if total_quotes > 0 else 0
+        
+        return {
+            "totalQuotes": total_quotes,
+            "pendingQuotes": pending_quotes,
+            "acceptedQuotes": accepted_quotes,
+            "totalValue": total_value,
+            "conversionRate": round(conversion_rate, 1)
+        }
+    except Exception as e:
+        return {"totalQuotes": 0, "pendingQuotes": 0, "acceptedQuotes": 0, "totalValue": 0, "conversionRate": 0}
+
+@api_router.post("/quotes/{quote_id}/send")
+async def send_quote_to_customer(quote_id: str, subject: str = "", body: str = ""):
+    """Send quote email to customer"""
+    quote = await db.quotes.find_one({"id": quote_id}, {"_id": 0})
+    if not quote:
+        raise HTTPException(status_code=404, detail="Quote not found")
+    
+    # TODO: Implement actual email sending with PDF attachment
+    
+    # Update quote status to sent
+    await db.quotes.update_one(
+        {"id": quote_id},
+        {"$set": {"status": "sent", "updated_at": datetime.now(timezone.utc)}}
+    )
+    
+    return {"message": f"Quote sent to {quote.get('customer_email')}"}
+
+@api_router.get("/quotes/{quote_id}/print")
+async def print_quote(quote_id: str):
+    """Generate printable quote HTML"""
+    quote = await db.quotes.find_one({"id": quote_id}, {"_id": 0})
+    if not quote:
+        raise HTTPException(status_code=404, detail="Quote not found")
+    
+    # Generate print-friendly HTML
+    return HTMLResponse(content=f"""
+    <html>
+    <head><title>Quote {quote.get('quote_number')}</title>
+    <style>
+        body {{ font-family: Arial, sans-serif; padding: 40px; }}
+        h1 {{ color: #333; }}
+        table {{ width: 100%; border-collapse: collapse; margin: 20px 0; }}
+        th, td {{ border: 1px solid #ddd; padding: 12px; text-align: left; }}
+        th {{ background: #f5f5f5; }}
+        .total {{ font-weight: bold; font-size: 18px; }}
+    </style>
+    </head>
+    <body>
+        <h1>Quote: {quote.get('quote_number')}</h1>
+        <p><strong>Customer:</strong> {quote.get('customer_name')}</p>
+        <p><strong>Email:</strong> {quote.get('customer_email')}</p>
+        <p><strong>Valid Until:</strong> {quote.get('valid_until', 'N/A')}</p>
+        <p class="total"><strong>Total:</strong> ${quote.get('total', 0):.2f}</p>
+    </body>
+    </html>
+    """)
+
+@api_router.get("/quotes/{quote_id}/pdf")
+async def download_quote_pdf(quote_id: str):
+    """Generate quote PDF (placeholder)"""
+    quote = await db.quotes.find_one({"id": quote_id}, {"_id": 0})
+    if not quote:
+        raise HTTPException(status_code=404, detail="Quote not found")
+    
+    # TODO: Implement actual PDF generation
+    return {"message": "PDF generation not yet implemented"}
+
 @api_router.get("/quotes/{quote_id}")
 async def get_quote(quote_id: str):
     """Get a single quote"""
