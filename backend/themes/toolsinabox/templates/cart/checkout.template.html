@@ -95,7 +95,7 @@
         flex-direction: column;
         gap: 0.75rem;
     }
-    .payment-option {
+    .payment-option, .shipping-option {
         display: flex;
         align-items: center;
         gap: 1rem;
@@ -105,13 +105,45 @@
         cursor: pointer;
         transition: all 0.2s;
     }
-    .payment-option:hover {
+    .payment-option:hover, .shipping-option:hover {
         border-color: #2563eb;
         background: #f8faff;
     }
-    .payment-option.selected {
+    .payment-option.selected, .shipping-option.selected {
         border-color: #2563eb;
         background: #eff6ff;
+    }
+    .shipping-option {
+        margin-bottom: 0.75rem;
+    }
+    .shipping-option-info {
+        flex: 1;
+    }
+    .shipping-option-info h4 {
+        font-weight: 600;
+        margin: 0;
+        font-size: 0.95rem;
+    }
+    .shipping-option-info p {
+        font-size: 0.8rem;
+        color: #666;
+        margin: 0.25rem 0 0 0;
+    }
+    .shipping-option-price {
+        font-weight: 700;
+        font-size: 1rem;
+        color: #c41e3a;
+    }
+    .shipping-option-price.free {
+        color: #16a34a;
+    }
+    .shipping-option input[type="radio"] {
+        width: 18px;
+        height: 18px;
+        accent-color: #2563eb;
+    }
+    @keyframes spin {
+        to { transform: rotate(360deg); }
     }
     .payment-option input[type="radio"] {
         width: 20px;
