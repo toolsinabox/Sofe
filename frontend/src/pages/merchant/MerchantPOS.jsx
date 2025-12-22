@@ -2109,6 +2109,123 @@ const MerchantPOS = () => {
               </div>
             )}
             
+            {/* Ship to Customer Toggle */}
+            <div className="p-3 bg-gray-800/50 rounded-lg space-y-3">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-2">
+                  <Truck className="w-4 h-4 text-orange-400" />
+                  <span className="text-gray-300 text-sm font-medium">Ship to customer</span>
+                </div>
+                <button
+                  onClick={() => {
+                    setShipToCustomer(!shipToCustomer);
+                    if (!shipToCustomer) {
+                      setShowShippingOptions(true);
+                    }
+                  }}
+                  className={`relative w-12 h-6 rounded-full transition-colors ${
+                    shipToCustomer ? 'bg-orange-500' : 'bg-gray-600'
+                  }`}
+                >
+                  <span
+                    className={`absolute top-1 w-4 h-4 bg-white rounded-full transition-transform ${
+                      shipToCustomer ? 'left-7' : 'left-1'
+                    }`}
+                  />
+                </button>
+              </div>
+              
+              {/* Shipping Options */}
+              {shipToCustomer && (
+                <div className="space-y-3 pt-2 border-t border-gray-700">
+                  {/* Shipping Method Dropdown */}
+                  <div className="space-y-2">
+                    <Label className="text-gray-400 text-xs">Shipping Option</Label>
+                    <Select 
+                      value={selectedShipping?.id || ''} 
+                      onValueChange={(value) => {
+                        const method = shippingMethods.find(m => m.id === value);
+                        setSelectedShipping(method);
+                      }}
+                    >
+                      <SelectTrigger className="bg-gray-800 border-gray-700 text-white text-sm">
+                        <SelectValue placeholder="Select shipping option..." />
+                      </SelectTrigger>
+                      <SelectContent className="bg-gray-800 border-gray-700">
+                        {shippingMethods.map(method => (
+                          <SelectItem 
+                            key={method.id} 
+                            value={method.id}
+                            className="text-white hover:bg-gray-700"
+                          >
+                            <div className="flex justify-between items-center w-full gap-4">
+                              <span>{method.name}</span>
+                              <span className="text-orange-400 font-medium">
+                                {method.price === 0 ? 'FREE' : `$${method.price.toFixed(2)}`}
+                              </span>
+                            </div>
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                    {selectedShipping && (
+                      <p className="text-gray-500 text-xs">{selectedShipping.description}</p>
+                    )}
+                  </div>
+                  
+                  {/* Signature Required Toggle */}
+                  <div className="flex items-center justify-between">
+                    <span className="text-gray-400 text-xs">Signature required</span>
+                    <button
+                      onClick={() => setSignatureRequired(!signatureRequired)}
+                      className={`relative w-10 h-5 rounded-full transition-colors ${
+                        signatureRequired ? 'bg-orange-500' : 'bg-gray-600'
+                      }`}
+                    >
+                      <span
+                        className={`absolute top-0.5 w-4 h-4 bg-white rounded-full transition-transform ${
+                          signatureRequired ? 'left-5' : 'left-0.5'
+                        }`}
+                      />
+                    </button>
+                  </div>
+                  
+                  {/* Delivery Instructions */}
+                  <div className="space-y-1">
+                    <Label className="text-gray-400 text-xs flex items-center gap-1">
+                      <PenLine className="w-3 h-3" />
+                      Delivery instructions
+                    </Label>
+                    <textarea
+                      value={deliveryInstructions}
+                      onChange={(e) => setDeliveryInstructions(e.target.value)}
+                      placeholder="E.g., Leave at front door, Call on arrival..."
+                      rows={2}
+                      className="w-full bg-gray-800 border border-gray-700 rounded-md text-white text-xs p-2 focus:border-orange-500 focus:outline-none"
+                    />
+                  </div>
+                  
+                  {/* Shipping Cost Display */}
+                  {selectedShipping && (
+                    <div className="flex justify-between items-center pt-2 border-t border-gray-700">
+                      <span className="text-gray-400 text-sm">Shipping Cost:</span>
+                      <span className="text-orange-400 font-bold">
+                        {selectedShipping.price === 0 ? 'FREE' : `$${selectedShipping.price.toFixed(2)}`}
+                      </span>
+                    </div>
+                  )}
+                  
+                  {/* Warning if no customer */}
+                  {!customer && (
+                    <p className="text-yellow-400 text-xs flex items-center gap-1">
+                      <AlertTriangle className="w-3 h-3" />
+                      Add customer for delivery address
+                    </p>
+                  )}
+                </div>
+              )}
+            </div>
+            
             {/* Payment Method Selection */}
             <div className="space-y-2">
               <p className="text-gray-400 text-sm">Payment Method</p>
