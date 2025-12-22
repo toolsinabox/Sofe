@@ -1449,8 +1449,8 @@ class MaropostTemplateEngine:
             'product_price': ('product', 'price'),
             'product_sale': ('product', 'sale'),
             'product_compare_price': ('product', 'compare_price'),
-            'in_stock': ('product', 'in_stock'),
-            'on_sale': ('product', 'on_sale'),
+            'in_stock': ('availability', 'in_stock'),
+            'on_sale': ('pricing', 'on_sale'),
             # Category tags
             'category_name': ('category', 'name'),
             'content_description': ('category', 'description'),
