@@ -78,13 +78,31 @@
                                 </svg>
                             </div>
                             <div id="shipping-section" style="padding: 20px;">
-                                <p style="color: #666; font-size: 13px; margin-bottom: 15px;">Enter your post code to calculate.</p>
+                                <p style="color: #666; font-size: 13px; margin-bottom: 15px;">Enter your postcode to calculate shipping rates.</p>
                                 <div style="display: flex; flex-direction: column; gap: 10px;">
-                                    <input type="text" id="postal-code" placeholder="Postal Code" style="padding: 10px 15px; border: 1px solid #ddd; border-radius: 4px; font-size: 14px;">
-                                    <select id="suburb-select" style="padding: 10px 15px; border: 1px solid #ddd; border-radius: 4px; font-size: 14px; color: #999;">
-                                        <option value="">-- Enter Valid Postal Code --</option>
+                                    <select id="country-select" style="padding: 10px 15px; border: 1px solid #ddd; border-radius: 4px; font-size: 14px;">
+                                        <option value="AU" selected>Australia</option>
+                                        <option value="NZ">New Zealand</option>
+                                        <option value="US">United States</option>
+                                        <option value="GB">United Kingdom</option>
+                                        <option value="CA">Canada</option>
                                     </select>
-                                    <button onclick="calculateShipping()" style="padding: 12px 20px; background: #333; color: #fff; border: none; border-radius: 4px; font-weight: 500; cursor: pointer;">Calculate Shipping</button>
+                                    <input type="text" id="postal-code" placeholder="Postcode (e.g., 3000)" style="padding: 10px 15px; border: 1px solid #ddd; border-radius: 4px; font-size: 14px;">
+                                    <button id="calc-shipping-btn" onclick="calculateShipping()" style="padding: 12px 20px; background: #333; color: #fff; border: none; border-radius: 4px; font-weight: 500; cursor: pointer;">
+                                        Calculate Shipping
+                                    </button>
+                                </div>
+                                <!-- Shipping Results -->
+                                <div id="shipping-results" style="display: none; margin-top: 15px; padding-top: 15px; border-top: 1px solid #e5e5e5;">
+                                    <p style="font-weight: 600; color: #333; margin-bottom: 10px;">Available Shipping Options:</p>
+                                    <div id="shipping-options-list"></div>
+                                </div>
+                                <!-- No Shipping Available Message -->
+                                <div id="no-shipping-msg" style="display: none; margin-top: 15px; padding: 15px; background: #fff3cd; border-radius: 4px; color: #856404; font-size: 13px;">
+                                    <svg style="width: 16px; height: 16px; display: inline; vertical-align: middle; margin-right: 5px;" fill="currentColor" viewBox="0 0 20 20">
+                                        <path fill-rule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clip-rule="evenodd"/>
+                                    </svg>
+                                    No shipping options available for this location. Please try a different postcode or select pickup.
                                 </div>
                             </div>
                         </div>
@@ -96,22 +114,30 @@
                                 <span id="summary-subtotal" style="font-weight: 600;">$0.00</span>
                             </div>
                             
-                            <div style="margin-bottom: 15px; padding: 15px; background: #f8f8f8; border-radius: 4px;">
+                            <div id="delivery-options" style="margin-bottom: 15px; padding: 15px; background: #f8f8f8; border-radius: 4px;">
                                 <p style="font-weight: 600; color: #333; margin-bottom: 10px;">Delivery & Pickup Options</p>
                                 <label style="display: flex; align-items: flex-start; gap: 10px; cursor: pointer; margin-bottom: 10px;">
-                                    <input type="radio" name="delivery" value="pickup" checked style="margin-top: 3px;">
+                                    <input type="radio" name="delivery" value="pickup" checked onchange="handleDeliveryChange()" style="margin-top: 3px;">
                                     <div>
                                         <span style="font-weight: 500;">Pickup - In Store - FREE</span>
                                         <p style="font-size: 12px; color: #666; margin-top: 3px;">Pickup From: Our Store Location</p>
                                     </div>
                                 </label>
-                                <label style="display: flex; align-items: flex-start; gap: 10px; cursor: pointer;">
-                                    <input type="radio" name="delivery" value="shipping" style="margin-top: 3px;">
-                                    <div>
-                                        <span style="font-weight: 500;">Shipping</span>
-                                        <span id="shipping-cost" style="color: #666; margin-left: 5px;">$0.00</span>
-                                    </div>
-                                </label>
+                                <div id="shipping-delivery-options">
+                                    <label style="display: flex; align-items: flex-start; gap: 10px; cursor: pointer; opacity: 0.5;" id="default-shipping-label">
+                                        <input type="radio" name="delivery" value="shipping" disabled style="margin-top: 3px;">
+                                        <div>
+                                            <span style="font-weight: 500;">Shipping</span>
+                                            <p style="font-size: 12px; color: #666; margin-top: 3px;">Calculate shipping above to see rates</p>
+                                        </div>
+                                    </label>
+                                </div>
+                            </div>
+                            
+                            <!-- Shipping Cost Line (shown when shipping selected) -->
+                            <div id="shipping-line" style="display: none; justify-content: space-between; margin-bottom: 15px; padding-bottom: 15px; border-bottom: 1px solid #e5e5e5;">
+                                <span style="color: #666;">Shipping (<span id="selected-shipping-name">Standard</span>)</span>
+                                <span id="shipping-cost-display" style="font-weight: 600;">$0.00</span>
                             </div>
                             
                             <div style="display: flex; justify-content: space-between; padding: 15px 0; border-top: 2px solid #333; margin-top: 15px;">
