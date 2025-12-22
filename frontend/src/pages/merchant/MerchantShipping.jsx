@@ -482,7 +482,10 @@ const MerchantShipping = () => {
                             </p>
                             {opt.price > 0 && opt.gst_amount > 0 && (
                               <p className="text-gray-500 text-xs">
-                                {opt.tax_inclusive ? 'incl.' : 'excl.'} ${opt.price_ex_gst?.toFixed(2)} + GST ${opt.gst_amount?.toFixed(2)}
+                                {opt.tax_inclusive 
+                                  ? `incl. GST $${opt.gst_amount?.toFixed(2)}` 
+                                  : `+ GST $${opt.gst_amount?.toFixed(2)} = $${opt.price?.toFixed(2)}`
+                                }
                               </p>
                             )}
                           </div>
