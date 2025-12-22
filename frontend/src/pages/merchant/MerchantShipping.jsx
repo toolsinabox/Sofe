@@ -77,6 +77,36 @@ const MerchantShipping = () => {
     fetchAllData();
   }, []);
 
+  // Fetch suburbs when postcode changes
+  useEffect(() => {
+    const fetchSuburbs = async () => {
+      if (calcPostcode.length >= 4) {
+        setLoadingSuburbs(true);
+        try {
+          const response = await axios.get(`${API}/shipping/suburbs?postcode=${calcPostcode}`);
+          setCalcSuburbs(response.data.suburbs || []);
+          // Auto-select first suburb if only one
+          if (response.data.suburbs?.length === 1) {
+            setCalcSuburb(response.data.suburbs[0].suburb);
+          } else {
+            setCalcSuburb('');
+          }
+        } catch (error) {
+          console.error('Error fetching suburbs:', error);
+          setCalcSuburbs([]);
+        } finally {
+          setLoadingSuburbs(false);
+        }
+      } else {
+        setCalcSuburbs([]);
+        setCalcSuburb('');
+      }
+    };
+    
+    const debounceTimer = setTimeout(fetchSuburbs, 300);
+    return () => clearTimeout(debounceTimer);
+  }, [calcPostcode]);
+
   const fetchAllData = async () => {
     setLoading(true);
     try {
