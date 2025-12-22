@@ -950,12 +950,12 @@ const ProductEditor = ({ product, categories, onSave, onClose, templateTags }) =
                           Shipping Class
                           <span className="text-xs text-gray-500 font-mono">[@product_shipping_class@]</span>
                         </Label>
-                        <Select value={formData.shipping_class || ''} onValueChange={(v) => handleChange('shipping_class', v)}>
+                        <Select value={formData.shipping_class || '_default'} onValueChange={(v) => handleChange('shipping_class', v === '_default' ? '' : v)}>
                           <SelectTrigger className="bg-gray-800/50 border-gray-700 text-gray-300">
                             <SelectValue placeholder="Select shipping class" />
                           </SelectTrigger>
                           <SelectContent className="bg-[#1a1f2e] border-gray-700">
-                            <SelectItem value="" className="text-gray-300">Default</SelectItem>
+                            <SelectItem value="_default" className="text-gray-300">Default</SelectItem>
                             <SelectItem value="standard" className="text-gray-300">Standard Shipping</SelectItem>
                             <SelectItem value="express" className="text-gray-300">Express Shipping</SelectItem>
                             <SelectItem value="freight" className="text-gray-300">Freight / Heavy Items</SelectItem>
