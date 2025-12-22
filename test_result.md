@@ -768,3 +768,67 @@ The payment modal now has 3 tabs at the top:
   - Updated Confirm Sale modal to show payment terms info
 
 ### Status: PHASE 2 COMPLETE ✓
+
+## POS Shipping Options (Phase 3) - 2025-12-22
+
+### Features Implemented ✓
+
+#### Ship to Customer Toggle
+- Orange toggle button to enable/disable shipping
+- Located in the Payment modal below the amount summary
+
+#### Shipping Options (When Enabled)
+1. **Shipping Option Dropdown** with options:
+   - Pickup - In Store (FREE)
+   - Standard Delivery ($15.00) - 3-5 business days
+   - Express Delivery ($25.00) - 1-2 business days
+   - Same Day Delivery ($50.00) - Delivered today
+   - Depot Delivery ($35.00) - Deliver to nearest depot
+
+2. **Signature Required Toggle** - For deliveries requiring signature
+
+3. **Delivery Instructions** - Text area for special instructions
+   - Placeholder: "E.g., Leave at front door, Call on arrival..."
+
+4. **Shipping Cost Display** - Shows selected shipping cost
+   - Also displayed in cart totals with truck icon
+
+5. **Customer Warning** - Shows "⚠ Add customer for delivery address" when no customer added
+
+#### Integration Points
+- Cart totals show shipping cost with 🚚 icon
+- Transaction data includes full shipping details
+- Confirm Sale modal shows shipping info in orange box
+- Receipt shows shipping method, signature requirement, and delivery instructions
+
+### Shipping Data Structure
+```javascript
+{
+  method: "Express Delivery",
+  method_id: "express",
+  cost: 25.00,
+  signature_required: true,
+  delivery_instructions: "Leave at front door",
+  status: "pending"
+}
+```
+
+### Screenshot Verification ✓
+- Ship to customer toggle visible and functional
+- Shipping options dropdown with prices
+- Signature required toggle
+- Delivery instructions text area
+- Customer warning displayed
+
+### Files Modified
+- `/app/frontend/src/pages/merchant/MerchantPOS.jsx`:
+  - Added shipping state variables
+  - Added shippingMethods array
+  - Updated calculateTotals to include shippingCost
+  - Added Ship to customer section in Payment modal
+  - Updated cart totals display
+  - Updated Confirm Sale modal to show shipping
+  - Updated receipt to show shipping details
+  - Added Truck, MapPin, PenLine icons
+
+### Status: PHASE 3 COMPLETE ✓
