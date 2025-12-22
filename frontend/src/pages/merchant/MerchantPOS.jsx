@@ -1720,7 +1720,18 @@ const MerchantPOS = () => {
       <Dialog open={showDiscount} onOpenChange={setShowDiscount}>
         <DialogContent className="bg-[#151b28] border-gray-800 text-white max-w-sm">
           <DialogHeader>
-            <DialogTitle>Apply Discount</DialogTitle>
+            <DialogTitle className="flex items-center gap-2">
+              <Percent className="w-5 h-5 text-emerald-400" />
+              Apply Discount
+            </DialogTitle>
+            {discountSettings && (
+              <p className="text-xs text-gray-500 mt-1">
+                Your limit: {cartDiscount.type === 'percentage' 
+                  ? `${discountSettings.roles?.[user?.role || 'staff']?.max_percentage || 10}%`
+                  : `$${discountSettings.roles?.[user?.role || 'staff']?.max_fixed || 50}`
+                }
+              </p>
+            )}
           </DialogHeader>
           
           <div className="py-4 space-y-4">
@@ -1775,7 +1786,7 @@ const MerchantPOS = () => {
               Clear
             </Button>
             <Button
-              onClick={() => setShowDiscount(false)}
+              onClick={() => applyDiscount(cartDiscount.type, cartDiscount.value)}
               className="bg-emerald-600 hover:bg-emerald-700 text-white"
             >
               Apply
