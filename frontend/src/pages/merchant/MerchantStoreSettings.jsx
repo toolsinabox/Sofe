@@ -34,7 +34,10 @@ const MerchantStoreSettings = () => {
     homepage_title: 'Home',
     meta_title: '',
     meta_description: '',
-    google_analytics_id: ''
+    google_analytics_id: '',
+    // Order number settings
+    order_prefix: 'ORD',
+    order_number_start: 1001
   });
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
