@@ -763,7 +763,7 @@ class MaropostTemplateEngine:
             page_slug = model_data.get('page_slug')
             print(f"DEBUG: CMS page requested, slug = {page_slug}")
             if page_slug:
-                page = await self.db.pages.find_one({"slug": page_slug}, {"_id": 0})
+                page = await self.db.cms_pages.find_one({"slug": page_slug}, {"_id": 0})
                 print(f"DEBUG: Page found = {page is not None}")
                 if page:
                     context['page'] = page
