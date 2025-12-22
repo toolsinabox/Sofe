@@ -1,8 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import { Link, useParams } from 'react-router-dom';
 import axios from 'axios';
-import { ArrowLeft, Star, Minus, Plus, Heart, Share2, Truck, Shield, RotateCcw, ShoppingCart } from 'lucide-react';
+import { ArrowLeft, Star, Minus, Plus, Heart, Share2, Truck, Shield, RotateCcw, ShoppingCart, MapPin, Loader2 } from 'lucide-react';
 import { Button } from '../../components/ui/button';
+import { Input } from '../../components/ui/input';
+import { Label } from '../../components/ui/label';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../../components/ui/select';
 import ProductCarousel from '../../components/store/ProductCarousel';
 import { useCart } from './StoreLayout';
 
@@ -18,9 +21,49 @@ const ProductDetail = () => {
   const [quantity, setQuantity] = useState(1);
   const [selectedImage, setSelectedImage] = useState(0);
 
+  // Shipping calculator state
+  const [shippingPostcode, setShippingPostcode] = useState('');
+  const [shippingSuburb, setShippingSuburb] = useState('');
+  const [suburbs, setSuburbs] = useState([]);
+  const [loadingSuburbs, setLoadingSuburbs] = useState(false);
+  const [shippingOptions, setShippingOptions] = useState([]);
+  const [calculatingShipping, setCalculatingShipping] = useState(false);
+  const [shippingCalculated, setShippingCalculated] = useState(false);
+
   useEffect(() => {
     fetchProduct();
   }, [id]);
+
+  // Fetch suburbs when postcode changes
+  useEffect(() => {
+    const fetchSuburbs = async () => {
+      if (shippingPostcode.length >= 4) {
+        setLoadingSuburbs(true);
+        try {
+          const response = await axios.get(`${API}/shipping/suburbs?postcode=${shippingPostcode}`);
+          setSuburbs(response.data.suburbs || []);
+          if (response.data.suburbs?.length === 1) {
+            setShippingSuburb(response.data.suburbs[0].suburb);
+          } else {
+            setShippingSuburb('');
+          }
+          setShippingCalculated(false);
+        } catch (error) {
+          console.error('Error fetching suburbs:', error);
+          setSuburbs([]);
+        } finally {
+          setLoadingSuburbs(false);
+        }
+      } else {
+        setSuburbs([]);
+        setShippingSuburb('');
+        setShippingCalculated(false);
+      }
+    };
+    
+    const debounceTimer = setTimeout(fetchSuburbs, 300);
+    return () => clearTimeout(debounceTimer);
+  }, [shippingPostcode]);
 
   const fetchProduct = async () => {
     setLoading(true);
@@ -40,10 +83,49 @@ const ProductDetail = () => {
     }
   };
 
+  const calculateShipping = async () => {
+    if (!shippingPostcode || !product) return;
+    
+    setCalculatingShipping(true);
+    try {
+      const itemData = {
+        weight: product.weight || 0.5,
+        quantity: quantity
+      };
+      
+      // Add shipping dimensions if available
+      if (product.shipping_length && product.shipping_width && product.shipping_height) {
+        itemData.shipping_length = product.shipping_length;
+        itemData.shipping_width = product.shipping_width;
+        itemData.shipping_height = product.shipping_height;
+      } else if (product.length && product.width && product.height) {
+        itemData.shipping_length = product.length;
+        itemData.shipping_width = product.width;
+        itemData.shipping_height = product.height;
+      }
+
+      const response = await axios.post(`${API}/shipping/calculate`, {
+        postcode: shippingPostcode,
+        suburb: shippingSuburb || null,
+        country: 'AU',
+        items: [itemData],
+        cart_total: product.price * quantity
+      });
+      
+      setShippingOptions(response.data.options || []);
+      setShippingCalculated(true);
+    } catch (error) {
+      console.error('Error calculating shipping:', error);
+      setShippingOptions([]);
+    } finally {
+      setCalculatingShipping(false);
+    }
+  };
+
   const formatCurrency = (value) => {
-    return new Intl.NumberFormat('en-US', {
+    return new Intl.NumberFormat('en-AU', {
       style: 'currency',
-      currency: 'USD',
+      currency: 'AUD',
       minimumFractionDigits: 2
     }).format(value);
   };
@@ -196,12 +278,90 @@ const ProductDetail = () => {
             </Button>
           </div>
 
+          {/* Shipping Calculator */}
+          <div className="border border-gray-200 rounded-lg p-4 mb-6 bg-gray-50">
+            <h3 className="font-semibold text-gray-900 mb-3 flex items-center gap-2">
+              <Truck size={18} className="text-orange-500" />
+              Calculate Shipping
+            </h3>
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+              <div>
+                <Label className="text-gray-600 text-sm">Postcode</Label>
+                <Input
+                  placeholder="e.g., 2000"
+                  value={shippingPostcode}
+                  onChange={(e) => setShippingPostcode(e.target.value)}
+                  className="mt-1"
+                />
+              </div>
+              <div>
+                <Label className="text-gray-600 text-sm flex items-center gap-1">
+                  Suburb
+                  {loadingSuburbs && <Loader2 className="w-3 h-3 animate-spin" />}
+                </Label>
+                <Select 
+                  value={shippingSuburb} 
+                  onValueChange={setShippingSuburb}
+                  disabled={suburbs.length === 0}
+                >
+                  <SelectTrigger className="mt-1">
+                    <SelectValue placeholder={suburbs.length === 0 ? "Enter postcode" : "Select suburb"} />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {suburbs.map((s, idx) => (
+                      <SelectItem key={idx} value={s.suburb}>
+                        {s.suburb} ({s.state})
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+              <div className="flex items-end">
+                <Button
+                  onClick={calculateShipping}
+                  disabled={!shippingPostcode || calculatingShipping}
+                  className="w-full bg-gray-800 hover:bg-gray-900 text-white"
+                >
+                  {calculatingShipping ? (
+                    <Loader2 className="w-4 h-4 animate-spin" />
+                  ) : (
+                    'Calculate'
+                  )}
+                </Button>
+              </div>
+            </div>
+
+            {/* Shipping Results */}
+            {shippingCalculated && shippingOptions.length > 0 && (
+              <div className="mt-4 space-y-2">
+                {shippingOptions.map((option, idx) => (
+                  <div key={idx} className="flex items-center justify-between p-3 bg-white rounded-lg border border-gray-200">
+                    <div>
+                      <p className="font-medium text-gray-900">{option.name}</p>
+                      <p className="text-sm text-gray-500">{option.description}</p>
+                    </div>
+                    <div className="text-right">
+                      <p className={`font-bold ${option.price === 0 ? 'text-green-600' : 'text-gray-900'}`}>
+                        {option.price === 0 ? 'FREE' : formatCurrency(option.price)}
+                      </p>
+                      {option.price > 0 && option.gst_amount > 0 && (
+                        <p className="text-xs text-gray-500">
+                          {option.tax_inclusive ? `incl. GST ${formatCurrency(option.gst_amount)}` : `+ GST`}
+                        </p>
+                      )}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
+
+            {shippingCalculated && shippingOptions.length === 0 && (
+              <p className="mt-4 text-sm text-gray-500">No shipping options available for this location.</p>
+            )}
+          </div>
+
           {/* Features */}
           <div className="border-t border-gray-200 pt-6 space-y-4">
-            <div className="flex items-center gap-3">
-              <Truck size={20} className="text-orange-500" />
-              <span className="text-gray-600">Free shipping on orders over $50</span>
-            </div>
             <div className="flex items-center gap-3">
               <Shield size={20} className="text-orange-500" />
               <span className="text-gray-600">1 year warranty included</span>
