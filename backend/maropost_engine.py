@@ -653,6 +653,9 @@ class MaropostTemplateEngine:
                     }
         
         elif page_type == PageType.HOME:
+            # Set page title for home
+            context['page'] = {'title': 'Home', 'slug': 'home'}
+            
             # Get featured products
             products = await self.db.products.find({}, {"_id": 0}).limit(20).to_list(20)
             context['products'] = products
