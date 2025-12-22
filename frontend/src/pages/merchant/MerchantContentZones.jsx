@@ -246,19 +246,38 @@ const BlockEditor = ({ block, onUpdate, onDelete, onMoveUp, onMoveDown, isFirst,
       
       {/* Block Content */}
       {isExpanded && (
-        <div className="p-4 space-y-4">
+        <div className="p-4 space-y-4 relative">
           {/* HTML Block */}
           {block.type === 'html' && (
-            <div>
-              <Label className="text-gray-300 mb-2 block">HTML Content</Label>
-              <Textarea
-                value={block.content || ''}
-                onChange={(e) => onUpdate({ ...block, content: e.target.value })}
-                placeholder="<div>Your HTML here...</div>"
-                className="bg-gray-700 border-gray-600 text-white font-mono text-sm min-h-32"
-              />
+            <div className="relative">
+              <div className="flex items-center justify-between mb-2">
+                <Label className="text-gray-300">HTML Content</Label>
+                <button
+                  onClick={() => setShowTagsPanel(!showTagsPanel)}
+                  className={`flex items-center gap-1.5 px-2 py-1 text-xs rounded transition-colors ${
+                    showTagsPanel 
+                      ? 'bg-cyan-600/20 text-cyan-400 border border-cyan-600/40' 
+                      : 'bg-gray-700 text-gray-400 hover:text-white hover:bg-gray-600'
+                  }`}
+                >
+                  <Tag size={12} />
+                  {showTagsPanel ? 'Hide Tags' : 'Show Tags'}
+                </button>
+              </div>
+              <div className="flex gap-0 relative">
+                <Textarea
+                  value={block.content || ''}
+                  onChange={(e) => onUpdate({ ...block, content: e.target.value })}
+                  placeholder="<div>Your HTML here...</div>&#10;&#10;Use template tags like [@store_name@] or [%thumb_list%] for dynamic content."
+                  className={`bg-gray-700 border-gray-600 text-white font-mono text-sm min-h-48 ${showTagsPanel ? 'pr-72' : ''}`}
+                />
+                <TemplateTagsPanel isOpen={showTagsPanel} onClose={() => setShowTagsPanel(false)} />
+              </div>
+              <p className="text-xs text-gray-500 mt-2">
+                Use Maropost-style template tags for dynamic content. Click "Show Tags" to see available tags.
+              </p>
             </div>
-          )}
+          )}}
           
           {/* Text Block */}
           {block.type === 'text' && (
