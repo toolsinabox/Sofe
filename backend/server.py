@@ -3344,20 +3344,11 @@ async def check_preorder_dates():
     
     return {"message": f"Processed {updated_count} products", "updated": updated_count}
 
-# ==================== SHIPPING ZONES & RATES ====================
+# ==================== SHIPPING ZONES & RATES (Deprecated - Use /api/shipping/* routes) ====================
+# Note: Comprehensive shipping system is now in /app/backend/routes/shipping.py
+# The routes below are kept for backwards compatibility but will be removed in future
 
-@api_router.get("/shipping/zones")
-async def get_shipping_zones():
-    """Get all shipping zones"""
-    zones = await db.shipping_zones.find({}, {"_id": 0}).to_list(100)
-    return zones
-
-@api_router.get("/shipping/zones/{zone_id}")
-async def get_shipping_zone(zone_id: str):
-    """Get a single shipping zone"""
-    zone = await db.shipping_zones.find_one({"id": zone_id}, {"_id": 0})
-    if not zone:
-        raise HTTPException(status_code=404, detail="Shipping zone not found")
+# ==================== ABANDONED CART RECOVERY ====================
     return zone
 
 @api_router.post("/shipping/zones", response_model=ShippingZone)
