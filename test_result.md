@@ -658,3 +658,64 @@ if (shiftRes.data && Object.keys(shiftRes.data).length > 0) {
 - Close shift with $0 actual cash and $0 closing float ✓
 - Open new shift with $0 opening float ✓
 - Full cycle: End Shift → Select outlet/register → Open Shift with $0 → POS loads successfully ✓
+
+## POS Confirm Sale Screen (Phase 1) - 2025-12-22
+
+### Features Implemented ✓
+
+#### Confirm Sale Modal (Maropost Style)
+After payment is processed, a "Confirm Sale" modal appears with:
+
+1. **Sale Summary**
+   - Transaction number (e.g., POS-20251222-0008)
+   - Amount paid with "Fully Paid" status in green box
+
+2. **Set Sale Status Dropdown**
+   - New
+   - On Hold
+   - Pick
+   - Pack
+   - **Completed** (default)
+   - Helper text explains what each status does
+
+3. **Receipt Options**
+   - **Print Receipt** button
+   - **Email Receipt** checkbox with email input field
+   - Customer email auto-populated if customer was added to sale
+
+4. **Add Note** feature
+   - "Add Note +" button reveals text area for order notes
+
+5. **Action Buttons**
+   - **Back to Sale** - Returns to edit the sale
+   - **Complete Sale** - Finalizes order with selected status
+
+#### Receipt Screen Enhancement
+- Added **Email Tax Invoice** button (appears when customer has email)
+- Print Receipt button
+- New Sale button
+
+### Backend APIs Added
+- `PUT /api/pos/transactions/{id}/status` - Update transaction/order status
+- `POST /api/pos/transactions/{id}/email-receipt` - Send email receipt/tax invoice
+
+### Order Status Mapping
+| POS Status | Order Status | Fulfillment |
+|------------|--------------|-------------|
+| new | pending | unfulfilled |
+| on_hold | on_hold | unfulfilled |
+| pick | processing | pick |
+| pack | processing | pack |
+| completed | completed | fulfilled |
+
+### Screenshot Verification ✓
+- Confirm Sale modal displays correctly after payment
+- Status dropdown shows all options
+- Email field pre-populates with customer email
+- Buttons are functional
+
+### Files Modified
+- `/app/frontend/src/pages/merchant/MerchantPOS.jsx` - Added Confirm Sale modal, states, functions
+- `/app/backend/server.py` - Added status update and email receipt endpoints
+
+### Status: PHASE 1 COMPLETE ✓
