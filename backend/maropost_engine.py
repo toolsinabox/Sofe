@@ -345,6 +345,13 @@ class MaropostTemplateEngine:
         if url == 'about':
             return PageType.ABOUT, model_data
         
+        # CMS Page: /page/{slug}
+        if url.startswith('page/'):
+            parts = url.split('/')
+            if len(parts) >= 2:
+                model_data['page_slug'] = parts[1]
+            return PageType.CMS, model_data
+        
         # Default to CMS page
         model_data['page_slug'] = url
         return PageType.CMS, model_data
