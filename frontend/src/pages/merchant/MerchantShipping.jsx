@@ -1022,6 +1022,122 @@ const MerchantShipping = () => {
       });
     };
 
+    // Toggle zone selection - add or remove rate for zone
+    const toggleZoneRate = (zone) => {
+      const existingIndex = serviceForm.rates.findIndex(r => r.zone_code === zone.code);
+      
+      if (existingIndex >= 0) {
+        // Remove the zone
+        setServiceForm({
+          ...serviceForm,
+          rates: serviceForm.rates.filter((_, i) => i !== existingIndex)
+        });
+      } else {
+        // Add the zone with empty rates
+        setServiceForm({
+          ...serviceForm,
+          rates: [...serviceForm.rates, {
+            zone_code: zone.code,
+            zone_name: zone.name,
+            min_weight: 0,
+            max_weight: 999,
+            base_rate: 0,
+            first_parcel: 0,
+            per_subsequent: 0,
+            per_kg_rate: 0,
+            delivery_days: 3,
+            is_active: true
+          }]
+        });
+      }
+    };
+
+    // Select all zones
+    const selectAllZones = () => {
+      const newRates = zones.map(zone => {
+        // Keep existing rate data if already selected
+        const existing = serviceForm.rates.find(r => r.zone_code === zone.code);
+        return existing || {
+          zone_code: zone.code,
+          zone_name: zone.name,
+          min_weight: 0,
+          max_weight: 999,
+          base_rate: 0,
+          first_parcel: 0,
+          per_subsequent: 0,
+          per_kg_rate: 0,
+          delivery_days: 3,
+          is_active: true
+        };
+      });
+      setServiceForm({ ...serviceForm, rates: newRates });
+    };
+
+    // Clear all zones
+    const clearAllZones = () => {
+      setServiceForm({ ...serviceForm, rates: [] });
+    };
+
+    // Handle CSV upload in modal - parse and auto-fill rates
+    const handleModalRateUpload = async (event) => {
+      const file = event.target.files?.[0];
+      if (!file) return;
+      
+      setModalUploadingRates(true);
+      
+      try {
+        const text = await file.text();
+        const lines = text.split('\n');
+        const headers = lines[0].split(',').map(h => h.replace(/"/g, '').trim());
+        
+        // Find column indices
+        const zoneCodeIdx = headers.findIndex(h => h.toLowerCase().includes('zone code'));
+        const zoneNameIdx = headers.findIndex(h => h.toLowerCase().includes('zone name'));
+        const minChargeIdx = headers.findIndex(h => h.toLowerCase().includes('minimum charge'));
+        const firstParcelIdx = headers.findIndex(h => h.toLowerCase().includes('1st parcel'));
+        const perKgIdx = headers.findIndex(h => h.toLowerCase().includes('per kg'));
+        const deliveryIdx = headers.findIndex(h => h.toLowerCase().includes('delivery time'));
+        
+        const newRates = [];
+        
+        for (let i = 1; i < lines.length; i++) {
+          const line = lines[i].trim();
+          if (!line) continue;
+          
+          // Parse CSV line (handling quoted values)
+          const values = line.match(/(".*?"|[^",\s]+)(?=\s*,|\s*$)/g)?.map(v => v.replace(/"/g, '').trim()) || [];
+          
+          const zoneCode = zoneCodeIdx >= 0 ? values[zoneCodeIdx] : '';
+          if (!zoneCode) continue;
+          
+          newRates.push({
+            zone_code: zoneCode,
+            zone_name: zoneNameIdx >= 0 ? values[zoneNameIdx] || zoneCode : zoneCode,
+            base_rate: minChargeIdx >= 0 ? parseFloat(values[minChargeIdx]) || 0 : 0,
+            first_parcel: firstParcelIdx >= 0 ? parseFloat(values[firstParcelIdx]) || 0 : 0,
+            per_kg_rate: perKgIdx >= 0 ? parseFloat(values[perKgIdx]) || 0 : 0,
+            delivery_days: deliveryIdx >= 0 ? parseInt(values[deliveryIdx]) || 0 : 3,
+            min_weight: 0,
+            max_weight: 999,
+            per_subsequent: 0,
+            is_active: true
+          });
+        }
+        
+        if (newRates.length > 0) {
+          setServiceForm({ ...serviceForm, rates: newRates });
+        }
+      } catch (error) {
+        console.error('Error parsing CSV:', error);
+        alert('Failed to parse CSV file');
+      } finally {
+        setModalUploadingRates(false);
+        if (modalRateFileInputRef.current) {
+          modalRateFileInputRef.current.value = '';
+        }
+      }
+    };
+
     const handleSaveService = async () => {
       setSaving(true);
       try {
