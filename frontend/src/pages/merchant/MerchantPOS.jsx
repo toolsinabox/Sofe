@@ -2209,7 +2209,7 @@ const MerchantPOS = () => {
 
       {/* Add Customer Modal */}
       <Dialog open={showAddCustomer} onOpenChange={setShowAddCustomer}>
-        <DialogContent className="bg-[#151b28] border-gray-800 text-white max-w-sm">
+        <DialogContent className="bg-[#151b28] border-gray-800 text-white max-w-lg max-h-[90vh] overflow-y-auto">
           <DialogHeader>
             <DialogTitle className="flex items-center gap-2">
               <UserPlus className="w-5 h-5 text-emerald-400" />
@@ -2218,43 +2218,143 @@ const MerchantPOS = () => {
           </DialogHeader>
           
           <div className="py-4 space-y-4">
-            <div className="space-y-2">
-              <Label className="text-gray-300 text-sm">Full Name *</Label>
-              <Input
-                value={newCustomer.name}
-                onChange={(e) => setNewCustomer(prev => ({ ...prev, name: e.target.value }))}
-                placeholder="John Smith"
-                className="bg-gray-800 border-gray-700 text-white"
+            {/* Basic Info */}
+            <div className="grid grid-cols-2 gap-3">
+              <div className="space-y-2">
+                <Label className="text-gray-300 text-sm">Full Name *</Label>
+                <Input
+                  value={newCustomer.name}
+                  onChange={(e) => setNewCustomer(prev => ({ ...prev, name: e.target.value }))}
+                  placeholder="John Smith"
+                  className="bg-gray-800 border-gray-700 text-white"
+                />
+              </div>
+              
+              <div className="space-y-2">
+                <Label className="text-gray-300 text-sm">Company Name</Label>
+                <div className="relative">
+                  <Building2 className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-500" />
+                  <Input
+                    value={newCustomer.company}
+                    onChange={(e) => setNewCustomer(prev => ({ ...prev, company: e.target.value }))}
+                    placeholder="Company Pty Ltd"
+                    className="bg-gray-800 border-gray-700 text-white pl-10"
+                  />
+                </div>
+              </div>
+            </div>
+            
+            <div className="grid grid-cols-2 gap-3">
+              <div className="space-y-2">
+                <Label className="text-gray-300 text-sm">Email *</Label>
+                <div className="relative">
+                  <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-500" />
+                  <Input
+                    type="email"
+                    value={newCustomer.email}
+                    onChange={(e) => setNewCustomer(prev => ({ ...prev, email: e.target.value }))}
+                    placeholder="john@example.com"
+                    className="bg-gray-800 border-gray-700 text-white pl-10"
+                  />
+                </div>
+              </div>
+              
+              <div className="space-y-2">
+                <Label className="text-gray-300 text-sm">Phone Number</Label>
+                <div className="relative">
+                  <Phone className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-500" />
+                  <Input
+                    type="tel"
+                    value={newCustomer.phone}
+                    onChange={(e) => setNewCustomer(prev => ({ ...prev, phone: e.target.value }))}
+                    placeholder="0400 000 000"
+                    className="bg-gray-800 border-gray-700 text-white pl-10"
+                  />
+                </div>
+              </div>
+            </div>
+            
+            {/* Billing Address */}
+            <div className="pt-2 border-t border-gray-700">
+              <Label className="text-gray-300 text-sm font-medium">Billing Address</Label>
+              <div className="mt-2 space-y-3">
+                <Input
+                  value={newCustomer.billingAddress}
+                  onChange={(e) => setNewCustomer(prev => ({ ...prev, billingAddress: e.target.value }))}
+                  placeholder="Street address"
+                  className="bg-gray-800 border-gray-700 text-white"
+                />
+                <div className="grid grid-cols-3 gap-2">
+                  <Input
+                    value={newCustomer.billingCity}
+                    onChange={(e) => setNewCustomer(prev => ({ ...prev, billingCity: e.target.value }))}
+                    placeholder="City"
+                    className="bg-gray-800 border-gray-700 text-white"
+                  />
+                  <Input
+                    value={newCustomer.billingState}
+                    onChange={(e) => setNewCustomer(prev => ({ ...prev, billingState: e.target.value }))}
+                    placeholder="State"
+                    className="bg-gray-800 border-gray-700 text-white"
+                  />
+                  <Input
+                    value={newCustomer.billingPostcode}
+                    onChange={(e) => setNewCustomer(prev => ({ ...prev, billingPostcode: e.target.value }))}
+                    placeholder="Postcode"
+                    className="bg-gray-800 border-gray-700 text-white"
+                  />
+                </div>
+              </div>
+            </div>
+            
+            {/* Delivery Address Toggle */}
+            <div className="flex items-center gap-2 pt-2">
+              <input
+                type="checkbox"
+                id="sameAsDelivery"
+                checked={newCustomer.sameAsDelivery}
+                onChange={(e) => setNewCustomer(prev => ({ ...prev, sameAsDelivery: e.target.checked }))}
+                className="w-4 h-4 rounded border-gray-600 bg-gray-800 text-emerald-500 focus:ring-emerald-500"
               />
+              <Label htmlFor="sameAsDelivery" className="text-gray-300 text-sm cursor-pointer">
+                Delivery address same as billing
+              </Label>
             </div>
             
-            <div className="space-y-2">
-              <Label className="text-gray-300 text-sm">Email *</Label>
-              <div className="relative">
-                <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-500" />
-                <Input
-                  type="email"
-                  value={newCustomer.email}
-                  onChange={(e) => setNewCustomer(prev => ({ ...prev, email: e.target.value }))}
-                  placeholder="john@example.com"
-                  className="bg-gray-800 border-gray-700 text-white pl-10"
-                />
+            {/* Delivery Address (shown if different) */}
+            {!newCustomer.sameAsDelivery && (
+              <div className="pt-2 border-t border-gray-700">
+                <Label className="text-gray-300 text-sm font-medium">Delivery Address</Label>
+                <div className="mt-2 space-y-3">
+                  <Input
+                    value={newCustomer.deliveryAddress}
+                    onChange={(e) => setNewCustomer(prev => ({ ...prev, deliveryAddress: e.target.value }))}
+                    placeholder="Street address"
+                    className="bg-gray-800 border-gray-700 text-white"
+                  />
+                  <div className="grid grid-cols-3 gap-2">
+                    <Input
+                      value={newCustomer.deliveryCity}
+                      onChange={(e) => setNewCustomer(prev => ({ ...prev, deliveryCity: e.target.value }))}
+                      placeholder="City"
+                      className="bg-gray-800 border-gray-700 text-white"
+                    />
+                    <Input
+                      value={newCustomer.deliveryState}
+                      onChange={(e) => setNewCustomer(prev => ({ ...prev, deliveryState: e.target.value }))}
+                      placeholder="State"
+                      className="bg-gray-800 border-gray-700 text-white"
+                    />
+                    <Input
+                      value={newCustomer.deliveryPostcode}
+                      onChange={(e) => setNewCustomer(prev => ({ ...prev, deliveryPostcode: e.target.value }))}
+                      placeholder="Postcode"
+                      className="bg-gray-800 border-gray-700 text-white"
+                    />
+                  </div>
+                </div>
               </div>
-            </div>
-            
-            <div className="space-y-2">
-              <Label className="text-gray-300 text-sm">Phone (Optional)</Label>
-              <div className="relative">
-                <Phone className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-500" />
-                <Input
-                  type="tel"
-                  value={newCustomer.phone}
-                  onChange={(e) => setNewCustomer(prev => ({ ...prev, phone: e.target.value }))}
-                  placeholder="0400 000 000"
-                  className="bg-gray-800 border-gray-700 text-white pl-10"
-                />
-              </div>
-            </div>
+            )}
           </div>
           
           <DialogFooter className="gap-2">
@@ -2262,7 +2362,21 @@ const MerchantPOS = () => {
               variant="outline"
               onClick={() => {
                 setShowAddCustomer(false);
-                setNewCustomer({ name: '', email: '', phone: '' });
+                setNewCustomer({ 
+                  name: '', 
+                  company: '',
+                  email: '', 
+                  phone: '',
+                  billingAddress: '',
+                  billingCity: '',
+                  billingState: '',
+                  billingPostcode: '',
+                  sameAsDelivery: true,
+                  deliveryAddress: '',
+                  deliveryCity: '',
+                  deliveryState: '',
+                  deliveryPostcode: ''
+                });
               }}
               className="border-gray-700 text-gray-300"
             >
