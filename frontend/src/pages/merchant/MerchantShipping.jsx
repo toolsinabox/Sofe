@@ -1121,8 +1121,10 @@ const MerchantShipping = () => {
         const zoneNameIdx = headers.findIndex(h => h.toLowerCase().includes('zone name'));
         const minChargeIdx = headers.findIndex(h => h.toLowerCase().includes('minimum charge'));
         const firstParcelIdx = headers.findIndex(h => h.toLowerCase().includes('1st parcel'));
+        const perSubseqIdx = headers.findIndex(h => h.toLowerCase().includes('per subsequent'));
         const perKgIdx = headers.findIndex(h => h.toLowerCase().includes('per kg'));
         const deliveryIdx = headers.findIndex(h => h.toLowerCase().includes('delivery time'));
+        const noteIdx = headers.findIndex(h => h.toLowerCase().includes('internal note'));
         
         const newRates = [];
         
@@ -1141,11 +1143,12 @@ const MerchantShipping = () => {
             zone_name: zoneNameIdx >= 0 ? values[zoneNameIdx] || zoneCode : zoneCode,
             base_rate: minChargeIdx >= 0 ? parseFloat(values[minChargeIdx]) || 0 : 0,
             first_parcel: firstParcelIdx >= 0 ? parseFloat(values[firstParcelIdx]) || 0 : 0,
+            per_subsequent: perSubseqIdx >= 0 ? parseFloat(values[perSubseqIdx]) || 0 : 0,
             per_kg_rate: perKgIdx >= 0 ? parseFloat(values[perKgIdx]) || 0 : 0,
             delivery_days: deliveryIdx >= 0 ? parseInt(values[deliveryIdx]) || 0 : 3,
+            internal_note: noteIdx >= 0 ? values[noteIdx] || '' : '',
             min_weight: 0,
             max_weight: 999,
-            per_subsequent: 0,
             is_active: true
           });
         }
