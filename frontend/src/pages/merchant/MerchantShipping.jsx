@@ -72,6 +72,50 @@ const MerchantShipping = () => {
   const [calcResult, setCalcResult] = useState(null);
   const [calculating, setCalculating] = useState(false);
 
+  // Zone form state (moved to parent level to persist across re-renders)
+  const [zoneForm, setZoneForm] = useState({
+    code: '',
+    name: '',
+    country: 'AU',
+    postcodes: [],
+    is_active: true,
+    sort_order: 0
+  });
+  const [postcodesInput, setPostcodesInput] = useState('');
+  const [showZoneImportModal, setShowZoneImportModal] = useState(false);
+  const [zoneImporting, setZoneImporting] = useState(false);
+  const [zoneImportMode, setZoneImportMode] = useState('merge');
+  const [zoneImportResult, setZoneImportResult] = useState(null);
+  const [zoneUploadProgress, setZoneUploadProgress] = useState(0);
+  const zoneFileInputRef = useRef(null);
+
+  // Service form state (moved to parent level)
+  const [serviceForm, setServiceForm] = useState({
+    name: '',
+    code: '',
+    carrier: 'custom',
+    charge_type: 'weight',
+    min_charge: 0,
+    max_charge: null,
+    handling_fee: 0,
+    fuel_levy_percent: 0,
+    cubic_weight_modifier: 250,
+    categories: [],
+    is_active: true,
+    sort_order: 0,
+    rates: []
+  });
+  const [expandedService, setExpandedService] = useState(null);
+  const [showRateImportModal, setShowRateImportModal] = useState(false);
+  const [selectedServiceForImport, setSelectedServiceForImport] = useState(null);
+  const [importingRates, setImportingRates] = useState(false);
+  const [rateImportMode, setRateImportMode] = useState('merge');
+  const [rateImportResult, setRateImportResult] = useState(null);
+  const [rateUploadProgress, setRateUploadProgress] = useState(0);
+  const [modalUploadingRates, setModalUploadingRates] = useState(false);
+  const rateFileInputRef = useRef(null);
+  const modalRateFileInputRef = useRef(null);
+
   // Fetch all data on mount
   useEffect(() => {
     fetchAllData();
