@@ -169,7 +169,15 @@ ul {
 .top-bar {
   background-color: var(--dark);
   color: var(--white);
-  font-size: 0.8125rem;
+  font-size: 0.6875rem;
+  padding: 0.25rem 0;
+}
+
+@media (min-width: 768px) {
+  .top-bar {
+    font-size: 0.8125rem;
+    padding: 0;
+  }
 }
 
 .top-bar a {
