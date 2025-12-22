@@ -775,8 +775,8 @@ class MaropostTemplateEngine:
             'rrp_formatted': f"{store.get('currency_symbol', '$')}{product.get('compare_price', 0):.2f}" if product.get('compare_price') else '',
             'compare_price': f"{product.get('compare_price', 0):.2f}" if product.get('compare_price') else '',
             'compare_price_formatted': f"{store.get('currency_symbol', '$')}{product.get('compare_price', 0):.2f}" if product.get('compare_price') else '',
-            'savings': f"{(product.get('compare_price', 0) - product.get('price', 0)):.2f}" if product.get('compare_price') and product.get('compare_price') > product.get('price', 0) else '',
-            'savings_formatted': f"{store.get('currency_symbol', '$')}{(product.get('compare_price', 0) - product.get('price', 0)):.2f}" if product.get('compare_price') and product.get('compare_price') > product.get('price', 0) else '',
+            'savings': f"{((product.get('compare_price') or 0) - (product.get('price') or 0)):.2f}" if product.get('compare_price') and (product.get('compare_price') or 0) > (product.get('price') or 0) else '',
+            'savings_formatted': f"{store.get('currency_symbol', '$')}{((product.get('compare_price') or 0) - (product.get('price') or 0)):.2f}" if product.get('compare_price') and (product.get('compare_price') or 0) > (product.get('price') or 0) else '',
             'installment_price': f"{store.get('currency_symbol', '$')}{(product.get('price', 0) / 4):.2f}" if product else '',
             'image': product.get('images', [''])[0] if product.get('images') and product.get('images')[0] else '',
             # Individual image slots (image1 through image12)
