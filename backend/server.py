@@ -2894,13 +2894,21 @@ async def print_quote(quote_id: str):
 
 @api_router.get("/quotes/{quote_id}/pdf")
 async def download_quote_pdf(quote_id: str):
-    """Generate quote PDF (placeholder)"""
+    """Generate quote PDF"""
     quote = await db.quotes.find_one({"id": quote_id}, {"_id": 0})
     if not quote:
         raise HTTPException(status_code=404, detail="Quote not found")
     
-    # TODO: Implement actual PDF generation
-    return {"message": "PDF generation not yet implemented"}
+    store_settings = await db.store_settings.find_one({"id": "store_settings"}, {"_id": 0})
+    
+    pdf_bytes = PDFGenerator.generate_quote_pdf(quote, store_settings)
+    return Response(
+        content=pdf_bytes,
+        media_type="application/pdf",
+        headers={
+            "Content-Disposition": f"attachment; filename=quote-{quote.get('quote_number', quote_id)}.pdf"
+        }
+    )
 
 @api_router.get("/quotes/{quote_id}")
 async def get_quote(quote_id: str):
