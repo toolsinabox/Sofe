@@ -564,7 +564,52 @@ The refactoring is progressing incrementally. The core application functionality
 8. Click a transaction row to open detail modal
 9. Test mobile responsive view (390px width)
 
-#### Credentials
+## POS Additional Features - 2025-12-22
+
+### Features Implemented ✓
+
+#### 1. Returns/Refunds Processing
+- **Returns Button** in shift status bar (orange RotateCcw icon)
+- **Returns Modal** with:
+  - Transaction search by number/ID
+  - Returnable items display with quantity already returned
+  - Select items to return with quantity control
+  - Return reason dropdown (Customer Changed Mind, Defective, Wrong Item, Damaged, Other)
+  - Refund method selection: Cash, Card, Store Credit
+  - Refund amount calculation
+  - Process Return action
+
+#### 2. Customer Management (Enhanced)
+- **"Add New Customer" Button** in customer search modal (dashed emerald border)
+- **Add Customer Form** with:
+  - Full Name (required)
+  - Email (required) with mail icon
+  - Phone (optional) with phone icon
+- Quick add creates customer and auto-selects in POS
+
+#### 3. Permission-gated Discounts
+- **Discount limits displayed** in modal header (e.g., "Your limit: $50")
+- **Role-based permissions**:
+  - Admin: 100% / $10,000, no approval needed
+  - Manager: 50% / $500, no approval needed
+  - Staff: 10% / $50, requires approval
+- **Approval request flow** for exceeding limits
+
+### Backend APIs Added
+- `POST /api/pos/returns` - Process a return
+- `GET /api/pos/returns` - Get return history
+- `GET /api/pos/transactions/{id}/returnable` - Get returnable items
+- `GET /api/pos/discount-settings` - Get discount permissions
+- `PUT /api/pos/discount-settings` - Update discount settings
+- `POST /api/pos/discount-approval` - Request approval
+- `POST /api/pos/customers/quick-add` - Quick add customer
+
+### Screenshot Verification ✓
+- Returns modal: Transaction search, item selection, refund method working
+- Add Customer form: Name/Email/Phone fields with validation
+- Discount modal: Shows user limit ($50 for staff role)
+
+### Credentials
 - **Merchant Role:**
   - Username: `edwardenayah@live.com.au`
   - Password: `qazxsw12`
