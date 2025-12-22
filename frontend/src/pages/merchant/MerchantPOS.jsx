@@ -8,29 +8,50 @@ import {
   CreditCard,
   Banknote,
   User,
-  Receipt,
   X,
   Check,
-  AlertCircle,
   Loader2,
   ShoppingCart,
   Package,
-  Calculator,
   Percent,
   Clock,
   ChevronRight,
-  Printer
+  Printer,
+  LogIn,
+  LogOut,
+  DollarSign,
+  ArrowDownCircle,
+  ArrowUpCircle,
+  Settings,
+  RefreshCw,
+  AlertTriangle,
+  Building2,
+  Monitor,
+  PlayCircle,
+  StopCircle,
+  Wallet,
+  History,
+  Calculator
 } from 'lucide-react';
 import { Button } from '../../components/ui/button';
 import { Input } from '../../components/ui/input';
 import { Card, CardContent, CardHeader, CardTitle } from '../../components/ui/card';
+import { Label } from '../../components/ui/label';
 import {
   Dialog,
   DialogContent,
   DialogHeader,
   DialogTitle,
   DialogFooter,
+  DialogDescription,
 } from '../../components/ui/dialog';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '../../components/ui/select';
 import { useAuth } from '../../context/AuthContext';
 
 const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
@@ -40,7 +61,7 @@ const MerchantPOS = () => {
   const { user } = useAuth();
   const searchInputRef = useRef(null);
   
-  // State
+  // Core State
   const [cart, setCart] = useState([]);
   const [searchQuery, setSearchQuery] = useState('');
   const [searchResults, setSearchResults] = useState([]);
@@ -54,11 +75,25 @@ const MerchantPOS = () => {
   const [cashReceived, setCashReceived] = useState('');
   const [showCustomerSearch, setShowCustomerSearch] = useState(false);
   const [customers, setCustomers] = useState([]);
-  const [outlet, setOutlet] = useState(null);
-  const [register, setRegister] = useState(null);
-  const [initialized, setInitialized] = useState(false);
   const [cartDiscount, setCartDiscount] = useState({ type: 'fixed', value: 0 });
   const [showDiscount, setShowDiscount] = useState(false);
+  
+  // Outlet/Register/Shift State
+  const [outlets, setOutlets] = useState([]);
+  const [registers, setRegisters] = useState([]);
+  const [selectedOutlet, setSelectedOutlet] = useState(null);
+  const [selectedRegister, setSelectedRegister] = useState(null);
+  const [currentShift, setCurrentShift] = useState(null);
+  const [showSetup, setShowSetup] = useState(true);
+  const [showOpenShift, setShowOpenShift] = useState(false);
+  const [showCloseShift, setShowCloseShift] = useState(false);
+  const [showCashMovement, setShowCashMovement] = useState(false);
+  const [showShiftHistory, setShowShiftHistory] = useState(false);
+  const [openingFloat, setOpeningFloat] = useState('');
+  const [closingData, setClosingData] = useState({ actualCash: '', closingFloat: '', notes: '' });
+  const [cashMovement, setCashMovement] = useState({ type: 'in', amount: '', reason: '' });
+  const [shiftHistory, setShiftHistory] = useState([]);
+  const [loading, setLoading] = useState(true);
 
   // Initialize POS
   useEffect(() => {
@@ -66,6 +101,7 @@ const MerchantPOS = () => {
   }, []);
 
   const initializePOS = async () => {
+    setLoading(true);
     try {
       // Try to init POS (creates default outlet/register if none exist)
       await axios.post(`${API}/pos/init`);
@@ -76,17 +112,174 @@ const MerchantPOS = () => {
         axios.get(`${API}/pos/registers`)
       ]);
       
-      if (outletsRes.data.length > 0) {
-        setOutlet(outletsRes.data[0]);
-      }
-      if (registersRes.data.length > 0) {
-        setRegister(registersRes.data[0]);
-      }
+      setOutlets(outletsRes.data);
+      setRegisters(registersRes.data);
       
-      setInitialized(true);
+      // Check for saved session
+      const savedOutlet = localStorage.getItem('pos_outlet');
+      const savedRegister = localStorage.getItem('pos_register');
+      
+      if (savedOutlet && savedRegister) {
+        const outlet = outletsRes.data.find(o => o.id === savedOutlet);
+        const register = registersRes.data.find(r => r.id === savedRegister);
+        
+        if (outlet && register) {
+          setSelectedOutlet(outlet);
+          setSelectedRegister(register);
+          
+          // Check for open shift
+          const shiftRes = await axios.get(`${API}/pos/shifts/current`, {
+            params: { register_id: register.id }
+          });
+          
+          if (shiftRes.data) {
+            setCurrentShift(shiftRes.data);
+            setShowSetup(false);
+          } else {
+            setShowSetup(true);
+          }
+        }
+      }
     } catch (error) {
       console.error('Error initializing POS:', error);
-      setInitialized(true); // Still allow use
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // Handle outlet/register selection
+  const handleSetupComplete = async () => {
+    if (!selectedOutlet || !selectedRegister) return;
+    
+    // Save to localStorage
+    localStorage.setItem('pos_outlet', selectedOutlet.id);
+    localStorage.setItem('pos_register', selectedRegister.id);
+    
+    // Check for existing shift
+    try {
+      const shiftRes = await axios.get(`${API}/pos/shifts/current`, {
+        params: { register_id: selectedRegister.id }
+      });
+      
+      if (shiftRes.data) {
+        setCurrentShift(shiftRes.data);
+        setShowSetup(false);
+      } else {
+        setShowOpenShift(true);
+      }
+    } catch (error) {
+      setShowOpenShift(true);
+    }
+  };
+
+  // Open a new shift
+  const handleOpenShift = async () => {
+    if (!openingFloat) return;
+    
+    setProcessing(true);
+    try {
+      const response = await axios.post(`${API}/pos/shifts/open`, null, {
+        params: {
+          register_id: selectedRegister.id,
+          outlet_id: selectedOutlet.id,
+          staff_id: user?.id || 'staff',
+          staff_name: user?.name || 'Staff',
+          opening_float: parseFloat(openingFloat)
+        }
+      });
+      
+      setCurrentShift(response.data);
+      setShowOpenShift(false);
+      setShowSetup(false);
+      setOpeningFloat('');
+    } catch (error) {
+      console.error('Error opening shift:', error);
+      alert(error.response?.data?.detail || 'Failed to open shift');
+    } finally {
+      setProcessing(false);
+    }
+  };
+
+  // Close current shift (cash-up)
+  const handleCloseShift = async () => {
+    if (!closingData.actualCash || !closingData.closingFloat) return;
+    
+    setProcessing(true);
+    try {
+      const response = await axios.post(`${API}/pos/shifts/${currentShift.id}/close`, null, {
+        params: {
+          actual_cash: parseFloat(closingData.actualCash),
+          closing_float: parseFloat(closingData.closingFloat),
+          notes: closingData.notes || null
+        }
+      });
+      
+      // Show variance result
+      const variance = response.data.variance;
+      const varianceMsg = variance === 0 
+        ? 'Cash balanced perfectly!' 
+        : variance > 0 
+          ? `Cash OVER by $${variance.toFixed(2)}` 
+          : `Cash SHORT by $${Math.abs(variance).toFixed(2)}`;
+      
+      alert(`Shift closed!\n\nExpected: $${response.data.expected_cash.toFixed(2)}\nActual: $${response.data.actual_cash.toFixed(2)}\n\n${varianceMsg}`);
+      
+      setCurrentShift(null);
+      setShowCloseShift(false);
+      setClosingData({ actualCash: '', closingFloat: '', notes: '' });
+      setShowSetup(true);
+    } catch (error) {
+      console.error('Error closing shift:', error);
+      alert(error.response?.data?.detail || 'Failed to close shift');
+    } finally {
+      setProcessing(false);
+    }
+  };
+
+  // Record cash movement (money in/out)
+  const handleCashMovement = async () => {
+    if (!cashMovement.amount || !cashMovement.reason) return;
+    
+    setProcessing(true);
+    try {
+      await axios.post(`${API}/pos/cash-movements`, {
+        id: crypto.randomUUID(),
+        shift_id: currentShift.id,
+        register_id: selectedRegister.id,
+        type: cashMovement.type,
+        amount: parseFloat(cashMovement.amount),
+        reason: cashMovement.reason,
+        staff_id: user?.id || 'staff',
+        staff_name: user?.name || 'Staff'
+      });
+      
+      // Refresh shift data
+      const shiftRes = await axios.get(`${API}/pos/shifts/current`, {
+        params: { register_id: selectedRegister.id }
+      });
+      if (shiftRes.data) {
+        setCurrentShift(shiftRes.data);
+      }
+      
+      setShowCashMovement(false);
+      setCashMovement({ type: 'in', amount: '', reason: '' });
+    } catch (error) {
+      console.error('Error recording cash movement:', error);
+      alert('Failed to record cash movement');
+    } finally {
+      setProcessing(false);
+    }
+  };
+
+  // Fetch shift history
+  const fetchShiftHistory = async () => {
+    try {
+      const response = await axios.get(`${API}/pos/shifts`, {
+        params: { register_id: selectedRegister?.id, limit: 10 }
+      });
+      setShiftHistory(response.data || []);
+    } catch (error) {
+      console.error('Error fetching shift history:', error);
     }
   };
 
@@ -121,7 +314,6 @@ const MerchantPOS = () => {
   // Handle barcode scan (Enter key)
   const handleSearchKeyDown = async (e) => {
     if (e.key === 'Enter' && searchQuery) {
-      // Try exact barcode match first
       try {
         const response = await axios.get(`${API}/pos/products`, {
           params: { barcode: searchQuery }
@@ -136,7 +328,6 @@ const MerchantPOS = () => {
         console.error('Barcode search error:', error);
       }
       
-      // If only one search result, add it
       if (searchResults.length === 1) {
         addToCart(searchResults[0]);
         setSearchQuery('');
@@ -151,13 +342,11 @@ const MerchantPOS = () => {
       const existingIndex = prevCart.findIndex(item => item.product_id === product.id);
       
       if (existingIndex >= 0) {
-        // Increase quantity
         const newCart = [...prevCart];
         newCart[existingIndex].quantity += 1;
         newCart[existingIndex].subtotal = newCart[existingIndex].price * newCart[existingIndex].quantity;
         return newCart;
       } else {
-        // Add new item
         return [...prevCart, {
           product_id: product.id,
           name: product.name,
@@ -213,7 +402,7 @@ const MerchantPOS = () => {
       }
     }
     
-    const taxRate = 0.10; // 10% GST
+    const taxRate = 0.10;
     const taxableAmount = subtotal - discountAmount;
     const tax = taxableAmount * taxRate;
     const total = taxableAmount + tax;
@@ -223,7 +412,6 @@ const MerchantPOS = () => {
 
   const { subtotal, discountAmount, tax, total } = calculateTotals();
 
-  // Calculate change
   const change = paymentMethod === 'cash' && cashReceived 
     ? Math.max(0, parseFloat(cashReceived) - total) 
     : 0;
@@ -253,8 +441,8 @@ const MerchantPOS = () => {
         tax_total: tax,
         total: total,
         notes: null,
-        outlet_id: outlet?.id || null,
-        register_id: register?.id || null,
+        outlet_id: selectedOutlet?.id || null,
+        register_id: selectedRegister?.id || null,
         staff_id: user?.id || null,
         staff_name: user?.name || 'Staff'
       };
@@ -267,6 +455,16 @@ const MerchantPOS = () => {
         id: response.data.id,
         created_at: new Date().toISOString()
       });
+      
+      // Update shift expected cash if cash payment
+      if (paymentMethod === 'cash' && currentShift) {
+        const shiftRes = await axios.get(`${API}/pos/shifts/current`, {
+          params: { register_id: selectedRegister.id }
+        });
+        if (shiftRes.data) {
+          setCurrentShift(shiftRes.data);
+        }
+      }
       
       setShowPayment(false);
       setShowReceipt(true);
@@ -302,249 +500,701 @@ const MerchantPOS = () => {
     window.print();
   };
 
-  // Quick cash amounts
   const quickCashAmounts = [20, 50, 100, 200];
 
-  return (
-    <div className="h-[calc(100vh-120px)] flex flex-col lg:flex-row gap-3 sm:gap-4">
-      {/* Left Panel - Products & Cart */}
-      <div className="flex-1 flex flex-col min-w-0">
-        {/* Search Bar */}
-        <div className="relative mb-3">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500 w-4 h-4 sm:w-5 sm:h-5" />
-          <Input
-            ref={searchInputRef}
-            type="text"
-            placeholder="Search products or scan barcode..."
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            onKeyDown={handleSearchKeyDown}
-            className="pl-9 sm:pl-10 pr-4 py-2.5 sm:py-3 bg-gray-800 border-gray-700 text-white text-sm sm:text-base placeholder-gray-500 focus:border-emerald-500"
-            autoFocus
-          />
-          {searching && (
-            <Loader2 className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 animate-spin text-gray-500" />
-          )}
-          
-          {/* Search Results Dropdown */}
-          {searchResults.length > 0 && (
-            <div className="absolute top-full left-0 right-0 mt-1 bg-gray-800 border border-gray-700 rounded-lg shadow-xl z-50 max-h-64 sm:max-h-80 overflow-y-auto">
-              {searchResults.map((product) => (
-                <button
-                  key={product.id}
-                  onClick={() => addToCart(product)}
-                  className="w-full flex items-center gap-2 sm:gap-3 p-2 sm:p-3 hover:bg-gray-700 transition-colors text-left"
-                >
-                  <div className="w-10 h-10 sm:w-12 sm:h-12 bg-gray-700 rounded-lg overflow-hidden flex-shrink-0">
-                    {product.image ? (
-                      <img src={product.image} alt={product.name} className="w-full h-full object-cover" />
-                    ) : (
-                      <div className="w-full h-full flex items-center justify-center">
-                        <Package className="w-5 h-5 sm:w-6 sm:h-6 text-gray-500" />
-                      </div>
-                    )}
-                  </div>
-                  <div className="flex-1 min-w-0">
-                    <p className="text-white font-medium text-xs sm:text-sm truncate">{product.name}</p>
-                    <p className="text-gray-500 text-[10px] sm:text-xs">{product.sku}</p>
-                  </div>
-                  <div className="text-right flex-shrink-0">
-                    <p className="text-emerald-400 font-semibold text-sm sm:text-base">${product.price.toFixed(2)}</p>
-                    <p className={`text-[10px] sm:text-xs ${product.stock > 0 ? 'text-gray-500' : 'text-red-400'}`}>
-                      {product.stock > 0 ? `${product.stock} in stock` : 'Out of stock'}
-                    </p>
-                  </div>
-                </button>
-              ))}
-            </div>
-          )}
-        </div>
+  // Format time elapsed
+  const formatTimeElapsed = (startTime) => {
+    const start = new Date(startTime);
+    const now = new Date();
+    const diff = Math.floor((now - start) / 1000 / 60);
+    const hours = Math.floor(diff / 60);
+    const mins = diff % 60;
+    return hours > 0 ? `${hours}h ${mins}m` : `${mins}m`;
+  };
 
-        {/* Cart Items */}
-        <Card className="flex-1 bg-[#151b28] border-gray-800 overflow-hidden flex flex-col">
-          <CardHeader className="py-2 sm:py-3 px-3 sm:px-4 border-b border-gray-800">
-            <div className="flex items-center justify-between">
-              <CardTitle className="text-white text-sm sm:text-base flex items-center gap-2">
-                <ShoppingCart className="w-4 h-4 sm:w-5 sm:h-5" />
-                Cart ({cart.length} items)
-              </CardTitle>
-              {cart.length > 0 && (
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  onClick={clearCart}
-                  className="text-red-400 hover:text-red-300 hover:bg-red-500/10 text-xs h-7 px-2"
-                >
-                  Clear All
-                </Button>
-              )}
+  // Loading state
+  if (loading) {
+    return (
+      <div className="h-[calc(100vh-120px)] flex items-center justify-center">
+        <div className="text-center">
+          <Loader2 className="w-10 h-10 animate-spin text-emerald-400 mx-auto mb-4" />
+          <p className="text-gray-400">Loading POS...</p>
+        </div>
+      </div>
+    );
+  }
+
+  // Setup Screen - Select Outlet & Register
+  if (showSetup && !currentShift) {
+    return (
+      <div className="h-[calc(100vh-120px)] flex items-center justify-center p-4">
+        <Card className="w-full max-w-md bg-[#151b28] border-gray-800">
+          <CardHeader className="text-center pb-2">
+            <div className="w-16 h-16 bg-gradient-to-br from-emerald-500 to-teal-600 rounded-2xl flex items-center justify-center mx-auto mb-4">
+              <Monitor className="w-8 h-8 text-white" />
             </div>
+            <CardTitle className="text-white text-xl">POS Setup</CardTitle>
+            <p className="text-gray-400 text-sm mt-1">Select your outlet and register to begin</p>
           </CardHeader>
           
-          <CardContent className="flex-1 overflow-y-auto p-2 sm:p-3 space-y-2">
-            {cart.length === 0 ? (
-              <div className="h-full flex flex-col items-center justify-center text-gray-500 py-8">
-                <ShoppingCart className="w-10 h-10 sm:w-12 sm:h-12 mb-3 opacity-30" />
-                <p className="text-xs sm:text-sm">Cart is empty</p>
-                <p className="text-[10px] sm:text-xs text-gray-600 mt-1">Search or scan products to add</p>
-              </div>
-            ) : (
-              cart.map((item, index) => (
-                <div
-                  key={index}
-                  className="flex items-center gap-2 sm:gap-3 p-2 sm:p-3 bg-gray-800/50 rounded-lg"
-                >
-                  <div className="w-10 h-10 sm:w-12 sm:h-12 bg-gray-700 rounded-lg overflow-hidden flex-shrink-0">
-                    {item.image ? (
-                      <img src={item.image} alt={item.name} className="w-full h-full object-cover" />
-                    ) : (
-                      <div className="w-full h-full flex items-center justify-center">
-                        <Package className="w-5 h-5 text-gray-500" />
+          <CardContent className="space-y-4 pt-4">
+            <div className="space-y-2">
+              <Label className="text-gray-300">Outlet / Location</Label>
+              <Select 
+                value={selectedOutlet?.id || ''} 
+                onValueChange={(value) => {
+                  const outlet = outlets.find(o => o.id === value);
+                  setSelectedOutlet(outlet);
+                  setSelectedRegister(null);
+                }}
+              >
+                <SelectTrigger className="bg-gray-800 border-gray-700 text-white">
+                  <SelectValue placeholder="Select outlet..." />
+                </SelectTrigger>
+                <SelectContent className="bg-gray-800 border-gray-700">
+                  {outlets.map(outlet => (
+                    <SelectItem key={outlet.id} value={outlet.id} className="text-white hover:bg-gray-700">
+                      <div className="flex items-center gap-2">
+                        <Building2 className="w-4 h-4 text-gray-400" />
+                        {outlet.name}
                       </div>
-                    )}
-                  </div>
-                  
-                  <div className="flex-1 min-w-0">
-                    <p className="text-white font-medium text-xs sm:text-sm truncate">{item.name}</p>
-                    <p className="text-gray-500 text-[10px] sm:text-xs">${item.price.toFixed(2)} each</p>
-                  </div>
-                  
-                  <div className="flex items-center gap-1 sm:gap-2">
-                    <button
-                      onClick={() => updateQuantity(index, -1)}
-                      className="w-6 h-6 sm:w-7 sm:h-7 flex items-center justify-center bg-gray-700 rounded text-gray-300 hover:bg-gray-600 transition-colors"
-                    >
-                      <Minus className="w-3 h-3 sm:w-4 sm:h-4" />
-                    </button>
-                    <span className="w-6 sm:w-8 text-center text-white text-xs sm:text-sm font-medium">
-                      {item.quantity}
-                    </span>
-                    <button
-                      onClick={() => updateQuantity(index, 1)}
-                      className="w-6 h-6 sm:w-7 sm:h-7 flex items-center justify-center bg-gray-700 rounded text-gray-300 hover:bg-gray-600 transition-colors"
-                    >
-                      <Plus className="w-3 h-3 sm:w-4 sm:h-4" />
-                    </button>
-                  </div>
-                  
-                  <div className="text-right w-16 sm:w-20">
-                    <p className="text-white font-semibold text-xs sm:text-sm">${item.subtotal.toFixed(2)}</p>
-                  </div>
-                  
-                  <button
-                    onClick={() => removeFromCart(index)}
-                    className="p-1 sm:p-1.5 text-gray-500 hover:text-red-400 transition-colors"
-                  >
-                    <Trash2 className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
-                  </button>
-                </div>
-              ))
-            )}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+            
+            <div className="space-y-2">
+              <Label className="text-gray-300">Register</Label>
+              <Select 
+                value={selectedRegister?.id || ''} 
+                onValueChange={(value) => {
+                  const register = registers.find(r => r.id === value);
+                  setSelectedRegister(register);
+                }}
+                disabled={!selectedOutlet}
+              >
+                <SelectTrigger className="bg-gray-800 border-gray-700 text-white">
+                  <SelectValue placeholder="Select register..." />
+                </SelectTrigger>
+                <SelectContent className="bg-gray-800 border-gray-700">
+                  {registers.filter(r => r.outlet_id === selectedOutlet?.id).map(register => (
+                    <SelectItem key={register.id} value={register.id} className="text-white hover:bg-gray-700">
+                      <div className="flex items-center gap-2">
+                        <Monitor className="w-4 h-4 text-gray-400" />
+                        {register.name}
+                      </div>
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+            
+            <Button 
+              onClick={handleSetupComplete}
+              disabled={!selectedOutlet || !selectedRegister}
+              className="w-full bg-emerald-600 hover:bg-emerald-700 text-white py-6 mt-4"
+            >
+              <PlayCircle className="w-5 h-5 mr-2" />
+              Continue
+            </Button>
           </CardContent>
         </Card>
       </div>
+    );
+  }
 
-      {/* Right Panel - Summary & Actions */}
-      <div className="w-full lg:w-80 xl:w-96 flex flex-col gap-3">
-        {/* Customer */}
-        <Card className="bg-[#151b28] border-gray-800">
-          <CardContent className="p-3 sm:p-4">
-            <button
-              onClick={() => setShowCustomerSearch(true)}
-              className="w-full flex items-center gap-2 sm:gap-3 p-2 sm:p-3 bg-gray-800/50 rounded-lg hover:bg-gray-800 transition-colors"
+  return (
+    <div className="h-[calc(100vh-120px)] flex flex-col">
+      {/* Shift Status Bar */}
+      {currentShift && (
+        <div className="bg-gray-800/50 border-b border-gray-700 px-3 py-2 flex items-center justify-between gap-2 flex-wrap">
+          <div className="flex items-center gap-4 text-xs sm:text-sm">
+            <div className="flex items-center gap-1.5 text-emerald-400">
+              <div className="w-2 h-2 bg-emerald-400 rounded-full animate-pulse" />
+              <span className="font-medium">Shift Active</span>
+            </div>
+            <div className="hidden sm:flex items-center gap-1.5 text-gray-400">
+              <Building2 className="w-3.5 h-3.5" />
+              <span>{selectedOutlet?.name}</span>
+            </div>
+            <div className="hidden sm:flex items-center gap-1.5 text-gray-400">
+              <Monitor className="w-3.5 h-3.5" />
+              <span>{selectedRegister?.name}</span>
+            </div>
+            <div className="flex items-center gap-1.5 text-gray-400">
+              <Clock className="w-3.5 h-3.5" />
+              <span>{formatTimeElapsed(currentShift.opened_at)}</span>
+            </div>
+            <div className="flex items-center gap-1.5 text-gray-400">
+              <Wallet className="w-3.5 h-3.5" />
+              <span>${currentShift.expected_cash?.toFixed(2) || '0.00'}</span>
+            </div>
+          </div>
+          
+          <div className="flex items-center gap-1.5">
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={() => setShowCashMovement(true)}
+              className="text-gray-400 hover:text-white h-7 px-2 text-xs"
             >
-              <div className="w-8 h-8 sm:w-10 sm:h-10 bg-gray-700 rounded-full flex items-center justify-center">
-                <User className="w-4 h-4 sm:w-5 sm:h-5 text-gray-400" />
+              <DollarSign className="w-3.5 h-3.5 mr-1" />
+              <span className="hidden sm:inline">Cash In/Out</span>
+            </Button>
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={() => {
+                fetchShiftHistory();
+                setShowShiftHistory(true);
+              }}
+              className="text-gray-400 hover:text-white h-7 px-2 text-xs"
+            >
+              <History className="w-3.5 h-3.5 mr-1" />
+              <span className="hidden sm:inline">History</span>
+            </Button>
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={() => setShowCloseShift(true)}
+              className="text-red-400 hover:text-red-300 hover:bg-red-500/10 h-7 px-2 text-xs"
+            >
+              <StopCircle className="w-3.5 h-3.5 mr-1" />
+              <span className="hidden sm:inline">End Shift</span>
+            </Button>
+          </div>
+        </div>
+      )}
+
+      {/* Main POS Interface */}
+      <div className="flex-1 flex flex-col lg:flex-row gap-3 p-3 overflow-hidden">
+        {/* Left Panel - Products & Cart */}
+        <div className="flex-1 flex flex-col min-w-0">
+          {/* Search Bar */}
+          <div className="relative mb-3">
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500 w-4 h-4 sm:w-5 sm:h-5" />
+            <Input
+              ref={searchInputRef}
+              type="text"
+              placeholder="Search products or scan barcode..."
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              onKeyDown={handleSearchKeyDown}
+              className="pl-9 sm:pl-10 pr-4 py-2.5 sm:py-3 bg-gray-800 border-gray-700 text-white text-sm sm:text-base placeholder-gray-500 focus:border-emerald-500"
+              autoFocus
+            />
+            {searching && (
+              <Loader2 className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 animate-spin text-gray-500" />
+            )}
+            
+            {/* Search Results Dropdown */}
+            {searchResults.length > 0 && (
+              <div className="absolute top-full left-0 right-0 mt-1 bg-gray-800 border border-gray-700 rounded-lg shadow-xl z-50 max-h-64 sm:max-h-80 overflow-y-auto">
+                {searchResults.map((product) => (
+                  <button
+                    key={product.id}
+                    onClick={() => addToCart(product)}
+                    className="w-full flex items-center gap-2 sm:gap-3 p-2 sm:p-3 hover:bg-gray-700 transition-colors text-left"
+                  >
+                    <div className="w-10 h-10 sm:w-12 sm:h-12 bg-gray-700 rounded-lg overflow-hidden flex-shrink-0">
+                      {product.image ? (
+                        <img src={product.image} alt={product.name} className="w-full h-full object-cover" />
+                      ) : (
+                        <div className="w-full h-full flex items-center justify-center">
+                          <Package className="w-5 h-5 sm:w-6 sm:h-6 text-gray-500" />
+                        </div>
+                      )}
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <p className="text-white font-medium text-xs sm:text-sm truncate">{product.name}</p>
+                      <p className="text-gray-500 text-[10px] sm:text-xs">{product.sku}</p>
+                    </div>
+                    <div className="text-right flex-shrink-0">
+                      <p className="text-emerald-400 font-semibold text-sm sm:text-base">${product.price.toFixed(2)}</p>
+                      <p className={`text-[10px] sm:text-xs ${product.stock > 0 ? 'text-gray-500' : 'text-red-400'}`}>
+                        {product.stock > 0 ? `${product.stock} in stock` : 'Out of stock'}
+                      </p>
+                    </div>
+                  </button>
+                ))}
               </div>
-              <div className="flex-1 text-left min-w-0">
-                {customer ? (
-                  <>
-                    <p className="text-white font-medium text-xs sm:text-sm truncate">{customer.name}</p>
-                    <p className="text-gray-500 text-[10px] sm:text-xs truncate">{customer.email}</p>
-                  </>
-                ) : (
-                  <p className="text-gray-400 text-xs sm:text-sm">Add Customer (Optional)</p>
+            )}
+          </div>
+
+          {/* Cart Items */}
+          <Card className="flex-1 bg-[#151b28] border-gray-800 overflow-hidden flex flex-col">
+            <CardHeader className="py-2 sm:py-3 px-3 sm:px-4 border-b border-gray-800">
+              <div className="flex items-center justify-between">
+                <CardTitle className="text-white text-sm sm:text-base flex items-center gap-2">
+                  <ShoppingCart className="w-4 h-4 sm:w-5 sm:h-5" />
+                  Cart ({cart.length} items)
+                </CardTitle>
+                {cart.length > 0 && (
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={clearCart}
+                    className="text-red-400 hover:text-red-300 hover:bg-red-500/10 text-xs h-7 px-2"
+                  >
+                    Clear All
+                  </Button>
                 )}
               </div>
-              <ChevronRight className="w-4 h-4 text-gray-500" />
-            </button>
-          </CardContent>
-        </Card>
+            </CardHeader>
+            
+            <CardContent className="flex-1 overflow-y-auto p-2 sm:p-3 space-y-2">
+              {cart.length === 0 ? (
+                <div className="h-full flex flex-col items-center justify-center text-gray-500 py-8">
+                  <ShoppingCart className="w-10 h-10 sm:w-12 sm:h-12 mb-3 opacity-30" />
+                  <p className="text-xs sm:text-sm">Cart is empty</p>
+                  <p className="text-[10px] sm:text-xs text-gray-600 mt-1">Search or scan products to add</p>
+                </div>
+              ) : (
+                cart.map((item, index) => (
+                  <div
+                    key={index}
+                    className="flex items-center gap-2 sm:gap-3 p-2 sm:p-3 bg-gray-800/50 rounded-lg"
+                  >
+                    <div className="w-10 h-10 sm:w-12 sm:h-12 bg-gray-700 rounded-lg overflow-hidden flex-shrink-0">
+                      {item.image ? (
+                        <img src={item.image} alt={item.name} className="w-full h-full object-cover" />
+                      ) : (
+                        <div className="w-full h-full flex items-center justify-center">
+                          <Package className="w-5 h-5 text-gray-500" />
+                        </div>
+                      )}
+                    </div>
+                    
+                    <div className="flex-1 min-w-0">
+                      <p className="text-white font-medium text-xs sm:text-sm truncate">{item.name}</p>
+                      <p className="text-gray-500 text-[10px] sm:text-xs">${item.price.toFixed(2)} each</p>
+                    </div>
+                    
+                    <div className="flex items-center gap-1 sm:gap-2">
+                      <button
+                        onClick={() => updateQuantity(index, -1)}
+                        className="w-6 h-6 sm:w-7 sm:h-7 flex items-center justify-center bg-gray-700 rounded text-gray-300 hover:bg-gray-600 transition-colors"
+                      >
+                        <Minus className="w-3 h-3 sm:w-4 sm:h-4" />
+                      </button>
+                      <span className="w-6 sm:w-8 text-center text-white text-xs sm:text-sm font-medium">
+                        {item.quantity}
+                      </span>
+                      <button
+                        onClick={() => updateQuantity(index, 1)}
+                        className="w-6 h-6 sm:w-7 sm:h-7 flex items-center justify-center bg-gray-700 rounded text-gray-300 hover:bg-gray-600 transition-colors"
+                      >
+                        <Plus className="w-3 h-3 sm:w-4 sm:h-4" />
+                      </button>
+                    </div>
+                    
+                    <div className="text-right w-16 sm:w-20">
+                      <p className="text-white font-semibold text-xs sm:text-sm">${item.subtotal.toFixed(2)}</p>
+                    </div>
+                    
+                    <button
+                      onClick={() => removeFromCart(index)}
+                      className="p-1 sm:p-1.5 text-gray-500 hover:text-red-400 transition-colors"
+                    >
+                      <Trash2 className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
+                    </button>
+                  </div>
+                ))
+              )}
+            </CardContent>
+          </Card>
+        </div>
 
-        {/* Totals */}
-        <Card className="bg-[#151b28] border-gray-800">
-          <CardContent className="p-3 sm:p-4 space-y-2 sm:space-y-3">
-            <div className="flex justify-between text-xs sm:text-sm">
-              <span className="text-gray-400">Subtotal</span>
-              <span className="text-white">${subtotal.toFixed(2)}</span>
+        {/* Right Panel - Summary & Actions */}
+        <div className="w-full lg:w-80 xl:w-96 flex flex-col gap-3">
+          {/* Customer */}
+          <Card className="bg-[#151b28] border-gray-800">
+            <CardContent className="p-3 sm:p-4">
+              <button
+                onClick={() => setShowCustomerSearch(true)}
+                className="w-full flex items-center gap-2 sm:gap-3 p-2 sm:p-3 bg-gray-800/50 rounded-lg hover:bg-gray-800 transition-colors"
+              >
+                <div className="w-8 h-8 sm:w-10 sm:h-10 bg-gray-700 rounded-full flex items-center justify-center">
+                  <User className="w-4 h-4 sm:w-5 sm:h-5 text-gray-400" />
+                </div>
+                <div className="flex-1 text-left min-w-0">
+                  {customer ? (
+                    <>
+                      <p className="text-white font-medium text-xs sm:text-sm truncate">{customer.name}</p>
+                      <p className="text-gray-500 text-[10px] sm:text-xs truncate">{customer.email}</p>
+                    </>
+                  ) : (
+                    <p className="text-gray-400 text-xs sm:text-sm">Add Customer (Optional)</p>
+                  )}
+                </div>
+                <ChevronRight className="w-4 h-4 text-gray-500" />
+              </button>
+            </CardContent>
+          </Card>
+
+          {/* Totals */}
+          <Card className="bg-[#151b28] border-gray-800">
+            <CardContent className="p-3 sm:p-4 space-y-2 sm:space-y-3">
+              <div className="flex justify-between text-xs sm:text-sm">
+                <span className="text-gray-400">Subtotal</span>
+                <span className="text-white">${subtotal.toFixed(2)}</span>
+              </div>
+              
+              {discountAmount > 0 && (
+                <div className="flex justify-between text-xs sm:text-sm">
+                  <span className="text-gray-400">Discount</span>
+                  <span className="text-red-400">-${discountAmount.toFixed(2)}</span>
+                </div>
+              )}
+              
+              <div className="flex justify-between text-xs sm:text-sm">
+                <span className="text-gray-400">Tax (GST 10%)</span>
+                <span className="text-white">${tax.toFixed(2)}</span>
+              </div>
+              
+              <div className="h-px bg-gray-700" />
+              
+              <div className="flex justify-between items-center">
+                <span className="text-white font-semibold text-base sm:text-lg">Total</span>
+                <span className="text-emerald-400 font-bold text-xl sm:text-2xl">${total.toFixed(2)}</span>
+              </div>
+            </CardContent>
+          </Card>
+
+          {/* Action Buttons */}
+          <div className="grid grid-cols-2 gap-2 sm:gap-3">
+            <Button
+              variant="outline"
+              onClick={() => setShowDiscount(true)}
+              className="border-gray-700 text-gray-300 hover:bg-gray-800 text-xs sm:text-sm py-2 sm:py-2.5"
+            >
+              <Percent className="w-3.5 h-3.5 sm:w-4 sm:h-4 mr-1.5" />
+              Discount
+            </Button>
+            <Button
+              variant="outline"
+              className="border-gray-700 text-gray-300 hover:bg-gray-800 text-xs sm:text-sm py-2 sm:py-2.5"
+            >
+              <Clock className="w-3.5 h-3.5 sm:w-4 sm:h-4 mr-1.5" />
+              Hold
+            </Button>
+          </div>
+
+          {/* Payment Buttons */}
+          <div className="grid grid-cols-2 gap-2 sm:gap-3 mt-auto">
+            <Button
+              onClick={() => {
+                setPaymentMethod('cash');
+                setShowPayment(true);
+              }}
+              disabled={cart.length === 0 || !currentShift}
+              className="bg-emerald-600 hover:bg-emerald-700 text-white py-4 sm:py-6 text-sm sm:text-base"
+            >
+              <Banknote className="w-4 h-4 sm:w-5 sm:h-5 mr-2" />
+              Cash
+            </Button>
+            <Button
+              onClick={() => {
+                setPaymentMethod('card');
+                setShowPayment(true);
+              }}
+              disabled={cart.length === 0 || !currentShift}
+              className="bg-blue-600 hover:bg-blue-700 text-white py-4 sm:py-6 text-sm sm:text-base"
+            >
+              <CreditCard className="w-4 h-4 sm:w-5 sm:h-5 mr-2" />
+              Card
+            </Button>
+          </div>
+          
+          {!currentShift && (
+            <p className="text-center text-xs text-yellow-400">Open a shift to process payments</p>
+          )}
+        </div>
+      </div>
+
+      {/* Open Shift Modal */}
+      <Dialog open={showOpenShift} onOpenChange={setShowOpenShift}>
+        <DialogContent className="bg-[#151b28] border-gray-800 text-white max-w-sm">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2">
+              <PlayCircle className="w-5 h-5 text-emerald-400" />
+              Open Shift
+            </DialogTitle>
+            <DialogDescription className="text-gray-400">
+              Enter your opening cash float to begin selling
+            </DialogDescription>
+          </DialogHeader>
+          
+          <div className="py-4 space-y-4">
+            <div className="p-3 bg-gray-800/50 rounded-lg">
+              <div className="flex items-center gap-2 text-sm text-gray-400 mb-1">
+                <Building2 className="w-4 h-4" />
+                <span>{selectedOutlet?.name}</span>
+              </div>
+              <div className="flex items-center gap-2 text-sm text-gray-400">
+                <Monitor className="w-4 h-4" />
+                <span>{selectedRegister?.name}</span>
+              </div>
             </div>
             
-            {discountAmount > 0 && (
-              <div className="flex justify-between text-xs sm:text-sm">
-                <span className="text-gray-400">Discount</span>
-                <span className="text-red-400">-${discountAmount.toFixed(2)}</span>
+            <div>
+              <Label className="text-gray-400 text-sm mb-2 block">Opening Float ($)</Label>
+              <Input
+                type="number"
+                value={openingFloat}
+                onChange={(e) => setOpeningFloat(e.target.value)}
+                placeholder="0.00"
+                className="bg-gray-800 border-gray-700 text-white text-xl text-center py-3"
+                autoFocus
+              />
+              <p className="text-xs text-gray-500 mt-2">Enter the starting cash amount in the drawer</p>
+            </div>
+            
+            <div className="grid grid-cols-4 gap-2">
+              {[100, 200, 300, 500].map((amount) => (
+                <Button
+                  key={amount}
+                  variant="outline"
+                  onClick={() => setOpeningFloat(amount.toString())}
+                  className="border-gray-700 text-gray-300 hover:bg-gray-800"
+                >
+                  ${amount}
+                </Button>
+              ))}
+            </div>
+          </div>
+          
+          <DialogFooter className="gap-2">
+            <Button
+              variant="outline"
+              onClick={() => {
+                setShowOpenShift(false);
+                setShowSetup(true);
+              }}
+              className="border-gray-700 text-gray-300"
+            >
+              Back
+            </Button>
+            <Button
+              onClick={handleOpenShift}
+              disabled={processing || !openingFloat}
+              className="bg-emerald-600 hover:bg-emerald-700 text-white"
+            >
+              {processing ? (
+                <><Loader2 className="w-4 h-4 mr-2 animate-spin" /> Opening...</>
+              ) : (
+                <><PlayCircle className="w-4 h-4 mr-2" /> Start Shift</>
+              )}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* Close Shift (Cash-Up) Modal */}
+      <Dialog open={showCloseShift} onOpenChange={setShowCloseShift}>
+        <DialogContent className="bg-[#151b28] border-gray-800 text-white max-w-md">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2">
+              <Calculator className="w-5 h-5 text-orange-400" />
+              Cash Up & Close Shift
+            </DialogTitle>
+          </DialogHeader>
+          
+          <div className="py-4 space-y-4">
+            {/* Shift Summary */}
+            <div className="p-4 bg-gray-800/50 rounded-lg space-y-2">
+              <div className="flex justify-between text-sm">
+                <span className="text-gray-400">Opening Float</span>
+                <span className="text-white">${currentShift?.opening_float?.toFixed(2)}</span>
+              </div>
+              <div className="flex justify-between text-sm">
+                <span className="text-gray-400">Cash Sales</span>
+                <span className="text-emerald-400">
+                  +${((currentShift?.expected_cash || 0) - (currentShift?.opening_float || 0)).toFixed(2)}
+                </span>
+              </div>
+              <div className="h-px bg-gray-700 my-2" />
+              <div className="flex justify-between font-semibold">
+                <span className="text-gray-300">Expected Cash</span>
+                <span className="text-white text-lg">${currentShift?.expected_cash?.toFixed(2)}</span>
+              </div>
+            </div>
+            
+            <div className="grid grid-cols-2 gap-4">
+              <div>
+                <Label className="text-gray-400 text-sm mb-2 block">Actual Cash Counted ($)</Label>
+                <Input
+                  type="number"
+                  value={closingData.actualCash}
+                  onChange={(e) => setClosingData(prev => ({ ...prev, actualCash: e.target.value }))}
+                  placeholder="0.00"
+                  className="bg-gray-800 border-gray-700 text-white text-center"
+                />
+              </div>
+              <div>
+                <Label className="text-gray-400 text-sm mb-2 block">Closing Float ($)</Label>
+                <Input
+                  type="number"
+                  value={closingData.closingFloat}
+                  onChange={(e) => setClosingData(prev => ({ ...prev, closingFloat: e.target.value }))}
+                  placeholder="0.00"
+                  className="bg-gray-800 border-gray-700 text-white text-center"
+                />
+              </div>
+            </div>
+            
+            {/* Variance Preview */}
+            {closingData.actualCash && currentShift && (
+              <div className={`p-3 rounded-lg text-center ${
+                parseFloat(closingData.actualCash) === currentShift.expected_cash
+                  ? 'bg-emerald-500/20 border border-emerald-500/30'
+                  : parseFloat(closingData.actualCash) > currentShift.expected_cash
+                    ? 'bg-blue-500/20 border border-blue-500/30'
+                    : 'bg-red-500/20 border border-red-500/30'
+              }`}>
+                <p className="text-sm text-gray-400 mb-1">Variance</p>
+                <p className={`text-xl font-bold ${
+                  parseFloat(closingData.actualCash) === currentShift.expected_cash
+                    ? 'text-emerald-400'
+                    : parseFloat(closingData.actualCash) > currentShift.expected_cash
+                      ? 'text-blue-400'
+                      : 'text-red-400'
+                }`}>
+                  {parseFloat(closingData.actualCash) >= currentShift.expected_cash ? '+' : ''}
+                  ${(parseFloat(closingData.actualCash) - currentShift.expected_cash).toFixed(2)}
+                </p>
+                <p className="text-xs text-gray-500 mt-1">
+                  {parseFloat(closingData.actualCash) === currentShift.expected_cash
+                    ? 'Perfect balance!'
+                    : parseFloat(closingData.actualCash) > currentShift.expected_cash
+                      ? 'Cash over'
+                      : 'Cash short'}
+                </p>
               </div>
             )}
             
-            <div className="flex justify-between text-xs sm:text-sm">
-              <span className="text-gray-400">Tax (GST 10%)</span>
-              <span className="text-white">${tax.toFixed(2)}</span>
+            <div>
+              <Label className="text-gray-400 text-sm mb-2 block">Notes (Optional)</Label>
+              <Input
+                value={closingData.notes}
+                onChange={(e) => setClosingData(prev => ({ ...prev, notes: e.target.value }))}
+                placeholder="Any notes about this shift..."
+                className="bg-gray-800 border-gray-700 text-white"
+              />
+            </div>
+          </div>
+          
+          <DialogFooter className="gap-2">
+            <Button
+              variant="outline"
+              onClick={() => setShowCloseShift(false)}
+              className="border-gray-700 text-gray-300"
+            >
+              Cancel
+            </Button>
+            <Button
+              onClick={handleCloseShift}
+              disabled={processing || !closingData.actualCash || !closingData.closingFloat}
+              className="bg-orange-600 hover:bg-orange-700 text-white"
+            >
+              {processing ? (
+                <><Loader2 className="w-4 h-4 mr-2 animate-spin" /> Processing...</>
+              ) : (
+                <><StopCircle className="w-4 h-4 mr-2" /> Close Shift</>
+              )}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* Cash Movement Modal */}
+      <Dialog open={showCashMovement} onOpenChange={setShowCashMovement}>
+        <DialogContent className="bg-[#151b28] border-gray-800 text-white max-w-sm">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2">
+              <DollarSign className="w-5 h-5 text-blue-400" />
+              Cash In / Out
+            </DialogTitle>
+          </DialogHeader>
+          
+          <div className="py-4 space-y-4">
+            <div className="grid grid-cols-2 gap-2">
+              <Button
+                variant={cashMovement.type === 'in' ? 'default' : 'outline'}
+                onClick={() => setCashMovement(prev => ({ ...prev, type: 'in' }))}
+                className={cashMovement.type === 'in' ? 'bg-emerald-600' : 'border-gray-700 text-gray-300'}
+              >
+                <ArrowDownCircle className="w-4 h-4 mr-2" />
+                Cash In
+              </Button>
+              <Button
+                variant={cashMovement.type === 'out' ? 'default' : 'outline'}
+                onClick={() => setCashMovement(prev => ({ ...prev, type: 'out' }))}
+                className={cashMovement.type === 'out' ? 'bg-red-600' : 'border-gray-700 text-gray-300'}
+              >
+                <ArrowUpCircle className="w-4 h-4 mr-2" />
+                Cash Out
+              </Button>
             </div>
             
-            <div className="h-px bg-gray-700" />
-            
-            <div className="flex justify-between items-center">
-              <span className="text-white font-semibold text-base sm:text-lg">Total</span>
-              <span className="text-emerald-400 font-bold text-xl sm:text-2xl">${total.toFixed(2)}</span>
+            <div>
+              <Label className="text-gray-400 text-sm mb-2 block">Amount ($)</Label>
+              <Input
+                type="number"
+                value={cashMovement.amount}
+                onChange={(e) => setCashMovement(prev => ({ ...prev, amount: e.target.value }))}
+                placeholder="0.00"
+                className="bg-gray-800 border-gray-700 text-white text-xl text-center py-3"
+              />
             </div>
-          </CardContent>
-        </Card>
-
-        {/* Action Buttons */}
-        <div className="grid grid-cols-2 gap-2 sm:gap-3">
-          <Button
-            variant="outline"
-            onClick={() => setShowDiscount(true)}
-            className="border-gray-700 text-gray-300 hover:bg-gray-800 text-xs sm:text-sm py-2 sm:py-2.5"
-          >
-            <Percent className="w-3.5 h-3.5 sm:w-4 sm:h-4 mr-1.5" />
-            Discount
-          </Button>
-          <Button
-            variant="outline"
-            className="border-gray-700 text-gray-300 hover:bg-gray-800 text-xs sm:text-sm py-2 sm:py-2.5"
-          >
-            <Clock className="w-3.5 h-3.5 sm:w-4 sm:h-4 mr-1.5" />
-            Hold
-          </Button>
-        </div>
-
-        {/* Payment Buttons */}
-        <div className="grid grid-cols-2 gap-2 sm:gap-3 mt-auto">
-          <Button
-            onClick={() => {
-              setPaymentMethod('cash');
-              setShowPayment(true);
-            }}
-            disabled={cart.length === 0}
-            className="bg-emerald-600 hover:bg-emerald-700 text-white py-4 sm:py-6 text-sm sm:text-base"
-          >
-            <Banknote className="w-4 h-4 sm:w-5 sm:h-5 mr-2" />
-            Cash
-          </Button>
-          <Button
-            onClick={() => {
-              setPaymentMethod('card');
-              setShowPayment(true);
-            }}
-            disabled={cart.length === 0}
-            className="bg-blue-600 hover:bg-blue-700 text-white py-4 sm:py-6 text-sm sm:text-base"
-          >
-            <CreditCard className="w-4 h-4 sm:w-5 sm:h-5 mr-2" />
-            Card
-          </Button>
-        </div>
-      </div>
+            
+            <div>
+              <Label className="text-gray-400 text-sm mb-2 block">Reason</Label>
+              <Input
+                value={cashMovement.reason}
+                onChange={(e) => setCashMovement(prev => ({ ...prev, reason: e.target.value }))}
+                placeholder={cashMovement.type === 'in' ? 'e.g., Float top-up, Change' : 'e.g., Petty cash, Bank deposit'}
+                className="bg-gray-800 border-gray-700 text-white"
+              />
+            </div>
+            
+            <div className="grid grid-cols-3 gap-2">
+              {[20, 50, 100].map((amount) => (
+                <Button
+                  key={amount}
+                  variant="outline"
+                  onClick={() => setCashMovement(prev => ({ ...prev, amount: amount.toString() }))}
+                  className="border-gray-700 text-gray-300 hover:bg-gray-800"
+                >
+                  ${amount}
+                </Button>
+              ))}
+            </div>
+          </div>
+          
+          <DialogFooter className="gap-2">
+            <Button
+              variant="outline"
+              onClick={() => setShowCashMovement(false)}
+              className="border-gray-700 text-gray-300"
+            >
+              Cancel
+            </Button>
+            <Button
+              onClick={handleCashMovement}
+              disabled={processing || !cashMovement.amount || !cashMovement.reason}
+              className={cashMovement.type === 'in' ? 'bg-emerald-600 hover:bg-emerald-700' : 'bg-red-600 hover:bg-red-700'}
+            >
+              {processing ? (
+                <><Loader2 className="w-4 h-4 mr-2 animate-spin" /> Recording...</>
+              ) : (
+                <><Check className="w-4 h-4 mr-2" /> Record</>
+              )}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
 
       {/* Payment Modal */}
       <Dialog open={showPayment} onOpenChange={setShowPayment}>
@@ -653,10 +1303,9 @@ const MerchantPOS = () => {
           
           {lastTransaction && (
             <div className="py-4">
-              {/* Receipt Preview */}
               <div className="bg-white text-gray-900 p-4 rounded-lg text-sm print:p-0">
                 <div className="text-center mb-4">
-                  <h3 className="font-bold text-lg">{outlet?.name || 'Store'}</h3>
+                  <h3 className="font-bold text-lg">{selectedOutlet?.name || 'Store'}</h3>
                   <p className="text-gray-600 text-xs">{lastTransaction.transaction_number}</p>
                   <p className="text-gray-600 text-xs">{new Date(lastTransaction.created_at).toLocaleString()}</p>
                 </div>
@@ -847,6 +1496,53 @@ const MerchantPOS = () => {
               Apply
             </Button>
           </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* Shift History Modal */}
+      <Dialog open={showShiftHistory} onOpenChange={setShowShiftHistory}>
+        <DialogContent className="bg-[#151b28] border-gray-800 text-white max-w-lg">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2">
+              <History className="w-5 h-5 text-blue-400" />
+              Shift History
+            </DialogTitle>
+          </DialogHeader>
+          
+          <div className="py-4 max-h-96 overflow-y-auto">
+            {shiftHistory.length === 0 ? (
+              <div className="text-center py-8 text-gray-500">
+                <History className="w-10 h-10 mx-auto mb-3 opacity-30" />
+                <p>No shift history yet</p>
+              </div>
+            ) : (
+              <div className="space-y-3">
+                {shiftHistory.map((shift) => (
+                  <div key={shift.id} className="p-3 bg-gray-800/50 rounded-lg">
+                    <div className="flex items-center justify-between mb-2">
+                      <span className="text-white font-medium">{shift.staff_name}</span>
+                      <span className={`text-xs px-2 py-0.5 rounded-full ${
+                        shift.status === 'open' ? 'bg-emerald-500/20 text-emerald-400' : 'bg-gray-600/50 text-gray-400'
+                      }`}>
+                        {shift.status}
+                      </span>
+                    </div>
+                    <div className="grid grid-cols-2 gap-2 text-xs text-gray-400">
+                      <div>Opened: {new Date(shift.opened_at).toLocaleString()}</div>
+                      {shift.closed_at && <div>Closed: {new Date(shift.closed_at).toLocaleString()}</div>}
+                      <div>Opening: ${shift.opening_float?.toFixed(2)}</div>
+                      <div>Expected: ${shift.expected_cash?.toFixed(2)}</div>
+                      {shift.variance !== null && (
+                        <div className={shift.variance === 0 ? 'text-emerald-400' : shift.variance > 0 ? 'text-blue-400' : 'text-red-400'}>
+                          Variance: ${shift.variance?.toFixed(2)}
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
         </DialogContent>
       </Dialog>
     </div>
