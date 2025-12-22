@@ -1569,64 +1569,71 @@ async def get_products(
 
 @api_router.get("/products/template-tags")
 async def get_product_template_tags():
-    """Get all available product template tags for theme development"""
+    """Get all available product template tags for theme development.
+    
+    Note: Both short form ([@name@]) and prefixed form ([@product_name@]) are supported.
+    Short form is used for single product pages, prefixed form for loops and lists.
+    """
     return {
         "basic_info": {
             "title": "Basic Information",
             "tags": [
-                {"field": "name", "tag": "[@product_name@]", "description": "Product name/title"},
+                {"field": "name", "tag": "[@name@] or [@product_name@]", "description": "Product name/title"},
                 {"field": "subtitle", "tag": "[@product_subtitle@]", "description": "Product subtitle or tagline"},
-                {"field": "description", "tag": "[@product_description@]", "description": "Full product description (HTML supported)"},
-                {"field": "short_description", "tag": "[@product_short_description@]", "description": "Brief product summary"},
-                {"field": "id", "tag": "[@product_id@]", "description": "Unique product identifier"},
+                {"field": "description", "tag": "[@description@] or [@product_description@]", "description": "Full product description (HTML supported)"},
+                {"field": "short_description", "tag": "[@short_description@] or [@product_short_description@]", "description": "Brief product summary"},
+                {"field": "id", "tag": "[@id@] or [@product_id@]", "description": "Unique product identifier"},
             ]
         },
         "pricing": {
             "title": "Pricing",
             "tags": [
-                {"field": "price", "tag": "[@product_price@]", "description": "Current selling price (number)"},
-                {"field": "price", "tag": "[@product_price_formatted@]", "description": "Price with currency symbol (e.g., $99.99)"},
-                {"field": "compare_price", "tag": "[@product_compare_price@]", "description": "Original/RRP price (number)"},
-                {"field": "compare_price", "tag": "[@product_compare_price_formatted@]", "description": "RRP with currency symbol"},
-                {"field": "compare_price", "tag": "[@product_rrp@]", "description": "Alias for compare price"},
-                {"field": "cost_price", "tag": "[@product_cost@]", "description": "Cost/wholesale price"},
-                {"field": "on_sale", "tag": "[@product_sale@]", "description": "Returns 'y' if on sale, 'n' otherwise"},
+                {"field": "price", "tag": "[@price@] or [@product_price@]", "description": "Current selling price (number)"},
+                {"field": "price", "tag": "[@price_formatted@] or [@product_price_formatted@]", "description": "Price with currency symbol (e.g., $99.99)"},
+                {"field": "compare_price", "tag": "[@compare_price@] or [@product_compare_price@]", "description": "Original/RRP price (number)"},
+                {"field": "compare_price", "tag": "[@compare_price_formatted@]", "description": "RRP with currency symbol"},
+                {"field": "compare_price", "tag": "[@rrp@] or [@product_rrp@]", "description": "Alias for compare price"},
+                {"field": "savings", "tag": "[@savings@] or [@savings_formatted@]", "description": "Amount saved if on sale"},
+                {"field": "on_sale", "tag": "[@on_sale@] or [@product_on_sale@]", "description": "Returns 'y' if on sale, 'n' otherwise"},
+                {"field": "installment_price", "tag": "[@installment_price@]", "description": "Price divided by 4 for Afterpay/etc"},
                 {"field": "tax_class", "tag": "[@product_tax_class@]", "description": "Tax classification"},
             ]
         },
         "identification": {
             "title": "Identification & SKU",
             "tags": [
-                {"field": "sku", "tag": "[@product_sku@]", "description": "Stock Keeping Unit"},
-                {"field": "barcode", "tag": "[@product_barcode@]", "description": "Product barcode/UPC"},
-                {"field": "barcode", "tag": "[@product_upc@]", "description": "Alias for barcode"},
-                {"field": "mpn", "tag": "[@product_mpn@]", "description": "Manufacturer Part Number"},
+                {"field": "sku", "tag": "[@sku@] or [@SKU@] or [@product_sku@]", "description": "Stock Keeping Unit"},
+                {"field": "barcode", "tag": "[@barcode@] or [@product_barcode@]", "description": "Product barcode/UPC"},
+                {"field": "barcode", "tag": "[@upc@] or [@product_upc@]", "description": "Alias for barcode"},
+                {"field": "mpn", "tag": "[@mpn@] or [@product_mpn@]", "description": "Manufacturer Part Number"},
             ]
         },
         "categorization": {
             "title": "Categorization",
             "tags": [
-                {"field": "category_id", "tag": "[@product_category@]", "description": "Category name"},
-                {"field": "category_id", "tag": "[@product_category_id@]", "description": "Category ID"},
-                {"field": "brand", "tag": "[@product_brand@]", "description": "Brand name"},
-                {"field": "manufacturer", "tag": "[@product_manufacturer@]", "description": "Manufacturer name"},
+                {"field": "category_id", "tag": "[@category_name@] or [@product_category@]", "description": "Category name"},
+                {"field": "category_id", "tag": "[@category_id@] or [@product_category_id@]", "description": "Category ID"},
+                {"field": "brand", "tag": "[@brand@] or [@product_brand@]", "description": "Brand name"},
+                {"field": "manufacturer", "tag": "[@manufacturer@] or [@product_manufacturer@]", "description": "Manufacturer name"},
                 {"field": "tags", "tag": "[@product_tags@]", "description": "Comma-separated tags"},
             ]
         },
         "images": {
             "title": "Images",
             "tags": [
-                {"field": "images", "tag": "[@product_image@]", "description": "Primary product image URL"},
-                {"field": "images", "tag": "[@product_images@]", "description": "All product images (use in loop)"},
-                {"field": "thumbnail", "tag": "[@product_thumbnail@]", "description": "Thumbnail image URL"},
+                {"field": "images", "tag": "[@image@] or [@product_image@]", "description": "Primary product image URL"},
+                {"field": "images", "tag": "[@image2@] through [@image12@]", "description": "Additional product images (up to 12)"},
+                {"field": "images", "tag": "[@product_images@]", "description": "Comma-separated list of all image URLs"},
+                {"field": "thumbnail", "tag": "[@thumb@] or [@thumbnail@] or [@product_thumbnail@]", "description": "Thumbnail image URL"},
             ]
         },
         "inventory": {
             "title": "Inventory & Stock",
             "tags": [
-                {"field": "stock", "tag": "[@product_stock@]", "description": "Current stock quantity"},
+                {"field": "stock", "tag": "[@stock@] or [@qty@] or [@product_stock@]", "description": "Current stock quantity"},
                 {"field": "stock", "tag": "[@product_qty@]", "description": "Alias for stock quantity"},
-                {"field": "in_stock", "tag": "[@product_in_stock@]", "description": "Returns 'y' if in stock"},
+                {"field": "in_stock", "tag": "[@in_stock@] or [@product_in_stock@]", "description": "Returns 'y' if in stock"},
+                {"field": "stock_status", "tag": "[@stock_status@]", "description": "Returns 'In Stock' or 'Out of Stock'"},
                 {"field": "low_stock_threshold", "tag": "[@product_low_stock@]", "description": "Low stock warning threshold"},
                 {"field": "allow_backorder", "tag": "[@product_backorder@]", "description": "Returns 'y' if backorders allowed"},
             ]
@@ -1634,7 +1641,7 @@ async def get_product_template_tags():
         "shipping": {
             "title": "Shipping & Dimensions",
             "tags": [
-                {"field": "weight", "tag": "[@product_weight@]", "description": "Product weight (kg)"},
+                {"field": "weight", "tag": "[@weight@] or [@product_weight@]", "description": "Product weight (kg)"},
                 {"field": "length", "tag": "[@product_length@]", "description": "Product length (cm)"},
                 {"field": "width", "tag": "[@product_width@]", "description": "Product width (cm)"},
                 {"field": "height", "tag": "[@product_height@]", "description": "Product height (cm)"},
@@ -1646,7 +1653,7 @@ async def get_product_template_tags():
             "tags": [
                 {"field": "meta_title", "tag": "[@product_meta_title@]", "description": "SEO page title"},
                 {"field": "meta_description", "tag": "[@product_meta_description@]", "description": "SEO meta description"},
-                {"field": "url_slug", "tag": "[@product_url@]", "description": "Product URL/permalink"},
+                {"field": "url_slug", "tag": "[@url@] or [@product_url@]", "description": "Product URL/permalink"},
                 {"field": "url_slug", "tag": "[@product_slug@]", "description": "URL slug only"},
             ]
         },
