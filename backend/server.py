@@ -583,15 +583,6 @@ class ThemeTemplateUpdate(BaseModel):
     is_active: Optional[bool] = None
     template_type: Optional[str] = None
 
-class ContentZone(BaseModel):
-    id: str = Field(default_factory=lambda: str(uuid.uuid4()))
-    zone_id: str  # e.g., "homepage_banner", "footer_links"
-    name: str
-    content: str  # HTML content
-    is_active: bool = True
-    created_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
-    updated_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
-
 # ==================== MAROPOST TEMPLATE ENGINE ====================
 
 class MaropostTemplateEngine:
