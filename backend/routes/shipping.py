@@ -1046,15 +1046,19 @@ async def calculate_shipping(request: ShippingCalculationRequest):
         if per_parcel_weight > 0 and per_kg > 0:
             single_parcel_price += per_parcel_weight * per_kg
         
-        # Apply fuel levy to BASE ONLY (Maropost method - fuel levy doesn't apply to handling fee)
+        # Apply fuel levy (Maropost method)
         # Fuel levy can be both a percentage AND a flat amount
+        # The percentage applies to the sum of (base + fixed fuel levy)
         fuel_levy_percent = service.get("fuel_levy_percent", 0)
         fuel_levy_amount = service.get("fuel_levy_amount", 0)
         
-        if fuel_levy_percent > 0:
-            single_parcel_price += single_parcel_price * (fuel_levy_percent / 100)
+        # Add fixed fuel levy first
         if fuel_levy_amount > 0:
             single_parcel_price += fuel_levy_amount
+        
+        # Then apply percentage to the total (base + fixed)
+        if fuel_levy_percent > 0:
+            single_parcel_price += single_parcel_price * (fuel_levy_percent / 100)
         
         # Add handling fee AFTER fuel levy (handling is not subject to fuel levy)
         single_parcel_price += service.get("handling_fee", 0)
