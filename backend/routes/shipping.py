@@ -49,11 +49,15 @@ class ShippingRate(BaseModel):
     zone_name: str
     min_weight: float = 0
     max_weight: float = 999999
+    max_length_mm: float = 0  # Maximum length in millimeters (0 = no limit)
     base_rate: float = 0
+    min_charge: float = 0  # Minimum charge for this zone
     first_parcel: float = 0  # 1st Parcel rate (same as base_rate for backwards compatibility)
     per_subsequent: float = 0  # Per Subsequent Parcel rate
     per_kg_rate: float = 0
+    add_weight: float = 0  # Additional weight charge
     delivery_days: int = 3
+    internal_note: str = ""
     is_active: bool = True
 
 class ShippingService(BaseModel):
