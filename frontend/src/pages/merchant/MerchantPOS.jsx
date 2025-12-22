@@ -131,6 +131,7 @@ const MerchantPOS = () => {
   // Initialize POS
   useEffect(() => {
     initializePOS();
+    fetchAllProducts();
   }, []);
 
   const initializePOS = async () => {
