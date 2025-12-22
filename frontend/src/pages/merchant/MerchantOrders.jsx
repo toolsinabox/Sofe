@@ -819,6 +819,54 @@ const MerchantOrders = () => {
           </DialogFooter>
         </DialogContent>
       </Dialog>
+
+      {/* Delete Order Confirmation Modal */}
+      <Dialog open={showDeleteModal} onOpenChange={setShowDeleteModal}>
+        <DialogContent className="bg-[#1a1f2e] border-gray-700 text-white max-w-md">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2 text-red-400">
+              <Trash2 size={20} />
+              Delete Order
+            </DialogTitle>
+          </DialogHeader>
+          <div className="py-4">
+            <div className="p-4 bg-red-500/10 border border-red-500/30 rounded-lg mb-4">
+              <p className="text-red-400 text-sm">
+                <strong>Warning:</strong> This action cannot be undone. The order and all its data will be permanently deleted.
+              </p>
+            </div>
+            {selectedOrder && (
+              <div className="space-y-2 text-sm">
+                <p className="text-gray-400">
+                  Order: <span className="text-white font-medium">{selectedOrder.order_number}</span>
+                </p>
+                <p className="text-gray-400">
+                  Customer: <span className="text-white">{selectedOrder.customer_name}</span>
+                </p>
+                <p className="text-gray-400">
+                  Total: <span className="text-white">${selectedOrder.total?.toFixed(2)}</span>
+                </p>
+              </div>
+            )}
+          </div>
+          <DialogFooter className="gap-2">
+            <Button 
+              variant="outline" 
+              onClick={() => { setShowDeleteModal(false); setSelectedOrder(null); }} 
+              className="border-gray-700 text-gray-300"
+            >
+              Cancel
+            </Button>
+            <Button 
+              onClick={deleteOrder} 
+              disabled={deleting}
+              className="bg-red-600 hover:bg-red-700 text-white"
+            >
+              {deleting ? 'Deleting...' : 'Delete Order'}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };
