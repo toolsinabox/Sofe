@@ -68,6 +68,9 @@ const MerchantShipping = () => {
   const [calcSuburbs, setCalcSuburbs] = useState([]);
   const [loadingSuburbs, setLoadingSuburbs] = useState(false);
   const [calcWeight, setCalcWeight] = useState('1');
+  const [calcLength, setCalcLength] = useState('');
+  const [calcWidth, setCalcWidth] = useState('');
+  const [calcHeight, setCalcHeight] = useState('');
   const [calcTotal, setCalcTotal] = useState('100');
   const [calcResult, setCalcResult] = useState(null);
   const [calculating, setCalculating] = useState(false);
