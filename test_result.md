@@ -642,3 +642,19 @@ if (shiftRes.data && Object.keys(shiftRes.data).length > 0) {
 - `/app/frontend/src/pages/merchant/MerchantPOS.jsx` - Updated `handleSetupComplete` function
 
 ### Status: COMPLETE ✓
+
+### Additional Bug Fix - Opening Shift with $0 Float
+
+**Issue:** Users reported "Failed to open shift" error when trying to open a shift with $0 opening float after ending a previous shift.
+
+**Root Cause:** The backend `/api/pos/shifts/open` endpoint was returning `shift_data` after inserting into MongoDB, but MongoDB had added `_id` (ObjectId) to the dict, which couldn't be JSON serialized.
+
+**Fix Applied:** Added `shift_data.pop("_id", None)` before returning the response in `/app/backend/server.py`.
+
+**Files Modified:**
+- `/app/backend/server.py` - Line ~5667: Added `_id` removal
+
+**Test Verified:**
+- Close shift with $0 actual cash and $0 closing float ✓
+- Open new shift with $0 opening float ✓
+- Full cycle: End Shift → Select outlet/register → Open Shift with $0 → POS loads successfully ✓
