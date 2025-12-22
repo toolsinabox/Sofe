@@ -719,3 +719,52 @@ After payment is processed, a "Confirm Sale" modal appears with:
 - `/app/backend/server.py` - Added status update and email receipt endpoints
 
 ### Status: PHASE 1 COMPLETE ✓
+
+## POS Payment Terms (Phase 2) - 2025-12-22
+
+### Features Implemented ✓
+
+#### Payment Terms Tabs (Maropost Style)
+The payment modal now has 3 tabs at the top:
+
+1. **Pay in full** (default - green)
+   - Full payment required now
+   - Shows total amount due
+
+2. **Pay later** (blue)
+   - Initial Payment options: No | 10% | 20% | Custom
+   - Shows remaining balance
+   - Warning if no customer added
+   - Calculates initial payment amount
+
+3. **Layby** (purple)
+   - Due date options: 4 weeks | 8 weeks | Select date
+   - Initial Payment options: No | 10% | 20% | Custom
+   - Shows due date calculation
+   - Shows remaining balance
+   - Warning if no customer added
+
+#### Payment Flow Updates
+- Payment Method section: Cash / Card selection buttons
+- Exact Amount button shows correct amount based on payment term
+- Change calculation updated for partial payments
+- Customer requirement enforced for Pay Later and Layby
+
+#### Transaction Data
+- Payment terms stored in transaction: type, initial_payment, remaining_balance, due_date, status
+- Backend receives payment_terms object with transaction
+
+### Screenshot Verification ✓
+- Pay in full tab with tabs visible
+- Pay later tab with initial payment options and customer warning
+- Layby tab with due date options and initial payment options
+
+### Files Modified
+- `/app/frontend/src/pages/merchant/MerchantPOS.jsx`:
+  - Added payment term states
+  - Added calculation functions
+  - Redesigned Payment Modal with tabs
+  - Updated processPayment function
+  - Updated Confirm Sale modal to show payment terms info
+
+### Status: PHASE 2 COMPLETE ✓
