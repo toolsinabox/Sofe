@@ -277,7 +277,7 @@ const BlockEditor = ({ block, onUpdate, onDelete, onMoveUp, onMoveDown, isFirst,
                 Use Maropost-style template tags for dynamic content. Click "Show Tags" to see available tags.
               </p>
             </div>
-          )}}
+          )}
           
           {/* Text Block */}
           {block.type === 'text' && (
