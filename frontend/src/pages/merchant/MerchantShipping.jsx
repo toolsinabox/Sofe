@@ -1048,6 +1048,7 @@ const MerchantShipping = () => {
             per_subsequent: 0,
             per_kg_rate: 0,
             delivery_days: 3,
+            internal_note: '',
             is_active: true
           }]
         });
@@ -1069,6 +1070,7 @@ const MerchantShipping = () => {
           per_subsequent: 0,
           per_kg_rate: 0,
           delivery_days: 3,
+          internal_note: '',
           is_active: true
         };
       });
@@ -1090,6 +1092,7 @@ const MerchantShipping = () => {
           per_subsequent: 0,
           per_kg_rate: 0,
           delivery_days: 3,
+          internal_note: '',
           is_active: true
         };
       });
