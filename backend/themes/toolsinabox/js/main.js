@@ -3,8 +3,98 @@
 
 const API_BASE = window.location.origin + '/api';
 
+// ================================
+// BANNER CAROUSEL
+// ================================
+let currentSlide = 0;
+let slideCount = 0;
+let autoSlideInterval = null;
+
+function initCarousel() {
+    const slidesContainer = document.getElementById('heroSlides');
+    const dotsContainer = document.getElementById('carouselDots');
+    
+    if (!slidesContainer) return;
+    
+    const slides = slidesContainer.querySelectorAll('.hero-slide');
+    slideCount = slides.length;
+    
+    if (slideCount <= 1) {
+        // Hide navigation if only one slide
+        document.querySelectorAll('.carousel-nav, .carousel-dots').forEach(el => {
+            el.style.display = 'none';
+        });
+        return;
+    }
+    
+    // Create dots
+    if (dotsContainer) {
+        dotsContainer.innerHTML = '';
+        for (let i = 0; i < slideCount; i++) {
+            const dot = document.createElement('button');
+            dot.className = 'carousel-dot' + (i === 0 ? ' active' : '');
+            dot.setAttribute('aria-label', `Go to slide ${i + 1}`);
+            dot.onclick = () => goToSlide(i);
+            dotsContainer.appendChild(dot);
+        }
+    }
+    
+    // Start auto-slide
+    startAutoSlide();
+    
+    // Pause on hover
+    const carousel = document.querySelector('.hero-carousel');
+    if (carousel) {
+        carousel.addEventListener('mouseenter', stopAutoSlide);
+        carousel.addEventListener('mouseleave', startAutoSlide);
+    }
+}
+
+function goToSlide(index) {
+    const slidesContainer = document.getElementById('heroSlides');
+    const dots = document.querySelectorAll('.carousel-dot');
+    
+    if (!slidesContainer) return;
+    
+    // Wrap around
+    if (index >= slideCount) index = 0;
+    if (index < 0) index = slideCount - 1;
+    
+    currentSlide = index;
+    slidesContainer.style.transform = `translateX(-${currentSlide * 100}%)`;
+    
+    // Update dots
+    dots.forEach((dot, i) => {
+        dot.classList.toggle('active', i === currentSlide);
+    });
+}
+
+function changeSlide(direction) {
+    goToSlide(currentSlide + direction);
+    // Reset auto-slide timer when manually changing
+    stopAutoSlide();
+    startAutoSlide();
+}
+
+function startAutoSlide() {
+    if (autoSlideInterval) clearInterval(autoSlideInterval);
+    autoSlideInterval = setInterval(() => {
+        goToSlide(currentSlide + 1);
+    }, 5000); // Change slide every 5 seconds
+}
+
+function stopAutoSlide() {
+    if (autoSlideInterval) {
+        clearInterval(autoSlideInterval);
+        autoSlideInterval = null;
+    }
+}
+
 document.addEventListener('DOMContentLoaded', function() {
     console.log('Theme loaded: Tools In A Box');
+    
+    // Initialize carousel
+    initCarousel();
     
     // Initialize cart
     initCart();
