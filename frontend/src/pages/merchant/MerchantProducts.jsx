@@ -53,7 +53,14 @@ import {
   TabsList,
   TabsTrigger,
 } from '../../components/ui/tabs';
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from '../../components/ui/tooltip';
 import { useDropzone } from 'react-dropzone';
+import { HelpCircle } from 'lucide-react';
 
 const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
 const API = `${BACKEND_URL}/api`;
