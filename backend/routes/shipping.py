@@ -1009,17 +1009,22 @@ async def calculate_shipping(request: ShippingCalculationRequest):
         if service_categories and not service_categories.intersection(item_categories):
             continue
         
-        # Find rate for this zone (case-insensitive match)
+        # Find rate by checking ALL matching zones (case-insensitive match)
         rate = None
-        zone_code = zone.get("code", "").upper()
-        for r in service.get("rates", []):
-            rate_zone_code = r.get("zone_code", "").upper()
-            if rate_zone_code == zone_code:
-                # Check weight range against chargeable weight
-                if r.get("min_weight", 0) <= chargeable_weight <= r.get("max_weight", 999999):
-                    if r.get("is_active", True):
-                        rate = r
-                        break
+        matched_zone = None
+        for zone in matching_zones:
+            zone_code = zone.get("code", "").upper()
+            for r in service.get("rates", []):
+                rate_zone_code = r.get("zone_code", "").upper()
+                if rate_zone_code == zone_code:
+                    # Check weight range against chargeable weight
+                    if r.get("min_weight", 0) <= chargeable_weight <= r.get("max_weight", 999999):
+                        if r.get("is_active", True):
+                            rate = r
+                            matched_zone = zone
+                            break
+            if rate:
+                break
         
         if not rate:
             continue
