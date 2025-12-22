@@ -1,66 +1,86 @@
 <analysis>**original_problem_statement:**
-The initial request was to build a clone of the Maropost e-commerce platform. This has since expanded to include a merchant dashboard, a Point of Sale (POS) system, and now a highly detailed shipping calculation and management system.
+The user wants to build a Maropost e-commerce clone. The current focus is on perfecting the shipping calculation system and integrating it into the customer-facing storefront.
 
-The most recent set of requests focused on perfecting this shipping system. The user asked for:
-- A suburb field in the shipping calculator that auto-populates from a postcode.
-- A fix for various UI bugs in the merchant shipping dashboard, such as input fields losing focus and edit modals not populating with data.
-- Implementation of cubic (volumetric) weight calculations based on new shipping dimension fields for products.
-- Implementation of GST handling via a Rates Include GST toggle for each shipping service.
-- A deep investigation and correction of the shipping calculation logic to exactly match Maropost's order of operations, specifically regarding how the fuel levy and handling fees are applied.
-- The final, and currently active, request is to integrate this perfected shipping calculator into the customer-facing storefront on the **Product Detail, Cart, and Checkout pages**.
+Recent requests include:
+1.  **Shipping Calculation Accuracy:** Debug and fix discrepancies in shipping prices for specific products (, ) to match Maropost's logic precisely. This involves handling cubic weight, per-parcel charges, fuel levies, and minimum charges correctly.
+2.  **Display All Shipping Options:** Ensure all available shipping carriers (e.g., Startrack, XFM-RES) appear as options for the customer during checkout.
+3.  **UI Bug Fix:** Resolve an issue where input fields lose focus in the Edit Shipping Service modal in the merchant dashboard, making it difficult to edit rates.
+4.  **UI/UX Improvements:**
+    *   Change product dimension units from  to  on the merchant product page.
+    *   Display the calculated cubic size next to the dimension fields.
+5.  **Rate Import Reliability:** Ensure that uploading a shipping rate CSV file works correctly every time, applying all fields like Minimum Charge and Maximum Length.
+6.  **Maximum Length Filtering:** Implement filtering to hide shipping options if a product's dimension exceeds the Maximum Length specified in the rate (in mm).
 
 **User's preferred language**: English
 
 **what currently exists?**
-- A full-stack application (React/FastAPI/MongoDB) with a merchant dashboard and POS.
-- A comprehensive backend shipping module () with a highly accurate calculation engine that now handles:
-    - Cubic/volumetric weight.
-    - A specific order of operations (Base Rate -> Fuel Levy -> Handling Fee -> GST) to match Maropost.
-    - GST calculations based on a  flag on each shipping service.
-    - An API endpoint for postcode-to-suburb lookup.
-- A feature-rich merchant shipping dashboard () with a fully functional shipping calculator and UI bug fixes applied.
-- The agent has started integrating the calculator into the storefront by overwriting the  and  files.
+- A full-stack application with a React/FastAPI/MongoDB stack.
+- The storefront is **not** a React SPA but is server-side rendered by a Maropost-style template engine located in . Client-side interactivity is handled by vanilla JavaScript in the theme files.
+- The React components under  are legacy and **not used**.
+- A complex backend shipping calculation engine in  that now handles per-parcel logic, multiple carriers, case-insensitive zone matching, minimum charges, and maximum length filtering.
+- The shipping calculator is integrated into the product, cart, and checkout pages of the server-rendered storefront.
+- The agent has successfully implemented logic that results in the correct price for product  (08.62 with XFM-RES).
 
 **Last working item**:
--   **Last item agent was working:** Integrating the newly perfected shipping calculation logic into the customer-facing storefront pages. The agent had just overwritten the  and  files with new code and was about to address the  page.
+-   **Last item agent was working:** The agent was addressing three user requests simultaneously:
+    1.  Fixing the focus loss bug in the Edit Shipping Service modal ().
+    2.  Implementing the change from  to  for dimensions and showing cubic size on the product page.
+    3.  Verifying the shipping price for product  is correct (08.62).
+    
+    The agent identified the cause of the focus loss (inline  handlers creating new function references on each render) and was planning the fix. The agent was also examining the product edit page () and the service edit modal () to implement the other changes.
 -   **Status:** IN PROGRESS
--   **Agent Testing Done:** N
--   **Which testing method agent to use?** Frontend testing agent to verify the complete shipping flow on the storefront: from the product page calculator, to the cart page, and finally selecting a shipping option on the checkout page.
+-   **Agent Testing Done:** N (Testing was in progress for individual pieces, but not for the complete set of fixes).
+-   **Which testing method agent to use?**
+    1.  **Frontend testing agent** for the focus loss bug in the  form.
+    2.  **Screenshot tool** to verify the UI changes (mm units, cubic size display) on the merchant product page.
+    3.   or  to verify the backend calculation for  remains correct.
 -   **User Testing Done:** N
 
 **All Pending/In progress Issue list**:
--   **Issue 1: Product Data Mismatch (P1)**
--   **Issue 2: No Backend Negative Stock Validation (P2)**
+-   **Issue 1: Incorrect Shipping Price for  (P0)**
+-   **Issue 2: Focus Loss in Edit Shipping Service Modal (P0)**
+-   **Issue 3: Product Data Mismatch (P2)**
+-   **Issue 4: No Backend Negative Stock Validation (P2)**
 
 Issues Detail:
--   **Issue 1: Product Data Mismatch**
-    -   **Attempted fixes:** None.
-    -   **Next debug checklist:** Update the  collection in the database with product data that aligns with the TOOLS IN A BOX brand identity.
-    -   **Why fix this issue and what will be achieved with this?** To create a consistent and believable user experience.
-    -   **Status:** NOT STARTED
+-   **Issue 1: Incorrect Shipping Price for **
+    -   **Attempted fixes:** The agent correctly implemented the Minimum Charge logic, but this resulted in a price of  for CCM-007, while the user expects . The agent has deduced that the per-kg rate being applied ( from  zone) is wrong and should be closer to . This points to a fundamental zone mapping issue.
+    -   **Next debug checklist:**
+        1.  Confirm with the user which XFM zone postcode  (Casula) should belong to, as it's likely not  for this carrier's rate card.
+        2.  Investigate the zone mapping logic in  () to ensure it correctly assigns postcodes to carrier-specific zones.
+        3.  Adjust the zone data or mapping logic to ensure  gets the rate that results in the  price.
+    -   **Why fix this issue and what will be achieved with this?** The shipping calculation must be 100% accurate for the platform to be viable. This is a critical business logic bug.
+    -   **Status:** IN PROGRESS
     -   **Is recurring issue?** Y
-    -   **Should Test frontend/backend/both after fix?** Frontend
--   **Issue 2: No Backend Negative Stock Validation**
-    -   **Attempted fixes:** None.
-    -   **Next debug checklist:** Modify the order creation logic to check if requested quantity exceeds available stock.
-    -   **Why fix this issue and what will be achieved with this?** Prevents overselling and ensures inventory accuracy.
-    -   **Status:** NOT STARTED
+    -   **Should Test frontend/backend/both after fix?** Backend (via  or ) and Frontend (via  on the product page).
+    -   **Blocked on other issue:** User input required to clarify the correct zone mapping for postcode 2170.
+-   **Issue 2: Focus Loss in Edit Shipping Service Modal**
+    -   **Attempted fixes:** The agent identified the root cause: inline  handlers () in  are creating new functions on every render, causing React to unmount and remount the input fields, which makes them lose focus.
+    -   **Next debug checklist:**
+        1.  Refactor the  handlers in the Edit Shipping Service modal within .
+        2.  Create stable event handler functions using  or by defining them outside the JSX.
+        3.  Pass these stable functions to the  prop of the input components.
+    -   **Why fix this issue and what will be achieved with this?** This is a significant usability bug that prevents merchants from easily managing their shipping rates.
+    -   **Status:** IN PROGRESS
     -   **Is recurring issue?** Y
-    -   **Should Test frontend/backend/both after fix?** Backend
+    -   **Should Test frontend/backend/both after fix?** Frontend testing agent.
+-   **Issue 3: Product Data Mismatch**
+    -   **Status:** NOT STARTED
+-   **Issue 4: No Backend Negative Stock Validation**
+    -   **Status:** NOT STARTED
 
 **In progress Task List**:
--   **Task 1: Integrate Shipping Calculator into Storefront (P0)**
+-   **Task 1: Change Product Dimensions to MM and Display Cubic Size (P0)**
     -   **Where to resume:**
-        1.  **Review  and :** The agent used . The code in these files must be reviewed to ensure the shipping calculator is implemented correctly and no previous functionality was lost.
-        2.  **Implement on :** Modify the checkout page to calculate shipping for the entire cart based on the customer's address. It must require the user to select a shipping option (e.g., Pickup or a calculated rate) before the payment section is enabled.
-        3.  **End-to-End Test:** Verify the entire customer journey works as expected.
-    -   **What will be achieved with this?** Customers will be able to get accurate shipping quotes on product pages and be required to select a final shipping method during checkout to complete a purchase.
+        1.  Modify  to change the labels for , , and  from cm to mm for both product and shipping dimensions.
+        2.  In the same file, add a non-editable field or text element that displays the calculated cubic size () whenever the dimensions are changed.
+        3.  Ensure the values are still sent to the backend in  or update the backend to handle , as the current calculation logic in  expects . The user's request implies a UI-only change.
+    -   **What will be achieved with this?** Fulfills a direct user request for better usability and clarity on the product editing page.
     -   **Status:** IN PROGRESS
-    -   **Blocked on something:** None.
+    -   **Should Test frontend/backend/both after fix?** Frontend
 
 **Upcoming and Future Tasks**
 -   **Upcoming Tasks:**
-    -   **P0:** Connect the new shipping system to the POS and storefront checkout to calculate and display real shipping rates.
     -   **P1:** Implement Park Sale and Void Sale functionalities in the POS.
     -   **P1:** Implement the logic for Pay Later and Layby transactions.
 -   **Future Tasks:**
@@ -69,66 +89,65 @@ Issues Detail:
     -   **P2:** Implement POS offline sync capability.
 
 **Completed work in this session**
--   **Feature: Advanced Shipping Calculation:**
-    -   Implemented cubic/volumetric weight calculation based on new product shipping dimensions.
-    -   Corrected the calculation order of operations (Fuel Levy on base rate only, then add Handling Fee) to exactly match Maropost.
-    -   Added full GST handling based on a Rates Include GST toggle per service.
--   **Feature: Suburb Autocomplete:** Added a backend API and frontend UI for looking up Australian suburbs from a postcode in the shipping calculator.
--   **Bug Fix:  UI Issues:**
-    -   Resolved the input losing focus bug by refactoring nested components and using memoization.
-    -   Fixed edit modals not showing saved data by lifting form state to the parent component.
--   **Bug Fix: Shipping Rate & Display Issues:**
-    -   Fixed the 1st Parcel rate not saving by updating the backend model.
-    -   Fixed the calculator displaying  by correcting the data key used in the frontend.
-    -   Fixed the Rates Include GST toggle not saving its state.
--   **Backend Model Updates:** Added  to products and  to services.
+-   **Feature: Storefront Shipping Integration:** The shipping calculator is now fully integrated into the server-side rendered , , and  templates.
+-   **Feature: Multi-Carrier Support:** The system can now show rates from multiple carriers (e.g., Startrack, XFM-RES) for a single postcode by looking up all matching zones.
+-   **Feature: Advanced Rate Rules:**
+    -   Implemented Minimum Charge logic for shipping rates.
+    -   Implemented Maximum Length filtering (in mm) to exclude services for oversized products.
+-   **Bug Fix: Per-Parcel Calculation:** Corrected the shipping logic to multiply the final calculated price per parcel, matching user expectations for multiple quantities.
+-   **Bug Fix: Zone Matching:** Made the zone code lookup case-insensitive, fixing an issue where  rates weren't matching the  zone.
+-   **Bug Fix: Data Persistence:** Fixed a bug where a previously tested flat fuel levy amount () was incorrectly saved in the database, skewing calculations.
+-   **Bug Fix: Cart & Checkout UI:** Added a suburb selector to the cart page and fixed various JS bugs related to variable scope (, ).
+-   **Bug Fix: Template Rendering:** Fixed a critical bug where shipping dimensions were not being rendered into the product page template by updating .
+-   **Tooling: Rate Import:** Improved the CSV rate import logic to handle  and .
 
 **Earlier issues found/mentioned but not fixed**
--   **Issue 1: Linting Errors in **: While the agent fixed the primary UI bugs, the file remains very large (over 3000 lines) and has numerous linting warnings about its structure. The original recommendation to break it into smaller components still stands.
+-   **Issue 1: Linting Errors in **: This file is over 3000 lines. The current focus-loss bug is a direct consequence of its complexity and technical debt. A full refactor into smaller components is still recommended for long-term stability.
 
 **Known issue recurrence from previous fork**
--   None.
+-   **Product Data Mismatch**: Remains pending.
+-   **No Backend Negative Stock Validation**: Remains pending.
 
 **Code Architecture**
 
 
 **Key Technical Concepts**
--   **Complex Calculation Logic:** The shipping price calculation now follows a precise order of operations to match a third-party system: .
--   **Frontend State Refactoring:** Solved critical UI bugs (input focus loss) in a large React component by lifting state out of nested functional components and using  to prevent unnecessary re-renders.
--   **Cubic Weight Calculation:** Shipping is based on the greater of actual weight or volumetric weight, calculated as .
+-   **Server-Side Templates:** The storefront UI is rendered by a backend template engine (), not React. All UI/JS changes for the store must be made in the theme files under .
+-   **Complex Shipping Logic:** The calculation now incorporates: . It also handles multiple carrier zones per postcode.
+-   **React State Management Bug:** The focus loss issue is a classic React problem caused by re-creating functions/components on each render, which breaks the state of uncontrolled inputs.
 
 **key DB schema**
--   **products:** added , , .
--   **shipping_rates:** added .
--   **shipping_services:** added , .
+-   **shipping_services (collection)**
+    -   : Added , .
 
 **changes in tech stack**
 -   None.
 
 **All files of reference**
--   **/app/backend/routes/shipping.py**: Core backend shipping calculation logic.
--   **/app/frontend/src/pages/merchant/MerchantShipping.jsx**: The merchant-facing shipping dashboard.
--   **/app/frontend/src/pages/store/ProductDetail.jsx**: Customer-facing product page.
--   **/app/frontend/src/pages/store/Cart.jsx**: Customer-facing cart page.
--   **/app/frontend/src/pages/store/Checkout.jsx**: Customer-facing checkout page.
+-   : The heart of the shipping calculation logic.
+-   : Location of the focus-loss bug.
+-   : Needs UI changes for mm units and cubic size.
+-   : Product page template.
+-   : Cart page template.
+-   : Checkout page template.
+-   : Renders product data into the HTML templates.
 
-**Areas that need refactoring**:
--   **/app/frontend/src/pages/merchant/MerchantShipping.jsx**: This file is over 3000 lines and, despite recent fixes, remains a source of technical debt. It should be broken down into smaller components for each tab.
--   The use of  on  and  requires the next agent to carefully review the new code to ensure no existing logic was unintentionally removed.
+**Areas that need refactoring**
+-   **/app/frontend/src/pages/merchant/MerchantShipping.jsx**: This file is the primary source of UI bugs and is difficult to maintain. It urgently needs to be broken down into smaller, manageable components to prevent future issues. The current focus-loss bug is a clear symptom of this technical debt.
 
 **key api endpoints**
--   : (New) Looks up suburbs by postcode.
--   : (Modified) Heavily updated calculation logic.
--   : (Modified) Correctly saves  flag.
+-   : Main calculation endpoint.
+-   : For uploading CSV rate files.
+-   : To update a shipping service.
 
 **Critical Info for New Agent**
--   **Top Priority:** Your main task is to complete the integration of the shipping calculator into the customer storefront.
--   **Review First:** Since the previous agent used , you **must** start by reviewing the code in  and .
--   **Checkout Page Logic:** The checkout page is the final piece. It needs to calculate shipping for the entire cart and require the user to select a shipping option before payment can be made.
--   **Calculation is Sensitive:** The shipping calculation in  is now finely tuned to match Maropost. Do not change the order of operations without careful consideration.
+-   **PRIORITY 1: Solve the CCM-007 Price Discrepancy.** The user expects , but the calculation yields . This is a zone mapping problem. You must confirm with the user which XFM rate zone postcode  should map to, as  is incorrect for this product's expected price.
+-   **PRIORITY 2: Fix the Focus Loss Bug.** This is a critical usability issue for the merchant. The root cause is identified (inline  handlers in ); you need to implement the fix by creating stable handler functions.
+-   **PRIORITY 3: Implement UI Changes.** Address the user's request to change dimension units to  and display cubic size on the merchant product page.
+-   **STOREFRONT IS NOT REACT:** Do not attempt to modify storefront UI by editing files in . All storefront changes must be done in the backend theme templates at .
 
 **documents and test_reports created in this job**
--    was updated to include test cases for the suburb feature.
+-   None.
 
 **Last 10 User Messages and any pending HUMAN messages**
 -   
@@ -143,7 +162,7 @@ Issues Detail:
 -   
 
 **Project Health Check:**
--   **Broken:** The storefront checkout flow is broken. A customer cannot select a shipping method or complete a purchase.
+-   **Broken:** The shipping price for certain products () is incorrect due to a zone mapping issue, making the checkout flow unreliable. The merchant dashboard has a critical usability bug (focus loss) that hinders rate management.
 -   **Mocked:** None.
 
 **3rd Party Integrations**
@@ -152,7 +171,7 @@ Issues Detail:
 **Testing status**
 -   **Testing agent used after significant changes:** NO
 -   **Troubleshoot agent used after agent stuck in loop:** NO
--   **Test files created:** None (only ad-hoc  and  commands were used).
+-   **Test files created:** None.
 -   **Known regressions:** None.
 
 **Credentials to test flow:**
@@ -161,5 +180,6 @@ Issues Detail:
     -   **Password:** 
 
 **What agent forgot to execute**
--   The agent started the task of integrating the shipping calculator into the storefront but did not complete it. The  page still needs to be implemented.
--   The agent used  for  and  but did not perform a review to ensure the new code was correct and complete.</analysis>
+-   The agent identified the cause of the focus-loss bug but has not yet implemented the fix.
+-   The agent has not started the work to change units from  to  and display cubic size.
+-   The core business logic issue of why product 's shipping is miscalculated remains unresolved and blocked on user feedback about zone mapping.</analysis>
