@@ -137,7 +137,7 @@ const MerchantDashboard = () => {
               <div>
                 <p className="text-yellow-400 font-medium">Inventory Alert</p>
                 <p className="text-yellow-400/70 text-sm">
-                  {stats.low_stock_products} items low on stock, {stats.out_of_stock_products} items out of stock.
+                  {stats.low_stock_products} {stats.low_stock_products === 1 ? 'item' : 'items'} low on stock, {stats.out_of_stock_products} {stats.out_of_stock_products === 1 ? 'item' : 'items'} out of stock.
                 </p>
               </div>
             </div>
