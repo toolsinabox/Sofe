@@ -74,16 +74,12 @@ logging.basicConfig(
 )
 logger = logging.getLogger(__name__)
 
-# ==================== PDF GENERATION ====================
+# PDFGenerator is imported from utils.pdf
 
-class PDFGenerator:
-    """Generate professional PDF invoices and quotes"""
-    
-    @staticmethod
-    def generate_invoice_pdf(order: dict, store_settings: dict = None) -> bytes:
-        """Generate an invoice PDF for an order"""
-        buffer = io.BytesIO()
-        doc = SimpleDocTemplate(buffer, pagesize=A4, rightMargin=2*cm, leftMargin=2*cm, topMargin=2*cm, bottomMargin=2*cm)
+# ==================== MODELS ====================
+# Note: Models are defined locally here for now. Future refactoring will move them to models/schemas.py
+
+class CategoryBase(BaseModel):
         
         styles = getSampleStyleSheet()
         styles.add(ParagraphStyle(name='RightAlign', parent=styles['Normal'], alignment=TA_RIGHT))
