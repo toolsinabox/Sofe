@@ -1382,6 +1382,36 @@ class MaropostTemplateEngine:
             if any(c in path for c in [':', '//', '?', '&', '=']):
                 return path
         
+        # First, check common flat keys that map to nested context values
+        flat_mappings = {
+            'page_content': ('page', 'content'),
+            'page_title': ('page', 'title'),
+            'page_heading': ('page', 'seo_heading'),
+            'page_description': ('page', 'seo_description'),
+            'page_keywords': ('page', 'seo_keywords'),
+            'page_image': ('page', 'main_image'),
+            'page_alt_image': ('page', 'alt_image'),
+            'store_name': ('store', 'store_name'),
+            'store_email': ('store', 'store_email'),
+            'store_phone': ('store', 'store_phone'),
+            'store_logo': ('store', 'store_logo'),
+            'store_url': ('store', 'store_url'),
+            'product_name': ('product', 'name'),
+            'product_price': ('product', 'price'),
+            'category_name': ('category', 'name'),
+        }
+        
+        if path in flat_mappings:
+            keys = flat_mappings[path]
+            value = context
+            for key in keys:
+                if isinstance(value, dict):
+                    value = value.get(key, '')
+                else:
+                    return ''
+            return value
+        
+        # Fall back to dotted path resolution
         parts = path.split('.')
         value = context
         
