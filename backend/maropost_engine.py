@@ -1470,6 +1470,9 @@ class MaropostTemplateEngine:
                     value = value.get(key, '')
                 else:
                     return ''
+            # Convert boolean to 'y'/'n' for Maropost compatibility
+            if isinstance(value, bool):
+                return 'y' if value else 'n'
             return value
         
         # Fall back to dotted path resolution
@@ -1482,6 +1485,9 @@ class MaropostTemplateEngine:
             else:
                 return ''
         
+        # Convert boolean to 'y'/'n' for Maropost compatibility
+        if isinstance(value, bool):
+            return 'y' if value else 'n'
         return value
     
     # ==================== MAIN RENDERING ====================
