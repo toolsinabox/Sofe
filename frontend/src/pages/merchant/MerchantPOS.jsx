@@ -31,7 +31,14 @@ import {
   StopCircle,
   Wallet,
   History,
-  Calculator
+  Calculator,
+  RotateCcw,
+  UserPlus,
+  Lock,
+  Mail,
+  Phone,
+  Shield,
+  Receipt
 } from 'lucide-react';
 import { Button } from '../../components/ui/button';
 import { Input } from '../../components/ui/input';
