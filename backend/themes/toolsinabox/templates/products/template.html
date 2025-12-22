@@ -1359,10 +1359,16 @@
         }
         
         function selectThumbnail(thumb, index) {
-            const src = thumb.querySelector('img').src;
-            document.getElementById('main-product-image').src = src;
+            // Get the image from galleryItems
+            if (galleryItems[index]) {
+                document.getElementById('main-product-image').src = galleryItems[index].src;
+            } else {
+                const img = thumb.querySelector('img');
+                if (img) document.getElementById('main-product-image').src = img.src;
+            }
             document.querySelectorAll('.thumb-btn').forEach(t => t.classList.remove('active'));
             thumb.classList.add('active');
+            currentIndex = index;
         }
         
         // Use the global addToCart function from main.js for consistency
