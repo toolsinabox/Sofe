@@ -5019,7 +5019,8 @@ async def render_page_v2(
     path: str,
     print: Optional[bool] = None,
     embed: Optional[bool] = None,
-    debug: Optional[bool] = None
+    debug: Optional[bool] = None,
+    q: Optional[str] = None
 ):
     """
     Render a page using the new Maropost-style template engine.
