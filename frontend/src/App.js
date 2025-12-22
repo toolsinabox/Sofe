@@ -26,6 +26,11 @@ import MerchantSettings from "./pages/merchant/MerchantSettings";
 import MerchantPayments from "./pages/merchant/MerchantPayments";
 import MerchantDiscounts from "./pages/merchant/MerchantDiscounts";
 import MerchantAnalytics from "./pages/merchant/MerchantAnalytics";
+import MerchantReviews from "./pages/merchant/MerchantReviews";
+import MerchantShipping from "./pages/merchant/MerchantShipping";
+import MerchantAbandonedCarts from "./pages/merchant/MerchantAbandonedCarts";
+import MerchantSEO from "./pages/merchant/MerchantSEO";
+import MerchantMegaMenu from "./pages/merchant/MerchantMegaMenu";
 import MerchantLogin from "./pages/merchant/MerchantLogin";
 
 // Live Storefront (Theme-rendered)
