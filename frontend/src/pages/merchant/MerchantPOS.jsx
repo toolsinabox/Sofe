@@ -2557,6 +2557,12 @@ const MerchantPOS = () => {
                     <span>GST (10%)</span>
                     <span>${lastTransaction.tax_total.toFixed(2)}</span>
                   </div>
+                  {lastTransaction.shipping_total > 0 && (
+                    <div className="flex justify-between text-orange-600">
+                      <span>Shipping ({lastTransaction.shipping?.method})</span>
+                      <span>${lastTransaction.shipping_total.toFixed(2)}</span>
+                    </div>
+                  )}
                   <div className="flex justify-between font-bold text-base pt-2 border-t border-gray-300">
                     <span>Total</span>
                     <span>${lastTransaction.total.toFixed(2)}</span>
@@ -2572,6 +2578,22 @@ const MerchantPOS = () => {
                     </div>
                   )}
                 </div>
+                
+                {/* Shipping Details */}
+                {lastTransaction.shipping && (
+                  <div className="mt-3 pt-2 border-t border-gray-300 text-xs">
+                    <p className="font-medium text-gray-700 flex items-center gap-1">
+                      <span>🚚</span> Shipping Details
+                    </p>
+                    <p className="text-gray-600">{lastTransaction.shipping.method}</p>
+                    {lastTransaction.shipping.signature_required && (
+                      <p className="text-gray-600">✍️ Signature required</p>
+                    )}
+                    {lastTransaction.shipping.delivery_instructions && (
+                      <p className="text-gray-500 italic">"{lastTransaction.shipping.delivery_instructions}"</p>
+                    )}
+                  </div>
+                )}
                 
                 <div className="text-center mt-4 pt-2 border-t border-gray-300">
                   <p className="text-xs text-gray-600">Thank you for your purchase!</p>
