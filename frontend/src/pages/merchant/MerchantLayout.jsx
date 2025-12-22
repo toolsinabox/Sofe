@@ -8,7 +8,6 @@ const MerchantLayout = () => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const location = useLocation();
   
-  // Check if on POS page - hide sidebar
   const isPOSPage = location.pathname === '/merchant/pos';
 
   // Close mobile menu on route change
@@ -50,15 +49,6 @@ const MerchantLayout = () => {
     return 'Merchant';
   };
 
-  // For POS page, render without sidebar
-  if (isPOSPage) {
-    return (
-      <div className="min-h-screen bg-[#0a0e14]">
-        <Outlet />
-      </div>
-    );
-  }
-
   return (
     <div className="min-h-screen bg-[#0a0e14]">
       {/* Mobile overlay */}
@@ -77,15 +67,18 @@ const MerchantLayout = () => {
         setMobileOpen={setMobileMenuOpen}
       />
       
-      {/* Main content */}
-      <div className={`transition-all duration-300 lg:${
-        sidebarCollapsed ? 'ml-[70px]' : 'ml-[260px]'
-      } ml-0`}>
-        <MerchantHeader 
-          title={getPageTitle()} 
-          onMenuClick={() => setMobileMenuOpen(true)}
-        />
-        <main className="p-3 sm:p-4 md:p-6">
+      {/* Main content - fixed margin classes for proper sidebar offset */}
+      <div 
+        className="transition-all duration-300 ml-0 lg:ml-[260px]"
+        style={{ marginLeft: typeof window !== 'undefined' && window.innerWidth >= 1024 ? (sidebarCollapsed ? '70px' : '260px') : '0' }}
+      >
+        {!isPOSPage && (
+          <MerchantHeader 
+            title={getPageTitle()} 
+            onMenuClick={() => setMobileMenuOpen(true)}
+          />
+        )}
+        <main className={isPOSPage ? "" : "p-3 sm:p-4 md:p-6"}>
           <Outlet />
         </main>
       </div>
