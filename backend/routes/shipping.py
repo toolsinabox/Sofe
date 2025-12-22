@@ -959,26 +959,30 @@ async def calculate_shipping(request: ShippingCalculationRequest):
         if not rate:
             continue
         
-        # Calculate base price
+        # Calculate base price - use first_parcel if available, otherwise fall back to base_rate
+        first_parcel = rate.get("first_parcel", rate.get("base_rate", 0))
+        per_kg = rate.get("per_kg_rate", 0)
+        per_subsequent = rate.get("per_subsequent", 0)
+        
         if service.get("charge_type") == "weight":
             # Weight-based calculation
-            base_price = rate.get("base_rate", 0)
-            if total_weight > 0 and rate.get("per_kg_rate", 0) > 0:
-                base_price += total_weight * rate.get("per_kg_rate", 0)
+            base_price = first_parcel
+            if total_weight > 0 and per_kg > 0:
+                base_price += total_weight * per_kg
         elif service.get("charge_type") == "cubic":
             # Cubic weight calculation
             total_cubic_weight = 0
             for item in request.items:
                 total_cubic_weight += calculate_item_weight(item, service)
-            base_price = rate.get("base_rate", 0)
-            if total_cubic_weight > 0 and rate.get("per_kg_rate", 0) > 0:
-                base_price += total_cubic_weight * rate.get("per_kg_rate", 0)
+            base_price = first_parcel
+            if total_cubic_weight > 0 and per_kg > 0:
+                base_price += total_cubic_weight * per_kg
         elif service.get("charge_type") == "cart_total":
             # Based on cart total
-            base_price = rate.get("base_rate", 0)
+            base_price = first_parcel
         else:
             # Fixed/flat rate
-            base_price = rate.get("base_rate", 0)
+            base_price = first_parcel
         
         # Add handling fee
         base_price += service.get("handling_fee", 0)
