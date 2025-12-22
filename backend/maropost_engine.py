@@ -1836,6 +1836,22 @@ class MaropostTemplateEngine:
             # 1. Route URL to page type
             page_type, model_data = self.resolve_page_type(url, request_params)
             
+            # Check cache for non-dynamic pages (not cart, checkout, or customer-specific)
+            cache_enabled = page_type not in [PageType.CART, PageType.CHECKOUT, PageType.QUOTE] and not customer
+            cache_key_hash = ""
+            
+            if cache_enabled:
+                # Generate cache key from URL and model data
+                import hashlib
+                cache_data = f"{url}:{json.dumps(model_data, sort_keys=True, default=str)}"
+                cache_key_hash = hashlib.md5(cache_data.encode()).hexdigest()
+                
+                cached_html = self.render_cache.get(page_type.value, url, cache_key_hash)
+                if cached_html:
+                    if self._debug_info:
+                        self._debug_info.cache_hit = True
+                    return cached_html, self._debug_info if self.debug_mode else None
+            
             # 2. Determine wrapper context
             wrapper_context = self.determine_wrapper_context(page_type, request_params)
             
