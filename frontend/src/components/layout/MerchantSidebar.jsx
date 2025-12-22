@@ -1,5 +1,6 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { NavLink, useNavigate } from 'react-router-dom';
+import axios from 'axios';
 import {
   LayoutDashboard,
   ShoppingCart,
@@ -30,9 +31,42 @@ import {
 } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
 
+const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
+
 const MerchantSidebar = ({ collapsed, setCollapsed }) => {
   const { logout } = useAuth();
   const navigate = useNavigate();
+  const [storeSettings, setStoreSettings] = useState({
+    store_name: 'My Store',
+    store_logo: ''
+  });
+
+  useEffect(() => {
+    const fetchStoreSettings = async () => {
+      try {
+        const response = await axios.get(`${BACKEND_URL}/api/store/settings`);
+        if (response.data) {
+          setStoreSettings({
+            store_name: response.data.store_name || 'My Store',
+            store_logo: response.data.store_logo || ''
+          });
+        }
+      } catch (error) {
+        console.error('Error fetching store settings:', error);
+      }
+    };
+    fetchStoreSettings();
+  }, []);
+
+  // Generate initials from store name
+  const getInitials = (name) => {
+    if (!name) return 'MS';
+    const words = name.split(' ').filter(w => w.length > 0);
+    if (words.length >= 2) {
+      return (words[0][0] + words[1][0]).toUpperCase();
+    }
+    return name.substring(0, 2).toUpperCase();
+  };
 
   const handleLogout = () => {
     logout();
