@@ -5664,6 +5664,8 @@ async def open_pos_shift(register_id: str, outlet_id: str, staff_id: str, staff_
     shift_data["opened_at"] = datetime.now(timezone.utc).isoformat()
     await db.pos_shifts.insert_one(shift_data)
     
+    # Remove MongoDB _id before returning
+    shift_data.pop("_id", None)
     return shift_data
 
 @api_router.get("/pos/shifts/current")
