@@ -1386,6 +1386,7 @@ class MaropostTemplateEngine:
         
         # First, check common flat keys that map to nested context values
         flat_mappings = {
+            # Page tags
             'page_content': ('page', 'content'),
             'page_title': ('page', 'title'),
             'page_heading': ('page', 'seo_heading'),
@@ -1393,14 +1394,28 @@ class MaropostTemplateEngine:
             'page_keywords': ('page', 'seo_keywords'),
             'page_image': ('page', 'main_image'),
             'page_alt_image': ('page', 'alt_image'),
+            # Store tags
             'store_name': ('store', 'store_name'),
             'store_email': ('store', 'store_email'),
             'store_phone': ('store', 'store_phone'),
             'store_logo': ('store', 'store_logo'),
             'store_url': ('store', 'store_url'),
+            # Product tags
             'product_name': ('product', 'name'),
             'product_price': ('product', 'price'),
+            'product_sale': ('product', 'sale'),
+            'product_compare_price': ('product', 'compare_price'),
+            'in_stock': ('product', 'in_stock'),
+            'on_sale': ('product', 'on_sale'),
+            # Category tags
             'category_name': ('category', 'name'),
+            'content_description': ('category', 'description'),
+            # Banner tags
+            'banner_title': ('banner', 'title'),
+            'banner_subtitle': ('banner', 'subtitle'),
+            'banner_button_text': ('banner', 'button_text'),
+            'banner_link': ('banner', 'link'),
+            'banner_image': ('banner', 'image'),
         }
         
         if path in flat_mappings:
