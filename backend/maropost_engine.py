@@ -625,9 +625,9 @@ class MaropostTemplateEngine:
                     context['variants'] = product.get('variants', [])
                     context['images'] = product.get('images', [])
                     context['pricing'] = {
-                        'price': product.get('price', 0),
+                        'price': product.get('price', 0) or 0,
                         'compare_price': product.get('compare_price'),
-                        'on_sale': product.get('compare_price', 0) > product.get('price', 0)
+                        'on_sale': (product.get('compare_price') or 0) > (product.get('price') or 0)
                     }
                     context['availability'] = {
                         'in_stock': product.get('stock', 0) > 0,
