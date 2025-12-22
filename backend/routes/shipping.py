@@ -913,13 +913,34 @@ async def calculate_shipping(request: ShippingCalculationRequest):
         {"_id": 0}
     ).sort("sort_order", 1).to_list(1000)
     
-    # Calculate total weight and check categories
-    total_weight = 0
+    # Calculate total weight and cubic weight, check categories
+    total_actual_weight = 0
+    total_cubic_weight = 0
     item_categories = set()
+    cubic_modifier = 250  # Default cubic weight modifier (kg per cubic meter)
     
     for item in request.items:
-        item_weight = item.get("weight", 0.5) * item.get("quantity", 1)
-        total_weight += item_weight
+        qty = item.get("quantity", 1)
+        
+        # Actual weight
+        actual_weight = item.get("weight", 0.5) * qty
+        total_actual_weight += actual_weight
+        
+        # Calculate cubic weight from shipping dimensions
+        # Formula: (L × W × H in cm) / 1,000,000 × Cubic Modifier = Cubic Weight in kg
+        shipping_length = item.get("shipping_length") or item.get("length", 0)
+        shipping_width = item.get("shipping_width") or item.get("width", 0)
+        shipping_height = item.get("shipping_height") or item.get("height", 0)
+        
+        if shipping_length and shipping_width and shipping_height:
+            # Calculate cubic weight: (L × W × H) / 1,000,000 × modifier
+            volume_m3 = (shipping_length * shipping_width * shipping_height) / 1000000
+            item_cubic_weight = volume_m3 * cubic_modifier * qty
+            total_cubic_weight += item_cubic_weight
+        else:
+            # Fall back to actual weight if no dimensions
+            total_cubic_weight += actual_weight
+        
         if item.get("shipping_category"):
             item_categories.add(item["shipping_category"])
     
@@ -941,6 +962,29 @@ async def calculate_shipping(request: ShippingCalculationRequest):
     })
     
     for service in services:
+        # Get service's cubic weight modifier
+        service_cubic_modifier = service.get("cubic_weight_modifier", 250)
+        
+        # Recalculate cubic weight with service's modifier if different
+        if service_cubic_modifier != cubic_modifier:
+            service_cubic_weight = 0
+            for item in request.items:
+                qty = item.get("quantity", 1)
+                shipping_length = item.get("shipping_length") or item.get("length", 0)
+                shipping_width = item.get("shipping_width") or item.get("width", 0)
+                shipping_height = item.get("shipping_height") or item.get("height", 0)
+                
+                if shipping_length and shipping_width and shipping_height:
+                    volume_m3 = (shipping_length * shipping_width * shipping_height) / 1000000
+                    service_cubic_weight += volume_m3 * service_cubic_modifier * qty
+                else:
+                    service_cubic_weight += item.get("weight", 0.5) * qty
+        else:
+            service_cubic_weight = total_cubic_weight
+        
+        # Use the GREATER of actual weight vs cubic weight (industry standard)
+        chargeable_weight = max(total_actual_weight, service_cubic_weight)
+        
         # Check if service applies to item categories
         service_categories = set(service.get("categories", []))
         if service_categories and not service_categories.intersection(item_categories):
@@ -950,8 +994,8 @@ async def calculate_shipping(request: ShippingCalculationRequest):
         rate = None
         for r in service.get("rates", []):
             if r.get("zone_code") == zone.get("code"):
-                # Check weight range
-                if r.get("min_weight", 0) <= total_weight <= r.get("max_weight", 999999):
+                # Check weight range against chargeable weight
+                if r.get("min_weight", 0) <= chargeable_weight <= r.get("max_weight", 999999):
                     if r.get("is_active", True):
                         rate = r
                         break
@@ -964,25 +1008,10 @@ async def calculate_shipping(request: ShippingCalculationRequest):
         per_kg = rate.get("per_kg_rate", 0)
         per_subsequent = rate.get("per_subsequent", 0)
         
-        if service.get("charge_type") == "weight":
-            # Weight-based calculation
-            base_price = first_parcel
-            if total_weight > 0 and per_kg > 0:
-                base_price += total_weight * per_kg
-        elif service.get("charge_type") == "cubic":
-            # Cubic weight calculation
-            total_cubic_weight = 0
-            for item in request.items:
-                total_cubic_weight += calculate_item_weight(item, service)
-            base_price = first_parcel
-            if total_cubic_weight > 0 and per_kg > 0:
-                base_price += total_cubic_weight * per_kg
-        elif service.get("charge_type") == "cart_total":
-            # Based on cart total
-            base_price = first_parcel
-        else:
-            # Fixed/flat rate
-            base_price = first_parcel
+        # Always use chargeable weight (greater of actual vs cubic)
+        base_price = first_parcel
+        if chargeable_weight > 0 and per_kg > 0:
+            base_price += chargeable_weight * per_kg
         
         # Add handling fee
         base_price += service.get("handling_fee", 0)
