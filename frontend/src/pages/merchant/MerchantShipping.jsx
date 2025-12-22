@@ -894,50 +894,6 @@ const MerchantShipping = () => {
             </DialogFooter>
           </DialogContent>
         </Dialog>
-                }`}>
-                  {importResult.success ? (
-                    <div className="space-y-2">
-                      <div className="flex items-center gap-2">
-                        <CheckCircle className="w-5 h-5 text-emerald-400" />
-                        <span className="text-emerald-400 font-medium">Import Successful!</span>
-                      </div>
-                      <div className="text-sm text-gray-300 space-y-1">
-                        <p>Mode: <span className="text-white">{importResult.mode}</span></p>
-                        <p>Rows processed: <span className="text-white">{importResult.rows_processed}</span></p>
-                        <p>Zones created: <span className="text-emerald-400">{importResult.zones_created}</span></p>
-                        <p>Zones updated: <span className="text-blue-400">{importResult.zones_updated}</span></p>
-                      </div>
-                    </div>
-                  ) : (
-                    <div className="flex items-start gap-2">
-                      <AlertCircle className="w-5 h-5 text-red-400 flex-shrink-0 mt-0.5" />
-                      <div>
-                        <span className="text-red-400 font-medium">Import Failed</span>
-                        <p className="text-red-300 text-sm mt-1">{importResult.error}</p>
-                      </div>
-                    </div>
-                  )}
-                </div>
-              )}
-            </div>
-
-            <DialogFooter className="flex-col sm:flex-row gap-2">
-              {zones.length > 0 && (
-                <Button 
-                  variant="outline" 
-                  onClick={handleDeleteAllZones}
-                  className="border-red-500/50 text-red-400 hover:bg-red-500/10 sm:mr-auto"
-                >
-                  <Trash2 className="w-4 h-4 mr-2" />
-                  Delete All Zones
-                </Button>
-              )}
-              <Button variant="outline" onClick={() => { setShowImportModal(false); setImportResult(null); }} className="border-gray-600">
-                Close
-              </Button>
-            </DialogFooter>
-          </DialogContent>
-        </Dialog>
       </div>
     );
   };
