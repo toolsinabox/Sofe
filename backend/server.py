@@ -140,10 +140,14 @@ class ProductBase(BaseModel):
     preorder_message: Optional[str] = None  # [@product_preorder_message@] - Custom pre-order message
     
     # === SHIPPING ===
-    weight: Optional[float] = None  # [@product_weight@] in kg
-    length: Optional[float] = None  # [@product_length@] in cm
+    weight: Optional[float] = None  # [@product_weight@] in kg - actual product weight
+    length: Optional[float] = None  # [@product_length@] in cm - product dimensions
     width: Optional[float] = None  # [@product_width@] in cm
     height: Optional[float] = None  # [@product_height@] in cm
+    # Shipping dimensions (for cubic weight calculation)
+    shipping_length: Optional[float] = None  # [@product_shipping_length@] in cm - shipping box length
+    shipping_width: Optional[float] = None  # [@product_shipping_width@] in cm - shipping box width
+    shipping_height: Optional[float] = None  # [@product_shipping_height@] in cm - shipping box height
     shipping_class: Optional[str] = None  # [@product_shipping_class@]
     requires_shipping: bool = True  # [@product_requires_shipping@]
     
