@@ -2361,7 +2361,8 @@ const MerchantPOS = () => {
               onClick={() => {
                 setShowAddCustomer(false);
                 setNewCustomer({ 
-                  name: '', 
+                  firstName: '',
+                  lastName: '', 
                   company: '',
                   email: '', 
                   phone: '',
@@ -2382,7 +2383,7 @@ const MerchantPOS = () => {
             </Button>
             <Button
               onClick={handleQuickAddCustomer}
-              disabled={addingCustomer || !newCustomer.name || !newCustomer.email}
+              disabled={addingCustomer || !newCustomer.firstName || !newCustomer.lastName || !newCustomer.email}
               className="bg-emerald-600 hover:bg-emerald-700 text-white"
             >
               {addingCustomer ? (
