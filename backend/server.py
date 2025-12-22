@@ -4992,7 +4992,11 @@ async def add_to_cart(cart_id: str, item: CartItem):
             "compare_price": product.get("compare_price"),
             "image": product.get("images", [""])[0] if product.get("images") else "",
             "quantity": item.quantity,
-            "line_total": item.quantity * product.get("price", 0)
+            "line_total": item.quantity * product.get("price", 0),
+            "weight": product.get("weight", 0.5),
+            "shipping_length": product.get("shipping_length", 0),
+            "shipping_width": product.get("shipping_width", 0),
+            "shipping_height": product.get("shipping_height", 0)
         })
     
     # Recalculate totals
