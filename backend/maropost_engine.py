@@ -970,6 +970,17 @@ class MaropostTemplateEngine:
     
     def _replace_banner_item_tags(self, content: str, banner: Dict) -> str:
         """Replace banner item tags within a loop."""
+        # Build device visibility classes
+        device_classes = []
+        if not banner.get('show_on_mobile', True):
+            device_classes.append('hide-mobile')
+        if not banner.get('show_on_tablet', True):
+            device_classes.append('hide-tablet')
+        if not banner.get('show_on_desktop', True):
+            device_classes.append('hide-desktop')
+        
+        device_class_str = ' '.join(device_classes)
+        
         replacements = {
             '[@banner_id@]': banner.get('id', ''),
             '[@banner_title@]': banner.get('title', banner.get('name', '')),
@@ -979,6 +990,10 @@ class MaropostTemplateEngine:
             '[@banner_image_mobile@]': banner.get('image_mobile', banner.get('image', '')),
             '[@banner_link@]': banner.get('link', '#'),
             '[@banner_button_text@]': banner.get('button_text', 'Shop Now'),
+            '[@banner_device_class@]': device_class_str,
+            '[@banner_show_desktop@]': 'y' if banner.get('show_on_desktop', True) else 'n',
+            '[@banner_show_tablet@]': 'y' if banner.get('show_on_tablet', True) else 'n',
+            '[@banner_show_mobile@]': 'y' if banner.get('show_on_mobile', True) else 'n',
         }
         
         for tag, value in replacements.items():
