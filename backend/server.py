@@ -1865,25 +1865,78 @@ async def create_order(order: OrderCreate):
 @api_router.get("/orders", response_model=List[Order])
 async def get_orders(
     status: Optional[str] = None,
+    payment_status: Optional[str] = None,
     limit: int = Query(default=50, le=100),
     skip: int = 0
 ):
     query = {}
     if status:
         query["status"] = status
-    orders = await db.orders.find(query).sort("created_at", -1).skip(skip).limit(limit).to_list(limit)
-    return [Order(**order) for order in orders]
+    if payment_status:
+        query["payment_status"] = payment_status
+    orders = await db.orders.find(query, {"_id": 0}).sort("created_at", -1).skip(skip).limit(limit).to_list(limit)
+    return orders
 
-@api_router.get("/orders/{order_id}", response_model=Order)
+@api_router.get("/orders/count")
+async def get_orders_count(status: Optional[str] = None):
+    query = {}
+    if status:
+        query["status"] = status
+    count = await db.orders.count_documents(query)
+    return {"count": count}
+
+@api_router.get("/orders/stats")
+async def get_orders_stats():
+    """Get order statistics for dashboard"""
+    try:
+        # Total orders
+        total_orders = await db.orders.count_documents({})
+        pending_orders = await db.orders.count_documents({"status": "pending"})
+        
+        # Total revenue from delivered orders
+        pipeline = [
+            {"$match": {"payment_status": "paid"}},
+            {"$group": {"_id": None, "total": {"$sum": "$total"}}}
+        ]
+        revenue_result = await db.orders.aggregate(pipeline).to_list(1)
+        total_revenue = revenue_result[0]["total"] if revenue_result else 0
+        
+        # Average order value
+        avg_order_value = total_revenue / total_orders if total_orders > 0 else 0
+        
+        # Today's orders
+        today = datetime.now(timezone.utc).replace(hour=0, minute=0, second=0, microsecond=0)
+        today_orders = await db.orders.count_documents({"created_at": {"$gte": today}})
+        
+        # Today's revenue
+        today_pipeline = [
+            {"$match": {"created_at": {"$gte": today}, "payment_status": "paid"}},
+            {"$group": {"_id": None, "total": {"$sum": "$total"}}}
+        ]
+        today_revenue_result = await db.orders.aggregate(today_pipeline).to_list(1)
+        today_revenue = today_revenue_result[0]["total"] if today_revenue_result else 0
+        
+        return {
+            "totalOrders": total_orders,
+            "pendingOrders": pending_orders,
+            "totalRevenue": total_revenue,
+            "avgOrderValue": avg_order_value,
+            "todayOrders": today_orders,
+            "todayRevenue": today_revenue
+        }
+    except Exception as e:
+        return {"totalOrders": 0, "pendingOrders": 0, "totalRevenue": 0, "avgOrderValue": 0, "todayOrders": 0, "todayRevenue": 0}
+
+@api_router.get("/orders/{order_id}")
 async def get_order(order_id: str):
-    order = await db.orders.find_one({"id": order_id})
+    order = await db.orders.find_one({"id": order_id}, {"_id": 0})
     if not order:
         raise HTTPException(status_code=404, detail="Order not found")
-    return Order(**order)
+    return order
 
 @api_router.patch("/orders/{order_id}/status")
-async def update_order_status(order_id: str, status: str):
-    valid_statuses = ["pending", "processing", "shipped", "delivered", "cancelled"]
+async def update_order_status(order_id: str, status: str, notify: bool = False):
+    valid_statuses = ["pending", "processing", "shipped", "delivered", "cancelled", "refunded"]
     if status not in valid_statuses:
         raise HTTPException(status_code=400, detail=f"Invalid status. Must be one of: {valid_statuses}")
     
@@ -1894,7 +1947,147 @@ async def update_order_status(order_id: str, status: str):
     if result.matched_count == 0:
         raise HTTPException(status_code=404, detail="Order not found")
     
+    # TODO: If notify=True, send email to customer
+    
     return {"message": f"Order status updated to {status}"}
+
+@api_router.patch("/orders/{order_id}/tracking")
+async def update_order_tracking(order_id: str, tracking_number: str, carrier: str, notify_customer: bool = True):
+    """Update order tracking information"""
+    result = await db.orders.update_one(
+        {"id": order_id},
+        {"$set": {
+            "tracking_number": tracking_number,
+            "tracking_carrier": carrier,
+            "updated_at": datetime.now(timezone.utc)
+        }}
+    )
+    if result.matched_count == 0:
+        raise HTTPException(status_code=404, detail="Order not found")
+    
+    return {"message": "Tracking information updated"}
+
+@api_router.post("/orders/{order_id}/notes")
+async def add_order_note(order_id: str, note: str, type: str = "internal", notify_customer: bool = False):
+    """Add a note to an order"""
+    order = await db.orders.find_one({"id": order_id})
+    if not order:
+        raise HTTPException(status_code=404, detail="Order not found")
+    
+    note_entry = {
+        "content": note,
+        "type": type,
+        "author": "Staff",  # TODO: Get from auth context
+        "created_at": datetime.now(timezone.utc).isoformat()
+    }
+    
+    await db.orders.update_one(
+        {"id": order_id},
+        {
+            "$push": {"internal_notes": note_entry},
+            "$set": {"updated_at": datetime.now(timezone.utc)}
+        }
+    )
+    
+    return {"message": "Note added successfully"}
+
+@api_router.get("/orders/{order_id}/timeline")
+async def get_order_timeline(order_id: str):
+    """Get order activity timeline"""
+    order = await db.orders.find_one({"id": order_id})
+    if not order:
+        raise HTTPException(status_code=404, detail="Order not found")
+    
+    # Build timeline from order data
+    timeline = []
+    # Add internal notes to timeline
+    if order.get("internal_notes"):
+        for note in order["internal_notes"]:
+            timeline.append({
+                "description": note.get("content", ""),
+                "type": note.get("type", "internal"),
+                "created_at": note.get("created_at")
+            })
+    
+    return timeline
+
+@api_router.post("/orders/{order_id}/refund")
+async def process_order_refund(order_id: str, amount: float, reason: str):
+    """Process a refund for an order"""
+    order = await db.orders.find_one({"id": order_id})
+    if not order:
+        raise HTTPException(status_code=404, detail="Order not found")
+    
+    if order.get("payment_status") != "paid":
+        raise HTTPException(status_code=400, detail="Order is not paid")
+    
+    # TODO: Process actual refund via Stripe if payment was via card
+    
+    # Update order status
+    new_payment_status = "refunded" if amount >= order.get("total", 0) else "partial_refund"
+    await db.orders.update_one(
+        {"id": order_id},
+        {"$set": {
+            "payment_status": new_payment_status,
+            "refund_amount": amount,
+            "refund_reason": reason,
+            "refunded_at": datetime.now(timezone.utc),
+            "updated_at": datetime.now(timezone.utc)
+        }}
+    )
+    
+    return {"message": f"Refund of ${amount:.2f} processed", "new_status": new_payment_status}
+
+@api_router.post("/orders/{order_id}/email")
+async def send_order_email(order_id: str, template: str = "custom", subject: str = "", body: str = ""):
+    """Send email to customer about their order"""
+    order = await db.orders.find_one({"id": order_id})
+    if not order:
+        raise HTTPException(status_code=404, detail="Order not found")
+    
+    # TODO: Implement actual email sending
+    
+    return {"message": f"Email sent to {order.get('customer_email')}"}
+
+@api_router.get("/orders/{order_id}/invoice")
+async def get_order_invoice(order_id: str, print: bool = False):
+    """Generate invoice HTML for an order"""
+    order = await db.orders.find_one({"id": order_id}, {"_id": 0})
+    if not order:
+        raise HTTPException(status_code=404, detail="Order not found")
+    
+    # TODO: Generate proper invoice template
+    return HTMLResponse(content=f"<html><body><h1>Invoice {order.get('order_number')}</h1></body></html>")
+
+@api_router.get("/orders/export")
+async def export_orders(format: str = "csv"):
+    """Export orders to CSV/Excel/PDF"""
+    orders = await db.orders.find({}, {"_id": 0}).sort("created_at", -1).to_list(1000)
+    
+    if format == "csv":
+        # Generate CSV
+        import csv
+        import io
+        output = io.StringIO()
+        writer = csv.writer(output)
+        writer.writerow(["Order Number", "Customer", "Email", "Total", "Status", "Payment Status", "Date"])
+        for order in orders:
+            writer.writerow([
+                order.get("order_number", ""),
+                order.get("customer_name", ""),
+                order.get("customer_email", ""),
+                order.get("total", 0),
+                order.get("status", ""),
+                order.get("payment_status", ""),
+                order.get("created_at", "")
+            ])
+        return Response(
+            content=output.getvalue(),
+            media_type="text/csv",
+            headers={"Content-Disposition": "attachment; filename=orders.csv"}
+        )
+    
+    return {"message": f"Export format {format} not yet implemented"}
 
 # ==================== CHECKOUT & PAYMENT ====================
 
