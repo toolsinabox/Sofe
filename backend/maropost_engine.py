@@ -819,6 +819,7 @@ class MaropostTemplateEngine:
             
             # Cart tags
             'cart_total': f"{store.get('currency_symbol', '$')}{cart.get('total', 0):.2f}",
+            'cart_subtotal': f"{store.get('currency_symbol', '$')}{cart.get('subtotal', cart.get('total', 0)):.2f}",
             'cart_item_count': str(cart.get('item_count', 0)),
             'mini_cart_count': str(cart.get('item_count', 0)),
         }
