@@ -991,32 +991,7 @@ const MerchantShipping = () => {
 
   // ============== SERVICES TAB ==============
   const ServicesTab = () => {
-    const [serviceForm, setServiceForm] = useState({
-      name: '',
-      code: '',
-      carrier: 'custom',
-      charge_type: 'weight',
-      min_charge: 0,
-      max_charge: null,
-      handling_fee: 0,
-      fuel_levy_percent: 0,
-      cubic_weight_modifier: 250,
-      categories: [],
-      is_active: true,
-      sort_order: 0,
-      rates: []
-    });
-    const [expandedService, setExpandedService] = useState(null);
-    const [showRateImportModal, setShowRateImportModal] = useState(false);
-    const [selectedServiceForImport, setSelectedServiceForImport] = useState(null);
-    const [importingRates, setImportingRates] = useState(false);
-    const [rateImportMode, setRateImportMode] = useState('merge');
-    const [rateImportResult, setRateImportResult] = useState(null);
-    const [selectedRateFile, setSelectedRateFile] = useState(null);
-    const [rateUploadProgress, setRateUploadProgress] = useState(0);
-    const [modalUploadingRates, setModalUploadingRates] = useState(false);
-    const rateFileInputRef = useRef(null);
-    const modalRateFileInputRef = useRef(null);
+    // Using parent-level state - removed local state declarations
 
     const openServiceModal = (service = null) => {
       if (service) {
