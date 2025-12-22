@@ -333,3 +333,72 @@ Integrated shipping rate calculation into the shopping cart page, allowing custo
 
 ### Credentials
 - Not required for storefront pages (guest checkout)
+
+## Merchant Orders & Quotes Management - Comprehensive Implementation - 2025-12-22
+
+### Orders Management
+
+#### Orders List Page (`/merchant/orders`)
+- **Stats Cards**: Total Orders, Total Revenue, Pending Orders, Avg Order Value
+- **Status Tabs**: All, Pending, Processing, Shipped, Delivered, Cancelled with counts
+- **Filters**: Search (order #, customer, email), Payment Status, Date Range
+- **Bulk Actions**: Select multiple orders, Mark as Processing/Shipped/Delivered, Print invoices/packing slips
+- **Table Columns**: Checkbox, Order #, Customer, Items (thumbnails), Total, Status Badge, Payment Badge, Date, Actions
+- **Actions Menu**: View Details, Update Status, Add Tracking, Add Note, Email Customer, Print Invoice, Packing Slip
+
+#### Order Detail Page (`/merchant/orders/:orderId`)
+- **Header**: Order number with copy, Status badges, Email/Print/Actions buttons
+- **Status Progress Bar**: Visual Pending → Processing → Shipped → Delivered flow
+- **Order Items Card**: Product images, names, SKUs, prices, quantities, line totals
+- **Order Totals**: Subtotal, Discount, Shipping, GST (10%), Total
+- **Tracking Card**: Carrier, Tracking Number with copy, Track Package button
+- **Notes Card**: Customer notes, Internal notes with timestamps
+- **Customer Card**: Avatar, name, company, email, phone, View Customer link
+- **Shipping Address Card**: Full address
+- **Billing Address Card**: If different from shipping
+- **Payment Card**: Method, Status, Transaction ID, PO Number, Total Paid
+- **Activity Timeline**: Order created, Payment received, Tracking added events
+- **Modals**: Update Status, Add Note, Add Tracking, Process Refund, Send Email
+
+### Quotes Management
+
+#### Quotes List Page (`/merchant/quotes`)
+- **Stats Cards**: Total Quotes, Pending Review, Total Quote Value, Conversion Rate
+- **Status Tabs**: All, Pending, Sent, Accepted, Rejected, Expired, Converted
+- **Filters**: Search (quote #, customer, company)
+- **Table Columns**: Quote #, Customer (with company), Items, Total, Status, Valid Until (with days left), Created, Actions
+- **Actions Menu**: View Details, Send to Customer, Convert to Order, Update Status, Add Note, Duplicate, Delete
+
+#### Quote Detail Page (`/merchant/quotes/:quoteId`)
+- **Header**: Quote number with copy, Status badge, Edit Quote/Send/Convert buttons
+- **Expiration Warning**: Red banner for expired quotes with Extend Validity button
+- **Quote Items Card**: Editable prices, quantities, remove items (in edit mode)
+- **Quote Totals**: Subtotal, Discount (editable), Shipping (editable), GST, Total
+- **Customer Notes Card**: Customer's original notes
+- **Internal Notes Card**: Editable merchant notes
+- **Customer Card**: Avatar, name, company, email, phone
+- **Delivery Address Card**: Full address
+- **Quote Details Card**: Quote #, Customer PO, Status, Created, Valid Until
+- **Quick Actions**: Send Quote, Convert to Order, Update Status
+- **Modals**: Update Status, Convert to Order, Extend Validity, Delete, Send Email
+
+### Backend APIs Added
+
+1. **Orders**:
+   - `GET /api/orders/count` - Get total order count
+   - `GET /api/orders/stats` - Get order statistics
+   - `PATCH /api/orders/{id}/tracking` - Update tracking info
+   - `POST /api/orders/{id}/notes` - Add order note
+   - `GET /api/orders/{id}/timeline` - Get order activity timeline
+   - `POST /api/orders/{id}/refund` - Process refund
+   - `POST /api/orders/{id}/email` - Send email to customer
+   - `GET /api/orders/{id}/invoice` - Generate invoice HTML
+   - `GET /api/orders/export` - Export orders to CSV
+
+2. **Quotes**:
+   - `GET /api/quotes/stats` - Get quote statistics
+   - `POST /api/quotes/{id}/send` - Send quote email to customer
+   - `GET /api/quotes/{id}/print` - Generate printable quote HTML
+   - `GET /api/quotes/{id}/pdf` - Download quote PDF (placeholder)
+
+### Status: COMPLETE
