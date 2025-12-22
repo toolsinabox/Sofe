@@ -1483,6 +1483,19 @@ class MaropostTemplateEngine:
             if not condition:
                 return False
             
+            # Check for malformed conditions that start with an operator
+            # This happens when tag was empty, e.g., [%if  ne ''%] -> condition = "ne ''"
+            if condition.startswith(('ne ', 'eq ', 'gt ', 'lt ', 'ge ', 'le ')):
+                # The left side was empty, so compare empty string
+                if condition.startswith('ne '):
+                    right_val = condition[3:].strip().strip("'\"")
+                    return '' != right_val  # Empty string comparison
+                elif condition.startswith('eq '):
+                    right_val = condition[3:].strip().strip("'\"")
+                    return '' == right_val
+                else:
+                    return False  # Other comparisons with empty left side are invalid
+            
             # Maropost-style operators: eq, ne, gt, lt, ge, le
             # ne - not equal
             if ' ne ' in condition:
