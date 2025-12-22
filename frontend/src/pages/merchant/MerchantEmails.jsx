@@ -653,7 +653,7 @@ const MerchantEmails = () => {
                     <SelectValue placeholder="Select template..." />
                   </SelectTrigger>
                   <SelectContent className="bg-gray-800 border-gray-700">
-                    <SelectItem value="" className="text-white">Custom Email</SelectItem>
+                    <SelectItem value="custom" className="text-white">Custom Email</SelectItem>
                     {templates.map(t => (
                       <SelectItem key={t.id} value={t.id} className="text-white">{t.name}</SelectItem>
                     ))}
