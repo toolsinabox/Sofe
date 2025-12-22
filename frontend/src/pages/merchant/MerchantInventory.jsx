@@ -154,7 +154,7 @@ const MerchantInventory = () => {
               <div>
                 <p className="text-yellow-400 font-medium">Inventory Alert</p>
                 <p className="text-yellow-400/70 text-sm">
-                  {lowStockItems.length} items low on stock, {outOfStockItems.length} items out of stock.
+                  {lowStockItems.length} {lowStockItems.length === 1 ? 'item' : 'items'} low on stock, {outOfStockItems.length} {outOfStockItems.length === 1 ? 'item' : 'items'} out of stock.
                 </p>
               </div>
             </div>
