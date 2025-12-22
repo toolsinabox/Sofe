@@ -291,12 +291,18 @@ class MaropostTemplateEngine:
         if not url or url == 'home':
             return PageType.HOME, model_data
         
+        # Products listing page (all products)
+        if url == 'products':
+            return PageType.CATEGORY, model_data  # Use category type for listing
+        
         # Product page: /product/{id} or /products/{id}
         if url.startswith('product/') or url.startswith('products/'):
             parts = url.split('/')
-            if len(parts) >= 2:
+            if len(parts) >= 2 and parts[1]:  # Make sure there's actually an ID
                 model_data['product_id'] = parts[1]
-            return PageType.PRODUCT, model_data
+                return PageType.PRODUCT, model_data
+            # If no ID, treat as listing
+            return PageType.CATEGORY, model_data
         
         # Category page: /category/{id} or /collection/{id}
         if url.startswith('category/') or url.startswith('collection/'):
