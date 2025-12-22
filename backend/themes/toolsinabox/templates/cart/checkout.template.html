@@ -674,7 +674,8 @@
 
 <script src="https://js.stripe.com/v3/"></script>
 <script>
-const API_BASE = window.location.origin + '/api';
+// Use API_BASE from main.js if available, otherwise define it
+const CHECKOUT_API_BASE = window.location.origin + '/api';
 let cartData = null;
 let stripe = null;
 let cardElement = null;
