@@ -645,6 +645,17 @@ const MerchantOrders = () => {
                                 <DropdownMenuItem className="text-gray-300 hover:text-white hover:bg-gray-700/50 cursor-pointer">
                                   <FileText size={14} className="mr-2" /> Packing Slip
                                 </DropdownMenuItem>
+                                {order.status === 'cancelled' && (
+                                  <>
+                                    <DropdownMenuSeparator className="bg-gray-700" />
+                                    <DropdownMenuItem 
+                                      className="text-red-400 hover:text-red-300 hover:bg-red-500/10 cursor-pointer"
+                                      onClick={() => { setSelectedOrder(order); setShowDeleteModal(true); }}
+                                    >
+                                      <Trash2 size={14} className="mr-2" /> Delete Order
+                                    </DropdownMenuItem>
+                                  </>
+                                )}
                               </DropdownMenuContent>
                             </DropdownMenu>
                           </td>
