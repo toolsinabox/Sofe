@@ -2027,4 +2027,122 @@
                 alert('Sorry, there was an error submitting your review. Please try again.');
             }
         }
+        
+        // ================================
+        // NOTIFY ME FUNCTIONS
+        // ================================
+        let notifyProductId = '';
+        let notifyProductName = '';
+        
+        function openNotifyModal(btn) {
+            notifyProductId = btn.dataset.productId;
+            notifyProductName = btn.dataset.productName;
+            
+            // Update modal with product info
+            document.getElementById('notify-product-name').textContent = notifyProductName;
+            document.getElementById('notify-product-image').src = '[@image@]';
+            
+            // Show modal
+            document.getElementById('notify-modal-overlay').classList.add('active');
+            document.body.style.overflow = 'hidden';
+        }
+        
+        function closeNotifyModal() {
+            document.getElementById('notify-modal-overlay').classList.remove('active');
+            document.body.style.overflow = '';
+        }
+        
+        async function submitNotifyForm(event) {
+            event.preventDefault();
+            const form = event.target;
+            const formData = new FormData(form);
+            const submitBtn = form.querySelector('button[type="submit"]');
+            
+            submitBtn.disabled = true;
+            submitBtn.textContent = 'Submitting...';
+            
+            const notifyData = {
+                product_id: notifyProductId,
+                customer_name: formData.get('notify_name'),
+                customer_email: formData.get('notify_email'),
+                customer_phone: formData.get('notify_phone') || null
+            };
+            
+            try {
+                const response = await fetch(`${window.location.origin}/api/stock-notifications`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(notifyData)
+                });
+                
+                const result = await response.json();
+                
+                if (response.ok && result.success) {
+                    // Show success message
+                    document.getElementById('notify-form-container').innerHTML = `
+                        <div style="text-align: center; padding: 2rem;">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="#16a34a" stroke-width="2" style="width: 64px; height: 64px; margin: 0 auto 1rem;">
+                                <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
+                                <polyline points="22 4 12 14.01 9 11.01"></polyline>
+                            </svg>
+                            <h3 style="font-size: 1.25rem; font-weight: 700; color: #111; margin-bottom: 0.5rem;">You're on the list!</h3>
+                            <p style="color: #666; margin-bottom: 1rem;">We'll notify you at <strong>${notifyData.customer_email}</strong> when this product is back in stock.</p>
+                            <button onclick="closeNotifyModal()" style="padding: 0.75rem 2rem; background: #111; color: white; border: none; border-radius: 8px; font-weight: 600; cursor: pointer;">Close</button>
+                        </div>
+                    `;
+                } else {
+                    throw new Error(result.message || 'Failed to subscribe');
+                }
+            } catch (error) {
+                console.error('Error subscribing to notifications:', error);
+                alert('Sorry, there was an error. Please try again.');
+                submitBtn.disabled = false;
+                submitBtn.textContent = 'Notify Me';
+            }
+        }
         </script>
+        
+        <!-- Notify Me Modal -->
+        <div id="notify-modal-overlay" class="notify-modal-overlay" onclick="if(event.target === this) closeNotifyModal()">
+            <div class="notify-modal">
+                <div class="notify-modal-header">
+                    <h3>
+                        <svg class="bell-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width: 24px; height: 24px;">
+                            <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path>
+                            <path d="M13.73 21a2 2 0 0 1-3.46 0"></path>
+                        </svg>
+                        Notify Me
+                    </h3>
+                    <button class="notify-modal-close" onclick="closeNotifyModal()">&times;</button>
+                </div>
+                
+                <div class="notify-modal-product">
+                    <img id="notify-product-image" src="[@image@]" alt="Product">
+                    <div class="notify-modal-product-info">
+                        <h4 id="notify-product-name">[@name@]</h4>
+                        <p>Currently out of stock</p>
+                    </div>
+                </div>
+                
+                <div id="notify-form-container">
+                    <form onsubmit="submitNotifyForm(event)">
+                        <div class="notify-form-group">
+                            <label for="notify_name">Your Name *</label>
+                            <input type="text" id="notify_name" name="notify_name" required placeholder="John Smith">
+                        </div>
+                        
+                        <div class="notify-form-group">
+                            <label for="notify_email">Email Address *</label>
+                            <input type="email" id="notify_email" name="notify_email" required placeholder="john@example.com">
+                        </div>
+                        
+                        <div class="notify-form-group">
+                            <label for="notify_phone">Phone Number (optional)</label>
+                            <input type="tel" id="notify_phone" name="notify_phone" placeholder="0400 000 000">
+                        </div>
+                        
+                        <button type="submit" class="notify-submit-btn">Notify Me</button>
+                    </form>
+                </div>
+            </div>
+        </div>
