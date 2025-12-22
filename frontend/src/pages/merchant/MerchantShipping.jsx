@@ -230,17 +230,25 @@ const MerchantShipping = () => {
     setServiceForm(prev => ({ ...prev, [field]: value }));
   }, []);
 
+  // Debounced state setter for form inputs
+  const debouncedSetServiceForm = useMemo(() => {
+    let timeoutId = null;
+    return (updater) => {
+      if (timeoutId) clearTimeout(timeoutId);
+      timeoutId = setTimeout(() => {
+        setServiceForm(updater);
+      }, 50);
+    };
+  }, []);
+
   // Stable handler for service form text input changes - uses name attribute
   const handleServiceFormInputChange = useCallback((e) => {
     const { name, value, type, checked } = e.target;
-    // Debounce state update to prevent focus loss
-    requestAnimationFrame(() => {
-      setServiceForm(prev => ({
-        ...prev,
-        [name]: type === 'checkbox' ? checked : value
-      }));
-    });
-  }, []);
+    debouncedSetServiceForm(prev => ({
+      ...prev,
+      [name]: type === 'checkbox' ? checked : value
+    }));
+  }, [debouncedSetServiceForm]);
 
   // Stable handler for code input (lowercase conversion)
   const handleServiceFormCodeChange = useCallback((e) => {
