@@ -402,3 +402,58 @@ Integrated shipping rate calculation into the shopping cart page, allowing custo
    - `GET /api/quotes/{id}/pdf` - Download quote PDF (placeholder)
 
 ### Status: COMPLETE
+
+
+## Application Review & Fixes - 2025-12-22
+
+### Issues Fixed ✓
+
+#### 1. Homepage Banner Placeholder Issue
+- **Problem**: Banner carousel showed "Banner Image" placeholder text instead of actual images
+- **Root Cause**: Banner images were pointing to an external domain (themeshop.preview.emergentagent.com) that no longer exists (returning 404)
+- **Fix**: Updated 5 banner records in the database with working image URLs from Unsplash
+- **Result**: Homepage now displays proper banner images with titles, subtitles, and Shop Now buttons
+
+#### 2. Category Images Broken
+- **Problem**: Categories on homepage showed "No Image" placeholders
+- **Root Cause**: Same issue - external URLs returning 404
+- **Fix**: Updated category image URLs with working Unsplash images
+- **Result**: Categories now display proper images
+
+### New Features Added ✓
+
+#### Email Management Page (`/merchant/emails`)
+Created a comprehensive email management interface for merchants:
+- **Stats Dashboard**: Total Sent, Sent Today, Delivery Rate, Open Rate cards
+- **Email History Tab**: View all emails sent across orders with status, customer info, dates
+- **Templates Tab**: 6 pre-built email templates (Order Confirmation, Shipping Notification, Order Delivered, Payment Reminder, Refund Notification, Quote Sent)
+- **Compose Email Modal**: Select order, choose template, customize subject/body, send
+- **Email Detail View**: View full email content, reply functionality
+- **Template Preview**: Preview template content with placeholder explanations
+- **Route Added**: `/merchant/emails` in App.js
+- **Sidebar Link**: Added "Emails" with Mail icon in MerchantSidebar.jsx
+
+### Pages Verified Working ✓
+
+**Storefront:**
+- Homepage (`/live`) - Banner carousel, categories, featured products, trust badges
+- Products Listing (`/live/products`) - Product grid with images, prices, sale badges
+- Product Detail (`/live/product/:id`) - Product info, pre-order, Afterpay/Zip options
+- Cart (`/live/cart`) - Empty cart state, discount code, shipping calculator
+- Checkout (`/live/checkout`) - Contact info, shipping, order summary
+
+**Merchant Dashboard:**
+- Dashboard - Stats cards, recent orders, top products, inventory alert
+- Orders - Stats, status tabs, filters, order table
+- Order Detail - Fulfillment progress bar, pick/pack/dispatch workflow, invoice preview
+- Quotes - Stats, status tabs, quote table
+- Quote Detail - Items, pricing, customer info, convert to order
+- Emails (NEW) - Email history, templates, compose
+- Invoice Settings - Layout, branding, styling customization with live preview
+
+### API Endpoints Verified ✓
+- `GET /api/orders/{order_id}/emails` - Email history for order
+- `POST /api/orders/{order_id}/email` - Send email to customer
+- Banner and Category CRUD endpoints working correctly
+
+### Status: COMPLETE
