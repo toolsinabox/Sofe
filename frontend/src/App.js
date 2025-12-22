@@ -247,6 +247,7 @@ function App() {
               <Route path="invoice-settings" element={<MerchantInvoiceSettings />} />
               <Route path="mega-menu" element={<MerchantMegaMenu />} />
               <Route path="pages" element={<MerchantPages />} />
+              <Route path="emails" element={<MerchantEmails />} />
             </Route>
 
             {/* Live Theme Storefront - Main customer-facing store */}
