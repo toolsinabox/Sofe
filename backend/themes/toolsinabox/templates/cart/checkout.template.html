@@ -834,7 +834,9 @@ async function calculateCheckoutShipping() {
             noShipping.style.display = 'block';
         } else {
             noShipping.style.display = 'none';
-            calculatedOptions.innerHTML = options.map(opt => `
+            // Filter out pickup option since we have a static one
+            const deliveryOptions = options.filter(opt => opt.name !== 'Pickup - In Store' && opt.id !== 'pickup');
+            calculatedOptions.innerHTML = deliveryOptions.map(opt => `
                 <label class="shipping-option" data-shipping-method="${opt.method || 'delivery'}" data-shipping-price="${opt.price}">
                     <input type="radio" name="shipping_method" value="${opt.name}" onchange="selectShippingMethod(this)">
                     <div class="shipping-option-info">
