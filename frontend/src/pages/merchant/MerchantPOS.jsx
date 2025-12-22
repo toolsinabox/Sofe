@@ -1817,6 +1817,330 @@ const MerchantPOS = () => {
           </div>
         </DialogContent>
       </Dialog>
+
+      {/* Returns Modal */}
+      <Dialog open={showReturns} onOpenChange={setShowReturns}>
+        <DialogContent className="bg-[#151b28] border-gray-800 text-white max-w-2xl max-h-[90vh] overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2">
+              <RotateCcw className="w-5 h-5 text-orange-400" />
+              Process Return / Refund
+            </DialogTitle>
+            <DialogDescription className="text-gray-400">
+              Search for the original transaction to process a return
+            </DialogDescription>
+          </DialogHeader>
+          
+          <div className="py-4 space-y-4">
+            {/* Transaction Search */}
+            <div className="flex gap-2">
+              <Input
+                type="text"
+                value={returnTransactionSearch}
+                onChange={(e) => setReturnTransactionSearch(e.target.value)}
+                placeholder="Enter transaction number (e.g., POS-20251222-0001)"
+                className="bg-gray-800 border-gray-700 text-white flex-1"
+                onKeyDown={(e) => e.key === 'Enter' && searchReturnTransaction()}
+              />
+              <Button
+                onClick={searchReturnTransaction}
+                className="bg-gray-700 hover:bg-gray-600"
+              >
+                <Search className="w-4 h-4" />
+              </Button>
+            </div>
+            
+            {/* Transaction Found */}
+            {returnTransaction && (
+              <div className="space-y-4">
+                <div className="p-3 bg-gray-800/50 rounded-lg">
+                  <div className="flex justify-between items-center mb-2">
+                    <span className="text-white font-medium">{returnTransaction.transaction_number}</span>
+                    <span className="text-gray-400 text-sm">
+                      {new Date(returnTransaction.created_at).toLocaleString()}
+                    </span>
+                  </div>
+                  <div className="text-sm text-gray-400">
+                    Original Total: <span className="text-white">${returnTransaction.total?.toFixed(2)}</span>
+                  </div>
+                </div>
+                
+                {/* Returnable Items */}
+                <div className="space-y-2">
+                  <Label className="text-gray-300 text-sm">Select items to return:</Label>
+                  {returnableItems.length === 0 ? (
+                    <p className="text-gray-500 text-sm py-4 text-center">
+                      All items from this transaction have been returned
+                    </p>
+                  ) : (
+                    returnableItems.map((item) => {
+                      const isSelected = returnItems.some(ri => ri.product_id === item.product_id);
+                      const selectedItem = returnItems.find(ri => ri.product_id === item.product_id);
+                      
+                      return (
+                        <div
+                          key={item.product_id}
+                          className={`p-3 rounded-lg cursor-pointer transition-colors ${
+                            isSelected ? 'bg-orange-500/20 border border-orange-500/50' : 'bg-gray-800/50 hover:bg-gray-800'
+                          }`}
+                          onClick={() => toggleReturnItem(item)}
+                        >
+                          <div className="flex items-center justify-between">
+                            <div className="flex items-center gap-3">
+                              <div className={`w-5 h-5 rounded border-2 flex items-center justify-center ${
+                                isSelected ? 'bg-orange-500 border-orange-500' : 'border-gray-600'
+                              }`}>
+                                {isSelected && <Check className="w-3 h-3 text-white" />}
+                              </div>
+                              <div>
+                                <p className="text-white text-sm">{item.name}</p>
+                                <p className="text-gray-500 text-xs">
+                                  ${item.price.toFixed(2)} × {item.max_returnable} available
+                                  {item.already_returned > 0 && ` (${item.already_returned} already returned)`}
+                                </p>
+                              </div>
+                            </div>
+                            
+                            {isSelected && (
+                              <div className="flex items-center gap-2" onClick={(e) => e.stopPropagation()}>
+                                <button
+                                  onClick={() => updateReturnQty(item.product_id, (selectedItem?.return_qty || 1) - 1)}
+                                  className="w-6 h-6 bg-gray-700 rounded flex items-center justify-center"
+                                >
+                                  <Minus className="w-3 h-3" />
+                                </button>
+                                <span className="w-8 text-center text-white">{selectedItem?.return_qty || 1}</span>
+                                <button
+                                  onClick={() => updateReturnQty(item.product_id, (selectedItem?.return_qty || 1) + 1)}
+                                  className="w-6 h-6 bg-gray-700 rounded flex items-center justify-center"
+                                >
+                                  <Plus className="w-3 h-3" />
+                                </button>
+                              </div>
+                            )}
+                          </div>
+                        </div>
+                      );
+                    })
+                  )}
+                </div>
+                
+                {returnItems.length > 0 && (
+                  <>
+                    {/* Return Reason */}
+                    <div className="space-y-2">
+                      <Label className="text-gray-300 text-sm">Return Reason</Label>
+                      <Select value={returnReason} onValueChange={setReturnReason}>
+                        <SelectTrigger className="bg-gray-800 border-gray-700 text-white">
+                          <SelectValue placeholder="Select reason..." />
+                        </SelectTrigger>
+                        <SelectContent className="bg-gray-800 border-gray-700">
+                          <SelectItem value="customer_return" className="text-white">Customer Changed Mind</SelectItem>
+                          <SelectItem value="defective" className="text-white">Defective Product</SelectItem>
+                          <SelectItem value="wrong_item" className="text-white">Wrong Item</SelectItem>
+                          <SelectItem value="damaged" className="text-white">Damaged in Transit</SelectItem>
+                          <SelectItem value="other" className="text-white">Other</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
+                    
+                    {/* Refund Method */}
+                    <div className="space-y-2">
+                      <Label className="text-gray-300 text-sm">Refund Method</Label>
+                      <div className="flex gap-2">
+                        <Button
+                          variant={refundMethod === 'cash' ? 'default' : 'outline'}
+                          onClick={() => setRefundMethod('cash')}
+                          className={refundMethod === 'cash' ? 'bg-emerald-600' : 'border-gray-700 text-gray-300'}
+                        >
+                          <Banknote className="w-4 h-4 mr-2" />
+                          Cash
+                        </Button>
+                        <Button
+                          variant={refundMethod === 'card' ? 'default' : 'outline'}
+                          onClick={() => setRefundMethod('card')}
+                          className={refundMethod === 'card' ? 'bg-blue-600' : 'border-gray-700 text-gray-300'}
+                        >
+                          <CreditCard className="w-4 h-4 mr-2" />
+                          Card
+                        </Button>
+                        <Button
+                          variant={refundMethod === 'store_credit' ? 'default' : 'outline'}
+                          onClick={() => setRefundMethod('store_credit')}
+                          className={refundMethod === 'store_credit' ? 'bg-purple-600' : 'border-gray-700 text-gray-300'}
+                        >
+                          <Receipt className="w-4 h-4 mr-2" />
+                          Store Credit
+                        </Button>
+                      </div>
+                    </div>
+                    
+                    {/* Refund Total */}
+                    <div className="p-4 bg-orange-500/10 border border-orange-500/30 rounded-lg text-center">
+                      <p className="text-gray-400 text-sm mb-1">Refund Amount</p>
+                      <p className="text-3xl font-bold text-orange-400">${calculateReturnTotal().toFixed(2)}</p>
+                    </div>
+                  </>
+                )}
+              </div>
+            )}
+          </div>
+          
+          <DialogFooter className="gap-2">
+            <Button
+              variant="outline"
+              onClick={() => {
+                setShowReturns(false);
+                setReturnTransaction(null);
+                setReturnableItems([]);
+                setReturnItems([]);
+                setReturnReason('');
+                setReturnTransactionSearch('');
+              }}
+              className="border-gray-700 text-gray-300"
+            >
+              Cancel
+            </Button>
+            <Button
+              onClick={processReturn}
+              disabled={processingReturn || returnItems.length === 0 || !returnReason}
+              className="bg-orange-600 hover:bg-orange-700 text-white"
+            >
+              {processingReturn ? (
+                <><Loader2 className="w-4 h-4 mr-2 animate-spin" /> Processing...</>
+              ) : (
+                <><RotateCcw className="w-4 h-4 mr-2" /> Process Return</>
+              )}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* Add Customer Modal */}
+      <Dialog open={showAddCustomer} onOpenChange={setShowAddCustomer}>
+        <DialogContent className="bg-[#151b28] border-gray-800 text-white max-w-sm">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2">
+              <UserPlus className="w-5 h-5 text-emerald-400" />
+              Add New Customer
+            </DialogTitle>
+          </DialogHeader>
+          
+          <div className="py-4 space-y-4">
+            <div className="space-y-2">
+              <Label className="text-gray-300 text-sm">Full Name *</Label>
+              <Input
+                value={newCustomer.name}
+                onChange={(e) => setNewCustomer(prev => ({ ...prev, name: e.target.value }))}
+                placeholder="John Smith"
+                className="bg-gray-800 border-gray-700 text-white"
+              />
+            </div>
+            
+            <div className="space-y-2">
+              <Label className="text-gray-300 text-sm">Email *</Label>
+              <div className="relative">
+                <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-500" />
+                <Input
+                  type="email"
+                  value={newCustomer.email}
+                  onChange={(e) => setNewCustomer(prev => ({ ...prev, email: e.target.value }))}
+                  placeholder="john@example.com"
+                  className="bg-gray-800 border-gray-700 text-white pl-10"
+                />
+              </div>
+            </div>
+            
+            <div className="space-y-2">
+              <Label className="text-gray-300 text-sm">Phone (Optional)</Label>
+              <div className="relative">
+                <Phone className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-500" />
+                <Input
+                  type="tel"
+                  value={newCustomer.phone}
+                  onChange={(e) => setNewCustomer(prev => ({ ...prev, phone: e.target.value }))}
+                  placeholder="0400 000 000"
+                  className="bg-gray-800 border-gray-700 text-white pl-10"
+                />
+              </div>
+            </div>
+          </div>
+          
+          <DialogFooter className="gap-2">
+            <Button
+              variant="outline"
+              onClick={() => {
+                setShowAddCustomer(false);
+                setNewCustomer({ name: '', email: '', phone: '' });
+              }}
+              className="border-gray-700 text-gray-300"
+            >
+              Cancel
+            </Button>
+            <Button
+              onClick={handleQuickAddCustomer}
+              disabled={addingCustomer || !newCustomer.name || !newCustomer.email}
+              className="bg-emerald-600 hover:bg-emerald-700 text-white"
+            >
+              {addingCustomer ? (
+                <><Loader2 className="w-4 h-4 mr-2 animate-spin" /> Adding...</>
+              ) : (
+                <><UserPlus className="w-4 h-4 mr-2" /> Add Customer</>
+              )}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* Discount Approval Modal */}
+      <Dialog open={showDiscountApproval} onOpenChange={setShowDiscountApproval}>
+        <DialogContent className="bg-[#151b28] border-gray-800 text-white max-w-sm">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2">
+              <Shield className="w-5 h-5 text-yellow-400" />
+              Discount Requires Approval
+            </DialogTitle>
+          </DialogHeader>
+          
+          <div className="py-4 space-y-4">
+            <div className="p-4 bg-yellow-500/10 border border-yellow-500/30 rounded-lg">
+              <div className="flex items-center gap-2 mb-2">
+                <Lock className="w-4 h-4 text-yellow-400" />
+                <span className="text-yellow-400 font-medium">Permission Required</span>
+              </div>
+              <p className="text-gray-400 text-sm">
+                The discount of {pendingDiscount?.type === 'percentage' 
+                  ? `${pendingDiscount?.value}%` 
+                  : `$${pendingDiscount?.value}`} exceeds your authorization limit.
+              </p>
+            </div>
+            
+            <p className="text-gray-400 text-sm">
+              You can request manager approval to apply this discount.
+            </p>
+          </div>
+          
+          <DialogFooter className="gap-2">
+            <Button
+              variant="outline"
+              onClick={() => {
+                setShowDiscountApproval(false);
+                setPendingDiscount(null);
+              }}
+              className="border-gray-700 text-gray-300"
+            >
+              Cancel
+            </Button>
+            <Button
+              onClick={requestDiscountApproval}
+              className="bg-yellow-600 hover:bg-yellow-700 text-white"
+            >
+              <Shield className="w-4 h-4 mr-2" />
+              Request Approval
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };
