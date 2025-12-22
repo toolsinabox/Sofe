@@ -22,6 +22,10 @@ import MerchantBanners from "./pages/merchant/MerchantBanners";
 import MerchantContentZones from "./pages/merchant/MerchantContentZones";
 import MerchantThemeEditor from "./pages/merchant/MerchantThemeEditor";
 import MerchantStoreSettings from "./pages/merchant/MerchantStoreSettings";
+import MerchantSettings from "./pages/merchant/MerchantSettings";
+import MerchantPayments from "./pages/merchant/MerchantPayments";
+import MerchantDiscounts from "./pages/merchant/MerchantDiscounts";
+import MerchantAnalytics from "./pages/merchant/MerchantAnalytics";
 import MerchantLogin from "./pages/merchant/MerchantLogin";
 
 // Live Storefront (Theme-rendered)
