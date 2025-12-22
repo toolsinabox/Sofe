@@ -923,7 +923,9 @@ const MerchantShipping = () => {
     const [rateImportResult, setRateImportResult] = useState(null);
     const [selectedRateFile, setSelectedRateFile] = useState(null);
     const [rateUploadProgress, setRateUploadProgress] = useState(0);
+    const [modalUploadingRates, setModalUploadingRates] = useState(false);
     const rateFileInputRef = useRef(null);
+    const modalRateFileInputRef = useRef(null);
 
     const openServiceModal = (service = null) => {
       if (service) {
