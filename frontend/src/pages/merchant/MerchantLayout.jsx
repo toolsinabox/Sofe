@@ -10,7 +10,10 @@ const MerchantLayout = () => {
   const getPageTitle = () => {
     const path = location.pathname;
     if (path === '/merchant') return 'Dashboard';
+    if (path.includes('/orders/')) return 'Order Details';
     if (path.includes('/orders')) return 'Orders';
+    if (path.includes('/quotes/')) return 'Quote Details';
+    if (path.includes('/quotes')) return 'Quotes';
     if (path.includes('/products')) return 'Products';
     if (path.includes('/inventory')) return 'Inventory';
     if (path.includes('/customers')) return 'Customers';
