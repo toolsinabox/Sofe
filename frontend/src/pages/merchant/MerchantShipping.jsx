@@ -236,14 +236,19 @@ const MerchantShipping = () => {
     };
   }, []);
 
-  // Stable handler for service form text input changes - uses name attribute
-  const handleServiceFormInputChange = useCallback((e) => {
+  // Handler for blur - syncs state when user leaves the field
+  const handleServiceFormBlur = useCallback((e) => {
     const { name, value, type, checked } = e.target;
-    debouncedSetServiceForm(prev => ({
+    setServiceForm(prev => ({
       ...prev,
       [name]: type === 'checkbox' ? checked : value
     }));
-  }, [debouncedSetServiceForm]);
+  }, []);
+
+  // Stable handler for service form text input changes - does nothing to avoid focus loss
+  const handleServiceFormInputChange = useCallback((e) => {
+    // No-op during typing - state syncs on blur
+  }, []);
 
   // Stable handler for code input (lowercase conversion)
   const handleServiceFormCodeChange = useCallback((e) => {
