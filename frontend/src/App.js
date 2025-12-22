@@ -38,6 +38,7 @@ import MerchantQuotes from "./pages/merchant/MerchantQuotes";
 import MerchantQuoteDetail from "./pages/merchant/MerchantQuoteDetail";
 import MerchantInvoiceSettings from "./pages/merchant/MerchantInvoiceSettings";
 import MerchantEmails from "./pages/merchant/MerchantEmails";
+import MerchantPOS from "./pages/merchant/MerchantPOS";
 
 // Live Storefront (Theme-rendered)
 import LiveThemeStorefront from "./pages/store/LiveThemeStorefront";
