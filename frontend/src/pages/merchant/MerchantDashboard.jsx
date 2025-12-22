@@ -175,17 +175,17 @@ const MerchantDashboard = () => {
                     className="flex items-center justify-between p-2 sm:p-2.5 bg-gray-800/30 rounded-lg hover:bg-gray-800/50 transition-colors"
                   >
                     <div className="flex items-center gap-2 min-w-0 flex-1">
-                      <div className="w-9 h-9 sm:w-10 sm:h-10 bg-gradient-to-br from-emerald-500/20 to-teal-600/20 rounded-lg flex items-center justify-center flex-shrink-0">
-                        <ShoppingBag size={16} className="sm:w-[18px] sm:h-[18px] text-emerald-400" />
+                      <div className="w-7 h-7 sm:w-8 sm:h-8 bg-gradient-to-br from-emerald-500/20 to-teal-600/20 rounded flex items-center justify-center flex-shrink-0">
+                        <ShoppingBag className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-emerald-400" />
                       </div>
                       <div className="min-w-0 flex-1">
-                        <p className="text-white font-medium text-xs sm:text-sm truncate">{order.order_number}</p>
-                        <p className="text-gray-500 text-xs truncate">{order.customer_name}</p>
+                        <p className="text-white font-medium text-[11px] sm:text-xs truncate">{order.order_number}</p>
+                        <p className="text-gray-500 text-[10px] sm:text-xs truncate">{order.customer_name}</p>
                       </div>
                     </div>
-                    <div className="text-right flex-shrink-0 ml-2">
-                      <p className="text-white font-medium text-xs sm:text-sm">{formatCurrency(order.total)}</p>
-                      <span className={`text-xs px-1.5 sm:px-2 py-0.5 rounded-full ${getStatusColor(order.status)}`}>
+                    <div className="text-right flex-shrink-0 ml-1.5">
+                      <p className="text-white font-medium text-[11px] sm:text-xs">{formatCurrency(order.total)}</p>
+                      <span className={`text-[10px] px-1.5 py-0.5 rounded-full ${getStatusColor(order.status)}`}>
                         {order.status.charAt(0).toUpperCase() + order.status.slice(1)}
                       </span>
                     </div>
