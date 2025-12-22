@@ -45,6 +45,7 @@ const MerchantSidebar = ({ collapsed, setCollapsed }) => {
     { path: '/merchant/inventory', icon: Boxes, label: 'Inventory' },
     { path: '/merchant/customers', icon: Users, label: 'Customers' },
     { path: '/merchant/reviews', icon: Star, label: 'Reviews' },
+    { path: '/merchant/pages', icon: FileText, label: 'Pages' },
     { path: '/merchant/banners', icon: Image, label: 'Banners' },
     { path: '/merchant/content-zones', icon: LayoutGrid, label: 'Content Zones' },
     { path: '/merchant/mega-menu', icon: Menu, label: 'Mega Menu' },
