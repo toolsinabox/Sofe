@@ -651,12 +651,12 @@ const ProductEditor = ({ product, categories, onSave, onClose, templateTags }) =
                       Category
                       <span className="text-xs text-gray-500 font-mono">[@product_category@]</span>
                     </Label>
-                    <Select value={formData.category_id || ''} onValueChange={(v) => handleChange('category_id', v)}>
+                    <Select value={formData.category_id || '_none'} onValueChange={(v) => handleChange('category_id', v === '_none' ? '' : v)}>
                       <SelectTrigger className="bg-gray-800/50 border-gray-700 text-gray-300">
                         <SelectValue placeholder="Select category" />
                       </SelectTrigger>
                       <SelectContent className="bg-[#1a1f2e] border-gray-700">
-                        <SelectItem value="" className="text-gray-300">No Category</SelectItem>
+                        <SelectItem value="_none" className="text-gray-300">No Category</SelectItem>
                         {categories.map(cat => (
                           <SelectItem key={cat.id} value={cat.id} className="text-gray-300">{cat.name}</SelectItem>
                         ))}
