@@ -178,19 +178,19 @@ const MerchantSidebar = ({ collapsed, setCollapsed }) => {
       )}
 
       {/* Bottom Section */}
-      <div className="p-3 border-t border-gray-800 space-y-1">
+      <div className="px-3 py-2 border-t border-gray-800 space-y-1">
         <NavLink
           to="/merchant/help"
-          className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-gray-400 hover:text-white hover:bg-gray-800/50 transition-all"
+          className="flex items-center gap-3 px-3 py-2 rounded-lg text-gray-400 hover:text-white hover:bg-gray-800/50 transition-all"
         >
-          <HelpCircle size={20} />
+          <HelpCircle size={18} />
           {!collapsed && <span className="font-medium text-sm">Help & Support</span>}
         </NavLink>
         <button 
           onClick={handleLogout}
-          className="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-gray-400 hover:text-red-400 hover:bg-red-500/10 transition-all"
+          className="w-full flex items-center gap-3 px-3 py-2 rounded-lg text-gray-400 hover:text-red-400 hover:bg-red-500/10 transition-all"
         >
-          <LogOut size={20} />
+          <LogOut size={18} />
           {!collapsed && <span className="font-medium text-sm">Logout</span>}
         </button>
       </div>
