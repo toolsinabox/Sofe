@@ -1247,14 +1247,69 @@ class MaropostTemplateEngine:
             if not condition:
                 return False
             
-            # Simple equality check
+            # Maropost-style operators: eq, ne, gt, lt, ge, le
+            # ne - not equal
+            if ' ne ' in condition:
+                left, right = condition.split(' ne ', 1)
+                left_val = self._resolve_value(left.strip(), context)
+                right_val = right.strip().strip("'\"")
+                return str(left_val) != right_val
+            
+            # eq - equal
+            if ' eq ' in condition:
+                left, right = condition.split(' eq ', 1)
+                left_val = self._resolve_value(left.strip(), context)
+                right_val = right.strip().strip("'\"")
+                return str(left_val) == right_val
+            
+            # gt - greater than
+            if ' gt ' in condition:
+                left, right = condition.split(' gt ', 1)
+                left_val = self._resolve_value(left.strip(), context)
+                right_val = right.strip().strip("'\"")
+                try:
+                    return float(left_val) > float(right_val)
+                except (ValueError, TypeError):
+                    return False
+            
+            # lt - less than
+            if ' lt ' in condition:
+                left, right = condition.split(' lt ', 1)
+                left_val = self._resolve_value(left.strip(), context)
+                right_val = right.strip().strip("'\"")
+                try:
+                    return float(left_val) < float(right_val)
+                except (ValueError, TypeError):
+                    return False
+            
+            # ge - greater than or equal
+            if ' ge ' in condition:
+                left, right = condition.split(' ge ', 1)
+                left_val = self._resolve_value(left.strip(), context)
+                right_val = right.strip().strip("'\"")
+                try:
+                    return float(left_val) >= float(right_val)
+                except (ValueError, TypeError):
+                    return False
+            
+            # le - less than or equal
+            if ' le ' in condition:
+                left, right = condition.split(' le ', 1)
+                left_val = self._resolve_value(left.strip(), context)
+                right_val = right.strip().strip("'\"")
+                try:
+                    return float(left_val) <= float(right_val)
+                except (ValueError, TypeError):
+                    return False
+            
+            # Simple equality check (fallback)
             if '==' in condition:
                 left, right = condition.split('==', 1)
                 left_val = self._resolve_value(left.strip(), context)
                 right_val = right.strip().strip("'\"")
                 return str(left_val) == right_val
             
-            # Inequality
+            # Inequality (fallback)
             if '!=' in condition:
                 left, right = condition.split('!=', 1)
                 left_val = self._resolve_value(left.strip(), context)
