@@ -972,8 +972,8 @@ const MerchantPOS = () => {
 
       {/* Main POS Interface */}
       <div className="flex-1 flex flex-col lg:flex-row gap-3 p-3 overflow-hidden">
-        {/* Left Panel - Products & Cart */}
-        <div className="flex-1 flex flex-col min-w-0">
+        {/* Left Panel - Product Grid */}
+        <div className="flex-1 flex flex-col min-w-0 lg:max-w-[50%]">
           {/* Search Bar */}
           <div className="relative mb-3">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500 w-4 h-4 sm:w-5 sm:h-5" />
@@ -1025,13 +1025,92 @@ const MerchantPOS = () => {
             )}
           </div>
 
-          {/* Cart Items */}
+          {/* Category Filter */}
+          <div className="flex gap-2 mb-3 overflow-x-auto pb-2">
+            <Button
+              variant={selectedCategory === 'all' ? 'default' : 'outline'}
+              size="sm"
+              onClick={() => setSelectedCategory('all')}
+              className={`whitespace-nowrap ${selectedCategory === 'all' ? 'bg-emerald-600 text-white' : 'border-gray-700 text-gray-300'}`}
+            >
+              All Products
+            </Button>
+            {categories.map((cat) => (
+              <Button
+                key={cat}
+                variant={selectedCategory === cat ? 'default' : 'outline'}
+                size="sm"
+                onClick={() => setSelectedCategory(cat)}
+                className={`whitespace-nowrap ${selectedCategory === cat ? 'bg-emerald-600 text-white' : 'border-gray-700 text-gray-300'}`}
+              >
+                {cat}
+              </Button>
+            ))}
+          </div>
+
+          {/* Product Grid */}
+          <Card className="flex-1 bg-[#151b28] border-gray-800 overflow-hidden">
+            <CardHeader className="py-2 px-3 border-b border-gray-800">
+              <CardTitle className="text-white text-sm flex items-center gap-2">
+                <Package className="w-4 h-4" />
+                Products ({filteredProducts.length})
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="p-2 overflow-y-auto h-[calc(100%-48px)]">
+              {loadingProducts ? (
+                <div className="flex items-center justify-center py-8">
+                  <Loader2 className="w-6 h-6 animate-spin text-emerald-400" />
+                </div>
+              ) : filteredProducts.length === 0 ? (
+                <div className="flex flex-col items-center justify-center py-8 text-gray-500">
+                  <Package className="w-12 h-12 mb-3 opacity-30" />
+                  <p className="text-sm">No products found</p>
+                </div>
+              ) : (
+                <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-2">
+                  {filteredProducts.map((product) => (
+                    <button
+                      key={product.id}
+                      onClick={() => addToCart(product)}
+                      disabled={product.stock <= 0}
+                      className={`p-2 rounded-lg text-left transition-all ${
+                        product.stock > 0 
+                          ? 'bg-gray-800/50 hover:bg-gray-800 hover:ring-1 hover:ring-emerald-500/50 cursor-pointer' 
+                          : 'bg-gray-800/30 opacity-50 cursor-not-allowed'
+                      }`}
+                    >
+                      <div className="aspect-square bg-gray-700 rounded-lg mb-2 overflow-hidden">
+                        {product.image ? (
+                          <img src={product.image} alt={product.name} className="w-full h-full object-cover" />
+                        ) : (
+                          <div className="w-full h-full flex items-center justify-center">
+                            <Package className="w-8 h-8 text-gray-500" />
+                          </div>
+                        )}
+                      </div>
+                      <p className="text-white text-xs font-medium truncate">{product.name}</p>
+                      <div className="flex items-center justify-between mt-1">
+                        <p className="text-emerald-400 text-sm font-semibold">${product.price.toFixed(2)}</p>
+                        <p className={`text-[10px] ${product.stock > 0 ? 'text-gray-500' : 'text-red-400'}`}>
+                          {product.stock > 0 ? `${product.stock}` : 'Out'}
+                        </p>
+                      </div>
+                    </button>
+                  ))}
+                </div>
+              )}
+            </CardContent>
+          </Card>
+        </div>
+
+        {/* Middle Panel - Cart */}
+        <div className="w-full lg:w-80 flex flex-col">
           <Card className="flex-1 bg-[#151b28] border-gray-800 overflow-hidden flex flex-col">
             <CardHeader className="py-2 sm:py-3 px-3 sm:px-4 border-b border-gray-800">
               <div className="flex items-center justify-between">
                 <CardTitle className="text-white text-sm sm:text-base flex items-center gap-2">
                   <ShoppingCart className="w-4 h-4 sm:w-5 sm:h-5" />
-                  Cart ({cart.length} items)
+                  Cart ({cart.length})
                 </CardTitle>
                 {cart.length > 0 && (
                   <Button
@@ -1040,7 +1119,7 @@ const MerchantPOS = () => {
                     onClick={clearCart}
                     className="text-red-400 hover:text-red-300 hover:bg-red-500/10 text-xs h-7 px-2"
                   >
-                    Clear All
+                    Clear
                   </Button>
                 )}
               </div>
@@ -1051,53 +1130,61 @@ const MerchantPOS = () => {
                 <div className="h-full flex flex-col items-center justify-center text-gray-500 py-8">
                   <ShoppingCart className="w-10 h-10 sm:w-12 sm:h-12 mb-3 opacity-30" />
                   <p className="text-xs sm:text-sm">Cart is empty</p>
-                  <p className="text-[10px] sm:text-xs text-gray-600 mt-1">Search or scan products to add</p>
+                  <p className="text-[10px] sm:text-xs text-gray-600 mt-1">Click products to add</p>
                 </div>
               ) : (
                 cart.map((item, index) => (
                   <div
                     key={index}
-                    className="flex items-center gap-2 sm:gap-3 p-2 sm:p-3 bg-gray-800/50 rounded-lg"
+                    className="flex items-center gap-2 p-2 bg-gray-800/50 rounded-lg"
                   >
-                    <div className="w-10 h-10 sm:w-12 sm:h-12 bg-gray-700 rounded-lg overflow-hidden flex-shrink-0">
+                    <div className="w-10 h-10 bg-gray-700 rounded-lg overflow-hidden flex-shrink-0">
                       {item.image ? (
                         <img src={item.image} alt={item.name} className="w-full h-full object-cover" />
                       ) : (
                         <div className="w-full h-full flex items-center justify-center">
-                          <Package className="w-5 h-5 text-gray-500" />
+                          <Package className="w-4 h-4 text-gray-500" />
                         </div>
                       )}
                     </div>
                     
                     <div className="flex-1 min-w-0">
-                      <p className="text-white font-medium text-xs sm:text-sm truncate">{item.name}</p>
-                      <p className="text-gray-500 text-[10px] sm:text-xs">${item.price.toFixed(2)} each</p>
+                      <p className="text-white font-medium text-xs truncate">{item.name}</p>
+                      <p className="text-gray-500 text-[10px]">${item.price.toFixed(2)}</p>
                     </div>
                     
-                    <div className="flex items-center gap-1 sm:gap-2">
+                    <div className="flex items-center gap-1">
                       <button
                         onClick={() => updateQuantity(index, -1)}
-                        className="w-6 h-6 sm:w-7 sm:h-7 flex items-center justify-center bg-gray-700 rounded text-gray-300 hover:bg-gray-600 transition-colors"
+                        className="w-6 h-6 flex items-center justify-center bg-gray-700 rounded text-gray-300 hover:bg-gray-600"
                       >
-                        <Minus className="w-3 h-3 sm:w-4 sm:h-4" />
+                        <Minus className="w-3 h-3" />
                       </button>
-                      <span className="w-6 sm:w-8 text-center text-white text-xs sm:text-sm font-medium">
+                      <span className="w-6 text-center text-white text-xs font-medium">
                         {item.quantity}
                       </span>
                       <button
                         onClick={() => updateQuantity(index, 1)}
-                        className="w-6 h-6 sm:w-7 sm:h-7 flex items-center justify-center bg-gray-700 rounded text-gray-300 hover:bg-gray-600 transition-colors"
+                        className="w-6 h-6 flex items-center justify-center bg-gray-700 rounded text-gray-300 hover:bg-gray-600"
                       >
-                        <Plus className="w-3 h-3 sm:w-4 sm:h-4" />
+                        <Plus className="w-3 h-3" />
                       </button>
                     </div>
                     
-                    <div className="text-right w-16 sm:w-20">
-                      <p className="text-white font-semibold text-xs sm:text-sm">${item.subtotal.toFixed(2)}</p>
-                    </div>
+                    <p className="text-white font-semibold text-xs w-14 text-right">${item.subtotal.toFixed(2)}</p>
                     
                     <button
                       onClick={() => removeFromCart(index)}
+                      className="p-1 text-gray-500 hover:text-red-400"
+                    >
+                      <Trash2 className="w-3.5 h-3.5" />
+                    </button>
+                  </div>
+                ))
+              )}
+            </CardContent>
+          </Card>
+        </div>
                       className="p-1 sm:p-1.5 text-gray-500 hover:text-red-400 transition-colors"
                     >
                       <Trash2 className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
