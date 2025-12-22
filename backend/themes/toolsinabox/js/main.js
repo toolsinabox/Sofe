@@ -126,26 +126,6 @@ function goToSlide(visibleIndex) {
         dot.classList.toggle('active', i === currentSlide);
     });
 }
-    
-    if (!slidesContainer || visibleSlides.length === 0) return;
-    
-    // Wrap around
-    if (visibleIndex >= visibleSlides.length) visibleIndex = 0;
-    if (visibleIndex < 0) visibleIndex = visibleSlides.length - 1;
-    
-    currentSlide = visibleIndex;
-    
-    // Get the actual index in the DOM
-    const actualIndex = visibleSlides[visibleIndex].index;
-    
-    // Transform to show the correct slide
-    slidesContainer.style.transform = `translateX(-${actualIndex * 100}%)`;
-    
-    // Update dots
-    dots.forEach((dot, i) => {
-        dot.classList.toggle('active', i === currentSlide);
-    });
-}
 
 function changeSlide(direction) {
     goToSlide(currentSlide + direction);
