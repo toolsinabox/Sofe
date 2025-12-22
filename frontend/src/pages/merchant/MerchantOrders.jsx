@@ -173,6 +173,23 @@ const MerchantOrders = () => {
     }
   };
 
+  const deleteOrder = async () => {
+    if (!selectedOrder) return;
+    setDeleting(true);
+    try {
+      await axios.delete(`${API}/orders/${selectedOrder.id}`);
+      setShowDeleteModal(false);
+      setSelectedOrder(null);
+      fetchOrders();
+      fetchStats();
+    } catch (error) {
+      console.error('Error deleting order:', error);
+      alert(error.response?.data?.detail || 'Failed to delete order');
+    } finally {
+      setDeleting(false);
+    }
+  };
+
   const exportOrders = async (format = 'csv') => {
     try {
       const response = await axios.get(`${API}/orders/export?format=${format}`, {
