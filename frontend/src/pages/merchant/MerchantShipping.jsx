@@ -194,9 +194,9 @@ const MerchantShipping = () => {
     }
   };
 
-  // ============== OVERVIEW TAB (Memoized to prevent re-renders) ==============
-  const overviewContent = useMemo(() => (
-    <div className="space-y-6">
+  // ============== OVERVIEW TAB - Stats and Quick Actions (memoized) ==============
+  const overviewStats = useMemo(() => (
+    <>
       {/* Stats Cards */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
         <div className="bg-gray-800 rounded-xl p-5 border border-gray-700">
@@ -245,7 +245,81 @@ const MerchantShipping = () => {
         </div>
       </div>
 
-      {/* Shipping Calculator */}
+      {/* Quick Actions */}
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+        <button 
+          onClick={() => { setActiveTab('zones'); }}
+          className="bg-gray-800 rounded-xl p-6 border border-gray-700 hover:border-blue-500/50 transition-all text-left group"
+        >
+          <div className="flex items-center justify-between">
+            <div>
+              <h4 className="text-white font-semibold mb-1">Manage Zones</h4>
+              <p className="text-gray-500 text-sm">Configure shipping regions and postcodes</p>
+            </div>
+            <MapPin className="w-8 h-8 text-blue-400 group-hover:scale-110 transition-transform" />
+          </div>
+        </button>
+        <button 
+          onClick={() => { setActiveTab('services'); }}
+          className="bg-gray-800 rounded-xl p-6 border border-gray-700 hover:border-emerald-500/50 transition-all text-left group"
+        >
+          <div className="flex items-center justify-between">
+            <div>
+              <h4 className="text-white font-semibold mb-1">Configure Services</h4>
+              <p className="text-gray-500 text-sm">Set up shipping rates and carriers</p>
+            </div>
+            <DollarSign className="w-8 h-8 text-emerald-400 group-hover:scale-110 transition-transform" />
+          </div>
+        </button>
+        <button 
+          onClick={() => { setActiveTab('options'); }}
+          className="bg-gray-800 rounded-xl p-6 border border-gray-700 hover:border-orange-500/50 transition-all text-left group"
+        >
+          <div className="flex items-center justify-between">
+            <div>
+              <h4 className="text-white font-semibold mb-1">Shipping Options</h4>
+              <p className="text-gray-500 text-sm">Free shipping thresholds & rules</p>
+            </div>
+            <Settings className="w-8 h-8 text-orange-400 group-hover:scale-110 transition-transform" />
+          </div>
+        </button>
+      </div>
+
+      {/* Recent Zones Preview */}
+      <div className="bg-gray-800 rounded-xl p-6 border border-gray-700">
+        <div className="flex items-center justify-between mb-4">
+          <h3 className="text-lg font-semibold text-white">Active Shipping Zones</h3>
+          <Button variant="outline" size="sm" onClick={() => setActiveTab('zones')} className="border-gray-600">
+            View All
+          </Button>
+        </div>
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
+          {zones.slice(0, 6).map(zone => (
+            <div key={zone.id} className="bg-gray-900 rounded-lg p-4 border border-gray-700">
+              <div className="flex items-center gap-2 mb-2">
+                <MapPin className="w-4 h-4 text-blue-400" />
+                <span className="text-white font-medium">{zone.name}</span>
+              </div>
+              <p className="text-gray-500 text-sm">{zone.postcodes?.slice(0, 3).join(', ')}{zone.postcodes?.length > 3 ? '...' : ''}</p>
+              <div className="flex items-center gap-2 mt-2">
+                <span className={`px-2 py-0.5 rounded text-xs ${zone.is_active ? 'bg-emerald-500/20 text-emerald-400' : 'bg-gray-700 text-gray-400'}`}>
+                  {zone.is_active ? 'Active' : 'Inactive'}
+                </span>
+                <span className="text-gray-600 text-xs">{zone.code}</span>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+    </>
+  ), [zones, services, categories, packages, setActiveTab]);
+
+  // Overview content combines memoized stats with calculator (not memoized)
+  const overviewContent = (
+    <div className="space-y-6">
+      {overviewStats}
+      
+      {/* Shipping Calculator - NOT memoized to allow input updates */}
       <div className="bg-gray-800 rounded-xl p-6 border border-gray-700">
         <h3 className="text-lg font-semibold text-white mb-4 flex items-center gap-2">
           <Calculator className="w-5 h-5 text-emerald-400" />
@@ -337,103 +411,31 @@ const MerchantShipping = () => {
                     )}
                   </div>
                 )}
-                <div className="space-y-2">
-                  {calcResult.options?.map((option, i) => (
-                    <div key={i} className="flex items-center justify-between p-3 bg-gray-800 rounded-lg">
-                      <div className="flex items-center gap-3">
-                        <Truck className="w-5 h-5 text-gray-400" />
+                {calcResult.options && calcResult.options.length > 0 ? (
+                  <div className="space-y-2">
+                    <p className="text-gray-300 text-sm font-medium">Available shipping options:</p>
+                    {calcResult.options.map((opt, idx) => (
+                      <div key={idx} className="flex items-center justify-between p-3 bg-gray-800 rounded-lg">
                         <div>
-                          <p className="text-white font-medium">{option.name}</p>
-                          <p className="text-gray-500 text-sm">{option.description}</p>
+                          <p className="text-white font-medium">{opt.service_name || opt.name}</p>
+                          <p className="text-gray-500 text-xs">{opt.delivery_estimate || `${opt.min_days || 0} business days`}</p>
                         </div>
-                      </div>
-                      <div className="text-right">
-                        <p className={`font-bold ${option.is_free ? 'text-emerald-400' : 'text-white'}`}>
-                          {option.is_free ? 'FREE' : `$${option.price.toFixed(2)}`}
+                        <p className={`font-bold ${opt.rate === 0 ? 'text-emerald-400' : 'text-white'}`}>
+                          {opt.rate === 0 ? 'FREE' : `$${opt.rate?.toFixed(2)}`}
                         </p>
-                        {option.delivery_days > 0 && (
-                          <p className="text-gray-500 text-sm">{option.delivery_days} days</p>
-                        )}
                       </div>
-                    </div>
-                  ))}
-                </div>
+                    ))}
+                  </div>
+                ) : (
+                  <p className="text-gray-400 text-sm">No shipping options available for this destination.</p>
+                )}
               </>
             )}
           </div>
         )}
       </div>
-
-      {/* Quick Actions */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-        <button 
-          onClick={() => { setActiveTab('zones'); }}
-          className="bg-gray-800 rounded-xl p-6 border border-gray-700 hover:border-blue-500/50 transition-all text-left group"
-        >
-          <div className="flex items-center justify-between">
-            <div>
-              <h4 className="text-white font-semibold mb-1">Manage Zones</h4>
-              <p className="text-gray-500 text-sm">Configure shipping regions and postcodes</p>
-            </div>
-            <MapPin className="w-8 h-8 text-blue-400 group-hover:scale-110 transition-transform" />
-          </div>
-        </button>
-        <button 
-          onClick={() => { setActiveTab('services'); }}
-          className="bg-gray-800 rounded-xl p-6 border border-gray-700 hover:border-emerald-500/50 transition-all text-left group"
-        >
-          <div className="flex items-center justify-between">
-            <div>
-              <h4 className="text-white font-semibold mb-1">Configure Services</h4>
-              <p className="text-gray-500 text-sm">Set up shipping rates and carriers</p>
-            </div>
-            <DollarSign className="w-8 h-8 text-emerald-400 group-hover:scale-110 transition-transform" />
-          </div>
-        </button>
-        <button 
-          onClick={() => { setActiveTab('options'); }}
-          className="bg-gray-800 rounded-xl p-6 border border-gray-700 hover:border-orange-500/50 transition-all text-left group"
-        >
-          <div className="flex items-center justify-between">
-            <div>
-              <h4 className="text-white font-semibold mb-1">Shipping Options</h4>
-              <p className="text-gray-500 text-sm">Free shipping thresholds & rules</p>
-            </div>
-            <Settings className="w-8 h-8 text-orange-400 group-hover:scale-110 transition-transform" />
-          </div>
-        </button>
-      </div>
-
-      {/* Recent Zones Preview */}
-      <div className="bg-gray-800 rounded-xl p-6 border border-gray-700">
-        <div className="flex items-center justify-between mb-4">
-          <h3 className="text-lg font-semibold text-white">Active Shipping Zones</h3>
-          <Button variant="outline" size="sm" onClick={() => setActiveTab('zones')} className="border-gray-600">
-            View All
-          </Button>
-        </div>
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
-          {zones.slice(0, 6).map(zone => (
-            <div key={zone.id} className="bg-gray-900 rounded-lg p-4 border border-gray-700">
-              <div className="flex items-center gap-2 mb-2">
-                <MapPin className="w-4 h-4 text-blue-400" />
-                <span className="text-white font-medium">{zone.name}</span>
-              </div>
-              <p className="text-gray-500 text-sm">{zone.postcodes?.slice(0, 3).join(', ')}{zone.postcodes?.length > 3 ? '...' : ''}</p>
-              <div className="flex items-center gap-2 mt-2">
-                <span className={`px-2 py-0.5 rounded text-xs ${zone.is_active ? 'bg-emerald-500/20 text-emerald-400' : 'bg-gray-700 text-gray-400'}`}>
-                  {zone.is_active ? 'Active' : 'Inactive'}
-                </span>
-                <span className="text-gray-600 text-xs">{zone.code}</span>
-              </div>
-            </div>
-          ))}
-        </div>
-      </div>
     </div>
-  ), [zones, services, categories, packages, setActiveTab, calcPostcode, calcSuburb, calcSuburbs, loadingSuburbs, calcWeight, calcTotal, calculating, calcResult, handleCalculateShipping]);
-
-  const OverviewTab = () => overviewContent;
+  );
 
   // ============== ZONES TAB ==============
   const ZonesTab = () => {
