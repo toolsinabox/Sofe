@@ -1444,6 +1444,39 @@ const MerchantShipping = () => {
               </DialogDescription>
             </DialogHeader>
             <div className="space-y-6 py-4">
+              {/* Carrier Selection - Prominent */}
+              <div className="bg-gray-900 rounded-lg p-4 border border-gray-700">
+                <div className="flex items-center gap-3 mb-3">
+                  <Truck className="w-5 h-5 text-emerald-400" />
+                  <Label className="text-white text-base font-medium">Select Carrier</Label>
+                </div>
+                <p className="text-gray-400 text-sm mb-3">Choose a carrier to load its zones, or select "Custom" to see all zones</p>
+                <div className="grid grid-cols-2 md:grid-cols-4 gap-2">
+                  {[
+                    { value: 'custom', label: 'Custom / All Zones' },
+                    { value: 'startrack', label: 'StarTrack' },
+                    { value: 'australia_post', label: 'Australia Post' },
+                    { value: 'tnt', label: 'TNT' },
+                    { value: 'fedex', label: 'FedEx' },
+                    { value: 'dhl', label: 'DHL' },
+                  ].map(carrier => (
+                    <button
+                      key={carrier.value}
+                      onClick={() => {
+                        setServiceForm({...serviceForm, carrier: carrier.value, rates: []});
+                      }}
+                      className={`p-3 rounded-lg border text-center transition-all ${
+                        serviceForm.carrier === carrier.value 
+                          ? 'border-emerald-500 bg-emerald-500/10 text-white' 
+                          : 'border-gray-700 text-gray-400 hover:border-gray-600'
+                      }`}
+                    >
+                      <span className="text-sm font-medium">{carrier.label}</span>
+                    </button>
+                  ))}
+                </div>
+              </div>
+
               {/* Basic Info */}
               <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
                 <div>
@@ -1465,26 +1498,6 @@ const MerchantShipping = () => {
                   />
                 </div>
                 <div>
-                  <Label className="text-gray-300">Carrier</Label>
-                  <Select value={serviceForm.carrier} onValueChange={(v) => setServiceForm({...serviceForm, carrier: v})}>
-                    <SelectTrigger className="bg-gray-700 border-gray-600 text-white mt-1">
-                      <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent className="bg-gray-800 border-gray-700">
-                      <SelectItem value="custom">Custom</SelectItem>
-                      <SelectItem value="australia_post">Australia Post</SelectItem>
-                      <SelectItem value="startrack">StarTrack</SelectItem>
-                      <SelectItem value="tnt">TNT</SelectItem>
-                      <SelectItem value="fedex">FedEx</SelectItem>
-                      <SelectItem value="dhl">DHL</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
-              </div>
-
-              {/* Charge Settings */}
-              <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                <div>
                   <Label className="text-gray-300">Charge Type</Label>
                   <Select value={serviceForm.charge_type} onValueChange={(v) => setServiceForm({...serviceForm, charge_type: v})}>
                     <SelectTrigger className="bg-gray-700 border-gray-600 text-white mt-1">
@@ -1498,6 +1511,10 @@ const MerchantShipping = () => {
                     </SelectContent>
                   </Select>
                 </div>
+              </div>
+
+              {/* Charge Settings */}
+              <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
                 <div>
                   <Label className="text-gray-300">Min Charge ($)</Label>
                   <Input
@@ -1527,6 +1544,15 @@ const MerchantShipping = () => {
                     onChange={(e) => setServiceForm({...serviceForm, fuel_levy_percent: parseFloat(e.target.value) || 0})}
                     className="bg-gray-700 border-gray-600 text-white mt-1"
                   />
+                </div>
+                <div className="flex items-end">
+                  <div className="flex items-center gap-2 h-10">
+                    <Switch
+                      checked={serviceForm.is_active}
+                      onCheckedChange={(checked) => setServiceForm({...serviceForm, is_active: checked})}
+                    />
+                    <Label className="text-gray-300">Active</Label>
+                  </div>
                 </div>
               </div>
 
