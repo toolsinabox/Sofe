@@ -759,6 +759,8 @@ class MaropostTemplateEngine:
                 if page:
                     context['page'] = page
                     context['content_blocks'] = page.get('content_blocks', [])
+                    context['page_content'] = page.get('content', '')  # Add content to context directly
+                    logging.info(f"CMS Page loaded: {page_slug}, content length: {len(page.get('content', ''))}")
         
         elif page_type == PageType.CHECKOUT:
             context['page'] = {'title': 'Checkout', 'slug': 'checkout'}
