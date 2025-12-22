@@ -624,7 +624,8 @@ async def import_service_rates_csv(
             rate = {
                 "zone_code": zone_code,
                 "zone_name": row.get("Zone Name", "").strip() or zone_code,
-                "base_rate": float(row.get("Minimum Charge", 0) or 0),
+                "min_charge": float(row.get("Minimum Charge", 0) or 0),  # Minimum charge for this zone
+                "base_rate": float(row.get("Minimum Charge", 0) or 0),  # Keep for backwards compatibility
                 "first_parcel": float(row.get("1st Parcel", 0) or 0),
                 "per_subsequent": float(row.get("Per Subsequent Parcel", 0) or 0) if row.get("Per Subsequent Parcel") else 0,
                 "per_kg_rate": float(row.get("Per Kg", 0) or 0),
