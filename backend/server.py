@@ -2068,6 +2068,25 @@ async def update_order(order_id: str, updates: dict):
     await db.orders.update_one({"id": order_id}, {"$set": update_data})
     return {"message": "Order updated successfully"}
 
+@api_router.delete("/orders/{order_id}")
+async def delete_order(order_id: str):
+    """Delete an order - only allowed for cancelled orders"""
+    order = await db.orders.find_one({"id": order_id})
+    if not order:
+        raise HTTPException(status_code=404, detail="Order not found")
+    
+    # Only allow deletion of cancelled orders
+    if order.get("status") != "cancelled":
+        raise HTTPException(
+            status_code=400, 
+            detail="Only cancelled orders can be deleted. Please cancel the order first."
+        )
+    
+    # Delete the order
+    await db.orders.delete_one({"id": order_id})
+    
+    return {"message": "Order deleted successfully"}
+
 @api_router.patch("/orders/{order_id}/fulfillment")
 async def update_order_fulfillment(order_id: str, fulfillment_data: dict):
     """Update order fulfillment status (pick, pack, dispatch)"""
