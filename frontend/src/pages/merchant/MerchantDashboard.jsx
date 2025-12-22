@@ -26,19 +26,19 @@ const StatCard = ({ title, value, subValue, icon: Icon, color, loading }) => {
 
   return (
     <Card className="bg-[#151b28] border-gray-800 hover:border-gray-700 transition-all duration-300">
-      <CardContent className="p-4 sm:p-5 md:p-6">
-        <div className="flex items-start justify-between">
+      <CardContent className="p-3 sm:p-4 md:p-5">
+        <div className="flex items-start justify-between gap-2">
           <div className="flex-1 min-w-0">
-            <p className="text-gray-400 text-xs sm:text-sm font-medium mb-1">{title}</p>
+            <p className="text-gray-400 text-[10px] sm:text-xs font-medium mb-0.5 sm:mb-1">{title}</p>
             {loading ? (
-              <div className="h-6 sm:h-8 w-20 sm:w-24 bg-gray-700 rounded animate-pulse" />
+              <div className="h-5 sm:h-6 w-16 sm:w-20 bg-gray-700 rounded animate-pulse" />
             ) : (
-              <p className="text-lg sm:text-xl md:text-2xl font-bold text-white truncate">{value}</p>
+              <p className="text-base sm:text-lg md:text-xl font-bold text-white truncate">{value}</p>
             )}
-            {subValue && <p className="text-gray-500 text-xs sm:text-sm mt-0.5 sm:mt-1 truncate">{subValue}</p>}
+            {subValue && <p className="text-gray-500 text-[10px] sm:text-xs mt-0.5 truncate">{subValue}</p>}
           </div>
-          <div className={`w-10 h-10 sm:w-11 sm:h-11 md:w-12 md:h-12 rounded-lg sm:rounded-xl bg-gradient-to-br ${colors[color]} flex items-center justify-center flex-shrink-0 ml-2`}>
-            <Icon size={20} className="sm:w-6 sm:h-6 text-white" />
+          <div className={`w-8 h-8 sm:w-9 sm:h-9 md:w-10 md:h-10 rounded-lg bg-gradient-to-br ${colors[color]} flex items-center justify-center flex-shrink-0`}>
+            <Icon className="w-4 h-4 sm:w-5 sm:h-5 text-white" />
           </div>
         </div>
       </CardContent>
