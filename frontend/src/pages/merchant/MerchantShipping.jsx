@@ -102,6 +102,7 @@ const MerchantShipping = () => {
     max_charge: null,
     handling_fee: 0,
     fuel_levy_percent: 0,
+    fuel_levy_amount: 0,
     cubic_weight_modifier: 250,
     tax_inclusive: false,
     tax_rate: 10.0,
