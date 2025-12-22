@@ -1084,22 +1084,22 @@ const MerchantPOS = () => {
     );
   }
 
-  // Setup Screen - Select Outlet & Register
+  // Setup Screen - Select Outlet & Register (Light Theme 2026)
   if (showSetup && !currentShift) {
     return (
-      <div className="h-[calc(100vh-120px)] flex items-center justify-center p-4">
-        <Card className="w-full max-w-md bg-[#151b28] border-gray-800">
+      <div className="h-[calc(100vh-120px)] flex items-center justify-center p-4 bg-gradient-to-br from-slate-50 to-slate-100">
+        <Card className="w-full max-w-md bg-white border-slate-200 shadow-xl">
           <CardHeader className="text-center pb-2">
-            <div className="w-16 h-16 bg-gradient-to-br from-emerald-500 to-teal-600 rounded-2xl flex items-center justify-center mx-auto mb-4">
+            <div className="w-16 h-16 bg-gradient-to-br from-cyan-500 to-teal-500 rounded-2xl flex items-center justify-center mx-auto mb-4 shadow-lg shadow-cyan-500/25">
               <Monitor className="w-8 h-8 text-white" />
             </div>
-            <CardTitle className="text-white text-xl">POS Setup</CardTitle>
-            <p className="text-gray-400 text-sm mt-1">Select your outlet and register to begin</p>
+            <CardTitle className="text-slate-800 text-xl">POS Setup</CardTitle>
+            <p className="text-slate-500 text-sm mt-1">Select your outlet and register to begin</p>
           </CardHeader>
           
           <CardContent className="space-y-4 pt-4">
             <div className="space-y-2">
-              <Label className="text-gray-300">Outlet / Location</Label>
+              <Label className="text-slate-600">Outlet / Location</Label>
               <Select 
                 value={selectedOutlet?.id || ''} 
                 onValueChange={(value) => {
@@ -1108,14 +1108,14 @@ const MerchantPOS = () => {
                   setSelectedRegister(null);
                 }}
               >
-                <SelectTrigger className="bg-gray-800 border-gray-700 text-white">
+                <SelectTrigger className="bg-white border-slate-200 text-slate-800">
                   <SelectValue placeholder="Select outlet..." />
                 </SelectTrigger>
-                <SelectContent className="bg-gray-800 border-gray-700">
+                <SelectContent className="bg-white border-slate-200">
                   {outlets.map(outlet => (
-                    <SelectItem key={outlet.id} value={outlet.id} className="text-white hover:bg-gray-700">
+                    <SelectItem key={outlet.id} value={outlet.id} className="text-slate-700 hover:bg-slate-100">
                       <div className="flex items-center gap-2">
-                        <Building2 className="w-4 h-4 text-gray-400" />
+                        <Building2 className="w-4 h-4 text-slate-400" />
                         {outlet.name}
                       </div>
                     </SelectItem>
@@ -1125,7 +1125,7 @@ const MerchantPOS = () => {
             </div>
             
             <div className="space-y-2">
-              <Label className="text-gray-300">Register</Label>
+              <Label className="text-slate-600">Register</Label>
               <Select 
                 value={selectedRegister?.id || ''} 
                 onValueChange={(value) => {
@@ -1134,14 +1134,14 @@ const MerchantPOS = () => {
                 }}
                 disabled={!selectedOutlet}
               >
-                <SelectTrigger className="bg-gray-800 border-gray-700 text-white">
+                <SelectTrigger className="bg-white border-slate-200 text-slate-800">
                   <SelectValue placeholder="Select register..." />
                 </SelectTrigger>
-                <SelectContent className="bg-gray-800 border-gray-700">
+                <SelectContent className="bg-white border-slate-200">
                   {registers.filter(r => r.outlet_id === selectedOutlet?.id).map(register => (
-                    <SelectItem key={register.id} value={register.id} className="text-white hover:bg-gray-700">
+                    <SelectItem key={register.id} value={register.id} className="text-slate-700 hover:bg-slate-100">
                       <div className="flex items-center gap-2">
-                        <Monitor className="w-4 h-4 text-gray-400" />
+                        <Monitor className="w-4 h-4 text-slate-400" />
                         {register.name}
                       </div>
                     </SelectItem>
@@ -1153,7 +1153,7 @@ const MerchantPOS = () => {
             <Button 
               onClick={handleSetupComplete}
               disabled={!selectedOutlet || !selectedRegister}
-              className="w-full bg-emerald-600 hover:bg-emerald-700 text-white py-6 mt-4"
+              className="w-full bg-gradient-to-r from-cyan-500 to-teal-500 hover:from-cyan-600 hover:to-teal-600 text-white py-6 mt-4 rounded-xl shadow-lg shadow-cyan-500/25"
             >
               <PlayCircle className="w-5 h-5 mr-2" />
               Continue
@@ -1161,12 +1161,12 @@ const MerchantPOS = () => {
           </CardContent>
         </Card>
         
-        {/* Open Shift Modal - must be rendered even in setup screen */}
+        {/* Open Shift Modal */}
         <Dialog open={showOpenShift} onOpenChange={setShowOpenShift}>
-          <DialogContent className="bg-[#151b28] border-gray-800 text-white max-w-sm">
+          <DialogContent className="bg-white border-slate-200 text-slate-800 max-w-sm">
             <DialogHeader>
-              <DialogTitle className="flex items-center gap-2">
-                <PlayCircle className="w-5 h-5 text-emerald-400" />
+              <DialogTitle className="flex items-center gap-2 text-slate-800">
+                <PlayCircle className="w-5 h-5 text-cyan-500" />
                 Open Shift
               </DialogTitle>
               <DialogDescription className="text-gray-400">
