@@ -30,6 +30,7 @@ const LiveThemeStorefront = () => {
     if (searchParams.has('print')) queryParams.push('print=true');
     if (searchParams.has('embed')) queryParams.push('embed=true');
     if (searchParams.has('debug')) queryParams.push('debug=true');
+    if (searchParams.has('q')) queryParams.push(`q=${encodeURIComponent(searchParams.get('q'))}`);
     if (queryParams.length > 0) url += '?' + queryParams.join('&');
     
     // Redirect to the backend rendered page
