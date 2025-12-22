@@ -1114,17 +1114,38 @@ const MerchantShipping = () => {
       try {
         const text = await file.text();
         const lines = text.split('\n');
-        const headers = lines[0].split(',').map(h => h.replace(/"/g, '').trim());
+        const headerLine = lines[0];
         
-        // Find column indices
-        const zoneCodeIdx = headers.findIndex(h => h.toLowerCase().includes('zone code'));
-        const zoneNameIdx = headers.findIndex(h => h.toLowerCase().includes('zone name'));
-        const minChargeIdx = headers.findIndex(h => h.toLowerCase().includes('minimum charge'));
-        const firstParcelIdx = headers.findIndex(h => h.toLowerCase().includes('1st parcel'));
-        const perSubseqIdx = headers.findIndex(h => h.toLowerCase().includes('per subsequent'));
-        const perKgIdx = headers.findIndex(h => h.toLowerCase().includes('per kg'));
-        const deliveryIdx = headers.findIndex(h => h.toLowerCase().includes('delivery time'));
-        const noteIdx = headers.findIndex(h => h.toLowerCase().includes('internal note'));
+        // Parse header - handle quoted values
+        const headers = [];
+        let inQuote = false;
+        let currentHeader = '';
+        for (let i = 0; i < headerLine.length; i++) {
+          const char = headerLine[i];
+          if (char === '"') {
+            inQuote = !inQuote;
+          } else if (char === ',' && !inQuote) {
+            headers.push(currentHeader.trim());
+            currentHeader = '';
+          } else if (char !== '\r') {
+            currentHeader += char;
+          }
+        }
+        headers.push(currentHeader.trim());
+        
+        console.log('CSV Headers:', headers);
+        
+        // Find column indices by exact header name
+        const zoneCodeIdx = headers.findIndex(h => h.toLowerCase() === 'zone code');
+        const zoneNameIdx = headers.findIndex(h => h.toLowerCase() === 'zone name');
+        const minChargeIdx = headers.findIndex(h => h.toLowerCase() === 'minimum charge');
+        const firstParcelIdx = headers.findIndex(h => h.toLowerCase() === '1st parcel');
+        const perSubseqIdx = headers.findIndex(h => h.toLowerCase() === 'per subsequent parcel');
+        const perKgIdx = headers.findIndex(h => h.toLowerCase() === 'per kg');
+        const deliveryIdx = headers.findIndex(h => h.toLowerCase() === 'delivery time');
+        const noteIdx = headers.findIndex(h => h.toLowerCase() === 'internal note');
+        
+        console.log('Column indices:', { zoneCodeIdx, zoneNameIdx, minChargeIdx, firstParcelIdx, perSubseqIdx, perKgIdx, deliveryIdx, noteIdx });
         
         const newRates = [];
         
@@ -1132,13 +1153,27 @@ const MerchantShipping = () => {
           const line = lines[i].trim();
           if (!line) continue;
           
-          // Parse CSV line (handling quoted values)
-          const values = line.match(/(".*?"|[^",\s]+)(?=\s*,|\s*$)/g)?.map(v => v.replace(/"/g, '').trim()) || [];
+          // Parse CSV line - handle empty values and commas properly
+          const values = [];
+          let inQuote = false;
+          let currentValue = '';
+          for (let j = 0; j < line.length; j++) {
+            const char = line[j];
+            if (char === '"') {
+              inQuote = !inQuote;
+            } else if (char === ',' && !inQuote) {
+              values.push(currentValue.trim());
+              currentValue = '';
+            } else if (char !== '\r') {
+              currentValue += char;
+            }
+          }
+          values.push(currentValue.trim());
           
           const zoneCode = zoneCodeIdx >= 0 ? values[zoneCodeIdx] : '';
           if (!zoneCode) continue;
           
-          newRates.push({
+          const rate = {
             zone_code: zoneCode,
             zone_name: zoneNameIdx >= 0 ? values[zoneNameIdx] || zoneCode : zoneCode,
             base_rate: minChargeIdx >= 0 ? parseFloat(values[minChargeIdx]) || 0 : 0,
@@ -1150,8 +1185,12 @@ const MerchantShipping = () => {
             min_weight: 0,
             max_weight: 999,
             is_active: true
-          });
+          };
+          
+          newRates.push(rate);
         }
+        
+        console.log('Parsed rates sample:', newRates[0]);
         
         if (newRates.length > 0) {
           setServiceForm({ ...serviceForm, rates: newRates });
