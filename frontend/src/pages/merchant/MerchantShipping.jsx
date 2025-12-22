@@ -1420,88 +1420,170 @@ const MerchantShipping = () => {
                     <Button 
                       variant="outline" 
                       size="sm" 
-                      onClick={addAllZonesAsRates} 
+                      onClick={() => modalRateFileInputRef.current?.click()}
                       className="border-gray-600"
-                      disabled={zones.length === 0}
                     >
-                      <Globe className="w-4 h-4 mr-1" /> Add All Zones
-                    </Button>
-                    <Button variant="outline" size="sm" onClick={addRateRow} className="border-gray-600">
-                      <Plus className="w-4 h-4 mr-1" /> Add Rate
+                      <Upload className="w-4 h-4 mr-1" /> Upload Rates CSV
                     </Button>
                   </div>
                 </div>
-                
-                {serviceForm.rates.length === 0 ? (
-                  <div className="bg-gray-900 rounded-lg p-6 text-center border border-dashed border-gray-700">
-                    <p className="text-gray-500 mb-2">No rates configured</p>
-                    <div className="flex justify-center gap-2">
-                      <Button variant="outline" size="sm" onClick={addAllZonesAsRates} className="border-gray-600">
-                        <Globe className="w-4 h-4 mr-1" /> Add All Zones
-                      </Button>
-                      <Button variant="outline" size="sm" onClick={addRateRow} className="border-gray-600">
-                        Add Single Rate
-                      </Button>
-                    </div>
-                  </div>
-                ) : (
-                  <div className="space-y-3 max-h-64 overflow-y-auto">
-                    {serviceForm.rates.map((rate, i) => (
-                      <div key={i} className="bg-gray-900 rounded-lg p-4 border border-gray-700">
-                        <div className="grid grid-cols-6 gap-3">
-                          <div className="col-span-2">
-                            <Label className="text-gray-500 text-xs">Zone</Label>
-                            <Select value={rate.zone_code} onValueChange={(v) => updateRate(i, 'zone_code', v)}>
-                              <SelectTrigger className="bg-gray-700 border-gray-600 text-white mt-1 h-9">
-                                <SelectValue placeholder="Select zone" />
-                              </SelectTrigger>
-                              <SelectContent className="bg-gray-800 border-gray-700">
-                                {zones.map(z => (
-                                  <SelectItem key={z.code} value={z.code}>{z.name}</SelectItem>
-                                ))}
-                              </SelectContent>
-                            </Select>
-                          </div>
-                          <div>
-                            <Label className="text-gray-500 text-xs">Base Rate ($)</Label>
-                            <Input
-                              type="number"
-                              step="0.01"
-                              value={rate.base_rate}
-                              onChange={(e) => updateRate(i, 'base_rate', parseFloat(e.target.value) || 0)}
-                              className="bg-gray-700 border-gray-600 text-white mt-1 h-9"
-                            />
-                          </div>
-                          <div>
-                            <Label className="text-gray-500 text-xs">Per kg ($)</Label>
-                            <Input
-                              type="number"
-                              step="0.01"
-                              value={rate.per_kg_rate}
-                              onChange={(e) => updateRate(i, 'per_kg_rate', parseFloat(e.target.value) || 0)}
-                              className="bg-gray-700 border-gray-600 text-white mt-1 h-9"
-                            />
-                          </div>
-                          <div>
-                            <Label className="text-gray-500 text-xs">Days</Label>
-                            <Input
-                              type="number"
-                              value={rate.delivery_days}
-                              onChange={(e) => updateRate(i, 'delivery_days', parseInt(e.target.value) || 0)}
-                              className="bg-gray-700 border-gray-600 text-white mt-1 h-9"
-                            />
-                          </div>
-                          <div className="flex items-end justify-end">
-                            <button
-                              onClick={() => removeRate(i)}
-                              className="p-2 rounded hover:bg-gray-700 text-gray-400 hover:text-red-400"
-                            >
-                              <Trash2 className="w-4 h-4" />
-                            </button>
-                          </div>
+
+                {/* Hidden file input for modal rate upload */}
+                <input
+                  ref={modalRateFileInputRef}
+                  type="file"
+                  accept=".csv"
+                  onChange={handleModalRateUpload}
+                  className="hidden"
+                />
+
+                {/* Upload progress indicator */}
+                {modalUploadingRates && (
+                  <div className="bg-gray-900 rounded-lg p-4 mb-4 border border-gray-700">
+                    <div className="flex items-center gap-3">
+                      <Loader2 className="w-5 h-5 text-emerald-400 animate-spin" />
+                      <div className="flex-1">
+                        <p className="text-white text-sm">Processing rates...</p>
+                        <div className="w-full bg-gray-700 rounded-full h-1.5 mt-2">
+                          <div className="bg-emerald-500 h-1.5 rounded-full w-full animate-pulse" />
                         </div>
                       </div>
-                    ))}
+                    </div>
+                  </div>
+                )}
+
+                {/* Zone Selection Grid */}
+                <div className="bg-gray-900 rounded-lg border border-gray-700 mb-4">
+                  <div className="p-3 border-b border-gray-700 flex items-center justify-between">
+                    <span className="text-gray-300 text-sm font-medium">Select Zones</span>
+                    <div className="flex gap-2">
+                      <button
+                        onClick={selectAllZones}
+                        className="text-xs text-emerald-400 hover:text-emerald-300"
+                      >
+                        Select All
+                      </button>
+                      <span className="text-gray-600">|</span>
+                      <button
+                        onClick={clearAllZones}
+                        className="text-xs text-gray-400 hover:text-gray-300"
+                      >
+                        Clear All
+                      </button>
+                    </div>
+                  </div>
+                  <div className="p-3 max-h-40 overflow-y-auto">
+                    <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-2">
+                      {zones.map(zone => {
+                        const isSelected = serviceForm.rates.some(r => r.zone_code === zone.code);
+                        return (
+                          <label
+                            key={zone.code}
+                            className={`flex items-center gap-2 p-2 rounded cursor-pointer transition-colors ${
+                              isSelected 
+                                ? 'bg-emerald-500/20 border border-emerald-500/30' 
+                                : 'bg-gray-800 border border-gray-700 hover:border-gray-600'
+                            }`}
+                          >
+                            <input
+                              type="checkbox"
+                              checked={isSelected}
+                              onChange={() => toggleZoneRate(zone)}
+                              className="rounded border-gray-600 text-emerald-500 focus:ring-emerald-500"
+                            />
+                            <span className={`text-sm truncate ${isSelected ? 'text-white' : 'text-gray-400'}`}>
+                              {zone.name}
+                            </span>
+                          </label>
+                        );
+                      })}
+                    </div>
+                  </div>
+                </div>
+                
+                {/* Rate Table for Selected Zones */}
+                {serviceForm.rates.length === 0 ? (
+                  <div className="bg-gray-900 rounded-lg p-6 text-center border border-dashed border-gray-700">
+                    <MapPin className="w-8 h-8 text-gray-600 mx-auto mb-2" />
+                    <p className="text-gray-500 mb-1">No zones selected</p>
+                    <p className="text-gray-600 text-sm">Select zones above or upload a rates CSV</p>
+                  </div>
+                ) : (
+                  <div className="bg-gray-900 rounded-lg border border-gray-700 overflow-hidden">
+                    <div className="overflow-x-auto">
+                      <table className="w-full text-sm">
+                        <thead>
+                          <tr className="bg-gray-800 text-gray-400 text-left">
+                            <th className="px-3 py-2 font-medium">Zone</th>
+                            <th className="px-3 py-2 font-medium w-24">Min Charge</th>
+                            <th className="px-3 py-2 font-medium w-24">1st Parcel</th>
+                            <th className="px-3 py-2 font-medium w-24">Per Kg</th>
+                            <th className="px-3 py-2 font-medium w-20">Days</th>
+                            <th className="px-3 py-2 font-medium w-12"></th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          {serviceForm.rates.map((rate, i) => (
+                            <tr key={i} className="border-t border-gray-700/50">
+                              <td className="px-3 py-2">
+                                <div className="text-white font-medium">{rate.zone_name}</div>
+                                <div className="text-gray-500 text-xs">{rate.zone_code}</div>
+                              </td>
+                              <td className="px-3 py-1">
+                                <Input
+                                  type="number"
+                                  step="0.01"
+                                  value={rate.base_rate || ''}
+                                  onChange={(e) => updateRate(i, 'base_rate', parseFloat(e.target.value) || 0)}
+                                  placeholder="0.00"
+                                  className="bg-gray-700 border-gray-600 text-white h-8 text-sm"
+                                />
+                              </td>
+                              <td className="px-3 py-1">
+                                <Input
+                                  type="number"
+                                  step="0.01"
+                                  value={rate.first_parcel || ''}
+                                  onChange={(e) => updateRate(i, 'first_parcel', parseFloat(e.target.value) || 0)}
+                                  placeholder="0.00"
+                                  className="bg-gray-700 border-gray-600 text-white h-8 text-sm"
+                                />
+                              </td>
+                              <td className="px-3 py-1">
+                                <Input
+                                  type="number"
+                                  step="0.01"
+                                  value={rate.per_kg_rate || ''}
+                                  onChange={(e) => updateRate(i, 'per_kg_rate', parseFloat(e.target.value) || 0)}
+                                  placeholder="0.00"
+                                  className="bg-gray-700 border-gray-600 text-white h-8 text-sm"
+                                />
+                              </td>
+                              <td className="px-3 py-1">
+                                <Input
+                                  type="number"
+                                  value={rate.delivery_days || ''}
+                                  onChange={(e) => updateRate(i, 'delivery_days', parseInt(e.target.value) || 0)}
+                                  placeholder="0"
+                                  className="bg-gray-700 border-gray-600 text-white h-8 text-sm"
+                                />
+                              </td>
+                              <td className="px-3 py-1">
+                                <button
+                                  onClick={() => removeRate(i)}
+                                  className="p-1 rounded hover:bg-gray-700 text-gray-400 hover:text-red-400"
+                                >
+                                  <X className="w-4 h-4" />
+                                </button>
+                              </td>
+                            </tr>
+                          ))}
+                        </tbody>
+                      </table>
+                    </div>
+                    <div className="px-3 py-2 bg-gray-800 border-t border-gray-700 text-gray-400 text-xs">
+                      {serviceForm.rates.length} zone(s) configured
+                    </div>
                   </div>
                 )}
               </div>
