@@ -1,11 +1,28 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Outlet, useLocation } from 'react-router-dom';
 import MerchantSidebar from '../../components/layout/MerchantSidebar';
 import MerchantHeader from '../../components/layout/MerchantHeader';
 
 const MerchantLayout = () => {
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const location = useLocation();
+
+  // Close mobile menu on route change
+  useEffect(() => {
+    setMobileMenuOpen(false);
+  }, [location.pathname]);
+
+  // Close mobile menu on window resize to desktop
+  useEffect(() => {
+    const handleResize = () => {
+      if (window.innerWidth >= 1024) {
+        setMobileMenuOpen(false);
+      }
+    };
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
 
   const getPageTitle = () => {
     const path = location.pathname;
@@ -22,17 +39,37 @@ const MerchantLayout = () => {
     if (path.includes('/analytics')) return 'Analytics';
     if (path.includes('/payments')) return 'Payments';
     if (path.includes('/settings')) return 'Settings';
+    if (path.includes('/emails')) return 'Emails';
     return 'Merchant';
   };
 
   return (
     <div className="min-h-screen bg-[#0a0e14]">
-      <MerchantSidebar collapsed={sidebarCollapsed} setCollapsed={setSidebarCollapsed} />
-      <div className={`transition-all duration-300 ${
+      {/* Mobile overlay */}
+      {mobileMenuOpen && (
+        <div 
+          className="fixed inset-0 bg-black/50 z-40 lg:hidden"
+          onClick={() => setMobileMenuOpen(false)}
+        />
+      )}
+      
+      {/* Sidebar */}
+      <MerchantSidebar 
+        collapsed={sidebarCollapsed} 
+        setCollapsed={setSidebarCollapsed}
+        mobileOpen={mobileMenuOpen}
+        setMobileOpen={setMobileMenuOpen}
+      />
+      
+      {/* Main content */}
+      <div className={`transition-all duration-300 lg:${
         sidebarCollapsed ? 'ml-[70px]' : 'ml-[260px]'
-      }`}>
-        <MerchantHeader title={getPageTitle()} />
-        <main className="p-6">
+      } ml-0`}>
+        <MerchantHeader 
+          title={getPageTitle()} 
+          onMenuClick={() => setMobileMenuOpen(true)}
+        />
+        <main className="p-3 sm:p-4 md:p-6">
           <Outlet />
         </main>
       </div>
