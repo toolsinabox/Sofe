@@ -1364,8 +1364,8 @@ class MaropostTemplateEngine:
             # 7. Process all tags
             html = await self.process_includes(html)
             html = await self.process_loop_tags(html, context)
+            html = await self.process_data_tags(html, context)  # Process data tags BEFORE conditionals
             html = await self.process_conditionals(html, context)
-            html = await self.process_data_tags(html, context)
             
             # 8. Fix asset paths
             html = self.fix_asset_paths(html)
