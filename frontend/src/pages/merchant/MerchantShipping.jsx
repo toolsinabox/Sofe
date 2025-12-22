@@ -340,7 +340,9 @@ const MerchantShipping = () => {
           <Calculator className="w-5 h-5 text-emerald-400" />
           Shipping Rate Calculator
         </h3>
-        <div className="grid grid-cols-1 md:grid-cols-5 gap-4">
+        
+        {/* Row 1: Postcode, Suburb, Weight */}
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-4">
           <div>
             <Label className="text-gray-400 text-sm">Postcode</Label>
             <Input 
@@ -376,7 +378,7 @@ const MerchantShipping = () => {
             )}
           </div>
           <div>
-            <Label className="text-gray-400 text-sm">Weight (kg)</Label>
+            <Label className="text-gray-400 text-sm">Actual Weight (kg)</Label>
             <Input 
               type="number"
               placeholder="1"
@@ -395,9 +397,55 @@ const MerchantShipping = () => {
               className="bg-gray-700 border-gray-600 text-white mt-1"
             />
           </div>
+        </div>
+        
+        {/* Row 2: Shipping Dimensions */}
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-4">
+          <div>
+            <Label className="text-gray-400 text-sm">Shipping Length (cm)</Label>
+            <Input 
+              type="number"
+              placeholder="0"
+              value={calcLength}
+              onChange={(e) => setCalcLength(e.target.value)}
+              className="bg-gray-700 border-gray-600 text-white mt-1"
+            />
+          </div>
+          <div>
+            <Label className="text-gray-400 text-sm">Shipping Width (cm)</Label>
+            <Input 
+              type="number"
+              placeholder="0"
+              value={calcWidth}
+              onChange={(e) => setCalcWidth(e.target.value)}
+              className="bg-gray-700 border-gray-600 text-white mt-1"
+            />
+          </div>
+          <div>
+            <Label className="text-gray-400 text-sm">Shipping Height (cm)</Label>
+            <Input 
+              type="number"
+              placeholder="0"
+              value={calcHeight}
+              onChange={(e) => setCalcHeight(e.target.value)}
+              className="bg-gray-700 border-gray-600 text-white mt-1"
+            />
+          </div>
           <div className="flex items-end">
             <Button 
               onClick={handleCalculateShipping}
+              disabled={calculating || !calcPostcode}
+              className="w-full bg-emerald-600 hover:bg-emerald-700"
+            >
+              {calculating ? <Loader2 className="w-4 h-4 animate-spin mr-2" /> : <Calculator className="w-4 h-4 mr-2" />}
+              Calculate
+            </Button>
+          </div>
+        </div>
+        
+        <p className="text-gray-500 text-xs mb-4">
+          Cubic Weight = (L × W × H) / 1,000,000 × 250. Charges use the greater of actual or cubic weight.
+        </p>
               disabled={calculating || !calcPostcode}
               className="w-full bg-emerald-600 hover:bg-emerald-700"
             >
