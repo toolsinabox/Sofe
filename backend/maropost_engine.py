@@ -963,6 +963,10 @@ class MaropostTemplateEngine:
             'cart_subtotal': f"{store.get('currency_symbol', '$')}{cart.get('subtotal', cart.get('total', 0)):.2f}",
             'cart_item_count': str(cart.get('item_count', 0)),
             'mini_cart_count': str(cart.get('item_count', 0)),
+            
+            # Search tags
+            'search_query': context.get('search_query', ''),
+            'search_results_count': context.get('search_results_count', '0'),
         }
         
         def replace_tag(match):
