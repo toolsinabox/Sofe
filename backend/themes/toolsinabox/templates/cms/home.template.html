@@ -41,18 +41,7 @@
                 <div class="carousel-dots" id="carouselDots"></div>
             </div>
         </section>
-        
-        <!-- Homepage Content (from CMS Page) -->
-        [%if [@page_content@]%]
-        <section class="homepage-content">
-            <div class="max-w-7xl mx-auto px-4 py-12">
-                <div id="homepage-cms-content">
-                    [@page_content@]
-                </div>
-            </div>
-        </section>
-        [%/if%]
-        
+
         <!-- Trust Badges -->
         <section class="trust-badges">
             <div class="max-w-7xl mx-auto px-4">
@@ -102,6 +91,24 @@
             </div>
         </section>
         
+        <!-- Homepage Content (from CMS Page) -->
+        [%if [@page_content@] %]
+        <section class="homepage-content">
+            <div class="max-w-7xl mx-auto px-4 py-12">
+                <div id="homepage-cms-content">
+                    [@page_content@]
+                </div>
+            </div>
+        </section>
+        [%/if%]
+        
+[%if [@page_content@] ne ''%]
+<div class="page-content">
+  [@page_content@]
+</div>
+[%/if%]
+[@page_content@]
+
         <!-- Featured Products -->
         <section class="products-section">
             <div class="max-w-7xl mx-auto px-4">
@@ -145,6 +152,7 @@
             </div>
         </section>
         
+
         <!-- Features Bar -->
         <section class="features-bar">
             <div class="max-w-7xl mx-auto px-4">
@@ -196,3 +204,5 @@
                 </div>
             </div>
         </section>
+
+
