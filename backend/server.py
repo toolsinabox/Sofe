@@ -1728,6 +1728,262 @@ async def delete_banner(banner_id: str):
         raise HTTPException(status_code=404, detail="Banner not found")
     return {"message": "Banner deleted successfully"}
 
+# ==================== CONTENT ZONES ====================
+
+@api_router.get("/content-zones", response_model=List[ContentZone])
+async def get_content_zones(page: Optional[str] = None, include_inactive: bool = False):
+    """Get all content zones, optionally filtered by page"""
+    query = {}
+    if page:
+        query["page"] = page
+    if not include_inactive:
+        query["is_active"] = True
+    
+    zones = await db.content_zones.find(query, {"_id": 0}).sort("name", 1).to_list(100)
+    return [ContentZone(**zone) for zone in zones]
+
+@api_router.get("/content-zones/{zone_id}", response_model=ContentZone)
+async def get_content_zone(zone_id: str):
+    """Get a specific content zone by ID"""
+    zone = await db.content_zones.find_one({"id": zone_id}, {"_id": 0})
+    if not zone:
+        raise HTTPException(status_code=404, detail="Content zone not found")
+    return ContentZone(**zone)
+
+@api_router.get("/content-zones/by-name/{zone_name}")
+async def get_content_zone_by_name(zone_name: str):
+    """Get a content zone by its unique name"""
+    zone = await db.content_zones.find_one({"name": zone_name}, {"_id": 0})
+    if not zone:
+        raise HTTPException(status_code=404, detail="Content zone not found")
+    return ContentZone(**zone)
+
+@api_router.post("/content-zones", response_model=ContentZone)
+async def create_content_zone(zone: ContentZoneCreate):
+    """Create a new content zone"""
+    # Check if name already exists
+    existing = await db.content_zones.find_one({"name": zone.name})
+    if existing:
+        raise HTTPException(status_code=400, detail="Content zone with this name already exists")
+    
+    zone_data = ContentZone(
+        **zone.dict(),
+        created_at=datetime.now(timezone.utc),
+        updated_at=datetime.now(timezone.utc)
+    )
+    await db.content_zones.insert_one(zone_data.dict())
+    return zone_data
+
+@api_router.put("/content-zones/{zone_id}", response_model=ContentZone)
+async def update_content_zone(zone_id: str, zone_update: ContentZoneUpdate):
+    """Update a content zone"""
+    update_data = {k: v for k, v in zone_update.dict().items() if v is not None}
+    update_data["updated_at"] = datetime.now(timezone.utc)
+    
+    result = await db.content_zones.update_one(
+        {"id": zone_id},
+        {"$set": update_data}
+    )
+    if result.matched_count == 0:
+        raise HTTPException(status_code=404, detail="Content zone not found")
+    
+    updated = await db.content_zones.find_one({"id": zone_id}, {"_id": 0})
+    return ContentZone(**updated)
+
+@api_router.delete("/content-zones/{zone_id}")
+async def delete_content_zone(zone_id: str):
+    """Delete a content zone"""
+    result = await db.content_zones.delete_one({"id": zone_id})
+    if result.deleted_count == 0:
+        raise HTTPException(status_code=404, detail="Content zone not found")
+    return {"message": "Content zone deleted successfully"}
+
+@api_router.post("/content-zones/{zone_id}/blocks", response_model=ContentZone)
+async def add_content_block(zone_id: str, block: ContentBlock):
+    """Add a new content block to a zone"""
+    zone = await db.content_zones.find_one({"id": zone_id})
+    if not zone:
+        raise HTTPException(status_code=404, detail="Content zone not found")
+    
+    # Set sort_order to end of list
+    blocks = zone.get("blocks", [])
+    block.sort_order = len(blocks)
+    
+    await db.content_zones.update_one(
+        {"id": zone_id},
+        {
+            "$push": {"blocks": block.dict()},
+            "$set": {"updated_at": datetime.now(timezone.utc)}
+        }
+    )
+    
+    updated = await db.content_zones.find_one({"id": zone_id}, {"_id": 0})
+    return ContentZone(**updated)
+
+@api_router.put("/content-zones/{zone_id}/blocks/{block_id}")
+async def update_content_block(zone_id: str, block_id: str, block_update: Dict[str, Any]):
+    """Update a specific content block within a zone"""
+    zone = await db.content_zones.find_one({"id": zone_id})
+    if not zone:
+        raise HTTPException(status_code=404, detail="Content zone not found")
+    
+    # Find and update the block
+    blocks = zone.get("blocks", [])
+    block_found = False
+    for i, b in enumerate(blocks):
+        if b.get("id") == block_id:
+            blocks[i] = {**b, **block_update}
+            block_found = True
+            break
+    
+    if not block_found:
+        raise HTTPException(status_code=404, detail="Content block not found")
+    
+    await db.content_zones.update_one(
+        {"id": zone_id},
+        {
+            "$set": {
+                "blocks": blocks,
+                "updated_at": datetime.now(timezone.utc)
+            }
+        }
+    )
+    
+    updated = await db.content_zones.find_one({"id": zone_id}, {"_id": 0})
+    return ContentZone(**updated)
+
+@api_router.delete("/content-zones/{zone_id}/blocks/{block_id}")
+async def delete_content_block(zone_id: str, block_id: str):
+    """Delete a content block from a zone"""
+    zone = await db.content_zones.find_one({"id": zone_id})
+    if not zone:
+        raise HTTPException(status_code=404, detail="Content zone not found")
+    
+    blocks = zone.get("blocks", [])
+    new_blocks = [b for b in blocks if b.get("id") != block_id]
+    
+    if len(new_blocks) == len(blocks):
+        raise HTTPException(status_code=404, detail="Content block not found")
+    
+    await db.content_zones.update_one(
+        {"id": zone_id},
+        {
+            "$set": {
+                "blocks": new_blocks,
+                "updated_at": datetime.now(timezone.utc)
+            }
+        }
+    )
+    
+    return {"message": "Content block deleted successfully"}
+
+@api_router.put("/content-zones/{zone_id}/reorder")
+async def reorder_content_blocks(zone_id: str, block_ids: List[str]):
+    """Reorder content blocks within a zone"""
+    zone = await db.content_zones.find_one({"id": zone_id})
+    if not zone:
+        raise HTTPException(status_code=404, detail="Content zone not found")
+    
+    blocks = zone.get("blocks", [])
+    blocks_dict = {b["id"]: b for b in blocks}
+    
+    # Reorder blocks based on provided order
+    reordered = []
+    for i, block_id in enumerate(block_ids):
+        if block_id in blocks_dict:
+            block = blocks_dict[block_id]
+            block["sort_order"] = i
+            reordered.append(block)
+    
+    await db.content_zones.update_one(
+        {"id": zone_id},
+        {
+            "$set": {
+                "blocks": reordered,
+                "updated_at": datetime.now(timezone.utc)
+            }
+        }
+    )
+    
+    updated = await db.content_zones.find_one({"id": zone_id}, {"_id": 0})
+    return ContentZone(**updated)
+
+@api_router.get("/content-zones/render/{zone_name}")
+async def render_content_zone(zone_name: str):
+    """Render a content zone to HTML (for preview or AJAX loading)"""
+    zone = await db.content_zones.find_one({"name": zone_name, "is_active": True}, {"_id": 0})
+    if not zone:
+        return {"html": "", "found": False}
+    
+    html_parts = []
+    for block in sorted(zone.get("blocks", []), key=lambda x: x.get("sort_order", 0)):
+        if not block.get("is_active", True):
+            continue
+        
+        block_type = block.get("type", "html")
+        content = block.get("content", "")
+        settings = block.get("settings", {})
+        
+        if block_type == "html":
+            html_parts.append(content)
+        elif block_type == "text":
+            html_parts.append(f'<div class="content-text">{content}</div>')
+        elif block_type == "image":
+            src = settings.get("src", "")
+            alt = settings.get("alt", "")
+            link = settings.get("link", "")
+            width = settings.get("width", "100%")
+            img_html = f'<img src="{src}" alt="{alt}" style="width:{width};max-width:100%">'
+            if link:
+                img_html = f'<a href="{link}">{img_html}</a>'
+            html_parts.append(f'<div class="content-image">{img_html}</div>')
+        elif block_type == "spacer":
+            height = settings.get("height", "50px")
+            html_parts.append(f'<div class="content-spacer" style="height:{height}"></div>')
+        elif block_type == "divider":
+            style = settings.get("style", "solid")
+            color = settings.get("color", "#e5e7eb")
+            html_parts.append(f'<hr class="content-divider" style="border-style:{style};border-color:{color}">')
+        elif block_type == "video":
+            src = settings.get("src", "")
+            # Convert YouTube URL to embed
+            if "youtube.com/watch" in src:
+                video_id = src.split("v=")[1].split("&")[0] if "v=" in src else ""
+                src = f"https://www.youtube.com/embed/{video_id}"
+            elif "youtu.be/" in src:
+                video_id = src.split("youtu.be/")[1].split("?")[0]
+                src = f"https://www.youtube.com/embed/{video_id}"
+            html_parts.append(f'<div class="content-video"><iframe src="{src}" frameborder="0" allowfullscreen style="width:100%;aspect-ratio:16/9"></iframe></div>')
+        elif block_type == "product_grid":
+            # Fetch products and render grid
+            limit = settings.get("limit", 4)
+            category_id = settings.get("category_id")
+            columns = settings.get("columns", 4)
+            
+            query = {"is_active": True}
+            if category_id:
+                query["category_id"] = category_id
+            
+            products = await db.products.find(query, {"_id": 0}).limit(limit).to_list(limit)
+            
+            grid_html = f'<div class="content-product-grid" style="display:grid;grid-template-columns:repeat({columns},1fr);gap:1rem">'
+            for p in products:
+                img = p.get("images", [""])[0] if p.get("images") else ""
+                grid_html += f'''
+                <div class="product-card-mini">
+                    <img src="{img}" alt="{p.get('name','')}" style="width:100%;aspect-ratio:1;object-fit:cover">
+                    <h4>{p.get('name','')}</h4>
+                    <p>${p.get('price', 0):.2f}</p>
+                </div>
+                '''
+            grid_html += '</div>'
+            html_parts.append(grid_html)
+        elif block_type == "custom":
+            # Custom HTML with template tag processing
+            html_parts.append(content)
+    
+    return {"html": "\n".join(html_parts), "found": True, "zone": zone}
+
 # ==================== STORE SETTINGS ====================
 
 @api_router.get("/store/settings", response_model=StoreSettings)
