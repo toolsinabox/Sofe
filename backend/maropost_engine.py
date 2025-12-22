@@ -658,8 +658,11 @@ class MaropostTemplateEngine:
             context['products'] = products
             context['featured_products'] = products[:8]
             
-            # Get banners
-            banners = await self.db.banners.find({}, {"_id": 0}).to_list(20)
+            # Get banners - only active ones, sorted by sort_order
+            banners = await self.db.banners.find(
+                {"is_active": True}, 
+                {"_id": 0}
+            ).sort("sort_order", 1).to_list(20)
             context['banners'] = banners
         
         elif page_type == PageType.SEARCH:
