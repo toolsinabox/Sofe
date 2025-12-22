@@ -832,3 +832,67 @@ The payment modal now has 3 tabs at the top:
   - Added Truck, MapPin, PenLine icons
 
 ### Status: PHASE 3 COMPLETE ✓
+
+## Comprehensive Shipping Management UI - 2025-12-22
+
+### Features Implemented ✓
+
+#### Full Shipping Management Dashboard (`/merchant/shipping`)
+A complete Maropost-style shipping management interface with 6 tabs:
+
+1. **Overview Tab**
+   - Stats cards: Shipping Zones (12), Services (2), Categories (4), Package Types (6)
+   - Shipping Rate Calculator with postcode, weight, cart total inputs
+   - Quick action cards for navigating to specific sections
+   - Active shipping zones preview grid
+
+2. **Shipping Zones Tab**
+   - Full CRUD for shipping zones
+   - Zone code, name, country selection
+   - Postcode ranges support (e.g., "2000-2234")
+   - Active/inactive toggle
+   - Edit and delete functionality
+
+3. **Services & Rates Tab**
+   - Shipping services with expandable rate tables
+   - Carrier selection (custom, Australia Post, StarTrack, TNT, FedEx, DHL)
+   - Charge type options (weight-based, cubic, fixed, flat)
+   - Zone-based rate configuration with base rate, per-kg rate, delivery days
+   - Min charge, handling fee, fuel levy settings
+
+4. **Categories Tab**
+   - Product shipping categories (Default, Dangerous Goods, Bulky Items, Fragile)
+   - Category code, name, description
+   - Default category designation
+   - Grid layout with edit/delete
+
+5. **Packages Tab**
+   - Predefined package sizes (satchels, boxes)
+   - Package type selection
+   - Dimensions (length x width x height)
+   - Max weight and tare weight settings
+
+6. **Options Tab**
+   - Checkout shipping options configuration
+   - Service linking (multiple services per option)
+   - Free shipping threshold setting
+   - Free shipping zone selection
+
+### Backend APIs Verified ✓
+- `GET /api/shipping/zones` - 12 Australian zones configured
+- `GET /api/shipping/services` - 2 services (Standard, Express) with 12 zone rates each
+- `GET /api/shipping/categories` - 4 categories
+- `GET /api/shipping/packages` - 6 package types
+- `GET /api/shipping/options` - 2 options with free shipping rules
+- `POST /api/shipping/calculate` - Calculator working with zone detection and free shipping
+
+### Shipping Calculator Test Results ✓
+- Postcode 2000 → Sydney Metro zone detected
+- $200 cart with 5kg → Standard Delivery FREE (over $150 threshold)
+- Express Delivery → $24.95 (1 business day)
+- Pickup → FREE
+
+### Files Modified
+- `/app/frontend/src/pages/merchant/MerchantShipping.jsx` - Complete rewrite with tabbed dashboard
+
+### Status: COMPLETE ✓
