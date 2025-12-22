@@ -223,6 +223,9 @@ function App() {
             }>
               <Route index element={<MerchantDashboard />} />
               <Route path="orders" element={<MerchantOrders />} />
+              <Route path="orders/:orderId" element={<MerchantOrderDetail />} />
+              <Route path="quotes" element={<MerchantQuotes />} />
+              <Route path="quotes/:quoteId" element={<MerchantQuoteDetail />} />
               <Route path="products" element={<MerchantProducts />} />
               <Route path="categories" element={<MerchantCategories />} />
               <Route path="inventory" element={<MerchantInventory />} />
