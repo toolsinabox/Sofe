@@ -90,6 +90,13 @@ const MerchantPOS = () => {
   const [cartDiscount, setCartDiscount] = useState({ type: 'fixed', value: 0 });
   const [showDiscount, setShowDiscount] = useState(false);
   
+  // Payment Terms State (Phase 2)
+  const [paymentTerm, setPaymentTerm] = useState('pay_in_full'); // pay_in_full, pay_later, layby
+  const [initialPaymentType, setInitialPaymentType] = useState('none'); // none, percent_10, percent_20, custom
+  const [initialPaymentAmount, setInitialPaymentAmount] = useState('');
+  const [laybyDueDate, setLaybyDueDate] = useState('');
+  const [laybyDuePeriod, setLaybyDuePeriod] = useState(''); // 4_weeks, 8_weeks, custom
+  
   // All products for browsing
   const [allProducts, setAllProducts] = useState([]);
   const [loadingProducts, setLoadingProducts] = useState(false);
