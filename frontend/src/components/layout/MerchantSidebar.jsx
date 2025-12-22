@@ -24,7 +24,8 @@ import {
   Truck,
   ShoppingBag,
   Search,
-  Menu
+  Menu,
+  FileText
 } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
 
