@@ -181,11 +181,23 @@ const MerchantShipping = () => {
     if (!calcPostcode) return;
     setCalculating(true);
     try {
+      const itemData = { 
+        weight: parseFloat(calcWeight) || 1, 
+        quantity: 1 
+      };
+      
+      // Add shipping dimensions if provided
+      if (calcLength && calcWidth && calcHeight) {
+        itemData.shipping_length = parseFloat(calcLength);
+        itemData.shipping_width = parseFloat(calcWidth);
+        itemData.shipping_height = parseFloat(calcHeight);
+      }
+      
       const response = await axios.post(`${API}/shipping/calculate`, {
         postcode: calcPostcode,
         suburb: calcSuburb || null,
         country: 'AU',
-        items: [{ weight: parseFloat(calcWeight) || 1, quantity: 1 }],
+        items: [itemData],
         cart_total: parseFloat(calcTotal) || 100
       });
       setCalcResult(response.data);
