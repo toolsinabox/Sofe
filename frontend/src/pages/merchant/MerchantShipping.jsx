@@ -1780,10 +1780,10 @@ const MerchantShipping = () => {
                 <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
                   <div>
                     <Label className="text-gray-300 text-sm">Name</Label>
-                    <Input
-                      key="service-name-input"
+                    <StableInput
+                      key={`service-name-${editingItem?.id || 'new'}`}
                       name="name"
-                      value={serviceForm.name}
+                      defaultValue={serviceForm.name}
                       onChange={handleServiceFormInputChange}
                       placeholder="e.g., StarTrack"
                       className="bg-gray-700 border-gray-600 text-white mt-1"
@@ -1792,10 +1792,10 @@ const MerchantShipping = () => {
                   </div>
                   <div>
                     <Label className="text-gray-300 text-sm">Code</Label>
-                    <Input
-                      key="service-code-input"
+                    <StableInput
+                      key={`service-code-${editingItem?.id || 'new'}`}
                       name="code"
-                      value={serviceForm.code}
+                      defaultValue={serviceForm.code}
                       onChange={handleServiceFormCodeChange}
                       placeholder="e.g., startrack"
                       className="bg-gray-700 border-gray-600 text-white mt-1"
