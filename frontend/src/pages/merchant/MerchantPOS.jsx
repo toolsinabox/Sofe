@@ -633,6 +633,16 @@ const MerchantPOS = () => {
         status: paymentTerm === 'pay_in_full' ? 'paid' : 'partial'
       };
       
+      // Build shipping data
+      const shippingData = shipToCustomer && selectedShipping ? {
+        method: selectedShipping.name,
+        method_id: selectedShipping.id,
+        cost: selectedShipping.price,
+        signature_required: signatureRequired,
+        delivery_instructions: deliveryInstructions || null,
+        status: 'pending'
+      } : null;
+      
       const transactionData = {
         items: cart,
         payments: payments,
@@ -642,13 +652,15 @@ const MerchantPOS = () => {
         subtotal: subtotal,
         discount_total: discountAmount,
         tax_total: tax,
+        shipping_total: shippingCost,
         total: total,
         notes: null,
         outlet_id: selectedOutlet?.id || null,
         register_id: selectedRegister?.id || null,
         staff_id: user?.id || null,
         staff_name: user?.name || 'Staff',
-        payment_terms: paymentTermsData
+        payment_terms: paymentTermsData,
+        shipping: shippingData
       };
       
       const response = await axios.post(`${API}/pos/transactions`, transactionData);
@@ -658,7 +670,8 @@ const MerchantPOS = () => {
         transaction_number: response.data.transaction_number,
         id: response.data.id,
         created_at: new Date().toISOString(),
-        payment_terms: paymentTermsData
+        payment_terms: paymentTermsData,
+        shipping: shippingData
       });
       
       // Update shift expected cash if cash payment
