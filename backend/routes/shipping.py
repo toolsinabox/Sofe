@@ -1007,6 +1007,19 @@ async def calculate_shipping(request: ShippingCalculationRequest):
         # Use the GREATER of actual weight vs cubic weight (industry standard)
         chargeable_weight = max(total_actual_weight, service_cubic_weight)
         
+        # Calculate max item length in mm (from shipping dimensions in cm)
+        max_item_length_mm = 0
+        for item in request.items:
+            # Get the longest dimension (could be length, width, or height)
+            item_length = max(
+                item.get("shipping_length", 0) or 0,
+                item.get("shipping_width", 0) or 0,
+                item.get("shipping_height", 0) or 0
+            )
+            # Convert cm to mm
+            item_length_mm = item_length * 10
+            max_item_length_mm = max(max_item_length_mm, item_length_mm)
+        
         # Check if service applies to item categories
         service_categories = set(service.get("categories", []))
         if service_categories and not service_categories.intersection(item_categories):
@@ -1022,6 +1035,11 @@ async def calculate_shipping(request: ShippingCalculationRequest):
                 if rate_zone_code == zone_code:
                     # Check weight range against chargeable weight
                     if r.get("min_weight", 0) <= chargeable_weight <= r.get("max_weight", 999999):
+                        # Check max length constraint (if set)
+                        rate_max_length = r.get("max_length_mm", 0)
+                        if rate_max_length > 0 and max_item_length_mm > rate_max_length:
+                            # Item exceeds max length for this rate, skip
+                            continue
                         if r.get("is_active", True):
                             rate = r
                             matched_zone = zone
