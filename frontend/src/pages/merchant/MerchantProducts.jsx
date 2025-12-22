@@ -603,7 +603,7 @@ const ProductEditor = ({ product, categories, onSave, onClose, templateTags }) =
                     <div className="p-4 bg-emerald-500/10 border border-emerald-500/30 rounded-lg">
                       <p className="text-emerald-400 text-sm flex items-center gap-2">
                         <Tag size={16} />
-                        This product will display as "On Sale" with {Math.round((1 - parseFloat(formData.price) / parseFloat(formData.compare_price)) * 100)}% off
+                        This product will display as &quot;On Sale&quot; with {Math.round((1 - parseFloat(formData.price) / parseFloat(formData.compare_price)) * 100)}% off
                       </p>
                     </div>
                   )}
