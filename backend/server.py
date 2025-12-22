@@ -5479,11 +5479,55 @@ async def create_pos_transaction(transaction: POSTransactionCreate):
     
     await db.pos_transactions.insert_one(trans_data)
     
+    # Also create an order record so it shows in Orders section
+    order_number = await generate_order_number()
+    order_items = []
+    for item in transaction.items:
+        order_items.append({
+            "product_id": item.product_id,
+            "name": item.name,
+            "sku": item.sku,
+            "quantity": item.quantity,
+            "price": item.price,
+            "subtotal": item.price * item.quantity
+        })
+    
+    # Determine payment method from payments
+    payment_method = "cash"
+    if transaction.payments:
+        payment_method = transaction.payments[0].method
+    
+    order_data = {
+        "id": str(uuid.uuid4()),
+        "order_number": order_number,
+        "customer_name": transaction.customer_name or "Walk-in Customer",
+        "customer_email": transaction.customer_email or "pos@store.local",
+        "customer_phone": "",
+        "shipping_address": "POS Sale - In Store",
+        "items": order_items,
+        "subtotal": transaction.subtotal,
+        "discount": transaction.discount_total,
+        "shipping": 0,
+        "tax": transaction.tax_total,
+        "total": transaction.total,
+        "status": "completed",
+        "payment_status": "paid",
+        "payment_method": payment_method,
+        "fulfillment_status": "fulfilled",
+        "notes": f"POS Transaction: {transaction_number}" + (f"\n{transaction.notes}" if transaction.notes else ""),
+        "source": "pos",
+        "pos_transaction_id": trans_data["id"],
+        "created_at": datetime.now(timezone.utc).isoformat(),
+        "updated_at": datetime.now(timezone.utc).isoformat()
+    }
+    
+    await db.orders.insert_one(order_data)
+    
     # Update inventory - reduce stock for each item sold
     for item in transaction.items:
         await db.products.update_one(
             {"id": item.product_id},
-            {"$inc": {"stock": -item.quantity}}
+            {"$inc": {"stock": -item.quantity, "sales_count": item.quantity}}
         )
     
     # If there's a shift open for this register, update expected cash
@@ -5495,9 +5539,22 @@ async def create_pos_transaction(transaction: POSTransactionCreate):
                 {"$inc": {"expected_cash": cash_amount}}
             )
     
+    # Update or create customer record
+    if transaction.customer_email and transaction.customer_email != "pos@store.local":
+        customer = await db.customers.find_one({"email": transaction.customer_email})
+        if customer:
+            await db.customers.update_one(
+                {"email": transaction.customer_email},
+                {
+                    "$inc": {"total_orders": 1, "total_spent": transaction.total},
+                    "$set": {"updated_at": datetime.now(timezone.utc).isoformat()}
+                }
+            )
+    
     return {
         "id": trans_data["id"],
         "transaction_number": transaction_number,
+        "order_number": order_number,
         "message": "Transaction completed successfully"
     }
 
