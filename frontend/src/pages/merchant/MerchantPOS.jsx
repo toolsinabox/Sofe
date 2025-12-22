@@ -1848,27 +1848,251 @@ const MerchantPOS = () => {
         </DialogContent>
       </Dialog>
 
-      {/* Payment Modal */}
+      {/* Payment Modal - Maropost Style with Payment Terms */}
       <Dialog open={showPayment} onOpenChange={setShowPayment}>
-        <DialogContent className="bg-[#151b28] border-gray-800 text-white max-w-md">
+        <DialogContent className="bg-[#151b28] border-gray-800 text-white max-w-lg max-h-[90vh] overflow-y-auto">
           <DialogHeader>
             <DialogTitle className="flex items-center gap-2 text-lg">
-              {paymentMethod === 'cash' ? (
-                <><Banknote className="w-5 h-5 text-emerald-400" /> Cash Payment</>
-              ) : (
-                <><CreditCard className="w-5 h-5 text-blue-400" /> Card Payment</>
-              )}
+              <Wallet className="w-5 h-5 text-emerald-400" />
+              Payment
             </DialogTitle>
           </DialogHeader>
           
-          <div className="py-4 space-y-4">
-            <div className="text-center py-4 bg-gray-800/50 rounded-lg">
-              <p className="text-gray-400 text-sm mb-1">Amount Due</p>
+          <div className="py-2 space-y-4">
+            {/* Payment Terms Tabs */}
+            <div className="flex border-b border-gray-700">
+              <button
+                onClick={() => setPaymentTerm('pay_in_full')}
+                className={`flex-1 py-2 px-4 text-sm font-medium border-b-2 transition-colors ${
+                  paymentTerm === 'pay_in_full' 
+                    ? 'border-emerald-500 text-emerald-400' 
+                    : 'border-transparent text-gray-400 hover:text-gray-300'
+                }`}
+              >
+                Pay in full
+              </button>
+              <button
+                onClick={() => setPaymentTerm('pay_later')}
+                className={`flex-1 py-2 px-4 text-sm font-medium border-b-2 transition-colors ${
+                  paymentTerm === 'pay_later' 
+                    ? 'border-blue-500 text-blue-400' 
+                    : 'border-transparent text-gray-400 hover:text-gray-300'
+                }`}
+              >
+                Pay later
+              </button>
+              <button
+                onClick={() => setPaymentTerm('layby')}
+                className={`flex-1 py-2 px-4 text-sm font-medium border-b-2 transition-colors ${
+                  paymentTerm === 'layby' 
+                    ? 'border-purple-500 text-purple-400' 
+                    : 'border-transparent text-gray-400 hover:text-gray-300'
+                }`}
+              >
+                Layby
+              </button>
+            </div>
+            
+            {/* Amount Summary */}
+            <div className="text-center py-3 bg-gray-800/50 rounded-lg">
+              <p className="text-gray-400 text-sm mb-1">
+                {paymentTerm === 'pay_in_full' ? 'Amount Due' : 'Total Sale'}
+              </p>
               <p className="text-3xl font-bold text-emerald-400">${total.toFixed(2)}</p>
             </div>
             
+            {/* Pay Later Options */}
+            {paymentTerm === 'pay_later' && (
+              <div className="space-y-3 p-3 bg-blue-500/10 border border-blue-500/30 rounded-lg">
+                <p className="text-blue-400 text-sm font-medium">Initial Payment</p>
+                <div className="grid grid-cols-4 gap-2">
+                  <Button
+                    variant={initialPaymentType === 'none' ? 'default' : 'outline'}
+                    onClick={() => setInitialPaymentType('none')}
+                    className={`text-xs ${initialPaymentType === 'none' ? 'bg-blue-600' : 'border-gray-700 text-gray-300'}`}
+                  >
+                    No
+                  </Button>
+                  <Button
+                    variant={initialPaymentType === 'percent_10' ? 'default' : 'outline'}
+                    onClick={() => setInitialPaymentType('percent_10')}
+                    className={`text-xs ${initialPaymentType === 'percent_10' ? 'bg-blue-600' : 'border-gray-700 text-gray-300'}`}
+                  >
+                    10%
+                  </Button>
+                  <Button
+                    variant={initialPaymentType === 'percent_20' ? 'default' : 'outline'}
+                    onClick={() => setInitialPaymentType('percent_20')}
+                    className={`text-xs ${initialPaymentType === 'percent_20' ? 'bg-blue-600' : 'border-gray-700 text-gray-300'}`}
+                  >
+                    20%
+                  </Button>
+                  <Button
+                    variant={initialPaymentType === 'custom' ? 'default' : 'outline'}
+                    onClick={() => setInitialPaymentType('custom')}
+                    className={`text-xs ${initialPaymentType === 'custom' ? 'bg-blue-600' : 'border-gray-700 text-gray-300'}`}
+                  >
+                    Custom
+                  </Button>
+                </div>
+                {initialPaymentType === 'custom' && (
+                  <Input
+                    type="number"
+                    value={initialPaymentAmount}
+                    onChange={(e) => setInitialPaymentAmount(e.target.value)}
+                    placeholder="Enter amount"
+                    className="bg-gray-800 border-gray-700 text-white"
+                  />
+                )}
+                {initialPayment > 0 && (
+                  <div className="flex justify-between text-sm">
+                    <span className="text-gray-400">Pay now:</span>
+                    <span className="text-blue-400 font-medium">${initialPayment.toFixed(2)}</span>
+                  </div>
+                )}
+                <div className="flex justify-between text-sm">
+                  <span className="text-gray-400">Remaining:</span>
+                  <span className="text-gray-300 font-medium">${remainingBalance.toFixed(2)}</span>
+                </div>
+                {!customer && (
+                  <p className="text-yellow-400 text-xs flex items-center gap-1">
+                    <AlertTriangle className="w-3 h-3" />
+                    Customer required for Pay Later
+                  </p>
+                )}
+              </div>
+            )}
+            
+            {/* Layby Options */}
+            {paymentTerm === 'layby' && (
+              <div className="space-y-3 p-3 bg-purple-500/10 border border-purple-500/30 rounded-lg">
+                <p className="text-purple-400 text-sm font-medium">When does this need to be fully paid?</p>
+                <div className="grid grid-cols-3 gap-2">
+                  <Button
+                    variant={laybyDuePeriod === '4_weeks' ? 'default' : 'outline'}
+                    onClick={() => setLaybyDuePeriod('4_weeks')}
+                    className={`text-xs ${laybyDuePeriod === '4_weeks' ? 'bg-purple-600' : 'border-gray-700 text-gray-300'}`}
+                  >
+                    4 weeks
+                  </Button>
+                  <Button
+                    variant={laybyDuePeriod === '8_weeks' ? 'default' : 'outline'}
+                    onClick={() => setLaybyDuePeriod('8_weeks')}
+                    className={`text-xs ${laybyDuePeriod === '8_weeks' ? 'bg-purple-600' : 'border-gray-700 text-gray-300'}`}
+                  >
+                    8 weeks
+                  </Button>
+                  <Button
+                    variant={laybyDuePeriod === 'custom' ? 'default' : 'outline'}
+                    onClick={() => setLaybyDuePeriod('custom')}
+                    className={`text-xs ${laybyDuePeriod === 'custom' ? 'bg-purple-600' : 'border-gray-700 text-gray-300'}`}
+                  >
+                    Select date
+                  </Button>
+                </div>
+                {laybyDuePeriod === 'custom' && (
+                  <Input
+                    type="date"
+                    value={laybyDueDate}
+                    onChange={(e) => setLaybyDueDate(e.target.value)}
+                    className="bg-gray-800 border-gray-700 text-white"
+                    min={new Date().toISOString().split('T')[0]}
+                  />
+                )}
+                {laybyDuePeriod && (
+                  <p className="text-purple-300 text-xs">
+                    Due by: {calculateLaybyDueDate()}
+                  </p>
+                )}
+                
+                <div className="border-t border-purple-500/30 pt-3 mt-2">
+                  <p className="text-purple-400 text-sm font-medium mb-2">Initial Payment</p>
+                  <div className="grid grid-cols-4 gap-2">
+                    <Button
+                      variant={initialPaymentType === 'none' ? 'default' : 'outline'}
+                      onClick={() => setInitialPaymentType('none')}
+                      className={`text-xs ${initialPaymentType === 'none' ? 'bg-purple-600' : 'border-gray-700 text-gray-300'}`}
+                    >
+                      No
+                    </Button>
+                    <Button
+                      variant={initialPaymentType === 'percent_10' ? 'default' : 'outline'}
+                      onClick={() => setInitialPaymentType('percent_10')}
+                      className={`text-xs ${initialPaymentType === 'percent_10' ? 'bg-purple-600' : 'border-gray-700 text-gray-300'}`}
+                    >
+                      10%
+                    </Button>
+                    <Button
+                      variant={initialPaymentType === 'percent_20' ? 'default' : 'outline'}
+                      onClick={() => setInitialPaymentType('percent_20')}
+                      className={`text-xs ${initialPaymentType === 'percent_20' ? 'bg-purple-600' : 'border-gray-700 text-gray-300'}`}
+                    >
+                      20%
+                    </Button>
+                    <Button
+                      variant={initialPaymentType === 'custom' ? 'default' : 'outline'}
+                      onClick={() => setInitialPaymentType('custom')}
+                      className={`text-xs ${initialPaymentType === 'custom' ? 'bg-purple-600' : 'border-gray-700 text-gray-300'}`}
+                    >
+                      Custom
+                    </Button>
+                  </div>
+                  {initialPaymentType === 'custom' && (
+                    <Input
+                      type="number"
+                      value={initialPaymentAmount}
+                      onChange={(e) => setInitialPaymentAmount(e.target.value)}
+                      placeholder="Enter amount"
+                      className="bg-gray-800 border-gray-700 text-white mt-2"
+                    />
+                  )}
+                </div>
+                
+                {initialPayment > 0 && (
+                  <div className="flex justify-between text-sm">
+                    <span className="text-gray-400">Pay now:</span>
+                    <span className="text-purple-400 font-medium">${initialPayment.toFixed(2)}</span>
+                  </div>
+                )}
+                <div className="flex justify-between text-sm">
+                  <span className="text-gray-400">Remaining:</span>
+                  <span className="text-gray-300 font-medium">${remainingBalance.toFixed(2)}</span>
+                </div>
+                {!customer && (
+                  <p className="text-yellow-400 text-xs flex items-center gap-1">
+                    <AlertTriangle className="w-3 h-3" />
+                    Customer required for Layby
+                  </p>
+                )}
+              </div>
+            )}
+            
+            {/* Payment Method Selection */}
+            <div className="space-y-2">
+              <p className="text-gray-400 text-sm">Payment Method</p>
+              <div className="grid grid-cols-2 gap-2">
+                <Button
+                  variant={paymentMethod === 'cash' ? 'default' : 'outline'}
+                  onClick={() => setPaymentMethod('cash')}
+                  className={`${paymentMethod === 'cash' ? 'bg-emerald-600' : 'border-gray-700 text-gray-300'}`}
+                >
+                  <Banknote className="w-4 h-4 mr-2" />
+                  Cash
+                </Button>
+                <Button
+                  variant={paymentMethod === 'card' ? 'default' : 'outline'}
+                  onClick={() => setPaymentMethod('card')}
+                  className={`${paymentMethod === 'card' ? 'bg-blue-600' : 'border-gray-700 text-gray-300'}`}
+                >
+                  <CreditCard className="w-4 h-4 mr-2" />
+                  Card
+                </Button>
+              </div>
+            </div>
+            
+            {/* Cash Payment Details */}
             {paymentMethod === 'cash' && (
-              <>
+              <div className="space-y-3">
                 <div>
                   <label className="text-gray-400 text-sm mb-2 block">Cash Received</label>
                   <Input
@@ -1896,10 +2120,10 @@ const MerchantPOS = () => {
                 
                 <Button
                   variant="outline"
-                  onClick={() => setCashReceived(total.toFixed(2))}
+                  onClick={() => setCashReceived((paymentTerm === 'pay_in_full' ? total : initialPayment).toFixed(2))}
                   className="w-full border-gray-700 text-gray-300 hover:bg-gray-800"
                 >
-                  Exact Amount (${total.toFixed(2)})
+                  Exact Amount (${(paymentTerm === 'pay_in_full' ? total : initialPayment).toFixed(2)})
                 </Button>
                 
                 {change > 0 && (
@@ -1908,30 +2132,36 @@ const MerchantPOS = () => {
                     <p className="text-2xl font-bold text-emerald-400">${change.toFixed(2)}</p>
                   </div>
                 )}
-              </>
+              </div>
             )}
             
+            {/* Card Payment Details */}
             {paymentMethod === 'card' && (
-              <div className="text-center py-6">
-                <CreditCard className="w-16 h-16 mx-auto mb-4 text-blue-400" />
+              <div className="text-center py-4">
+                <CreditCard className="w-12 h-12 mx-auto mb-3 text-blue-400" />
                 <p className="text-gray-400">Present card to terminal</p>
-                <p className="text-gray-500 text-sm mt-2">Click Complete when payment is confirmed</p>
+                <p className="text-gray-500 text-sm mt-1">Click Complete when payment is confirmed</p>
               </div>
             )}
           </div>
           
-          <DialogFooter className="gap-2">
+          <DialogFooter className="gap-2 flex-col sm:flex-row">
             <Button
               variant="outline"
               onClick={() => setShowPayment(false)}
-              className="border-gray-700 text-gray-300"
+              className="border-gray-700 text-gray-300 w-full sm:w-auto"
             >
-              Cancel
+              Edit Sale
             </Button>
             <Button
               onClick={processPayment}
-              disabled={processing || (paymentMethod === 'cash' && (!cashReceived || parseFloat(cashReceived) < total))}
-              className="bg-emerald-600 hover:bg-emerald-700 text-white"
+              disabled={
+                processing || 
+                (paymentTerm !== 'pay_in_full' && !customer) ||
+                (paymentTerm === 'layby' && !laybyDuePeriod) ||
+                (paymentMethod === 'cash' && (!cashReceived || parseFloat(cashReceived) < (paymentTerm === 'pay_in_full' ? total : initialPayment)))
+              }
+              className="bg-emerald-600 hover:bg-emerald-700 text-white w-full sm:w-auto"
             >
               {processing ? (
                 <><Loader2 className="w-4 h-4 mr-2 animate-spin" /> Processing...</>
