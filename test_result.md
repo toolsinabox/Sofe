@@ -201,3 +201,43 @@ Incorporate User Feedback:
 - Tested mini-cart dropdown - shows items with image, name, price, qty
 - Tested Continue Shopping button - modal closes correctly
 - Cart badge updates correctly in header
+
+## Shipping Rate Calculator Integration - 2025-12-22
+
+### Feature Implemented ✓
+Integrated shipping rate calculation into the shopping cart page, allowing customers to:
+1. Select their country (Australia, NZ, US, GB, CA)
+2. Enter their postcode
+3. Calculate available shipping rates based on merchant-configured zones
+4. Select between Pickup (FREE) or calculated shipping options
+5. See updated order totals including shipping costs
+
+### Technical Changes
+1. **Updated `/app/backend/themes/toolsinabox/templates/cart/shopping_cart.template.html`**:
+   - Added country dropdown with common shipping destinations
+   - Implemented `calculateShipping()` function that calls `/api/shipping/calculate`
+   - Added "Available Shipping Options" section to display calculated rates
+   - Updated "Delivery & Pickup Options" to dynamically show shipping rates with prices
+   - Added shipping cost line item that shows when shipping is selected
+   - Updated `updateSummary()` to include shipping in order total calculation
+   - Added localStorage persistence for shipping selection
+   - Added "No shipping available" message for locations without coverage
+
+2. **Backend API Used**:
+   - `POST /api/shipping/calculate` - Takes country, postcode, and order_total to return matching rates
+
+3. **Shipping Zone Data Updated**:
+   - Updated existing "Australia Metro" zone to use ISO country code "AU"
+   - Added postcode ranges for major metro areas (3000-3999, 4000-4999, 2000-2999)
+   - Rates: Standard Shipping ($9.95, 3-5 days), Express Shipping ($19.95, 1-2 days)
+
+### UI Features
+- Country dropdown (default: Australia)
+- Postcode input field with placeholder
+- "Calculate Shipping" button with loading state
+- Shipping options displayed with zone name, rate name, price, and estimated delivery
+- Radio button selection between Pickup and multiple shipping options
+- Order total updates dynamically when shipping method changes
+- GST calculation includes shipping
+
+### Status: COMPLETE
