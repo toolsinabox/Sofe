@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import axios from 'axios';
 import { useDropzone } from 'react-dropzone';
-import { Save, Upload, Globe, Mail, Phone, MapPin, Facebook, Instagram, Twitter, Youtube, Image } from 'lucide-react';
+import { Save, Upload, Globe, Mail, Phone, MapPin, Facebook, Instagram, Twitter, Youtube, Image, Hash } from 'lucide-react';
 import { Button } from '../../components/ui/button';
 import { Input } from '../../components/ui/input';
 import { Label } from '../../components/ui/label';
