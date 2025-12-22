@@ -2038,6 +2038,79 @@ async def process_order_refund(order_id: str, amount: float, reason: str):
     
     return {"message": f"Refund of ${amount:.2f} processed", "new_status": new_payment_status}
 
+@api_router.patch("/orders/{order_id}")
+async def update_order(order_id: str, updates: dict):
+    """Update order fields (items, addresses, customer info, etc.)"""
+    order = await db.orders.find_one({"id": order_id})
+    if not order:
+        raise HTTPException(status_code=404, detail="Order not found")
+    
+    # Allowed fields to update
+    allowed_fields = [
+        "items", "subtotal", "discount", "shipping", "tax", "total",
+        "customer_name", "customer_email", "customer_phone", "company_name",
+        "shipping_address", "shipping_city", "shipping_state", "shipping_postcode", "shipping_country",
+        "billing_address", "billing_city", "billing_state", "billing_postcode", "billing_country",
+        "notes"
+    ]
+    
+    update_data = {k: v for k, v in updates.items() if k in allowed_fields}
+    update_data["updated_at"] = datetime.now(timezone.utc)
+    
+    await db.orders.update_one({"id": order_id}, {"$set": update_data})
+    return {"message": "Order updated successfully"}
+
+@api_router.patch("/orders/{order_id}/fulfillment")
+async def update_order_fulfillment(order_id: str, fulfillment_data: dict):
+    """Update order fulfillment status (pick, pack, dispatch)"""
+    order = await db.orders.find_one({"id": order_id})
+    if not order:
+        raise HTTPException(status_code=404, detail="Order not found")
+    
+    update_data = {
+        "fulfillment_status": fulfillment_data.get("status"),
+        "updated_at": datetime.now(timezone.utc)
+    }
+    
+    if fulfillment_data.get("picked_items"):
+        update_data["picked_items"] = fulfillment_data["picked_items"]
+        update_data["picked_at"] = fulfillment_data.get("picked_at")
+    
+    if fulfillment_data.get("packed_items"):
+        update_data["packed_items"] = fulfillment_data["packed_items"]
+        update_data["packed_at"] = fulfillment_data.get("packed_at")
+        update_data["package_weight"] = fulfillment_data.get("package_weight")
+        update_data["package_dimensions"] = fulfillment_data.get("package_dimensions")
+    
+    if fulfillment_data.get("tracking_number"):
+        update_data["tracking_number"] = fulfillment_data["tracking_number"]
+        update_data["tracking_carrier"] = fulfillment_data.get("tracking_carrier")
+        update_data["tracking_url"] = fulfillment_data.get("tracking_url")
+        update_data["dispatched_at"] = fulfillment_data.get("dispatched_at")
+    
+    await db.orders.update_one({"id": order_id}, {"$set": update_data})
+    
+    # Add to timeline
+    await db.orders.update_one(
+        {"id": order_id},
+        {"$push": {"timeline": {
+            "action": f"fulfillment_{fulfillment_data.get('status')}",
+            "description": f"Order marked as {fulfillment_data.get('status')}",
+            "created_at": datetime.now(timezone.utc).isoformat()
+        }}}
+    )
+    
+    return {"message": f"Fulfillment status updated to {fulfillment_data.get('status')}"}
+
+@api_router.get("/orders/{order_id}/emails")
+async def get_order_emails(order_id: str):
+    """Get email history for an order"""
+    order = await db.orders.find_one({"id": order_id})
+    if not order:
+        raise HTTPException(status_code=404, detail="Order not found")
+    
+    return order.get("email_history", [])
+
 @api_router.post("/orders/{order_id}/email")
 async def send_order_email(order_id: str, template: str = "custom", subject: str = "", body: str = ""):
     """Send email to customer about their order"""
