@@ -139,3 +139,32 @@ Incorporate User Feedback:
 - Products showing with sale badges
 - SSR engine working correctly
 
+
+## Pages UI Enhancement - $(date +%Y-%m-%d)
+
+### Enhanced CMS Pages Management ✓
+1. Backend Models Updated:
+   - CMSPageCreate: Added visible_on_menu, visible_on_sitemap, main_image, alt_image, sort_order
+   - CMSPageUpdate: Added same fields for updates
+   
+2. Frontend UI Enhancements (MerchantPages.jsx):
+   - 5 tabs: General, Content, Images, SEO Settings, Visibility
+   - Image upload with drag & drop (Main Image, Alternative Image)
+   - Content editor with HTML formatting toolbar (Bold, Italic, Underline, H1, H2, Lists, Link, Image, Quote, Code, Alignment)
+   - Live HTML preview
+   - Visibility controls (Menu, Sitemap, Active status)
+   - Sort order field
+   - Template selection (Default, Full Width, Sidebar, Landing Page)
+   
+3. Pages List Table Enhanced:
+   - Image thumbnail column
+   - Visibility badges (Menu, Sitemap)
+   - Drag handle for reordering (visual only)
+
+### API Testing ✓
+- POST /api/pages: Creates page with all new fields
+- GET /api/pages: Returns pages with new fields
+- PUT /api/pages/{id}: Updates page with new fields
+- DELETE /api/pages/{id}: Deletes non-system pages
+
+### Status: COMPLETE
