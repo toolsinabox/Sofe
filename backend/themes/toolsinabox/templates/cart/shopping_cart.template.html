@@ -328,7 +328,7 @@
                 let cartData = null;
                 
                 if (cartId) {
-                    const response = await fetch(`${API_BASE}/cart/${cartId}`);
+                    const response = await fetch(`${CART_API_BASE}/cart/${cartId}`);
                     if (response.ok) {
                         cartData = await response.json();
                     }
@@ -468,7 +468,7 @@
                 suburbSelect.innerHTML = '<option value="">Loading...</option>';
                 suburbSelect.disabled = true;
                 
-                const response = await fetch(`${API_BASE}/shipping/suburbs?postcode=${postcode}`);
+                const response = await fetch(`${CART_API_BASE}/shipping/suburbs?postcode=${postcode}`);
                 const data = await response.json();
                 
                 cartCurrentSuburbs = data.suburbs || [];
@@ -528,7 +528,7 @@
                     shipping_height: item.shipping_height || 0
                 }));
                 
-                const response = await fetch(`${API_BASE}/shipping/calculate`, {
+                const response = await fetch(`${CART_API_BASE}/shipping/calculate`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({
@@ -725,7 +725,7 @@
             if (!cartId) return;
             
             try {
-                const response = await fetch(`${API_BASE}/cart/${cartId}/update`, {
+                const response = await fetch(`${CART_API_BASE}/cart/${cartId}/update`, {
                     method: 'PUT',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ product_id: productId, quantity: newQty })
@@ -757,7 +757,7 @@
             if (!cartId) return;
             
             try {
-                const response = await fetch(`${API_BASE}/cart/${cartId}/remove/${productId}`, {
+                const response = await fetch(`${CART_API_BASE}/cart/${cartId}/remove/${productId}`, {
                     method: 'DELETE'
                 });
                 
