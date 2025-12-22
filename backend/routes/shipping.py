@@ -487,8 +487,14 @@ async def update_shipping_service(service_id: str, service: ShippingService):
     
     service_data = service.dict()
     service_data["id"] = service_id
+    # Preserve created_at from existing
+    service_data["created_at"] = existing.get("created_at", service_data.get("created_at"))
+    
     await db.shipping_services.update_one({"id": service_id}, {"$set": service_data})
-    return {"message": "Service updated successfully"}
+    
+    # Return updated service
+    updated = await db.shipping_services.find_one({"id": service_id}, {"_id": 0})
+    return updated
 
 @router.delete("/services/{service_id}")
 async def delete_shipping_service(service_id: str):
