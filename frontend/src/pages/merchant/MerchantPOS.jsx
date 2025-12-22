@@ -959,6 +959,74 @@ const MerchantPOS = () => {
             </Button>
           </CardContent>
         </Card>
+        
+        {/* Open Shift Modal - must be rendered even in setup screen */}
+        <Dialog open={showOpenShift} onOpenChange={setShowOpenShift}>
+          <DialogContent className="bg-[#151b28] border-gray-800 text-white max-w-sm">
+            <DialogHeader>
+              <DialogTitle className="flex items-center gap-2">
+                <PlayCircle className="w-5 h-5 text-emerald-400" />
+                Open Shift
+              </DialogTitle>
+              <DialogDescription className="text-gray-400">
+                Enter your opening cash float to begin selling
+              </DialogDescription>
+            </DialogHeader>
+            
+            <div className="py-4 space-y-4">
+              <div className="p-3 bg-gray-800/50 rounded-lg">
+                <div className="flex items-center gap-2 text-sm text-gray-400 mb-1">
+                  <Building2 className="w-4 h-4" />
+                  <span>{selectedOutlet?.name}</span>
+                </div>
+                <div className="flex items-center gap-2 text-sm text-gray-400">
+                  <Monitor className="w-4 h-4" />
+                  <span>{selectedRegister?.name}</span>
+                </div>
+              </div>
+              
+              <div>
+                <Label className="text-gray-400 text-sm mb-2 block">Opening Float ($)</Label>
+                <Input
+                  type="number"
+                  value={openingFloat}
+                  onChange={(e) => setOpeningFloat(e.target.value)}
+                  placeholder="0.00"
+                  className="bg-gray-800 border-gray-700 text-white text-xl text-center py-3"
+                  autoFocus
+                />
+                <p className="text-xs text-gray-500 mt-2">Enter the starting cash amount in the drawer</p>
+              </div>
+              
+              <div className="grid grid-cols-4 gap-2">
+                {[100, 200, 300, 500].map((amount) => (
+                  <Button
+                    key={amount}
+                    variant="outline"
+                    onClick={() => setOpeningFloat(amount.toString())}
+                    className="border-gray-700 text-gray-300 hover:bg-gray-800"
+                  >
+                    ${amount}
+                  </Button>
+                ))}
+              </div>
+            </div>
+            
+            <DialogFooter>
+              <Button
+                onClick={openShift}
+                disabled={processing || !openingFloat}
+                className="w-full bg-emerald-600 hover:bg-emerald-700 text-white"
+              >
+                {processing ? (
+                  <><Loader2 className="w-4 h-4 mr-2 animate-spin" /> Opening...</>
+                ) : (
+                  <><PlayCircle className="w-4 h-4 mr-2" /> Open Shift</>
+                )}
+              </Button>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
       </div>
     );
   }
