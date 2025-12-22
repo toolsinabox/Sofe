@@ -740,6 +740,10 @@ class MaropostTemplateEngine:
         replacements = {
             # Page tags
             'page_title': page.get('title', product.get('name', category.get('name', store.get('store_name', 'Home')))),
+            'page_content': page.get('content', ''),
+            'page_heading': page.get('seo_heading', ''),
+            'page_description': page.get('seo_description', ''),
+            'page_keywords': page.get('seo_keywords', ''),
             
             # Store tags
             'store_name': store.get('store_name', ''),
