@@ -3,7 +3,8 @@ import axios from 'axios';
 import {
   Plus, Edit, Trash2, X, Save, GripVertical, Eye, EyeOff,
   Layout, Type, Image, Video, Box, Grid, Minus, Code,
-  Monitor, Tablet, Smartphone, ChevronDown, ChevronUp, Copy
+  Monitor, Tablet, Smartphone, ChevronDown, ChevronUp, Copy, Check,
+  Tag, HelpCircle
 } from 'lucide-react';
 import { Button } from '../../components/ui/button';
 import { Input } from '../../components/ui/input';
@@ -21,9 +22,144 @@ import {
 const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
 const API = `${BACKEND_URL}/api`;
 
+// Template Tags Reference for HTML blocks
+const TEMPLATE_TAGS = {
+  store: {
+    title: 'Store & Global',
+    tags: [
+      { tag: '[@store_name@]', desc: 'Store name' },
+      { tag: '[@store_email@]', desc: 'Store email' },
+      { tag: '[@store_phone@]', desc: 'Store phone' },
+      { tag: '[@store_url@]', desc: 'Store URL' },
+      { tag: '[@store_logo@]', desc: 'Logo URL' },
+      { tag: '[@currency_symbol@]', desc: 'Currency ($)' },
+      { tag: '[@current_year@]', desc: 'Current year' },
+    ]
+  },
+  products: {
+    title: 'Product Loops',
+    tags: [
+      { tag: "[%thumb_list type:'products' limit:'8'%]", desc: 'Product list start' },
+      { tag: '[%param *body%]', desc: 'Loop body start' },
+      { tag: '[%/param%]', desc: 'Loop body end' },
+      { tag: '[%/thumb_list%]', desc: 'Product list end' },
+      { tag: "[%new_arrivals limit:'4'%]...[%/new_arrivals%]", desc: 'New arrivals' },
+      { tag: "[%top_sellers limit:'4'%]...[%/top_sellers%]", desc: 'Top sellers' },
+    ]
+  },
+  product: {
+    title: 'Product Tags (in loops)',
+    tags: [
+      { tag: '[@name@]', desc: 'Product name' },
+      { tag: '[@price_formatted@]', desc: 'Price ($XX.XX)' },
+      { tag: '[@rrp_formatted@]', desc: 'Compare price' },
+      { tag: '[@image@]', desc: 'Product image' },
+      { tag: '[@url@]', desc: 'Product URL' },
+      { tag: '[@SKU@]', desc: 'Product SKU' },
+      { tag: '[@description@]', desc: 'Description' },
+      { tag: '[@brand@]', desc: 'Brand name' },
+      { tag: '[@qty@]', desc: 'Stock quantity' },
+      { tag: '[@on_sale@]', desc: '"y" if on sale' },
+      { tag: '[@in_stock@]', desc: '"y" if in stock' },
+    ]
+  },
+  conditionals: {
+    title: 'Conditionals',
+    tags: [
+      { tag: "[%if [@on_sale@] eq 'y'%]", desc: 'If on sale' },
+      { tag: "[%if [@in_stock@] eq 'y'%]", desc: 'If in stock' },
+      { tag: '[%else%]', desc: 'Else clause' },
+      { tag: '[%/if%]', desc: 'End if' },
+    ]
+  },
+  categories: {
+    title: 'Categories',
+    tags: [
+      { tag: "[%content_menu type:'categories' limit:'10'%]", desc: 'Category menu' },
+      { tag: '[@content_name@]', desc: 'Category name' },
+      { tag: '[@content_url@]', desc: 'Category URL' },
+      { tag: '[@content_image@]', desc: 'Category image' },
+    ]
+  },
+  zones: {
+    title: 'Content Zones',
+    tags: [
+      { tag: "[%content_zone name:'zone_name'%][%/content_zone%]", desc: 'Render zone' },
+    ]
+  }
+};
+
+// Copyable Tag Component
+const CopyableTag = ({ tag, desc }) => {
+  const [copied, setCopied] = useState(false);
+  
+  const copyTag = () => {
+    navigator.clipboard.writeText(tag);
+    setCopied(true);
+    setTimeout(() => setCopied(false), 1500);
+  };
+  
+  return (
+    <div 
+      onClick={copyTag}
+      className="flex items-start gap-2 p-1.5 rounded hover:bg-gray-700 cursor-pointer group"
+    >
+      <code className="text-xs text-cyan-400 bg-gray-900 px-1.5 py-0.5 rounded flex-shrink-0 max-w-[160px] truncate">
+        {tag}
+      </code>
+      <span className="text-xs text-gray-500 flex-1">{desc}</span>
+      {copied ? <Check size={12} className="text-green-400 flex-shrink-0" /> : <Copy size={12} className="text-gray-600 group-hover:text-gray-400 flex-shrink-0" />}
+    </div>
+  );
+};
+
+// Template Tags Panel Component
+const TemplateTagsPanel = ({ isOpen, onClose }) => {
+  const [expandedSection, setExpandedSection] = useState('products');
+  
+  if (!isOpen) return null;
+  
+  return (
+    <div className="absolute right-0 top-0 w-72 h-full bg-gray-900 border-l border-gray-700 overflow-y-auto z-10">
+      <div className="sticky top-0 bg-gray-900 p-3 border-b border-gray-700 flex items-center justify-between">
+        <h4 className="text-sm font-medium text-white flex items-center gap-2">
+          <Tag size={14} className="text-cyan-400" />
+          Template Tags
+        </h4>
+        <button onClick={onClose} className="text-gray-500 hover:text-white">
+          <X size={16} />
+        </button>
+      </div>
+      <p className="text-xs text-gray-500 px-3 py-2 border-b border-gray-800">
+        Click any tag to copy. Use these in your HTML content.
+      </p>
+      <div className="p-2">
+        {Object.entries(TEMPLATE_TAGS).map(([key, section]) => (
+          <div key={key} className="mb-2">
+            <button
+              onClick={() => setExpandedSection(expandedSection === key ? '' : key)}
+              className="w-full flex items-center justify-between px-2 py-1.5 rounded bg-gray-800 hover:bg-gray-750 text-gray-300 text-xs font-medium"
+            >
+              {section.title}
+              {expandedSection === key ? <ChevronUp size={14} /> : <ChevronDown size={14} />}
+            </button>
+            {expandedSection === key && (
+              <div className="mt-1 space-y-0.5">
+                {section.tags.map((t, i) => (
+                  <CopyableTag key={i} tag={t.tag} desc={t.desc} />
+                ))}
+              </div>
+            )}
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+};
+
 // Block type definitions
 const BLOCK_TYPES = [
-  { id: 'html', label: 'HTML', icon: Code, description: 'Custom HTML content' },
+  { id: 'html', label: 'HTML', icon: Code, description: 'Custom HTML content with template tags' },
   { id: 'text', label: 'Text', icon: Type, description: 'Simple text paragraph' },
   { id: 'image', label: 'Image', icon: Image, description: 'Image with optional link' },
   { id: 'video', label: 'Video', icon: Video, description: 'YouTube or video embed' },
