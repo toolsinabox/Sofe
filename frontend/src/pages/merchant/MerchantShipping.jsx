@@ -1721,8 +1721,9 @@ const MerchantShipping = () => {
                   <div>
                     <Label className="text-gray-300 text-sm">Name</Label>
                     <Input
+                      name="name"
                       value={serviceForm.name}
-                      onChange={(e) => handleServiceFormChange('name', e.target.value)}
+                      onChange={handleServiceFormInputChange}
                       placeholder="e.g., StarTrack"
                       className="bg-gray-700 border-gray-600 text-white mt-1"
                     />
@@ -1730,6 +1731,7 @@ const MerchantShipping = () => {
                   <div>
                     <Label className="text-gray-300 text-sm">Code</Label>
                     <Input
+                      name="code"
                       value={serviceForm.code}
                       onChange={(e) => handleServiceFormChange('code', e.target.value.toLowerCase())}
                       placeholder="e.g., startrack"
