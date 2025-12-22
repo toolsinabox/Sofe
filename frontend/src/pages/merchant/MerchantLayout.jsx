@@ -80,7 +80,7 @@ const MerchantLayout = () => {
             onMenuClick={() => setMobileMenuOpen(true)}
           />
         )}
-        <main className={isPOSPage ? "" : "p-3 sm:p-4 md:p-6"}>
+        <main className={isPOSPage ? "h-screen" : "p-3 sm:p-4 md:p-6"}>
           <Outlet />
         </main>
       </div>
