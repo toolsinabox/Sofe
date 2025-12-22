@@ -1758,21 +1758,25 @@ const MerchantShipping = () => {
                   <div>
                     <Label className="text-gray-300 text-sm">Name</Label>
                     <Input
+                      key="service-name-input"
                       name="name"
                       value={serviceForm.name}
                       onChange={handleServiceFormInputChange}
                       placeholder="e.g., StarTrack"
                       className="bg-gray-700 border-gray-600 text-white mt-1"
+                      autoComplete="off"
                     />
                   </div>
                   <div>
                     <Label className="text-gray-300 text-sm">Code</Label>
                     <Input
+                      key="service-code-input"
                       name="code"
                       value={serviceForm.code}
                       onChange={handleServiceFormCodeChange}
                       placeholder="e.g., startrack"
                       className="bg-gray-700 border-gray-600 text-white mt-1"
+                      autoComplete="off"
                     />
                   </div>
                   <div>
