@@ -778,13 +778,16 @@ class MaropostTemplateEngine:
         # Build replacements map
         replacements = {
             # Page tags
-            'page_title': page.get('title', product.get('name', category.get('name', store.get('store_name', 'Home')))),
+            'page_title': context.get('page_title', page.get('title', product.get('name', category.get('name', store.get('store_name', 'Home'))))),
             'page_content': page.get('content', ''),
             'page_heading': page.get('seo_heading', ''),
             'page_description': page.get('seo_description', ''),
             'page_keywords': page.get('seo_keywords', ''),
             'page_image': page.get('main_image', ''),
             'page_alt_image': page.get('alt_image', ''),
+            
+            # Checkout/Quote specific tags
+            'secure_label': context.get('secure_label', 'Secure Checkout'),
             
             # Store tags
             'store_name': store.get('store_name', ''),
