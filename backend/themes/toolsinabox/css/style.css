@@ -47,6 +47,12 @@ a {
 img {
   max-width: 100%;
   height: auto;
+  display: block;
+}
+
+/* Override for hero images - they need to fill their container */
+.hero-image {
+  max-width: none;
 }
 
 button {
