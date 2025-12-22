@@ -67,6 +67,8 @@ class ShippingService(BaseModel):
     handling_fee: float = 0
     fuel_levy_percent: float = 0
     cubic_weight_modifier: float = 250  # kg per cubic meter
+    tax_inclusive: bool = False  # True = rates already include GST, False = GST will be added
+    tax_rate: float = 10.0  # GST rate (default 10% for Australia)
     rates: List[ShippingRate] = []
     categories: List[str] = []  # Linked category codes
     is_active: bool = True
