@@ -236,8 +236,50 @@ class Order(OrderBase):
     order_number: str = Field(default_factory=lambda: f"ORD-{datetime.now(timezone.utc).strftime('%Y%m%d')}-{str(uuid.uuid4())[:8].upper()}")
     status: str = "pending"  # pending, processing, shipped, delivered, cancelled
     payment_status: str = "pending"  # pending, paid, refunded
+    payment_intent_id: Optional[str] = None  # Stripe payment intent ID
+    notes: Optional[str] = None
     created_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
     updated_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
+
+# ==================== QUOTES ====================
+
+class QuoteBase(BaseModel):
+    customer_name: str
+    customer_email: str
+    customer_phone: Optional[str] = None
+    company_name: Optional[str] = None
+    shipping_address: str
+    billing_address: Optional[str] = None
+    items: List[OrderItemBase]
+    subtotal: float
+    shipping: float
+    tax: float
+    total: float
+    notes: Optional[str] = None
+    purchase_order: Optional[str] = None  # Customer's PO number
+
+class QuoteCreate(QuoteBase):
+    pass
+
+class Quote(QuoteBase):
+    id: str = Field(default_factory=lambda: str(uuid.uuid4()))
+    quote_number: str = Field(default_factory=lambda: f"QTE-{datetime.now(timezone.utc).strftime('%Y%m%d')}-{str(uuid.uuid4())[:8].upper()}")
+    status: str = "pending"  # pending, sent, accepted, rejected, expired, converted
+    valid_until: Optional[datetime] = None  # Quote expiry date
+    converted_order_id: Optional[str] = None  # If converted to order
+    merchant_notes: Optional[str] = None  # Internal notes
+    created_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
+    updated_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
+
+class QuoteUpdate(BaseModel):
+    status: Optional[str] = None
+    merchant_notes: Optional[str] = None
+    valid_until: Optional[str] = None
+    items: Optional[List[OrderItemBase]] = None
+    subtotal: Optional[float] = None
+    shipping: Optional[float] = None
+    tax: Optional[float] = None
+    total: Optional[float] = None
 
 class CustomerBase(BaseModel):
     name: str
