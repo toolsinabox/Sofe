@@ -25,7 +25,8 @@ import {
   ShoppingBag,
   Search,
   Menu,
-  FileText
+  FileText,
+  Mail
 } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
 
