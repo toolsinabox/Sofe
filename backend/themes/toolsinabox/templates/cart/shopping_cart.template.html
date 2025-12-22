@@ -299,8 +299,15 @@
         <script>
         const API_BASE = window.location.origin + '/api';
         
+        // Global state for shipping
+        let currentSubtotal = 0;
+        let selectedShippingRate = null;
+        let availableShippingRates = [];
+        
         document.addEventListener('DOMContentLoaded', function() {
             loadCartPage();
+            // Restore shipping selection from localStorage
+            restoreShippingSelection();
         });
         
         async function loadCartPage() {
@@ -336,7 +343,8 @@
                 }
                 
                 renderCartItems(cartData);
-                updateSummary(cartData.item_count || cartData.items.reduce((s, i) => s + i.quantity, 0), cartData.total || cartData.subtotal || 0);
+                currentSubtotal = cartData.total || cartData.subtotal || 0;
+                updateSummary(cartData.item_count || cartData.items.reduce((s, i) => s + i.quantity, 0), currentSubtotal);
                 
             } catch (error) {
                 console.error('Error loading cart:', error);
