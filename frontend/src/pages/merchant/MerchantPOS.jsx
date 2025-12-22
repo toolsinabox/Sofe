@@ -528,6 +528,12 @@ const MerchantPOS = () => {
     setInitialPaymentAmount('');
     setLaybyDueDate('');
     setLaybyDuePeriod('');
+    // Reset shipping
+    setShipToCustomer(false);
+    setSelectedShipping(null);
+    setSignatureRequired(false);
+    setDeliveryInstructions('');
+    setShowShippingOptions(false);
   };
 
   // Calculate totals
