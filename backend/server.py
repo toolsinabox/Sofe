@@ -750,6 +750,8 @@ class CMSPageCreate(BaseModel):
     name: str
     slug: str
     is_active: bool = True
+    visible_on_menu: bool = False
+    visible_on_sitemap: bool = True
     seo_title: str = ""
     seo_keywords: str = ""
     seo_description: str = ""
@@ -757,11 +759,16 @@ class CMSPageCreate(BaseModel):
     canonical_url: Optional[str] = None
     content: str = ""
     template: str = "default"
+    main_image: Optional[str] = None
+    alt_image: Optional[str] = None
+    sort_order: int = 0
 
 class CMSPageUpdate(BaseModel):
     name: Optional[str] = None
     slug: Optional[str] = None
     is_active: Optional[bool] = None
+    visible_on_menu: Optional[bool] = None
+    visible_on_sitemap: Optional[bool] = None
     seo_title: Optional[str] = None
     seo_keywords: Optional[str] = None
     seo_description: Optional[str] = None
@@ -769,6 +776,9 @@ class CMSPageUpdate(BaseModel):
     canonical_url: Optional[str] = None
     content: Optional[str] = None
     template: Optional[str] = None
+    main_image: Optional[str] = None
+    alt_image: Optional[str] = None
+    sort_order: Optional[int] = None
 
 # ==================== MEGA MENU ====================
 
