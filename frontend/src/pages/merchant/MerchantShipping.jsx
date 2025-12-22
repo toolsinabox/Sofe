@@ -532,6 +532,15 @@ const MerchantShipping = () => {
 
     return (
       <div className="space-y-4">
+        {/* Hidden file input */}
+        <input
+          ref={fileInputRef}
+          type="file"
+          accept=".csv"
+          onChange={handleFileSelect}
+          className="hidden"
+        />
+
         <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
           <div>
             <h2 className="text-xl font-bold text-white">Shipping Zones</h2>
@@ -550,7 +559,7 @@ const MerchantShipping = () => {
             <Button 
               variant="outline" 
               size="sm" 
-              onClick={() => setShowImportModal(true)}
+              onClick={openImportModal}
               className="border-gray-600"
             >
               <Upload className="w-4 h-4 mr-2" /> Import CSV
