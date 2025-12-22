@@ -1003,3 +1003,57 @@ Added full import/export functionality for shipping zones matching Maropost's CS
 - **Merchant Role:**
   - Username: `edwardenayah@live.com.au`
   - Password: `qazxsw12`
+
+## Suburb Field Added to Shipping Calculator - 2025-12-22
+
+### Feature Implemented ✓
+
+Added suburb lookup functionality to the shipping calculator, allowing for more accurate shipping rate calculations.
+
+#### Backend Changes
+1. **New API Endpoints Added** (`/app/backend/routes/shipping.py`):
+   - `GET /api/shipping/suburbs?postcode={postcode}` - Returns all suburbs for a given postcode
+   - `POST /api/shipping/suburbs/import` - Import postcode-suburb mappings from CSV
+   - `GET /api/shipping/suburbs/search?q={query}` - Search suburbs by name or postcode prefix
+
+2. **New Models**:
+   - `SuburbEntry` - Pydantic model for suburb data (postcode, suburb, state, country)
+
+3. **Comprehensive Australian Suburb Data**:
+   - Added static data for 300+ suburbs across major Australian postcodes
+   - Coverage includes: Sydney Metro, Greater Sydney, Melbourne Metro, Brisbane Metro, Perth Metro, Adelaide Metro
+   - Database support for additional custom suburb mappings
+
+#### Frontend Changes
+1. **Updated Shipping Calculator** (`/app/frontend/src/pages/merchant/MerchantShipping.jsx`):
+   - Added new `calcSuburb`, `calcSuburbs`, and `loadingSuburbs` state variables
+   - Added `useEffect` to fetch suburbs when postcode is entered (with 300ms debounce)
+   - Added Suburb dropdown that auto-populates based on entered postcode
+   - Updated layout from 4 columns to 5 columns to accommodate the new field
+   - Added loading indicator while suburbs are being fetched
+   - Auto-selects suburb if only one exists for the postcode
+   - Updated calculation results to display selected suburb
+
+2. **UX Features**:
+   - Dropdown shows "Enter postcode first" when no postcode is entered
+   - Shows "No suburbs found" message for invalid/unknown postcodes
+   - Auto-selects first suburb when only one match exists
+   - Displays suburb with state code (e.g., "Bondi Beach (NSW)")
+
+### API Testing ✓
+- `GET /api/shipping/suburbs?postcode=2000` → Returns 6 suburbs (Sydney, The Rocks, etc.)
+- `GET /api/shipping/suburbs?postcode=3000` → Returns 1 suburb (Melbourne)
+- `GET /api/shipping/suburbs?postcode=4000` → Returns 4 suburbs (Brisbane City, etc.)
+- `GET /api/shipping/suburbs/search?q=bondi` → Returns 3 matching suburbs
+
+### UI Testing ✓
+- Postcode field triggers suburb lookup on input
+- Suburb dropdown shows all suburbs for entered postcode
+- Selected suburb is displayed in calculation results
+- Suburb value is passed to the shipping calculation API
+
+### Files Modified
+- `/app/backend/routes/shipping.py` - Added suburb lookup endpoints and comprehensive suburb data
+- `/app/frontend/src/pages/merchant/MerchantShipping.jsx` - Updated calculator with suburb field
+
+### Status: COMPLETE ✓
