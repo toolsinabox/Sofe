@@ -80,11 +80,13 @@ const MerchantOrders = () => {
   const [showStatusModal, setShowStatusModal] = useState(false);
   const [showNoteModal, setShowNoteModal] = useState(false);
   const [showTrackingModal, setShowTrackingModal] = useState(false);
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [selectedOrder, setSelectedOrder] = useState(null);
   const [newStatus, setNewStatus] = useState('');
   const [newNote, setNewNote] = useState('');
   const [trackingNumber, setTrackingNumber] = useState('');
   const [trackingCarrier, setTrackingCarrier] = useState('');
+  const [deleting, setDeleting] = useState(false);
   
   // Statistics
   const [stats, setStats] = useState({
