@@ -1351,6 +1351,8 @@
             thumb.classList.add('active');
         }
         
+        // Use the global addToCart function from main.js for consistency
+        // This wrapper ensures the product page works with the unified cart system
         function addProductToCart(btn) {
             if (btn.classList.contains('disabled')) return;
             
@@ -1358,36 +1360,16 @@
             const productName = btn.dataset.productName;
             const productPrice = parseFloat(btn.dataset.productPrice);
             const productImage = btn.dataset.productImage;
-            const qty = parseInt(document.getElementById('product-qty').value);
+            const qty = parseInt(document.getElementById('product-qty').value) || 1;
             
-            let cart = JSON.parse(localStorage.getItem('cart') || '{"items":[],"total":0}');
-            
-            const existingItem = cart.items.find(item => item.id === productId);
-            if (existingItem) {
-                existingItem.quantity += qty;
+            // Use the global tiabCart from main.js if available
+            if (typeof tiabCart !== 'undefined') {
+                // Add to the unified cart system
+                addToCartWithQty(productId, productName, productPrice, productImage, qty);
             } else {
-                cart.items.push({
-                    id: productId,
-                    name: productName,
-                    price: productPrice,
-                    image: productImage,
-                    quantity: qty
-                });
+                // Fallback to localStorage-only cart
+                addToLocalCart(productId, productName, productPrice, productImage, qty);
             }
-            
-            cart.total = cart.items.reduce((sum, item) => sum + (item.price * item.quantity), 0);
-            localStorage.setItem('cart', JSON.stringify(cart));
-            
-            // Update cart badge
-            const cartCount = cart.items.reduce((sum, item) => sum + item.quantity, 0);
-            const cartBadge = document.getElementById('cart-count');
-            if (cartBadge) cartBadge.textContent = cartCount;
-            
-            // Update mini-cart
-            updateMiniCart();
-            
-            // Show the cart modal
-            showCartModal(productName, productPrice, productImage, qty, cart.total);
             
             // Update button temporarily
             btn.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg> Added!';
@@ -1399,63 +1381,89 @@
             }, 2000);
         }
         
-        // ================================
-        // MINI CART FUNCTIONS
-        // ================================
-        function updateMiniCart() {
-            const cart = JSON.parse(localStorage.getItem('cart') || '{"items":[],"total":0}');
-            const itemsContainer = document.getElementById('mini-cart-items');
-            const itemCount = document.getElementById('mini-cart-item-count');
-            const totalElement = document.getElementById('mini-cart-total');
-            const cartBadge = document.getElementById('cart-count');
-            
-            if (!itemsContainer) return;
-            
-            const totalQty = cart.items.reduce((sum, item) => sum + item.quantity, 0);
-            
-            // Update badge
-            if (cartBadge) cartBadge.textContent = totalQty;
-            
-            // Update item count text
-            if (itemCount) itemCount.textContent = totalQty + ' item' + (totalQty !== 1 ? 's' : '');
-            
-            // Update total
-            if (totalElement) totalElement.textContent = '$' + cart.total.toFixed(2);
-            
-            // Update items list
-            if (cart.items.length === 0) {
-                itemsContainer.innerHTML = '<div class="mini-cart-empty"><p>Your cart is empty</p></div>';
-            } else {
-                itemsContainer.innerHTML = cart.items.map(item => `
-                    <div class="mini-cart-item">
-                        <img src="${item.image || 'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="60" height="60"%3E%3Crect fill="%23f3f4f6" width="60" height="60"/%3E%3C/svg%3E'}" alt="${item.name}">
-                        <div class="mini-cart-item-info">
-                            <div class="mini-cart-item-name">${item.name}</div>
-                            <div class="mini-cart-item-price">$${item.price.toFixed(2)}</div>
-                            <div class="mini-cart-item-qty">Qty: ${item.quantity}</div>
-                        </div>
-                        <button class="mini-cart-item-remove" onclick="removeFromMiniCart('${item.id}')" title="Remove">
-                            <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2">
-                                <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
-                            </svg>
-                        </button>
-                    </div>
-                `).join('');
+        // Add to cart with specific quantity (integrates with main.js cart system)
+        async function addToCartWithQty(productId, productName, productPrice, productImage, qty) {
+            try {
+                const cartId = getCartId();
+                const response = await fetch(window.location.origin + '/api/cart/' + cartId + '/add', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ product_id: productId, quantity: qty })
+                });
+                
+                if (response.ok) {
+                    const data = await response.json();
+                    tiabCart = data.cart;
+                    localStorage.setItem('tiab_cart_backup', JSON.stringify(tiabCart));
+                    updateCartUI();
+                    
+                    // Show modal with correct values
+                    const total = tiabCart.total || tiabCart.subtotal || 0;
+                    showCartModal(productName, productPrice, productImage, qty, total);
+                } else {
+                    throw new Error('API failed');
+                }
+            } catch (error) {
+                console.error('Error adding to cart:', error);
+                // Fallback to local cart
+                addToLocalCart(productId, productName, productPrice, productImage, qty);
             }
         }
         
-        function removeFromMiniCart(productId) {
-            let cart = JSON.parse(localStorage.getItem('cart') || '{"items":[],"total":0}');
-            cart.items = cart.items.filter(item => item.id !== productId);
-            cart.total = cart.items.reduce((sum, item) => sum + (item.price * item.quantity), 0);
-            localStorage.setItem('cart', JSON.stringify(cart));
-            updateMiniCart();
+        // Fallback local cart add
+        function addToLocalCart(productId, productName, productPrice, productImage, qty) {
+            // Update tiabCart if available
+            if (typeof tiabCart !== 'undefined') {
+                const existingItem = tiabCart.items.find(item => item.product_id === productId);
+                if (existingItem) {
+                    existingItem.quantity += qty;
+                    existingItem.line_total = existingItem.quantity * existingItem.price;
+                } else {
+                    tiabCart.items.push({
+                        product_id: productId,
+                        name: productName,
+                        price: productPrice,
+                        image: productImage,
+                        quantity: qty,
+                        line_total: productPrice * qty
+                    });
+                }
+                tiabCart.subtotal = tiabCart.items.reduce((sum, item) => sum + (item.line_total || item.price * item.quantity), 0);
+                tiabCart.total = tiabCart.subtotal;
+                tiabCart.item_count = tiabCart.items.reduce((sum, item) => sum + item.quantity, 0);
+                localStorage.setItem('tiab_cart_backup', JSON.stringify(tiabCart));
+                
+                if (typeof updateCartUI === 'function') {
+                    updateCartUI();
+                }
+                
+                showCartModal(productName, productPrice, productImage, qty, tiabCart.total);
+            } else {
+                // Pure localStorage fallback
+                let cart = JSON.parse(localStorage.getItem('cart') || '{"items":[],"total":0}');
+                const existingItem = cart.items.find(item => item.id === productId);
+                if (existingItem) {
+                    existingItem.quantity += qty;
+                } else {
+                    cart.items.push({
+                        id: productId,
+                        name: productName,
+                        price: productPrice,
+                        image: productImage,
+                        quantity: qty
+                    });
+                }
+                cart.total = cart.items.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+                localStorage.setItem('cart', JSON.stringify(cart));
+                
+                // Update badge
+                const cartCount = cart.items.reduce((sum, item) => sum + item.quantity, 0);
+                const cartBadge = document.getElementById('cart-count');
+                if (cartBadge) cartBadge.textContent = cartCount;
+                
+                showCartModal(productName, productPrice, productImage, qty, cart.total);
+            }
         }
-        
-        // Initialize mini-cart on page load
-        document.addEventListener('DOMContentLoaded', function() {
-            updateMiniCart();
-        });
         
         function addToWishlist() { alert('Added to wishlist!'); }
         function shareProduct() {
