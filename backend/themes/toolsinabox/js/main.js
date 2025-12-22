@@ -7,8 +7,38 @@ const API_BASE = window.location.origin + '/api';
 // BANNER CAROUSEL
 // ================================
 let currentSlide = 0;
-let slideCount = 0;
+let visibleSlides = [];
 let autoSlideInterval = null;
+
+function getDeviceType() {
+    const width = window.innerWidth;
+    if (width < 768) return 'mobile';
+    if (width < 1024) return 'tablet';
+    return 'desktop';
+}
+
+function getVisibleSlides() {
+    const device = getDeviceType();
+    const allSlides = document.querySelectorAll('#heroSlides .hero-slide');
+    const visible = [];
+    
+    allSlides.forEach((slide, index) => {
+        const showDesktop = slide.dataset.showDesktop !== 'n';
+        const showTablet = slide.dataset.showTablet !== 'n';
+        const showMobile = slide.dataset.showMobile !== 'n';
+        
+        let shouldShow = true;
+        if (device === 'mobile' && !showMobile) shouldShow = false;
+        if (device === 'tablet' && !showTablet) shouldShow = false;
+        if (device === 'desktop' && !showDesktop) shouldShow = false;
+        
+        if (shouldShow) {
+            visible.push({ element: slide, index: index });
+        }
+    });
+    
+    return visible;
+}
 
 function initCarousel() {
     const slidesContainer = document.getElementById('heroSlides');
@@ -16,21 +46,31 @@ function initCarousel() {
     
     if (!slidesContainer) return;
     
-    const slides = slidesContainer.querySelectorAll('.hero-slide');
-    slideCount = slides.length;
+    // Get visible slides based on device
+    visibleSlides = getVisibleSlides();
     
-    if (slideCount <= 1) {
-        // Hide navigation if only one slide
+    if (visibleSlides.length <= 1) {
+        // Hide navigation if only one or zero visible slides
         document.querySelectorAll('.carousel-nav, .carousel-dots').forEach(el => {
             el.style.display = 'none';
         });
+        // If there's one slide, make sure it's visible
+        if (visibleSlides.length === 1) {
+            goToSlide(0);
+        }
         return;
     }
     
-    // Create dots
+    // Show navigation
+    document.querySelectorAll('.carousel-nav').forEach(el => {
+        el.style.display = 'flex';
+    });
+    
+    // Create dots for visible slides only
     if (dotsContainer) {
         dotsContainer.innerHTML = '';
-        for (let i = 0; i < slideCount; i++) {
+        dotsContainer.style.display = 'flex';
+        for (let i = 0; i < visibleSlides.length; i++) {
             const dot = document.createElement('button');
             dot.className = 'carousel-dot' + (i === 0 ? ' active' : '');
             dot.setAttribute('aria-label', `Go to slide ${i + 1}`);
@@ -38,6 +78,10 @@ function initCarousel() {
             dotsContainer.appendChild(dot);
         }
     }
+    
+    // Start at first visible slide
+    currentSlide = 0;
+    goToSlide(0);
     
     // Start auto-slide
     startAutoSlide();
@@ -50,18 +94,23 @@ function initCarousel() {
     }
 }
 
-function goToSlide(index) {
+function goToSlide(visibleIndex) {
     const slidesContainer = document.getElementById('heroSlides');
     const dots = document.querySelectorAll('.carousel-dot');
     
-    if (!slidesContainer) return;
+    if (!slidesContainer || visibleSlides.length === 0) return;
     
     // Wrap around
-    if (index >= slideCount) index = 0;
-    if (index < 0) index = slideCount - 1;
+    if (visibleIndex >= visibleSlides.length) visibleIndex = 0;
+    if (visibleIndex < 0) visibleIndex = visibleSlides.length - 1;
     
-    currentSlide = index;
-    slidesContainer.style.transform = `translateX(-${currentSlide * 100}%)`;
+    currentSlide = visibleIndex;
+    
+    // Get the actual index in the DOM
+    const actualIndex = visibleSlides[visibleIndex].index;
+    
+    // Transform to show the correct slide
+    slidesContainer.style.transform = `translateX(-${actualIndex * 100}%)`;
     
     // Update dots
     dots.forEach((dot, i) => {
@@ -78,6 +127,8 @@ function changeSlide(direction) {
 
 function startAutoSlide() {
     if (autoSlideInterval) clearInterval(autoSlideInterval);
+    if (visibleSlides.length <= 1) return;
+    
     autoSlideInterval = setInterval(() => {
         goToSlide(currentSlide + 1);
     }, 5000); // Change slide every 5 seconds
@@ -89,6 +140,16 @@ function stopAutoSlide() {
         autoSlideInterval = null;
     }
 }
+
+// Re-initialize carousel on window resize (device type might change)
+let resizeTimeout;
+window.addEventListener('resize', function() {
+    clearTimeout(resizeTimeout);
+    resizeTimeout = setTimeout(function() {
+        stopAutoSlide();
+        initCarousel();
+    }, 250);
+});
 
 document.addEventListener('DOMContentLoaded', function() {
     console.log('Theme loaded: Tools In A Box');
