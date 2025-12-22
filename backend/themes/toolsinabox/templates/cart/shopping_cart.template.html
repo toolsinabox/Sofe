@@ -394,16 +394,36 @@
             container.innerHTML = itemsHtml;
         }
         
-        function updateSummary(itemCount, total) {
+        function updateSummary(itemCount, subtotal) {
+            currentSubtotal = subtotal;
             const subtotalEl = document.getElementById('summary-subtotal');
             const totalEl = document.getElementById('summary-total');
             const gstEl = document.getElementById('summary-gst');
             const checkoutBtn = document.getElementById('checkout-btn');
             const badge = document.getElementById('cart-count');
+            const shippingLine = document.getElementById('shipping-line');
+            const shippingCostDisplay = document.getElementById('shipping-cost-display');
+            const selectedShippingName = document.getElementById('selected-shipping-name');
             
+            // Calculate shipping cost based on selection
+            let shippingCost = 0;
+            const deliveryOption = document.querySelector('input[name="delivery"]:checked');
+            
+            if (deliveryOption && deliveryOption.value !== 'pickup' && selectedShippingRate) {
+                shippingCost = selectedShippingRate.price;
+                if (shippingLine) {
+                    shippingLine.style.display = 'flex';
+                    if (shippingCostDisplay) shippingCostDisplay.textContent = '$' + shippingCost.toFixed(2);
+                    if (selectedShippingName) selectedShippingName.textContent = selectedShippingRate.rate_name;
+                }
+            } else {
+                if (shippingLine) shippingLine.style.display = 'none';
+            }
+            
+            const total = subtotal + shippingCost;
             const gst = total / 11; // GST is 1/11 of total in Australia
             
-            if (subtotalEl) subtotalEl.textContent = '$' + (total || 0).toFixed(2);
+            if (subtotalEl) subtotalEl.textContent = '$' + (subtotal || 0).toFixed(2);
             if (totalEl) totalEl.textContent = '$' + (total || 0).toFixed(2);
             if (gstEl) gstEl.textContent = '$' + gst.toFixed(2);
             if (badge) badge.textContent = itemCount;
@@ -412,6 +432,203 @@
                 checkoutBtn.disabled = itemCount === 0;
                 checkoutBtn.style.opacity = itemCount === 0 ? '0.5' : '1';
                 checkoutBtn.style.cursor = itemCount === 0 ? 'not-allowed' : 'pointer';
+            }
+        }
+        
+        async function calculateShipping() {
+            const postalCode = document.getElementById('postal-code').value.trim();
+            const country = document.getElementById('country-select').value;
+            const calcBtn = document.getElementById('calc-shipping-btn');
+            const resultsDiv = document.getElementById('shipping-results');
+            const optionsList = document.getElementById('shipping-options-list');
+            const noShippingMsg = document.getElementById('no-shipping-msg');
+            
+            if (!postalCode) {
+                alert('Please enter a postcode');
+                return;
+            }
+            
+            // Show loading state
+            const originalText = calcBtn.innerHTML;
+            calcBtn.innerHTML = '<svg style="animation: spin 1s linear infinite; width: 16px; height: 16px; display: inline; margin-right: 5px;" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10" stroke-opacity="0.25"/><path d="M12 2a10 10 0 0 1 10 10" stroke-opacity="0.75"/></svg> Calculating...';
+            calcBtn.disabled = true;
+            
+            try {
+                const params = new URLSearchParams({
+                    country: country,
+                    postcode: postalCode,
+                    order_total: currentSubtotal
+                });
+                
+                const response = await fetch(`${API_BASE}/shipping/calculate?${params}`, {
+                    method: 'POST'
+                });
+                
+                if (!response.ok) throw new Error('Failed to calculate shipping');
+                
+                const data = await response.json();
+                availableShippingRates = data.rates || [];
+                
+                // Save shipping details to localStorage
+                localStorage.setItem('tiab_shipping_postcode', postalCode);
+                localStorage.setItem('tiab_shipping_country', country);
+                
+                if (availableShippingRates.length === 0) {
+                    // No shipping options available
+                    resultsDiv.style.display = 'none';
+                    noShippingMsg.style.display = 'block';
+                    updateDeliveryOptions([]);
+                } else {
+                    // Show shipping options
+                    noShippingMsg.style.display = 'none';
+                    resultsDiv.style.display = 'block';
+                    
+                    // Render options in calculator section
+                    optionsList.innerHTML = availableShippingRates.map((rate, idx) => `
+                        <div style="display: flex; justify-content: space-between; align-items: center; padding: 10px; background: ${idx === 0 ? '#e8f5e9' : '#fff'}; border: 1px solid ${idx === 0 ? '#4CAF50' : '#ddd'}; border-radius: 4px; margin-bottom: 8px; cursor: pointer;" onclick="selectShippingFromCalc(${idx})">
+                            <div>
+                                <p style="font-weight: 500; color: #333; margin: 0;">${rate.rate_name}</p>
+                                <p style="font-size: 12px; color: #666; margin: 2px 0 0 0;">${rate.zone_name} - ${rate.estimated_days}</p>
+                            </div>
+                            <span style="font-weight: 600; color: #333;">$${rate.price.toFixed(2)}</span>
+                        </div>
+                    `).join('');
+                    
+                    // Update delivery options section
+                    updateDeliveryOptions(availableShippingRates);
+                    
+                    // Auto-select first shipping option
+                    if (availableShippingRates.length > 0) {
+                        selectShippingRate(0);
+                    }
+                }
+                
+            } catch (error) {
+                console.error('Error calculating shipping:', error);
+                alert('Failed to calculate shipping. Please try again.');
+            } finally {
+                calcBtn.innerHTML = originalText;
+                calcBtn.disabled = false;
+            }
+        }
+        
+        function updateDeliveryOptions(rates) {
+            const container = document.getElementById('shipping-delivery-options');
+            const defaultLabel = document.getElementById('default-shipping-label');
+            
+            if (rates.length === 0) {
+                // Reset to default disabled state
+                container.innerHTML = `
+                    <label style="display: flex; align-items: flex-start; gap: 10px; cursor: pointer; opacity: 0.5;" id="default-shipping-label">
+                        <input type="radio" name="delivery" value="shipping" disabled style="margin-top: 3px;">
+                        <div>
+                            <span style="font-weight: 500;">Shipping</span>
+                            <p style="font-size: 12px; color: #666; margin-top: 3px;">Calculate shipping above to see rates</p>
+                        </div>
+                    </label>
+                `;
+                return;
+            }
+            
+            // Build shipping options
+            container.innerHTML = rates.map((rate, idx) => `
+                <label style="display: flex; align-items: flex-start; gap: 10px; cursor: pointer; margin-bottom: 8px; padding: 8px; border-radius: 4px; ${idx === 0 ? 'background: #f0f7ff;' : ''}" id="shipping-option-${idx}">
+                    <input type="radio" name="delivery" value="shipping_${idx}" ${idx === 0 ? 'checked' : ''} onchange="selectShippingRate(${idx})" style="margin-top: 3px;">
+                    <div style="flex: 1;">
+                        <div style="display: flex; justify-content: space-between; align-items: center;">
+                            <span style="font-weight: 500;">${rate.rate_name}</span>
+                            <span style="font-weight: 600; color: #c41e3a;">$${rate.price.toFixed(2)}</span>
+                        </div>
+                        <p style="font-size: 12px; color: #666; margin-top: 3px;">${rate.zone_name} - ${rate.estimated_days}</p>
+                    </div>
+                </label>
+            `).join('');
+        }
+        
+        function selectShippingFromCalc(index) {
+            const radio = document.querySelector(`input[name="delivery"][value="shipping_${index}"]`);
+            if (radio) {
+                radio.checked = true;
+            }
+            selectShippingRate(index);
+        }
+        
+        function selectShippingRate(index) {
+            if (index < 0 || index >= availableShippingRates.length) return;
+            
+            selectedShippingRate = availableShippingRates[index];
+            
+            // Save selection
+            localStorage.setItem('tiab_selected_shipping', JSON.stringify({
+                index: index,
+                rate: selectedShippingRate
+            }));
+            
+            // Highlight selected option in calculator
+            const optionsList = document.getElementById('shipping-options-list');
+            if (optionsList) {
+                const options = optionsList.children;
+                for (let i = 0; i < options.length; i++) {
+                    if (i === index) {
+                        options[i].style.background = '#e8f5e9';
+                        options[i].style.borderColor = '#4CAF50';
+                    } else {
+                        options[i].style.background = '#fff';
+                        options[i].style.borderColor = '#ddd';
+                    }
+                }
+            }
+            
+            // Highlight selected option in delivery section
+            for (let i = 0; i < availableShippingRates.length; i++) {
+                const label = document.getElementById(`shipping-option-${i}`);
+                if (label) {
+                    label.style.background = i === index ? '#f0f7ff' : 'transparent';
+                }
+            }
+            
+            // Update totals
+            updateSummary(getCurrentItemCount(), currentSubtotal);
+        }
+        
+        function handleDeliveryChange() {
+            const deliveryOption = document.querySelector('input[name="delivery"]:checked');
+            
+            if (deliveryOption && deliveryOption.value === 'pickup') {
+                selectedShippingRate = null;
+                localStorage.removeItem('tiab_selected_shipping');
+            }
+            
+            updateSummary(getCurrentItemCount(), currentSubtotal);
+        }
+        
+        function getCurrentItemCount() {
+            const rows = document.querySelectorAll('.cart-item-row');
+            let count = 0;
+            rows.forEach(row => {
+                const input = row.querySelector('input[type="number"]');
+                if (input) count += parseInt(input.value) || 0;
+            });
+            return count;
+        }
+        
+        function restoreShippingSelection() {
+            const savedShipping = localStorage.getItem('tiab_selected_shipping');
+            const savedPostcode = localStorage.getItem('tiab_shipping_postcode');
+            const savedCountry = localStorage.getItem('tiab_shipping_country');
+            
+            if (savedPostcode) {
+                document.getElementById('postal-code').value = savedPostcode;
+            }
+            if (savedCountry) {
+                document.getElementById('country-select').value = savedCountry;
+            }
+            
+            // If we have saved shipping, recalculate
+            if (savedPostcode && savedShipping) {
+                setTimeout(() => {
+                    calculateShipping();
+                }, 500);
             }
         }
         
