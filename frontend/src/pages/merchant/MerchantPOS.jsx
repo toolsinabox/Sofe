@@ -1547,6 +1547,16 @@ const MerchantPOS = () => {
                 <span className="text-white">${tax.toFixed(2)}</span>
               </div>
               
+              {shippingCost > 0 && (
+                <div className="flex justify-between text-xs sm:text-sm">
+                  <span className="text-gray-400 flex items-center gap-1">
+                    <Truck className="w-3 h-3" />
+                    Shipping
+                  </span>
+                  <span className="text-orange-400">${shippingCost.toFixed(2)}</span>
+                </div>
+              )}
+              
               <div className="h-px bg-gray-700" />
               
               <div className="flex justify-between items-center">
