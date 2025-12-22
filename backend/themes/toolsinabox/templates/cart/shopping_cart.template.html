@@ -351,6 +351,7 @@
                 }
                 
                 renderCartItems(cartData);
+                cartItems = cartData.items; // Save items for shipping calculation
                 currentSubtotal = cartData.total || cartData.subtotal || 0;
                 updateSummary(cartData.item_count || cartData.items.reduce((s, i) => s + i.quantity, 0), currentSubtotal);
                 
