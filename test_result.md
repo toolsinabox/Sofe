@@ -457,3 +457,58 @@ Created a comprehensive email management interface for merchants:
 - Banner and Category CRUD endpoints working correctly
 
 ### Status: COMPLETE
+
+
+## Server.py Refactoring Progress - 2025-12-22
+
+### Completed Refactoring Steps
+
+1. **PDFGenerator Extraction**
+   - Removed PDFGenerator class from server.py (333 lines removed)
+   - Now imports from `/app/backend/utils/pdf.py`
+   - server.py reduced from 6023 to 5685 lines
+
+2. **New Modular Directory Structure Created**
+   - `/app/backend/core/` - Shared dependencies
+     - `database.py` - MongoDB connection
+     - `auth.py` - Authentication helpers
+   - `/app/backend/routes/` - API route modules  
+     - `auth.py` - Auth endpoints (login, register, me, init-admin)
+   - `/app/backend/utils/` - Utility modules
+     - `pdf.py` - PDF generation for invoices, quotes, packing slips
+
+3. **Auth Routes Module**
+   - Created modular auth router at `/app/backend/routes/auth.py`
+   - Includes: login, register, get_me, init-admin endpoints
+   - Added to app with prefix `/api`
+
+### Verified Working ✓
+
+1. **Storefront Homepage** - Banner carousel, categories, trust badges working
+2. **Merchant Dashboard** - Stats, orders, products all loading correctly
+3. **CMS Pages** - All pages working:
+   - `/live/page/about` - About Us page
+   - `/live/page/contact` - Contact Us page  
+   - `/live/page/faq` - FAQ page
+   - `/live/page/shipping-returns` - Shipping & Returns page
+4. **Auth API** - Login working via modular routes
+
+### Next Steps for Full Refactoring
+
+**Remaining Route Modules to Create:**
+- products.py - Product CRUD endpoints
+- orders.py - Order management endpoints
+- quotes.py - Quote management endpoints
+- customers.py - Customer management endpoints
+- banners.py - Banner and content zones
+- settings.py - Store settings, invoice settings
+- themes.py - Theme management
+- cms.py - CMS pages endpoints
+- checkout.py - Checkout and payments
+- cart.py - Shopping cart API
+- maropost.py - SSR engine endpoints
+- admin.py - Admin routes
+
+### Status: IN PROGRESS
+
+The refactoring is progressing incrementally. The core application functionality remains intact.
