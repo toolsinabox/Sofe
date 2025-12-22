@@ -92,7 +92,7 @@
         </section>
         
         <!-- Homepage Content (from CMS Page) -->
-        [%if [@page_content@] %]
+        [%if [@page_content@] ne ''%]
         <section class="homepage-content">
             <div class="max-w-7xl mx-auto px-4 py-12">
                 <div id="homepage-cms-content">
@@ -101,12 +101,6 @@
             </div>
         </section>
         [%/if%]
-        
-[%if [@page_content@] ne ''%]
-<div class="page-content">
-  [@page_content@]
-</div>
-[%/if%]
 
         <!-- Featured Products -->
         <section class="products-section">
