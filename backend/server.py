@@ -626,6 +626,25 @@ class ProductReviewUpdate(BaseModel):
     content: Optional[str] = None
     rating: Optional[int] = None
 
+# ==================== STOCK NOTIFICATIONS ====================
+
+class StockNotification(BaseModel):
+    id: str = Field(default_factory=lambda: str(uuid.uuid4()))
+    product_id: str
+    product_name: str
+    customer_name: str
+    customer_email: str
+    customer_phone: Optional[str] = None
+    notified: bool = False
+    notified_at: Optional[datetime] = None
+    created_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
+
+class StockNotificationCreate(BaseModel):
+    product_id: str
+    customer_name: str
+    customer_email: str
+    customer_phone: Optional[str] = None
+
 # ==================== SHIPPING ZONES & RATES ====================
 
 class ShippingRate(BaseModel):
