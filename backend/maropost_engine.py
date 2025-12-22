@@ -899,6 +899,8 @@ class MaropostTemplateEngine:
                     item_content = self._replace_category_item_tags(item_content, item)
                 elif tag_name in ['banner_list', 'banners']:
                     item_content = self._replace_banner_item_tags(item_content, item)
+                elif tag_name in ['cart_items', 'cart_list']:
+                    item_content = self._replace_cart_item_tags(item_content, item, context.get('store', {}))
                 
                 # Replace index tags
                 item_content = item_content.replace('[@index@]', str(i))
