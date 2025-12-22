@@ -655,8 +655,9 @@ class MaropostTemplateEngine:
                     }
         
         elif page_type == PageType.HOME:
-            # Set page title for home
-            context['page'] = {'title': 'Home', 'slug': 'home'}
+            # Set page title for home - use custom homepage_title from settings if available
+            homepage_title = context.get('store', {}).get('homepage_title', 'Home') or 'Home'
+            context['page'] = {'title': homepage_title, 'slug': 'home'}
             
             # Get featured products
             products = await self.db.products.find({}, {"_id": 0}).limit(20).to_list(20)
