@@ -237,6 +237,7 @@ function App() {
               <Route path="abandoned-carts" element={<MerchantAbandonedCarts />} />
               <Route path="seo" element={<MerchantSEO />} />
               <Route path="mega-menu" element={<MerchantMegaMenu />} />
+              <Route path="pages" element={<MerchantPages />} />
             </Route>
 
             {/* Live Theme Storefront - Main customer-facing store */}
