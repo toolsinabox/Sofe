@@ -470,14 +470,23 @@ const MerchantShipping = () => {
                   <div className="space-y-2">
                     <p className="text-gray-300 text-sm font-medium">Available shipping options:</p>
                     {calcResult.options.map((opt, idx) => (
-                      <div key={idx} className="flex items-center justify-between p-3 bg-gray-800 rounded-lg">
-                        <div>
-                          <p className="text-white font-medium">{opt.service_name || opt.name}</p>
-                          <p className="text-gray-500 text-xs">{opt.delivery_estimate || opt.description || `${opt.delivery_days || 0} business days`}</p>
+                      <div key={idx} className="p-3 bg-gray-800 rounded-lg">
+                        <div className="flex items-center justify-between">
+                          <div>
+                            <p className="text-white font-medium">{opt.service_name || opt.name}</p>
+                            <p className="text-gray-500 text-xs">{opt.delivery_estimate || opt.description || `${opt.delivery_days || 0} business days`}</p>
+                          </div>
+                          <div className="text-right">
+                            <p className={`font-bold ${(opt.price === 0 || opt.is_free) ? 'text-emerald-400' : 'text-white'}`}>
+                              {(opt.price === 0 || opt.is_free) ? 'FREE' : `$${(opt.price || 0).toFixed(2)}`}
+                            </p>
+                            {opt.price > 0 && opt.gst_amount > 0 && (
+                              <p className="text-gray-500 text-xs">
+                                {opt.tax_inclusive ? 'incl.' : 'excl.'} ${opt.price_ex_gst?.toFixed(2)} + GST ${opt.gst_amount?.toFixed(2)}
+                              </p>
+                            )}
+                          </div>
                         </div>
-                        <p className={`font-bold ${(opt.price === 0 || opt.is_free) ? 'text-emerald-400' : 'text-white'}`}>
-                          {(opt.price === 0 || opt.is_free) ? 'FREE' : `$${(opt.price || 0).toFixed(2)}`}
-                        </p>
                       </div>
                     ))}
                   </div>
