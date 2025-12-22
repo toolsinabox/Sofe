@@ -1428,6 +1428,148 @@ const MerchantShipping = () => {
             </DialogFooter>
           </DialogContent>
         </Dialog>
+
+        {/* Rate Import Modal */}
+        <Dialog open={showRateImportModal} onOpenChange={setShowRateImportModal}>
+          <DialogContent className="bg-gray-800 border-gray-700 text-white max-w-lg">
+            <DialogHeader>
+              <DialogTitle className="flex items-center gap-2">
+                <Upload className="w-5 h-5 text-emerald-400" />
+                Import Shipping Rates
+              </DialogTitle>
+              <DialogDescription className="text-gray-400">
+                Upload a CSV file to import rates for: <span className="text-white font-medium">{selectedServiceForImport?.name}</span>
+              </DialogDescription>
+            </DialogHeader>
+            
+            <div className="space-y-4 py-4">
+              {/* Format Info */}
+              <div className="bg-gray-900 rounded-lg p-4 border border-gray-700">
+                <h4 className="text-sm font-medium text-white mb-2">CSV Format (Maropost Compatible)</h4>
+                <p className="text-gray-400 text-xs mb-2">Required columns:</p>
+                <div className="flex flex-wrap gap-1.5">
+                  {['Zone Code', 'Zone Name', 'Courier Name', 'Minimum Charge', '1st Parcel', 'Per Kg', 'Delivery Time'].map(col => (
+                    <span key={col} className="px-1.5 py-0.5 bg-gray-800 text-gray-300 text-xs rounded font-mono">
+                      {col}
+                    </span>
+                  ))}
+                </div>
+              </div>
+
+              {/* Download Template */}
+              <Button 
+                variant="outline" 
+                className="w-full border-gray-600 border-dashed"
+                onClick={handleDownloadRateTemplate}
+              >
+                <FileDown className="w-4 h-4 mr-2" />
+                Download Sample Rate Template
+              </Button>
+
+              {/* Import Mode */}
+              <div>
+                <Label className="text-gray-300 mb-2 block">Import Mode</Label>
+                <div className="grid grid-cols-2 gap-2">
+                  <button
+                    onClick={() => setRateImportMode('merge')}
+                    className={`p-3 rounded-lg border text-left transition-all ${
+                      rateImportMode === 'merge' 
+                        ? 'border-emerald-500 bg-emerald-500/10 text-white' 
+                        : 'border-gray-700 text-gray-400 hover:border-gray-600'
+                    }`}
+                  >
+                    <div className="font-medium text-sm">Merge</div>
+                    <div className="text-xs mt-1 opacity-70">Add new & update by zone code</div>
+                  </button>
+                  <button
+                    onClick={() => setRateImportMode('replace')}
+                    className={`p-3 rounded-lg border text-left transition-all ${
+                      rateImportMode === 'replace' 
+                        ? 'border-orange-500 bg-orange-500/10 text-white' 
+                        : 'border-gray-700 text-gray-400 hover:border-gray-600'
+                    }`}
+                  >
+                    <div className="font-medium text-sm">Replace</div>
+                    <div className="text-xs mt-1 opacity-70">Clear all rates & import fresh</div>
+                  </button>
+                </div>
+              </div>
+
+              {/* Warning for Replace */}
+              {rateImportMode === 'replace' && (
+                <div className="flex items-start gap-2 p-3 bg-orange-500/10 border border-orange-500/30 rounded-lg">
+                  <AlertTriangle className="w-5 h-5 text-orange-400 flex-shrink-0 mt-0.5" />
+                  <p className="text-orange-300 text-sm">
+                    Replace mode will delete all existing rates for this service before importing.
+                  </p>
+                </div>
+              )}
+
+              {/* File Upload */}
+              <div>
+                <Label className="text-gray-300 mb-2 block">Select CSV File</Label>
+                <input
+                  ref={rateFileInputRef}
+                  type="file"
+                  accept=".csv"
+                  onChange={handleImportRates}
+                  disabled={importingRates}
+                  className="w-full text-sm text-gray-400 
+                    file:mr-4 file:py-2 file:px-4 
+                    file:rounded-lg file:border-0 
+                    file:text-sm file:font-medium 
+                    file:bg-emerald-600 file:text-white 
+                    hover:file:bg-emerald-700 
+                    file:cursor-pointer cursor-pointer"
+                />
+              </div>
+
+              {/* Import Progress/Result */}
+              {importingRates && (
+                <div className="flex items-center justify-center gap-2 p-4 bg-gray-900 rounded-lg">
+                  <Loader2 className="w-5 h-5 text-emerald-400 animate-spin" />
+                  <span className="text-gray-300">Importing rates...</span>
+                </div>
+              )}
+
+              {rateImportResult && (
+                <div className={`p-4 rounded-lg border ${
+                  rateImportResult.success 
+                    ? 'bg-emerald-500/10 border-emerald-500/30' 
+                    : 'bg-red-500/10 border-red-500/30'
+                }`}>
+                  {rateImportResult.success ? (
+                    <div className="space-y-2">
+                      <div className="flex items-center gap-2">
+                        <CheckCircle className="w-5 h-5 text-emerald-400" />
+                        <span className="text-emerald-400 font-medium">Import Successful!</span>
+                      </div>
+                      <div className="text-sm text-gray-300 space-y-1">
+                        <p>Mode: <span className="text-white">{rateImportResult.mode}</span></p>
+                        <p>Rates imported: <span className="text-emerald-400">{rateImportResult.rates_imported}</span></p>
+                        <p>Total rates: <span className="text-white">{rateImportResult.total_rates}</span></p>
+                      </div>
+                    </div>
+                  ) : (
+                    <div className="flex items-start gap-2">
+                      <AlertCircle className="w-5 h-5 text-red-400 flex-shrink-0 mt-0.5" />
+                      <div>
+                        <span className="text-red-400 font-medium">Import Failed</span>
+                        <p className="text-red-300 text-sm mt-1">{rateImportResult.error}</p>
+                      </div>
+                    </div>
+                  )}
+                </div>
+              )}
+            </div>
+
+            <DialogFooter>
+              <Button variant="outline" onClick={() => { setShowRateImportModal(false); setRateImportResult(null); }} className="border-gray-600">
+                Close
+              </Button>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
       </div>
     );
   };
