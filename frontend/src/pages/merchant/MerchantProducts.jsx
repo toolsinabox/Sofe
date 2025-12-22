@@ -1118,6 +1118,58 @@ const ProductEditor = ({ product, categories, onSave, onClose, templateTags }) =
                         </div>
                       </div>
                       
+                      {/* Shipping Box Dimensions - for cubic weight calculation */}
+                      <div className="pt-4 border-t border-gray-700">
+                        <Label className="text-gray-300 text-sm mb-3 block flex items-center gap-2">
+                          <Box className="w-4 h-4 text-blue-400" />
+                          Shipping Box Dimensions (for cubic weight calculation)
+                        </Label>
+                        <div className="grid grid-cols-3 gap-4">
+                          <div className="space-y-2">
+                            <Label className="text-gray-400 text-xs">
+                              Shipping Length (cm)
+                            </Label>
+                            <Input
+                              type="number"
+                              step="0.1"
+                              className="bg-gray-800/50 border-gray-700 text-white"
+                              placeholder="0"
+                              value={formData.shipping_length || ''}
+                              onChange={(e) => handleChange('shipping_length', e.target.value)}
+                            />
+                          </div>
+                          <div className="space-y-2">
+                            <Label className="text-gray-400 text-xs">
+                              Shipping Width (cm)
+                            </Label>
+                            <Input
+                              type="number"
+                              step="0.1"
+                              className="bg-gray-800/50 border-gray-700 text-white"
+                              placeholder="0"
+                              value={formData.shipping_width || ''}
+                              onChange={(e) => handleChange('shipping_width', e.target.value)}
+                            />
+                          </div>
+                          <div className="space-y-2">
+                            <Label className="text-gray-400 text-xs">
+                              Shipping Height (cm)
+                            </Label>
+                            <Input
+                              type="number"
+                              step="0.1"
+                              className="bg-gray-800/50 border-gray-700 text-white"
+                              placeholder="0"
+                              value={formData.shipping_height || ''}
+                              onChange={(e) => handleChange('shipping_height', e.target.value)}
+                            />
+                          </div>
+                        </div>
+                        <p className="text-gray-500 text-xs mt-2">
+                          Cubic Weight = (L × W × H) / 1,000,000 × Modifier. Used when larger than actual weight.
+                        </p>
+                      </div>
+                      
                       <div className="space-y-2">
                         <Label className="text-gray-300 flex items-center gap-2">
                           Shipping Class
