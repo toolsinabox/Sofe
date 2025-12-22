@@ -1976,8 +1976,9 @@ const MerchantShipping = () => {
                       <Input
                         type="number"
                         step="0.1"
+                        name="fuel_levy_percent"
                         value={serviceForm.fuel_levy_percent || ''}
-                        onChange={(e) => handleServiceFormNumberChange('fuel_levy_percent', e.target.value, 0)}
+                        onChange={handleServiceFormNumericChange}
                         placeholder="0.0"
                         className="bg-gray-700 border-gray-600 text-white w-20"
                       />
@@ -1990,8 +1991,9 @@ const MerchantShipping = () => {
                       <Input
                         type="number"
                         step="0.1"
+                        name="packaging_allowance_kg"
                         value={serviceForm.packaging_allowance_kg || ''}
-                        onChange={(e) => handleServiceFormNumberChange('packaging_allowance_kg', e.target.value, 0)}
+                        onChange={handleServiceFormNumericChange}
                         placeholder="0"
                         className="bg-gray-700 border-gray-600 text-white w-16"
                       />
@@ -2000,8 +2002,9 @@ const MerchantShipping = () => {
                       <Input
                         type="number"
                         step="0.1"
+                        name="packaging_allowance_percent"
                         value={serviceForm.packaging_allowance_percent || ''}
-                        onChange={(e) => handleServiceFormNumberChange('packaging_allowance_percent', e.target.value, 0)}
+                        onChange={handleServiceFormNumericChange}
                         placeholder="0"
                         className="bg-gray-700 border-gray-600 text-white w-16"
                       />
@@ -2014,8 +2017,9 @@ const MerchantShipping = () => {
                   <label className="flex items-center gap-2 cursor-pointer">
                     <input
                       type="checkbox"
+                      name="round_up_weight"
                       checked={serviceForm.round_up_weight || false}
-                      onChange={(e) => handleServiceFormChange('round_up_weight', e.target.checked)}
+                      onChange={handleServiceFormInputChange}
                       className="rounded border-gray-600 text-emerald-500"
                     />
                     <span className="text-gray-300 text-sm">Round Up to Nearest kg</span>
@@ -2023,8 +2027,9 @@ const MerchantShipping = () => {
                   <label className="flex items-center gap-2 cursor-pointer">
                     <input
                       type="checkbox"
+                      name="ignore_physical_weight"
                       checked={serviceForm.ignore_physical_weight || false}
-                      onChange={(e) => handleServiceFormChange('ignore_physical_weight', e.target.checked)}
+                      onChange={handleServiceFormInputChange}
                       className="rounded border-gray-600 text-emerald-500"
                     />
                     <span className="text-gray-300 text-sm">Ignore physical weight of products in calculations</span>
