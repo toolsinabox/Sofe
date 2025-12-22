@@ -1875,6 +1875,155 @@ const MerchantPOS = () => {
         </DialogContent>
       </Dialog>
 
+      {/* Confirm Sale Modal (Phase 1 - Maropost Style) */}
+      <Dialog open={showConfirmSale} onOpenChange={setShowConfirmSale}>
+        <DialogContent className="bg-[#151b28] border-gray-800 text-white max-w-md">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2 text-lg">
+              <CheckCircle2 className="w-6 h-6 text-emerald-400" />
+              Confirm Sale
+            </DialogTitle>
+            {lastTransaction && (
+              <p className="text-gray-400 text-sm mt-1">
+                {lastTransaction.transaction_number}
+              </p>
+            )}
+          </DialogHeader>
+          
+          {lastTransaction && (
+            <div className="py-4 space-y-4">
+              {/* Sale Summary */}
+              <div className="bg-emerald-500/10 border border-emerald-500/30 rounded-lg p-4 text-center">
+                <p className="text-emerald-400 text-2xl font-bold">
+                  ${lastTransaction.total.toFixed(2)}
+                </p>
+                <p className="text-emerald-300 text-sm mt-1">Fully Paid</p>
+              </div>
+              
+              {/* Set Sale Status */}
+              <div className="space-y-2">
+                <Label className="text-gray-300 text-sm flex items-center gap-2">
+                  <FileText className="w-4 h-4" />
+                  Set sale status
+                </Label>
+                <Select value={saleStatus} onValueChange={setSaleStatus}>
+                  <SelectTrigger className="bg-gray-800 border-gray-700 text-white">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent className="bg-gray-800 border-gray-700">
+                    {saleStatusOptions.map(option => (
+                      <SelectItem 
+                        key={option.value} 
+                        value={option.value}
+                        className="text-white hover:bg-gray-700"
+                      >
+                        {option.label}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+                <p className="text-xs text-gray-500">
+                  {saleStatus === 'completed' && 'Order will be marked as dispatched/fulfilled'}
+                  {saleStatus === 'pick' && 'Order will go to Pick section for fulfillment'}
+                  {saleStatus === 'pack' && 'Order will go to Pack section'}
+                  {saleStatus === 'new' && 'Order will appear as new order'}
+                  {saleStatus === 'on_hold' && 'Order will be placed on hold'}
+                </p>
+              </div>
+              
+              {/* Receipt Actions */}
+              <div className="space-y-3 pt-2 border-t border-gray-700">
+                <div className="flex gap-2">
+                  <Button
+                    variant="outline"
+                    onClick={printReceipt}
+                    className="flex-1 border-gray-700 text-gray-300 hover:bg-gray-800"
+                  >
+                    <Printer className="w-4 h-4 mr-2" />
+                    Print Receipt
+                  </Button>
+                </div>
+                
+                {/* Email Receipt */}
+                <div className="space-y-2">
+                  <div className="flex items-center justify-between">
+                    <Label className="text-gray-300 text-sm flex items-center gap-2">
+                      <Mail className="w-4 h-4" />
+                      Email Receipt
+                    </Label>
+                    <input
+                      type="checkbox"
+                      checked={emailReceipt}
+                      onChange={(e) => setEmailReceipt(e.target.checked)}
+                      className="w-4 h-4 rounded border-gray-600 bg-gray-800 text-emerald-500 focus:ring-emerald-500"
+                    />
+                  </div>
+                  {emailReceipt && (
+                    <Input
+                      type="email"
+                      value={receiptEmail}
+                      onChange={(e) => setReceiptEmail(e.target.value)}
+                      placeholder="customer@email.com"
+                      className="bg-gray-800 border-gray-700 text-white text-sm"
+                    />
+                  )}
+                </div>
+              </div>
+              
+              {/* Add Note */}
+              <div className="pt-2 border-t border-gray-700">
+                {!showSaleNote ? (
+                  <Button
+                    variant="ghost"
+                    onClick={() => setShowSaleNote(true)}
+                    className="text-gray-400 hover:text-white hover:bg-gray-800 w-full justify-start"
+                  >
+                    <StickyNote className="w-4 h-4 mr-2" />
+                    Add Note +
+                  </Button>
+                ) : (
+                  <div className="space-y-2">
+                    <Label className="text-gray-300 text-sm">Order Note</Label>
+                    <textarea
+                      value={saleNote}
+                      onChange={(e) => setSaleNote(e.target.value)}
+                      placeholder="Add a note to this order..."
+                      rows={3}
+                      className="w-full bg-gray-800 border border-gray-700 rounded-md text-white text-sm p-2 focus:border-emerald-500 focus:outline-none"
+                    />
+                  </div>
+                )}
+              </div>
+            </div>
+          )}
+          
+          <DialogFooter className="gap-2 flex-col sm:flex-row">
+            <Button
+              variant="outline"
+              onClick={() => {
+                setShowConfirmSale(false);
+                // Go back to add more items (restore cart from transaction)
+              }}
+              className="border-gray-700 text-gray-300 w-full sm:w-auto"
+            >
+              <ChevronLeft className="w-4 h-4 mr-1" />
+              Back to Sale
+            </Button>
+            <Button
+              onClick={completeSale}
+              disabled={completingSale || (emailReceipt && !receiptEmail)}
+              className="bg-emerald-600 hover:bg-emerald-700 text-white w-full sm:w-auto"
+            >
+              {completingSale ? (
+                <><Loader2 className="w-4 h-4 mr-2 animate-spin" /> Completing...</>
+              ) : (
+                <><Check className="w-4 h-4 mr-2" /> Complete Sale</>
+              )}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
       {/* Receipt Modal */}
       <Dialog open={showReceipt} onOpenChange={setShowReceipt}>
         <DialogContent className="bg-[#151b28] border-gray-800 text-white max-w-sm">
