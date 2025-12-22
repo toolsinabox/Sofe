@@ -140,11 +140,19 @@ class PDFGenerator:
         elements.append(Spacer(1, 0.5*cm))
         
         # Bill To / Ship To
+        shipping_addr = order.get('shipping_address', {})
+        if isinstance(shipping_addr, str):
+            # Handle string address
+            shipping_text = shipping_addr
+        else:
+            # Handle dict address
+            shipping_text = f"{shipping_addr.get('street', '')}<br/>{shipping_addr.get('city', '')}, {shipping_addr.get('state', '')} {shipping_addr.get('postcode', '')}<br/>{shipping_addr.get('country', 'Australia')}"
+        
         bill_ship_data = [
             [Paragraph('<b>Bill To:</b>', styles['Normal']), Paragraph('<b>Ship To:</b>', styles['Normal'])],
             [
                 Paragraph(f"{order.get('customer_name', 'N/A')}<br/>{order.get('customer_email', '')}<br/>{order.get('customer_phone', '')}", styles['Normal']),
-                Paragraph(f"{order.get('shipping_address', {}).get('street', '')}<br/>{order.get('shipping_address', {}).get('city', '')}, {order.get('shipping_address', {}).get('state', '')} {order.get('shipping_address', {}).get('postcode', '')}<br/>{order.get('shipping_address', {}).get('country', 'Australia')}", styles['Normal'])
+                Paragraph(shipping_text, styles['Normal'])
             ]
         ]
         bill_ship_table = Table(bill_ship_data, colWidths=[8.5*cm, 8.5*cm])
