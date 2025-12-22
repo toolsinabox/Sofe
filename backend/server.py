@@ -5675,6 +5675,9 @@ async def delete_admin_user(user_id: str, admin: dict = Depends(get_admin_user))
 # Include the router in the main app
 app.include_router(api_router)
 
+# Include modular route routers under /api prefix
+app.include_router(auth_router, prefix="/api")
+
 app.add_middleware(
     CORSMiddleware,
     allow_credentials=True,
