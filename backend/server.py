@@ -2090,28 +2090,6 @@ async def delete_template(template_id: str):
         raise HTTPException(status_code=404, detail="Template not found")
     return {"message": "Template deleted successfully"}
 
-# ==================== CONTENT ZONES ====================
-
-@api_router.get("/content-zones")
-async def get_content_zones():
-    zones = await db.content_zones.find({}).to_list(100)
-    return [ContentZone(**z) for z in zones]
-
-@api_router.post("/content-zones", response_model=ContentZone)
-async def create_content_zone(zone: ContentZone):
-    await db.content_zones.insert_one(zone.dict())
-    return zone
-
-@api_router.put("/content-zones/{zone_id}")
-async def update_content_zone(zone_id: str, content: str = Form(...)):
-    result = await db.content_zones.update_one(
-        {"id": zone_id},
-        {"$set": {"content": content, "updated_at": datetime.now(timezone.utc)}}
-    )
-    if result.matched_count == 0:
-        raise HTTPException(status_code=404, detail="Content zone not found")
-    return {"message": "Content zone updated"}
-
 # ==================== TEMPLATE RENDERING ====================
 
 @api_router.post("/render-template")
