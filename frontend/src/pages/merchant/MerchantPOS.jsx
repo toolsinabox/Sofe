@@ -1666,6 +1666,19 @@ const MerchantPOS = () => {
               className="bg-gray-800 border-gray-700 text-white"
             />
             
+            {/* Add New Customer Button */}
+            <Button
+              variant="outline"
+              onClick={() => {
+                setShowCustomerSearch(false);
+                setShowAddCustomer(true);
+              }}
+              className="w-full border-dashed border-emerald-500/50 text-emerald-400 hover:bg-emerald-500/10"
+            >
+              <UserPlus className="w-4 h-4 mr-2" />
+              Add New Customer
+            </Button>
+            
             <div className="max-h-64 overflow-y-auto space-y-2">
               {customers.map((c) => (
                 <button
