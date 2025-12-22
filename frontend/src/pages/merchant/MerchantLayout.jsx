@@ -7,6 +7,9 @@ const MerchantLayout = () => {
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const location = useLocation();
+  
+  // Check if on POS page - hide sidebar
+  const isPOSPage = location.pathname === '/merchant/pos';
 
   // Close mobile menu on route change
   useEffect(() => {
@@ -30,6 +33,7 @@ const MerchantLayout = () => {
   const getPageTitle = () => {
     const path = location.pathname;
     if (path === '/merchant') return 'Dashboard';
+    if (path === '/merchant/pos') return 'Point of Sale';
     if (path.includes('/orders/')) return 'Order Details';
     if (path.includes('/orders')) return 'Orders';
     if (path.includes('/quotes/')) return 'Quote Details';
@@ -45,6 +49,15 @@ const MerchantLayout = () => {
     if (path.includes('/emails')) return 'Emails';
     return 'Merchant';
   };
+
+  // For POS page, render without sidebar
+  if (isPOSPage) {
+    return (
+      <div className="min-h-screen bg-[#0a0e14]">
+        <Outlet />
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-[#0a0e14]">
