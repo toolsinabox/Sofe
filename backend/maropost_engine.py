@@ -585,6 +585,12 @@ class MaropostTemplateEngine:
         # Get categories
         categories = await self.db.categories.find({}, {"_id": 0}).to_list(100)
         
+        # Get mega menus
+        mega_menus = await self.db.mega_menus.find(
+            {"is_active": True}, 
+            {"_id": 0}
+        ).sort("sort_order", 1).to_list(20)
+        
         return {
             "shop": store_settings,
             "store": store_settings,
@@ -592,6 +598,7 @@ class MaropostTemplateEngine:
             "cart": {"items": [], "item_count": 0, "total": 0},
             "settings": store_settings,
             "categories": categories,
+            "mega_menus": mega_menus,
             "current_year": str(datetime.now(timezone.utc).year),
             "current_date": datetime.now(timezone.utc).strftime('%Y-%m-%d'),
         }
