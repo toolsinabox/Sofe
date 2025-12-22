@@ -1073,65 +1073,96 @@ const ProductEditor = ({ product, categories, onSave, onClose, templateTags }) =
                         />
                       </div>
                       
-                      <div className="grid grid-cols-3 gap-4">
-                        <div className="space-y-2">
-                          <Label className="text-gray-300 flex items-center gap-2">
-                            Length (cm)
-                            <span className="text-xs text-gray-500 font-mono">[@product_length@]</span>
-                          </Label>
-                          <Input
-                            type="number"
-                            step="0.1"
-                            className="bg-gray-800/50 border-gray-700 text-white"
-                            placeholder="0"
-                            value={formData.length || ''}
-                            onChange={(e) => handleChange('length', e.target.value)}
-                          />
+                      <div className="space-y-3">
+                        <div className="flex items-center justify-between">
+                          <Label className="text-gray-300">Product Dimensions</Label>
+                          {formData.length && formData.width && formData.height && (
+                            <div className="flex items-center gap-2 text-sm">
+                              <span className="text-gray-500">Cubic:</span>
+                              <span className="font-mono text-emerald-400">
+                                {((parseFloat(formData.length) || 0) * (parseFloat(formData.width) || 0) * (parseFloat(formData.height) || 0)).toFixed(0)} mm³
+                              </span>
+                              <span className="text-gray-600">|</span>
+                              <span className="font-mono text-blue-400">
+                                {(((parseFloat(formData.length) || 0) * (parseFloat(formData.width) || 0) * (parseFloat(formData.height) || 0)) / 1000000000).toFixed(4)} m³
+                              </span>
+                            </div>
+                          )}
                         </div>
-                        <div className="space-y-2">
-                          <Label className="text-gray-300 flex items-center gap-2">
-                            Width (cm)
-                            <span className="text-xs text-gray-500 font-mono">[@product_width@]</span>
-                          </Label>
-                          <Input
-                            type="number"
-                            step="0.1"
-                            className="bg-gray-800/50 border-gray-700 text-white"
-                            placeholder="0"
-                            value={formData.width || ''}
-                            onChange={(e) => handleChange('width', e.target.value)}
-                          />
-                        </div>
-                        <div className="space-y-2">
-                          <Label className="text-gray-300 flex items-center gap-2">
-                            Height (cm)
-                            <span className="text-xs text-gray-500 font-mono">[@product_height@]</span>
-                          </Label>
-                          <Input
-                            type="number"
-                            step="0.1"
-                            className="bg-gray-800/50 border-gray-700 text-white"
-                            placeholder="0"
-                            value={formData.height || ''}
-                            onChange={(e) => handleChange('height', e.target.value)}
-                          />
+                        <div className="grid grid-cols-3 gap-4">
+                          <div className="space-y-2">
+                            <Label className="text-gray-300 flex items-center gap-2">
+                              Length (mm)
+                              <span className="text-xs text-gray-500 font-mono">[@product_length@]</span>
+                            </Label>
+                            <Input
+                              type="number"
+                              step="1"
+                              className="bg-gray-800/50 border-gray-700 text-white"
+                              placeholder="0"
+                              value={formData.length || ''}
+                              onChange={(e) => handleChange('length', e.target.value)}
+                            />
+                          </div>
+                          <div className="space-y-2">
+                            <Label className="text-gray-300 flex items-center gap-2">
+                              Width (mm)
+                              <span className="text-xs text-gray-500 font-mono">[@product_width@]</span>
+                            </Label>
+                            <Input
+                              type="number"
+                              step="1"
+                              className="bg-gray-800/50 border-gray-700 text-white"
+                              placeholder="0"
+                              value={formData.width || ''}
+                              onChange={(e) => handleChange('width', e.target.value)}
+                            />
+                          </div>
+                          <div className="space-y-2">
+                            <Label className="text-gray-300 flex items-center gap-2">
+                              Height (mm)
+                              <span className="text-xs text-gray-500 font-mono">[@product_height@]</span>
+                            </Label>
+                            <Input
+                              type="number"
+                              step="1"
+                              className="bg-gray-800/50 border-gray-700 text-white"
+                              placeholder="0"
+                              value={formData.height || ''}
+                              onChange={(e) => handleChange('height', e.target.value)}
+                            />
+                          </div>
                         </div>
                       </div>
                       
                       {/* Shipping Box Dimensions - for cubic weight calculation */}
                       <div className="pt-4 border-t border-gray-700">
-                        <Label className="text-gray-300 text-sm mb-3 block flex items-center gap-2">
-                          <Box className="w-4 h-4 text-blue-400" />
-                          Shipping Box Dimensions (for cubic weight calculation)
-                        </Label>
+                        <div className="flex items-center justify-between mb-3">
+                          <Label className="text-gray-300 text-sm flex items-center gap-2">
+                            <Box className="w-4 h-4 text-blue-400" />
+                            Shipping Box Dimensions (for cubic weight calculation)
+                          </Label>
+                          {formData.shipping_length && formData.shipping_width && formData.shipping_height && (
+                            <div className="flex items-center gap-2 text-sm">
+                              <span className="text-gray-500">Cubic:</span>
+                              <span className="font-mono text-emerald-400">
+                                {((parseFloat(formData.shipping_length) || 0) * (parseFloat(formData.shipping_width) || 0) * (parseFloat(formData.shipping_height) || 0)).toFixed(0)} mm³
+                              </span>
+                              <span className="text-gray-600">|</span>
+                              <span className="font-mono text-blue-400">
+                                {(((parseFloat(formData.shipping_length) || 0) * (parseFloat(formData.shipping_width) || 0) * (parseFloat(formData.shipping_height) || 0)) / 1000000000).toFixed(4)} m³
+                              </span>
+                            </div>
+                          )}
+                        </div>
                         <div className="grid grid-cols-3 gap-4">
                           <div className="space-y-2">
                             <Label className="text-gray-400 text-xs">
-                              Shipping Length (cm)
+                              Shipping Length (mm)
                             </Label>
                             <Input
                               type="number"
-                              step="0.1"
+                              step="1"
                               className="bg-gray-800/50 border-gray-700 text-white"
                               placeholder="0"
                               value={formData.shipping_length || ''}
@@ -1140,11 +1171,11 @@ const ProductEditor = ({ product, categories, onSave, onClose, templateTags }) =
                           </div>
                           <div className="space-y-2">
                             <Label className="text-gray-400 text-xs">
-                              Shipping Width (cm)
+                              Shipping Width (mm)
                             </Label>
                             <Input
                               type="number"
-                              step="0.1"
+                              step="1"
                               className="bg-gray-800/50 border-gray-700 text-white"
                               placeholder="0"
                               value={formData.shipping_width || ''}
@@ -1153,11 +1184,11 @@ const ProductEditor = ({ product, categories, onSave, onClose, templateTags }) =
                           </div>
                           <div className="space-y-2">
                             <Label className="text-gray-400 text-xs">
-                              Shipping Height (cm)
+                              Shipping Height (mm)
                             </Label>
                             <Input
                               type="number"
-                              step="0.1"
+                              step="1"
                               className="bg-gray-800/50 border-gray-700 text-white"
                               placeholder="0"
                               value={formData.shipping_height || ''}
@@ -1166,7 +1197,7 @@ const ProductEditor = ({ product, categories, onSave, onClose, templateTags }) =
                           </div>
                         </div>
                         <p className="text-gray-500 text-xs mt-2">
-                          Cubic Weight = (L × W × H) / 1,000,000 × Modifier. Used when larger than actual weight.
+                          Cubic Weight = (L × W × H in mm) / 1,000,000,000 × Modifier (250 or 333). Used when larger than actual weight.
                         </p>
                       </div>
                       
