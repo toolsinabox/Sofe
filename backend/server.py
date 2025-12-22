@@ -583,6 +583,172 @@ class ThemeTemplateUpdate(BaseModel):
     is_active: Optional[bool] = None
     template_type: Optional[str] = None
 
+# ==================== PRODUCT REVIEWS ====================
+
+class ProductReview(BaseModel):
+    id: str = Field(default_factory=lambda: str(uuid.uuid4()))
+    product_id: str
+    customer_id: Optional[str] = None
+    customer_name: str
+    customer_email: str
+    rating: int = Field(ge=1, le=5)  # 1-5 stars
+    title: str
+    content: str
+    status: str = "pending"  # pending, approved, rejected
+    verified_purchase: bool = False
+    helpful_votes: int = 0
+    created_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
+    updated_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
+
+class ProductReviewCreate(BaseModel):
+    product_id: str
+    customer_name: str
+    customer_email: str
+    rating: int = Field(ge=1, le=5)
+    title: str
+    content: str
+
+class ProductReviewUpdate(BaseModel):
+    status: Optional[str] = None
+    title: Optional[str] = None
+    content: Optional[str] = None
+    rating: Optional[int] = None
+
+# ==================== SHIPPING ZONES & RATES ====================
+
+class ShippingRate(BaseModel):
+    id: str = Field(default_factory=lambda: str(uuid.uuid4()))
+    name: str  # e.g., "Standard", "Express"
+    min_weight: float = 0  # kg
+    max_weight: Optional[float] = None  # kg, None = unlimited
+    min_order: float = 0  # minimum order value
+    max_order: Optional[float] = None
+    price: float
+    estimated_days: str = "3-5 business days"
+    is_active: bool = True
+
+class ShippingZone(BaseModel):
+    id: str = Field(default_factory=lambda: str(uuid.uuid4()))
+    name: str  # e.g., "Australia", "International"
+    countries: List[str] = []  # ISO country codes
+    states: List[str] = []  # State/region codes
+    postcodes: List[str] = []  # Postcode patterns (e.g., "3000-3999")
+    rates: List[ShippingRate] = []
+    is_active: bool = True
+    created_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
+
+class ShippingZoneCreate(BaseModel):
+    name: str
+    countries: List[str] = []
+    states: List[str] = []
+    postcodes: List[str] = []
+    rates: List[dict] = []
+    is_active: bool = True
+
+class ShippingZoneUpdate(BaseModel):
+    name: Optional[str] = None
+    countries: Optional[List[str]] = None
+    states: Optional[List[str]] = None
+    postcodes: Optional[List[str]] = None
+    rates: Optional[List[dict]] = None
+    is_active: Optional[bool] = None
+
+# ==================== ABANDONED CART ====================
+
+class AbandonedCart(BaseModel):
+    id: str = Field(default_factory=lambda: str(uuid.uuid4()))
+    cart_id: str
+    customer_email: str
+    customer_name: Optional[str] = None
+    items: List[dict] = []
+    subtotal: float = 0
+    recovery_emails_sent: int = 0
+    last_email_sent: Optional[datetime] = None
+    recovered: bool = False
+    recovered_order_id: Optional[str] = None
+    created_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
+    last_activity: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
+
+class AbandonedCartRecoveryEmail(BaseModel):
+    cart_id: str
+    email_type: str = "reminder"  # reminder, discount, final
+
+# ==================== SEO SETTINGS ====================
+
+class SEOSettings(BaseModel):
+    id: str = Field(default_factory=lambda: str(uuid.uuid4()))
+    entity_type: str  # product, category, page
+    entity_id: str
+    meta_title: Optional[str] = None
+    meta_description: Optional[str] = None
+    meta_keywords: Optional[str] = None
+    url_slug: Optional[str] = None
+    canonical_url: Optional[str] = None
+    og_title: Optional[str] = None
+    og_description: Optional[str] = None
+    og_image: Optional[str] = None
+    robots: str = "index,follow"
+    schema_markup: Optional[str] = None  # JSON-LD
+    updated_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
+
+class SEOSettingsUpdate(BaseModel):
+    meta_title: Optional[str] = None
+    meta_description: Optional[str] = None
+    meta_keywords: Optional[str] = None
+    url_slug: Optional[str] = None
+    canonical_url: Optional[str] = None
+    og_title: Optional[str] = None
+    og_description: Optional[str] = None
+    og_image: Optional[str] = None
+    robots: Optional[str] = None
+    schema_markup: Optional[str] = None
+
+class GlobalSEOSettings(BaseModel):
+    id: str = "global_seo"
+    site_title_suffix: str = ""  # Appended to all page titles
+    default_meta_description: str = ""
+    google_analytics_id: Optional[str] = None
+    google_search_console: Optional[str] = None
+    facebook_pixel_id: Optional[str] = None
+    robots_txt: str = "User-agent: *\nAllow: /"
+    sitemap_enabled: bool = True
+    structured_data_enabled: bool = True
+
+# ==================== MEGA MENU ====================
+
+class MegaMenuItem(BaseModel):
+    id: str = Field(default_factory=lambda: str(uuid.uuid4()))
+    title: str
+    url: str
+    image: Optional[str] = None
+    type: str = "link"  # link, category, custom
+
+class MegaMenuColumn(BaseModel):
+    id: str = Field(default_factory=lambda: str(uuid.uuid4()))
+    title: Optional[str] = None
+    items: List[MegaMenuItem] = []
+    width: str = "auto"  # auto, 1/4, 1/3, 1/2
+
+class MegaMenu(BaseModel):
+    id: str = Field(default_factory=lambda: str(uuid.uuid4()))
+    category_id: Optional[str] = None  # If linked to a category
+    title: str
+    columns: List[MegaMenuColumn] = []
+    featured_image: Optional[str] = None
+    featured_title: Optional[str] = None
+    featured_link: Optional[str] = None
+    is_active: bool = True
+    sort_order: int = 0
+
+class MegaMenuUpdate(BaseModel):
+    title: Optional[str] = None
+    columns: Optional[List[dict]] = None
+    featured_image: Optional[str] = None
+    featured_title: Optional[str] = None
+    featured_link: Optional[str] = None
+    is_active: Optional[bool] = None
+    sort_order: Optional[int] = None
+
 # ==================== MAROPOST TEMPLATE ENGINE ====================
 
 class MaropostTemplateEngine:
