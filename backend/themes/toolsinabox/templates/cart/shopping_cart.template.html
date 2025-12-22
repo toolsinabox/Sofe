@@ -441,16 +441,73 @@
             }
         }
         
+        // Suburb lookup functionality
+        let cartPostcodeDebounceTimer = null;
+        let cartCurrentSuburbs = [];
+        
+        function onCartPostcodeInput() {
+            const postalCode = document.getElementById('postal-code').value.trim();
+            
+            if (cartPostcodeDebounceTimer) clearTimeout(cartPostcodeDebounceTimer);
+            
+            cartPostcodeDebounceTimer = setTimeout(() => {
+                if (postalCode.length >= 4) {
+                    fetchCartSuburbs(postalCode);
+                } else {
+                    resetCartSuburbSelect();
+                }
+            }, 300);
+        }
+        
+        async function fetchCartSuburbs(postcode) {
+            const suburbSelect = document.getElementById('suburb-select');
+            
+            try {
+                suburbSelect.innerHTML = '<option value="">Loading...</option>';
+                suburbSelect.disabled = true;
+                
+                const response = await fetch(`${API_BASE}/shipping/suburbs?postcode=${postcode}`);
+                const data = await response.json();
+                
+                cartCurrentSuburbs = data.suburbs || [];
+                
+                if (cartCurrentSuburbs.length === 0) {
+                    suburbSelect.innerHTML = '<option value="">No suburbs found</option>';
+                    suburbSelect.disabled = true;
+                } else if (cartCurrentSuburbs.length === 1) {
+                    suburbSelect.innerHTML = `<option value="${cartCurrentSuburbs[0].suburb}">${cartCurrentSuburbs[0].suburb} (${cartCurrentSuburbs[0].state})</option>`;
+                    suburbSelect.disabled = false;
+                    suburbSelect.value = cartCurrentSuburbs[0].suburb;
+                } else {
+                    suburbSelect.innerHTML = '<option value="">Select suburb</option>' +
+                        cartCurrentSuburbs.map(s => `<option value="${s.suburb}">${s.suburb} (${s.state})</option>`).join('');
+                    suburbSelect.disabled = false;
+                }
+            } catch (error) {
+                console.error('Error fetching suburbs:', error);
+                suburbSelect.innerHTML = '<option value="">Error loading</option>';
+                suburbSelect.disabled = true;
+            }
+        }
+        
+        function resetCartSuburbSelect() {
+            const suburbSelect = document.getElementById('suburb-select');
+            suburbSelect.innerHTML = '<option value="">Enter postcode first</option>';
+            suburbSelect.disabled = true;
+            cartCurrentSuburbs = [];
+        }
+        
         async function calculateShipping() {
             const postalCode = document.getElementById('postal-code').value.trim();
+            const suburb = document.getElementById('suburb-select').value;
             const country = document.getElementById('country-select').value;
             const calcBtn = document.getElementById('calc-shipping-btn');
             const resultsDiv = document.getElementById('shipping-results');
             const optionsList = document.getElementById('shipping-options-list');
             const noShippingMsg = document.getElementById('no-shipping-msg');
             
-            if (!postalCode) {
-                alert('Please enter a postcode');
+            if (!postalCode || postalCode.length !== 4) {
+                alert('Please enter a valid 4-digit postcode');
                 return;
             }
             
@@ -460,32 +517,52 @@
             calcBtn.disabled = true;
             
             try {
-                const params = new URLSearchParams({
-                    country: country,
-                    postcode: postalCode,
-                    order_total: currentSubtotal
-                });
+                // Build items array from cart with shipping dimensions
+                const items = tiabCart.items.map(item => ({
+                    weight: item.weight || 0.5,
+                    quantity: item.quantity,
+                    shipping_length: item.shipping_length || 0,
+                    shipping_width: item.shipping_width || 0,
+                    shipping_height: item.shipping_height || 0
+                }));
                 
-                const response = await fetch(`${API_BASE}/shipping/calculate?${params}`, {
-                    method: 'POST'
+                const response = await fetch(`${API_BASE}/shipping/calculate`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        postcode: postalCode,
+                        suburb: suburb || null,
+                        country: country,
+                        items: items,
+                        cart_total: currentSubtotal
+                    })
                 });
                 
                 if (!response.ok) throw new Error('Failed to calculate shipping');
                 
                 const data = await response.json();
-                availableShippingRates = data.rates || [];
+                const options = data.options || [];
+                
+                // Convert to legacy format for compatibility
+                availableShippingRates = options.filter(o => o.name !== 'Pickup - In Store').map(opt => ({
+                    rate_name: opt.name,
+                    zone_name: data.zone_name || suburb || postalCode,
+                    estimated_days: opt.delivery_days ? `${opt.delivery_days} business days` : 'Calculated',
+                    price: opt.price,
+                    gst_amount: opt.gst_amount || 0,
+                    tax_inclusive: opt.tax_inclusive || false
+                }));
                 
                 // Save shipping details to localStorage
                 localStorage.setItem('tiab_shipping_postcode', postalCode);
+                localStorage.setItem('tiab_shipping_suburb', suburb);
                 localStorage.setItem('tiab_shipping_country', country);
                 
                 if (availableShippingRates.length === 0) {
-                    // No shipping options available
                     resultsDiv.style.display = 'none';
                     noShippingMsg.style.display = 'block';
                     updateDeliveryOptions([]);
                 } else {
-                    // Show shipping options
                     noShippingMsg.style.display = 'none';
                     resultsDiv.style.display = 'block';
                     
@@ -494,16 +571,14 @@
                         <div style="display: flex; justify-content: space-between; align-items: center; padding: 10px; background: ${idx === 0 ? '#e8f5e9' : '#fff'}; border: 1px solid ${idx === 0 ? '#4CAF50' : '#ddd'}; border-radius: 4px; margin-bottom: 8px; cursor: pointer;" onclick="selectShippingFromCalc(${idx})">
                             <div>
                                 <p style="font-weight: 500; color: #333; margin: 0;">${rate.rate_name}</p>
-                                <p style="font-size: 12px; color: #666; margin: 2px 0 0 0;">${rate.zone_name} - ${rate.estimated_days}</p>
+                                <p style="font-size: 12px; color: #666; margin: 2px 0 0 0;">${rate.zone_name}${rate.tax_inclusive ? ' (incl. GST)' : rate.gst_amount > 0 ? ' (+ GST)' : ''}</p>
                             </div>
                             <span style="font-weight: 600; color: #333;">$${rate.price.toFixed(2)}</span>
                         </div>
                     `).join('');
                     
-                    // Update delivery options section
                     updateDeliveryOptions(availableShippingRates);
                     
-                    // Auto-select first shipping option
                     if (availableShippingRates.length > 0) {
                         selectShippingRate(0);
                     }
