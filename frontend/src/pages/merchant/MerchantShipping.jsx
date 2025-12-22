@@ -1782,7 +1782,10 @@ const MerchantShipping = () => {
                       onChange={(e) => setServiceForm({...serviceForm, tax_inclusive: e.target.checked})}
                       className="rounded border-gray-600 text-emerald-500"
                     />
-                    <span className="text-gray-300 text-sm">Tax Inclusive</span>
+                    <div>
+                      <span className="text-gray-300 text-sm">Rates Include GST</span>
+                      <p className="text-gray-500 text-xs">Check if uploaded rates already include 10% GST</p>
+                    </div>
                   </label>
                   <label className="flex items-center gap-2 cursor-pointer">
                     <input
