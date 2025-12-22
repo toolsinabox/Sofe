@@ -321,6 +321,73 @@ class BannerUpdate(BaseModel):
     is_active: Optional[bool] = None
     sort_order: Optional[int] = None
 
+# ==================== CONTENT ZONES ====================
+
+class ContentBlockType:
+    """Available content block types"""
+    HTML = "html"
+    TEXT = "text"
+    IMAGE = "image"
+    PRODUCT_GRID = "product_grid"
+    CATEGORY_GRID = "category_grid"
+    BANNER = "banner"
+    VIDEO = "video"
+    SPACER = "spacer"
+    DIVIDER = "divider"
+    CUSTOM = "custom"
+
+class ContentBlock(BaseModel):
+    """Individual content block within a zone"""
+    id: str = Field(default_factory=lambda: str(uuid.uuid4()))
+    type: str  # html, text, image, product_grid, category_grid, banner, video, spacer, divider, custom
+    title: Optional[str] = None  # Internal label
+    content: Optional[str] = None  # HTML/text content
+    settings: Dict[str, Any] = {}  # Type-specific settings
+    # Settings examples:
+    # - product_grid: {"limit": 4, "category_id": "xxx", "show_price": true, "columns": 4}
+    # - image: {"src": "url", "alt": "text", "link": "url", "width": "100%"}
+    # - video: {"src": "youtube_url", "autoplay": false}
+    # - spacer: {"height": "50px"}
+    is_active: bool = True
+    sort_order: int = 0
+
+class ContentZone(BaseModel):
+    """Content zone that can contain multiple content blocks"""
+    id: str = Field(default_factory=lambda: str(uuid.uuid4()))
+    name: str  # Unique identifier used in templates: [%content_zone name:'homepage_main'%]
+    label: str  # Display name in admin: "Homepage Main Content"
+    description: Optional[str] = None
+    page: str = "home"  # Which page this zone belongs to: home, product, category, cart, etc.
+    blocks: List[ContentBlock] = []
+    is_active: bool = True
+    show_on_desktop: bool = True
+    show_on_tablet: bool = True
+    show_on_mobile: bool = True
+    created_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
+    updated_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
+
+class ContentZoneCreate(BaseModel):
+    name: str
+    label: str
+    description: Optional[str] = None
+    page: str = "home"
+    blocks: List[ContentBlock] = []
+    is_active: bool = True
+    show_on_desktop: bool = True
+    show_on_tablet: bool = True
+    show_on_mobile: bool = True
+
+class ContentZoneUpdate(BaseModel):
+    name: Optional[str] = None
+    label: Optional[str] = None
+    description: Optional[str] = None
+    page: Optional[str] = None
+    blocks: Optional[List[ContentBlock]] = None
+    is_active: Optional[bool] = None
+    show_on_desktop: Optional[bool] = None
+    show_on_tablet: Optional[bool] = None
+    show_on_mobile: Optional[bool] = None
+
 # ==================== STORE SETTINGS ====================
 
 class StoreSettings(BaseModel):
