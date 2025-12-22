@@ -1077,6 +1077,8 @@ const MerchantShipping = () => {
           handling_fee: service.handling_fee || 0,
           fuel_levy_percent: service.fuel_levy_percent || 0,
           cubic_weight_modifier: service.cubic_weight_modifier || 250,
+          tax_inclusive: service.tax_inclusive || false,
+          tax_rate: service.tax_rate || 10.0,
           categories: service.categories || [],
           is_active: service.is_active !== false,
           sort_order: service.sort_order || 0,
