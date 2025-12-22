@@ -231,6 +231,11 @@ function App() {
               <Route path="analytics" element={<MerchantAnalytics />} />
               <Route path="payments" element={<MerchantPayments />} />
               <Route path="settings" element={<MerchantSettings />} />
+              <Route path="reviews" element={<MerchantReviews />} />
+              <Route path="shipping" element={<MerchantShipping />} />
+              <Route path="abandoned-carts" element={<MerchantAbandonedCarts />} />
+              <Route path="seo" element={<MerchantSEO />} />
+              <Route path="mega-menu" element={<MerchantMegaMenu />} />
             </Route>
 
             {/* Live Theme Storefront - Main customer-facing store */}
