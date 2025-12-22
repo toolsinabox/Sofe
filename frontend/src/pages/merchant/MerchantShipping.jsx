@@ -1596,54 +1596,86 @@ const MerchantShipping = () => {
                   </div>
                 )}
 
-                {/* Zone Selection Grid */}
-                <div className="bg-gray-900 rounded-lg border border-gray-700 mb-4">
-                  <div className="p-3 border-b border-gray-700 flex items-center justify-between">
-                    <span className="text-gray-300 text-sm font-medium">Select Zones</span>
-                    <div className="flex gap-2">
-                      <button
-                        onClick={selectAllZones}
-                        className="text-xs text-emerald-400 hover:text-emerald-300"
-                      >
-                        Select All
-                      </button>
-                      <span className="text-gray-600">|</span>
-                      <button
-                        onClick={clearAllZones}
-                        className="text-xs text-gray-400 hover:text-gray-300"
-                      >
-                        Clear All
-                      </button>
-                    </div>
-                  </div>
-                  <div className="p-3 max-h-40 overflow-y-auto">
-                    <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-2">
-                      {zones.map(zone => {
-                        const isSelected = serviceForm.rates.some(r => r.zone_code === zone.code);
-                        return (
-                          <label
-                            key={zone.code}
-                            className={`flex items-center gap-2 p-2 rounded cursor-pointer transition-colors ${
-                              isSelected 
-                                ? 'bg-emerald-500/20 border border-emerald-500/30' 
-                                : 'bg-gray-800 border border-gray-700 hover:border-gray-600'
-                            }`}
+                {/* Zone Selection Grid - Filtered by Carrier */}
+                {(() => {
+                  // Filter zones by carrier
+                  const carrierMap = {
+                    'startrack': 'StarTrack',
+                    'australia_post': 'Australia Post',
+                    'tnt': 'TNT',
+                    'fedex': 'FedEx',
+                    'dhl': 'DHL'
+                  };
+                  const selectedCarrierName = carrierMap[serviceForm.carrier];
+                  const filteredZones = serviceForm.carrier === 'custom' 
+                    ? zones 
+                    : zones.filter(z => z.carrier?.toLowerCase() === selectedCarrierName?.toLowerCase() || z.carrier === selectedCarrierName);
+                  
+                  return (
+                    <div className="bg-gray-900 rounded-lg border border-gray-700 mb-4">
+                      <div className="p-3 border-b border-gray-700 flex items-center justify-between">
+                        <div className="flex items-center gap-2">
+                          <span className="text-gray-300 text-sm font-medium">
+                            {serviceForm.carrier === 'custom' ? 'All Zones' : `${selectedCarrierName} Zones`}
+                          </span>
+                          <span className="text-gray-500 text-xs">({filteredZones.length} available)</span>
+                        </div>
+                        <div className="flex gap-2">
+                          <button
+                            onClick={() => selectAllZonesFiltered(filteredZones)}
+                            className="text-xs text-emerald-400 hover:text-emerald-300"
+                            disabled={filteredZones.length === 0}
                           >
-                            <input
-                              type="checkbox"
-                              checked={isSelected}
-                              onChange={() => toggleZoneRate(zone)}
-                              className="rounded border-gray-600 text-emerald-500 focus:ring-emerald-500"
-                            />
-                            <span className={`text-sm truncate ${isSelected ? 'text-white' : 'text-gray-400'}`}>
-                              {zone.name}
-                            </span>
-                          </label>
-                        );
-                      })}
+                            Select All
+                          </button>
+                          <span className="text-gray-600">|</span>
+                          <button
+                            onClick={clearAllZones}
+                            className="text-xs text-gray-400 hover:text-gray-300"
+                          >
+                            Clear All
+                          </button>
+                        </div>
+                      </div>
+                      
+                      {filteredZones.length === 0 ? (
+                        <div className="p-6 text-center">
+                          <MapPin className="w-8 h-8 text-gray-600 mx-auto mb-2" />
+                          <p className="text-gray-500">No zones found for {selectedCarrierName || 'selected carrier'}</p>
+                          <p className="text-gray-600 text-sm mt-1">Upload zones for this carrier or select "Custom / All Zones"</p>
+                        </div>
+                      ) : (
+                        <div className="p-3 max-h-40 overflow-y-auto">
+                          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-2">
+                            {filteredZones.map(zone => {
+                              const isSelected = serviceForm.rates.some(r => r.zone_code === zone.code);
+                              return (
+                                <label
+                                  key={zone.code}
+                                  className={`flex items-center gap-2 p-2 rounded cursor-pointer transition-colors ${
+                                    isSelected 
+                                      ? 'bg-emerald-500/20 border border-emerald-500/30' 
+                                      : 'bg-gray-800 border border-gray-700 hover:border-gray-600'
+                                  }`}
+                                >
+                                  <input
+                                    type="checkbox"
+                                    checked={isSelected}
+                                    onChange={() => toggleZoneRate(zone)}
+                                    className="rounded border-gray-600 text-emerald-500 focus:ring-emerald-500"
+                                  />
+                                  <span className={`text-sm truncate ${isSelected ? 'text-white' : 'text-gray-400'}`}>
+                                    {zone.name}
+                                  </span>
+                                </label>
+                              );
+                            })}
+                          </div>
+                        </div>
+                      )}
                     </div>
-                  </div>
-                </div>
+                  );
+                })()}
                 
                 {/* Rate Table for Selected Zones */}
                 {serviceForm.rates.length === 0 ? (
