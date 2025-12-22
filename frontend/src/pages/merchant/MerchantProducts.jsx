@@ -216,6 +216,11 @@ const ProductEditor = ({ product, categories, onSave, onClose, templateTags }) =
     low_stock_threshold: '10',
     track_inventory: true,
     allow_backorder: false,
+    // Pre-Order
+    preorder_enabled: false,
+    preorder_qty: '',
+    preorder_arrival_date: '',
+    preorder_message: '',
     // Shipping
     weight: '',
     length: '',
