@@ -761,15 +761,12 @@ class MaropostTemplateEngine:
         
         elif page_type == PageType.CMS:
             page_slug = model_data.get('page_slug')
-            print(f"DEBUG: CMS page requested, slug = {page_slug}")
             if page_slug:
                 page = await self.db.cms_pages.find_one({"slug": page_slug}, {"_id": 0})
-                print(f"DEBUG: Page found = {page is not None}")
                 if page:
                     context['page'] = page
                     context['content_blocks'] = page.get('content_blocks', [])
-                    context['page_content'] = page.get('content', '')  # Add content to context directly
-                    print(f"DEBUG: Page content length = {len(page.get('content', ''))}")
+                    context['page_content'] = page.get('content', '')
         
         elif page_type == PageType.CHECKOUT:
             context['page'] = {'title': 'Checkout', 'slug': 'checkout'}
