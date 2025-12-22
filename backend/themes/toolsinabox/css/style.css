@@ -105,27 +105,14 @@ ul {
 .text-center { text-align: center; }
 
 /* Device Visibility Classes for Banners */
+/* These are now handled by JavaScript inline styles */
 /* Mobile: < 768px, Tablet: 768px - 1023px, Desktop: >= 1024px */
 
-/* Hide on mobile (screens smaller than 768px) */
-@media (max-width: 767px) {
-  .hide-mobile {
-    display: none !important;
-  }
-}
-
-/* Hide on tablet (screens 768px to 1023px) */
-@media (min-width: 768px) and (max-width: 1023px) {
-  .hide-tablet {
-    display: none !important;
-  }
-}
-
-/* Hide on desktop (screens 1024px and above) */
-@media (min-width: 1024px) {
-  .hide-desktop {
-    display: none !important;
-  }
+/* Fallback hide classes (JavaScript will override these) */
+.hide-mobile,
+.hide-tablet,
+.hide-desktop {
+  /* Let JavaScript handle visibility via inline styles */
 }
 
 /* Grid */
