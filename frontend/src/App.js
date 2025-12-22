@@ -222,10 +222,10 @@ function App() {
               <Route path="theme-editor" element={<MerchantThemeEditor />} />
               <Route path="store-settings" element={<MerchantStoreSettings />} />
               <Route path="content-zones" element={<MerchantContentZones />} />
-              <Route path="discounts" element={<MerchantDashboard />} />
-              <Route path="analytics" element={<MerchantDashboard />} />
-              <Route path="payments" element={<MerchantDashboard />} />
-              <Route path="settings" element={<MerchantDashboard />} />
+              <Route path="discounts" element={<MerchantDiscounts />} />
+              <Route path="analytics" element={<MerchantAnalytics />} />
+              <Route path="payments" element={<MerchantPayments />} />
+              <Route path="settings" element={<MerchantSettings />} />
             </Route>
 
             {/* Live Theme Storefront - Main customer-facing store */}
