@@ -2695,6 +2695,9 @@ async def convert_quote_to_order(quote_id: str):
         notes=f"Converted from Quote #{quote['quote_number']}"
     )
     
+    # Generate custom order number
+    new_order.order_number = await generate_order_number()
+    
     await db.orders.insert_one(new_order.dict())
     
     # Deduct stock NOW (not when quote was created)
