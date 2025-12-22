@@ -945,6 +945,16 @@ async function processCheckout(event) {
     event.preventDefault();
     
     const btn = document.getElementById('place-order-btn');
+    
+    // Validate shipping method is selected
+    const shippingSelected = document.querySelector('input[name="shipping_method"]:checked');
+    if (!shippingSelected) {
+        document.getElementById('shipping-required-error').style.display = 'block';
+        // Scroll to shipping section
+        document.querySelector('h2:has(~ #shipping-options-container)')?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        return;
+    }
+    
     btn.disabled = true;
     btn.classList.add('loading');
     
@@ -972,6 +982,7 @@ async function processCheckout(event) {
             billing_country: document.getElementById('billing_country').value,
             cart_id: cartId,
             shipping_cost: shippingCost,
+            shipping_method: shippingSelected.value,
             payment_method: selectedPaymentMethod,
             notes: document.getElementById('order_notes').value,
             purchase_order: document.getElementById('purchase_order').value
