@@ -14,6 +14,7 @@ const MerchantLayout = () => {
     if (path.includes('/products')) return 'Products';
     if (path.includes('/inventory')) return 'Inventory';
     if (path.includes('/customers')) return 'Customers';
+    if (path.includes('/content-zones')) return 'Content Zones';
     if (path.includes('/discounts')) return 'Discounts';
     if (path.includes('/analytics')) return 'Analytics';
     if (path.includes('/payments')) return 'Payments';
