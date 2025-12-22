@@ -839,27 +839,38 @@ async def delete_predefined_package(package_id: str):
 # ============== SHIPPING CALCULATION ==============
 
 def find_zone_for_postcode(postcode: str, zones: List[dict]) -> Optional[dict]:
-    """Find the matching zone for a given postcode"""
+    """Find the matching zone for a given postcode (returns first match for backwards compatibility)"""
+    matching_zones = find_all_zones_for_postcode(postcode, zones)
+    return matching_zones[0] if matching_zones else None
+
+def find_all_zones_for_postcode(postcode: str, zones: List[dict]) -> List[dict]:
+    """Find ALL matching zones for a given postcode"""
     postcode = postcode.strip()
+    matching = []
     
     for zone in zones:
         for pc in zone.get("postcodes", []):
+            matched = False
             # Check for exact match
             if pc == postcode:
-                return zone
+                matched = True
             # Check for range (e.g., "2000-2050")
-            if "-" in pc:
+            elif "-" in str(pc):
                 try:
-                    start, end = pc.split("-")
+                    start, end = str(pc).split("-")
                     if int(start) <= int(postcode) <= int(end):
-                        return zone
+                        matched = True
                 except (ValueError, TypeError):
                     pass
             # Check for prefix match (e.g., "20" matches "2000", "2001", etc.)
-            if postcode.startswith(pc):
-                return zone
+            elif postcode.startswith(str(pc)):
+                matched = True
+            
+            if matched:
+                matching.append(zone)
+                break  # Found match for this zone, move to next zone
     
-    return None
+    return matching
 
 def calculate_cubic_weight(length: float, width: float, height: float, modifier: float = 250) -> float:
     """Calculate cubic weight in kg (dimensions in cm)"""
