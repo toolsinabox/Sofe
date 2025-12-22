@@ -512,6 +512,7 @@ ul {
   align-items: center;
   -webkit-overflow-scrolling: touch;
   scrollbar-width: none;
+  overflow-x: auto;
 }
 
 .nav-container::-webkit-scrollbar {
@@ -520,8 +521,8 @@ ul {
 
 .nav-link {
   display: block;
-  padding: 0.875rem 1.25rem;
-  font-size: 0.8125rem;
+  padding: 0.625rem 0.75rem;
+  font-size: 0.6875rem;
   font-weight: 600;
   color: var(--white);
   text-transform: uppercase;
@@ -529,6 +530,20 @@ ul {
   white-space: nowrap;
   transition: all 0.2s;
   border-bottom: 3px solid transparent;
+}
+
+@media (min-width: 640px) {
+  .nav-link {
+    padding: 0.75rem 1rem;
+    font-size: 0.75rem;
+  }
+}
+
+@media (min-width: 1024px) {
+  .nav-link {
+    padding: 0.875rem 1.25rem;
+    font-size: 0.8125rem;
+  }
 }
 
 .nav-link:hover {
