@@ -100,14 +100,27 @@
             </div>
         </div>
         
-        <!-- Category Navigation -->
+        <!-- Category Navigation with Mega Menu -->
         <nav class="category-nav">
             <div class="max-w-7xl mx-auto px-4">
                 <div class="nav-container">
-                    <a href="/live/products" class="nav-link">All Toolboxes</a>
-                    [%category_list limit:'7'%]
-                    <a href="/live/category/[@category_id@]" class="nav-link">[@category_name@]</a>
-                    [%/category_list%]
+                    <a href="/live/products" class="nav-link">All Products</a>
+                    [%mega_menu_list%]
+                    <div class="mega-menu-trigger">
+                        <a href="/live/category/[@menu_category_id@]" class="nav-link">
+                            [@menu_title@]
+                            <svg class="mega-menu-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M6 9l6 6 6-6"/>
+                            </svg>
+                        </a>
+                        <div class="mega-menu-dropdown">
+                            <div class="mega-menu-content">
+                                [@menu_columns@]
+                                [@menu_featured_html@]
+                            </div>
+                        </div>
+                    </div>
+                    [%/mega_menu_list%]
                     <a href="/live/sale" class="nav-link sale">On Sale</a>
                 </div>
             </div>
