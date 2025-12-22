@@ -1,95 +1,480 @@
-        <div class="max-w-7xl mx-auto px-4 py-8">
+        <div class="product-page-container">
             <!-- Breadcrumb -->
-            <nav class="text-sm text-gray-500 mb-6">
-                <a href="/live" class="hover:text-orange-500">Home</a>
-                <span class="mx-2">/</span>
-                <a href="/live/products" class="hover:text-orange-500">Products</a>
-                <span class="mx-2">/</span>
-                <span class="text-gray-900">[@name@]</span>
-            </nav>
+            <div class="max-w-7xl mx-auto px-4 py-4">
+                <nav class="breadcrumb text-sm">
+                    <a href="/live" class="text-gray-500 hover:text-red-600">Home</a>
+                    <span class="mx-2 text-gray-400">/</span>
+                    [%if [@category_name@] ne ''%]
+                    <a href="/live/category/[@category_id@]" class="text-gray-500 hover:text-red-600">[@category_name@]</a>
+                    <span class="mx-2 text-gray-400">/</span>
+                    [%/if%]
+                    <span class="text-gray-700">[@name@]</span>
+                </nav>
+            </div>
             
-            <div class="grid md:grid-cols-2 gap-8">
-                <!-- Product Images -->
-                <div class="product-gallery">
-                    <div class="main-image bg-gray-100 rounded-lg overflow-hidden aspect-square mb-4">
-                        <img id="main-product-image" src="[@image@]" alt="[@name@]" class="w-full h-full object-cover">
-                    </div>
-                    <div class="thumbnail-grid grid grid-cols-4 gap-2">
-                        [%if [@image@]%]
-                        <button class="product-thumb border-2 border-orange-500 rounded overflow-hidden aspect-square">
-                            <img src="[@image@]" alt="[@name@]" class="w-full h-full object-cover">
-                        </button>
-                        [%/if%]
-                    </div>
-                </div>
-                
-                <!-- Product Info -->
-                <div class="product-details">
-                    <h1 class="text-3xl font-bold text-gray-900 mb-2">[@name@]</h1>
+            <div class="max-w-7xl mx-auto px-4 pb-12">
+                <div class="grid lg:grid-cols-2 gap-8 lg:gap-12">
                     
-                    <div class="flex items-center gap-2 mb-4">
-                        <span class="text-sm text-gray-500">SKU: [@SKU@]</span>
-                        [%if [@in_stock@] == 'y'%]
-                        <span class="px-2 py-1 bg-green-100 text-green-800 text-xs font-semibold rounded">In Stock</span>
-                        [%else%]
-                        <span class="px-2 py-1 bg-red-100 text-red-800 text-xs font-semibold rounded">Out of Stock</span>
-                        [%/if%]
-                    </div>
-                    
-                    <div class="price-block mb-6">
-                        <div class="flex items-center gap-3">
-                            <span class="text-3xl font-bold text-gray-900">[@price_formatted@]</span>
-                            [%if [@on_sale@] == 'y'%]
-                            <span class="text-xl text-gray-400 line-through">[@rrp_formatted@]</span>
-                            <span class="px-2 py-1 bg-red-600 text-white text-sm font-bold rounded">SALE</span>
-                            [%/if%]
+                    <!-- Left Column: Product Images -->
+                    <div class="product-gallery">
+                        <!-- Main Image with Zoom -->
+                        <div class="main-image-container relative bg-white border border-gray-200 rounded-lg overflow-hidden mb-4">
+                            <div class="aspect-square">
+                                <img id="main-product-image" 
+                                     src="[@image@]" 
+                                     alt="[@name@]" 
+                                     class="w-full h-full object-contain p-4"
+                                     onerror="this.onerror=null;this.src='data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 width=%27600%27 height=%27600%27 viewBox=%270 0 600 600%27%3E%3Crect fill=%27%23f3f4f6%27 width=%27600%27 height=%27600%27/%3E%3Ctext x=%27300%27 y=%27310%27 fill=%27%239ca3af%27 font-size=%2724%27 text-anchor=%27middle%27%3ENo Image Available%3C/text%3E%3C/svg%3E'">
+                            </div>
+                            <!-- Zoom Icon -->
+                            <button class="absolute bottom-4 right-4 p-2 bg-white rounded-full shadow-md hover:shadow-lg transition-shadow" onclick="openImageModal()">
+                                <svg class="w-5 h-5 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0zM10 7v3m0 0v3m0-3h3m-3 0H7"/>
+                                </svg>
+                            </button>
+                        </div>
+                        
+                        <!-- Thumbnail Gallery -->
+                        <div class="thumbnail-gallery flex gap-2 overflow-x-auto pb-2">
+                            <button class="product-thumb flex-shrink-0 w-20 h-20 border-2 border-red-600 rounded-lg overflow-hidden bg-white" onclick="changeMainImage(this)">
+                                <img src="[@image@]" alt="[@name@]" class="w-full h-full object-contain p-1">
+                            </button>
+                            <!-- Additional thumbnails would be dynamically added here -->
                         </div>
                     </div>
                     
-                    <div class="description mb-6">
-                        <h3 class="font-semibold text-gray-900 mb-2">Description</h3>
-                        <p class="text-gray-600">[@description@]</p>
-                    </div>
-                    
-                    <!-- Quantity & Add to Cart -->
-                    <div class="add-to-cart-section">
-                        <div class="flex items-center gap-4 mb-4">
-                            <label class="font-semibold text-gray-700">Quantity:</label>
-                            <div class="flex items-center border border-gray-300 rounded">
-                                <button class="qty-btn px-3 py-2 hover:bg-gray-100" data-action="decrease">-</button>
-                                <input type="number" id="product-qty" value="1" min="1" class="w-16 text-center border-x border-gray-300 py-2">
-                                <button class="qty-btn px-3 py-2 hover:bg-gray-100" data-action="increase">+</button>
+                    <!-- Right Column: Product Info -->
+                    <div class="product-info">
+                        <!-- Product Title -->
+                        <h1 class="text-2xl lg:text-3xl font-bold text-gray-900 mb-3 leading-tight">[@name@]</h1>
+                        
+                        <!-- Subtitle / Features -->
+                        <p class="text-gray-600 mb-4">
+                            <span class="font-semibold">3mm THICK</span> | 
+                            <span>Call: <a href="tel:1300026937" class="text-red-600 hover:underline">1300 026 937</a></span> | 
+                            <span class="font-semibold">1 YEAR WARRANTY</span>
+                        </p>
+                        
+                        <!-- SKU & Reviews -->
+                        <div class="flex flex-wrap items-center gap-4 mb-4 pb-4 border-b border-gray-200">
+                            <span class="text-sm text-gray-500">SKU: <span class="font-medium text-gray-700">[@sku@]</span></span>
+                            <a href="#reviews" class="text-sm text-red-600 hover:underline flex items-center gap-1">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z"/>
+                                </svg>
+                                Write a review
+                            </a>
+                        </div>
+                        
+                        <!-- Pricing Section -->
+                        <div class="pricing-section mb-6">
+                            [%if [@compare_price@] ne ''%]
+                            <div class="flex items-center gap-2 mb-1">
+                                <span class="text-gray-500 text-sm">RRP</span>
+                                <span class="text-gray-400 line-through text-lg">[@compare_price_formatted@]</span>
+                            </div>
+                            [%/if%]
+                            
+                            <div class="flex items-center gap-4 mb-2">
+                                <span class="text-4xl font-bold text-red-600">[@price_formatted@]</span>
+                                [%if [@compare_price@] ne ''%]
+                                <span class="px-3 py-1 bg-red-600 text-white text-sm font-bold rounded">
+                                    SAVE [@savings_formatted@]
+                                </span>
+                                [%/if%]
+                            </div>
+                            
+                            <!-- Stock Status -->
+                            <div class="flex items-center gap-2 mb-4">
+                                [%if [@in_stock@] eq 'y'%]
+                                <span class="flex items-center gap-1 text-green-600 font-semibold">
+                                    <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+                                        <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
+                                    </svg>
+                                    In Stock
+                                </span>
+                                [%else%]
+                                <span class="flex items-center gap-1 text-red-600 font-semibold">
+                                    <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+                                        <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd"/>
+                                    </svg>
+                                    Out of Stock
+                                </span>
+                                [%/if%]
+                            </div>
+                            
+                            <!-- Afterpay / Payment Options -->
+                            <div class="payment-options bg-gray-50 rounded-lg p-3 mb-6">
+                                <p class="text-sm text-gray-600">
+                                    <span class="font-semibold">4 payments</span> of <span class="font-bold text-gray-900">[@installment_price@]</span>
+                                </p>
+                                <div class="flex items-center gap-2 mt-2">
+                                    <span class="text-xs text-gray-500">Or pay with</span>
+                                    <img src="https://static.afterpay.com/integration/product-page/logo-afterpay-colour.svg" alt="Afterpay" class="h-4">
+                                    <img src="https://zip.co/favicon.ico" alt="Zip" class="h-4">
+                                </div>
                             </div>
                         </div>
                         
-                        <button class="add-to-cart-btn w-full md:w-auto px-8 py-3 text-lg" data-product-id="[@id@]">
-                            Add to Cart
+                        <!-- Product Options (if any) -->
+                        <div class="product-options mb-6">
+                            <!-- Options would go here dynamically -->
+                        </div>
+                        
+                        <!-- Quantity & Add to Cart -->
+                        <div class="add-to-cart-section mb-6">
+                            <div class="flex flex-col sm:flex-row items-stretch sm:items-center gap-4">
+                                <!-- Quantity Selector -->
+                                <div class="quantity-selector flex items-center border border-gray-300 rounded-lg overflow-hidden">
+                                    <button class="qty-btn w-12 h-12 flex items-center justify-center hover:bg-gray-100 text-xl font-bold" onclick="changeQty(-1)">−</button>
+                                    <input type="number" id="product-qty" value="1" min="1" class="w-16 h-12 text-center border-x border-gray-300 font-semibold text-lg">
+                                    <button class="qty-btn w-12 h-12 flex items-center justify-center hover:bg-gray-100 text-xl font-bold" onclick="changeQty(1)">+</button>
+                                </div>
+                                
+                                <!-- Add to Cart Button -->
+                                <button class="add-to-cart-btn flex-1 sm:flex-none px-8 py-3 bg-red-600 hover:bg-red-700 text-white font-bold text-lg rounded-lg transition-colors flex items-center justify-center gap-2"
+                                        data-product-id="[@id@]"
+                                        data-product-name="[@name@]"
+                                        data-product-price="[@price@]"
+                                        data-product-image="[@image@]"
+                                        onclick="addToCart(this)">
+                                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z"/>
+                                    </svg>
+                                    Add To Cart
+                                </button>
+                            </div>
+                        </div>
+                        
+                        <!-- Action Buttons -->
+                        <div class="action-buttons flex flex-wrap gap-3 mb-6 pb-6 border-b border-gray-200">
+                            <button class="flex items-center gap-2 px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 text-sm">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"/>
+                                </svg>
+                                Wishlist
+                            </button>
+                            <button class="flex items-center gap-2 px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 text-sm">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z"/>
+                                </svg>
+                                Share
+                            </button>
+                            <button class="flex items-center gap-2 px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 text-sm">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/>
+                                </svg>
+                                Product Enquiry
+                            </button>
+                        </div>
+                        
+                        <!-- Shipping Calculator -->
+                        <div class="shipping-calculator mb-6">
+                            <h3 class="font-semibold text-gray-900 mb-3">Calculate Shipping</h3>
+                            <div class="flex gap-2">
+                                <input type="text" placeholder="Enter Postal Code" class="flex-1 px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-red-500">
+                                <button class="px-6 py-2 bg-gray-800 text-white rounded-lg hover:bg-gray-700 font-medium">Calculate</button>
+                            </div>
+                            <div class="mt-3 p-3 bg-green-50 rounded-lg">
+                                <p class="text-sm text-green-800 flex items-center gap-2">
+                                    <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+                                        <path d="M8 16.5a1.5 1.5 0 11-3 0 1.5 1.5 0 013 0zM15 16.5a1.5 1.5 0 11-3 0 1.5 1.5 0 013 0z"/>
+                                        <path d="M3 4a1 1 0 00-1 1v10a1 1 0 001 1h1.05a2.5 2.5 0 014.9 0H10a1 1 0 001-1v-1h3.05a2.5 2.5 0 014.9 0H19a1 1 0 001-1v-4a1 1 0 00-.293-.707l-3-3A1 1 0 0016 5h-3V4a1 1 0 00-1-1H3z"/>
+                                    </svg>
+                                    <strong>Pickup - In Store</strong> - FREE
+                                </p>
+                            </div>
+                        </div>
+                        
+                        <!-- Trust Features -->
+                        <div class="trust-features grid grid-cols-2 sm:grid-cols-4 gap-4 text-center">
+                            <div class="p-3">
+                                <svg class="w-8 h-8 mx-auto mb-2 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 8h14M5 8a2 2 0 110-4h14a2 2 0 110 4M5 8v10a2 2 0 002 2h10a2 2 0 002-2V8m-9 4h4"/>
+                                </svg>
+                                <span class="text-xs text-gray-600 block">Free Delivery</span>
+                            </div>
+                            <div class="p-3">
+                                <svg class="w-8 h-8 mx-auto mb-2 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/>
+                                </svg>
+                                <span class="text-xs text-gray-600 block">1 Year Warranty</span>
+                            </div>
+                            <div class="p-3">
+                                <svg class="w-8 h-8 mx-auto mb-2 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/>
+                                </svg>
+                                <span class="text-xs text-gray-600 block">30-Day Returns</span>
+                            </div>
+                            <div class="p-3">
+                                <svg class="w-8 h-8 mx-auto mb-2 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"/>
+                                </svg>
+                                <span class="text-xs text-gray-600 block">Secure Payment</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Product Tabs Section -->
+                <div class="product-tabs mt-12">
+                    <!-- Tab Navigation -->
+                    <div class="tab-nav flex border-b border-gray-200 overflow-x-auto">
+                        <button class="tab-btn active px-6 py-4 font-semibold text-red-600 border-b-2 border-red-600 whitespace-nowrap" data-tab="description">
+                            Description
+                        </button>
+                        <button class="tab-btn px-6 py-4 font-semibold text-gray-500 hover:text-gray-700 whitespace-nowrap" data-tab="specifications">
+                            Specifications
+                        </button>
+                        <button class="tab-btn px-6 py-4 font-semibold text-gray-500 hover:text-gray-700 whitespace-nowrap" data-tab="delivery">
+                            Delivery & Returns
+                        </button>
+                        <button class="tab-btn px-6 py-4 font-semibold text-gray-500 hover:text-gray-700 whitespace-nowrap" data-tab="reviews">
+                            Reviews
                         </button>
                     </div>
                     
-                    <!-- Trust badges -->
-                    <div class="trust-badges-inline mt-8 pt-6 border-t border-gray-200">
-                        <div class="grid grid-cols-3 gap-4 text-center text-sm">
-                            <div>
-                                <svg class="w-6 h-6 text-green-500 mx-auto mb-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
-                                </svg>
-                                <span class="text-gray-600">Free Shipping</span>
-                            </div>
-                            <div>
-                                <svg class="w-6 h-6 text-green-500 mx-auto mb-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path>
-                                </svg>
-                                <span class="text-gray-600">30-Day Returns</span>
-                            </div>
-                            <div>
-                                <svg class="w-6 h-6 text-green-500 mx-auto mb-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"></path>
-                                </svg>
-                                <span class="text-gray-600">Secure Payment</span>
+                    <!-- Tab Content -->
+                    <div class="tab-content">
+                        <!-- Description Tab -->
+                        <div id="tab-description" class="tab-panel py-8">
+                            <div class="prose max-w-none">
+                                <h2 class="text-2xl font-bold text-gray-900 mb-4">Description</h2>
+                                <div class="text-gray-700 leading-relaxed">
+                                    [@description@]
+                                </div>
+                                
+                                <!-- Product Features Table -->
+                                <div class="mt-8 overflow-x-auto">
+                                    <table class="w-full border-collapse">
+                                        <tbody>
+                                            <tr class="border-b border-gray-200">
+                                                <td class="py-3 pr-4 font-semibold text-gray-900 w-1/3">Material</td>
+                                                <td class="py-3 text-gray-700">Premium Aluminium Checker Plate</td>
+                                            </tr>
+                                            <tr class="border-b border-gray-200 bg-gray-50">
+                                                <td class="py-3 pr-4 font-semibold text-gray-900">Locking System</td>
+                                                <td class="py-3 text-gray-700">Whale Tail Lock - Barrel & Key With Option To Padlock</td>
+                                            </tr>
+                                            <tr class="border-b border-gray-200">
+                                                <td class="py-3 pr-4 font-semibold text-gray-900">Welding</td>
+                                                <td class="py-3 text-gray-700">Fully Welded Seams</td>
+                                            </tr>
+                                            <tr class="border-b border-gray-200 bg-gray-50">
+                                                <td class="py-3 pr-4 font-semibold text-gray-900">Rubber Seal</td>
+                                                <td class="py-3 text-gray-700">Steel Pinch Rubber Dust/Water Seal</td>
+                                            </tr>
+                                            <tr class="border-b border-gray-200">
+                                                <td class="py-3 pr-4 font-semibold text-gray-900">Gas Strut</td>
+                                                <td class="py-3 text-gray-700">2x Heavy Duty Stainless Steel Rod Gas Struts</td>
+                                            </tr>
+                                            <tr class="border-b border-gray-200 bg-gray-50">
+                                                <td class="py-3 pr-4 font-semibold text-gray-900">Keys</td>
+                                                <td class="py-3 text-gray-700">4 Keys Included</td>
+                                            </tr>
+                                            <tr class="border-b border-gray-200">
+                                                <td class="py-3 pr-4 font-semibold text-gray-900">Hinge</td>
+                                                <td class="py-3 text-gray-700">Stainless Steel Piano Hinge</td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
                             </div>
                         </div>
+                        
+                        <!-- Specifications Tab -->
+                        <div id="tab-specifications" class="tab-panel py-8 hidden">
+                            <h2 class="text-2xl font-bold text-gray-900 mb-6">Specifications</h2>
+                            <div class="grid md:grid-cols-2 gap-8">
+                                <div>
+                                    <h3 class="text-lg font-semibold text-gray-900 mb-4 pb-2 border-b border-gray-200">SPECIFICATIONS</h3>
+                                    <table class="w-full">
+                                        <tbody>
+                                            <tr class="border-b border-gray-100">
+                                                <td class="py-3 font-medium text-gray-900">Size</td>
+                                                <td class="py-3 text-gray-700">[@dimensions@]</td>
+                                            </tr>
+                                            <tr class="border-b border-gray-100">
+                                                <td class="py-3 font-medium text-gray-900">Weight</td>
+                                                <td class="py-3 text-gray-700">[@weight@]</td>
+                                            </tr>
+                                            <tr class="border-b border-gray-100">
+                                                <td class="py-3 font-medium text-gray-900">Material</td>
+                                                <td class="py-3 text-gray-700">Aluminium Checker Plate</td>
+                                            </tr>
+                                            <tr class="border-b border-gray-100">
+                                                <td class="py-3 font-medium text-gray-900">Locking System</td>
+                                                <td class="py-3 text-gray-700">Whale Tail Locks Key Lockable</td>
+                                            </tr>
+                                            <tr class="border-b border-gray-100">
+                                                <td class="py-3 font-medium text-gray-900">Seal</td>
+                                                <td class="py-3 text-gray-700">Rubber Seal - Water & Dust Resistant</td>
+                                            </tr>
+                                            <tr class="border-b border-gray-100">
+                                                <td class="py-3 font-medium text-gray-900">Welding</td>
+                                                <td class="py-3 text-gray-700">Full Welded Seams</td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                                <div>
+                                    <h3 class="text-lg font-semibold text-gray-900 mb-4 pb-2 border-b border-gray-200">KEY SPECIFICATIONS</h3>
+                                    <table class="w-full">
+                                        <tbody>
+                                            <tr class="border-b border-gray-100">
+                                                <td class="py-3 font-medium text-gray-900">SKU</td>
+                                                <td class="py-3 text-gray-700">[@sku@]</td>
+                                            </tr>
+                                            <tr class="border-b border-gray-100">
+                                                <td class="py-3 font-medium text-gray-900">Brand</td>
+                                                <td class="py-3 text-gray-700">[@store_name@]</td>
+                                            </tr>
+                                            <tr class="border-b border-gray-100">
+                                                <td class="py-3 font-medium text-gray-900">Shipping Weight</td>
+                                                <td class="py-3 text-gray-700">[@weight@]</td>
+                                            </tr>
+                                            <tr class="border-b border-gray-100">
+                                                <td class="py-3 font-medium text-gray-900">Category</td>
+                                                <td class="py-3 text-gray-700">[@category_name@]</td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Delivery & Returns Tab -->
+                        <div id="tab-delivery" class="tab-panel py-8 hidden">
+                            <h2 class="text-2xl font-bold text-gray-900 mb-6">Delivery & Returns</h2>
+                            
+                            <div class="grid md:grid-cols-2 gap-8">
+                                <div>
+                                    <h3 class="text-lg font-semibold text-gray-900 mb-4 flex items-center gap-2">
+                                        <svg class="w-6 h-6 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path d="M8 16.5a1.5 1.5 0 11-3 0 1.5 1.5 0 013 0zM15 16.5a1.5 1.5 0 11-3 0 1.5 1.5 0 013 0z"/>
+                                            <path d="M3 4a1 1 0 00-1 1v10a1 1 0 001 1h1.05a2.5 2.5 0 014.9 0H10a1 1 0 001-1v-1h3.05a2.5 2.5 0 014.9 0H19a1 1 0 001-1v-4a1 1 0 00-.293-.707l-3-3A1 1 0 0016 5h-3V4a1 1 0 00-1-1H3z"/>
+                                        </svg>
+                                        PICKUP & SHIPPING
+                                    </h3>
+                                    <div class="text-gray-700 space-y-4">
+                                        <p><strong>Pick-up:</strong></p>
+                                        <p>Free pick-up (click and collect) is available from our warehouse. Please contact us to confirm stock is available prior to your arrival.</p>
+                                        <p>All items are shipped within 24 hours of order payment receipt, except on weekends.</p>
+                                        <p>Items can be combined to reduce shipping costs.</p>
+                                        <p>Some remote areas will incur additional shipping charges.</p>
+                                    </div>
+                                </div>
+                                
+                                <div>
+                                    <h3 class="text-lg font-semibold text-gray-900 mb-4 flex items-center gap-2">
+                                        <svg class="w-6 h-6 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/>
+                                        </svg>
+                                        RETURN & WARRANTY
+                                    </h3>
+                                    <div class="text-gray-700 space-y-4">
+                                        <p><strong>WARRANTY:</strong> 1-year warranty on this product.</p>
+                                        <p><strong>CHANGED YOUR MIND?</strong> You may return or exchange any product within 30 days, as long as the item is in resalable condition and is returned in its original packaging.</p>
+                                        <p><strong>FAULTY OR INCORRECT ITEM?</strong> The item needs to be returned and will be replaced or a full refund provided.</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Reviews Tab -->
+                        <div id="tab-reviews" class="tab-panel py-8 hidden" id="reviews">
+                            <h2 class="text-2xl font-bold text-gray-900 mb-6">Reviews</h2>
+                            
+                            <div class="text-center py-12 bg-gray-50 rounded-lg">
+                                <svg class="w-16 h-16 mx-auto mb-4 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z"/>
+                                </svg>
+                                <h3 class="text-xl font-semibold text-gray-900 mb-2">Be The First To Review This Product!</h3>
+                                <p class="text-gray-600 mb-6">Help other customers by sharing your experience.</p>
+                                <button class="px-6 py-3 bg-red-600 hover:bg-red-700 text-white font-semibold rounded-lg transition-colors">
+                                    Write a Product Review
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Related Products -->
+                <div class="related-products mt-12">
+                    <h2 class="text-2xl font-bold text-gray-900 mb-6">MORE FROM THIS CATEGORY</h2>
+                    <div class="grid grid-cols-2 md:grid-cols-4 gap-6">
+                        [%product_list limit:'4'%]
+                        <div class="product-card bg-white rounded-lg border border-gray-200 overflow-hidden hover:shadow-lg transition-shadow">
+                            <a href="/live/product/[@product_id@]">
+                                <div class="aspect-square bg-gray-100 relative">
+                                    [%if [@product_sale@] == 'y'%]
+                                    <span class="absolute top-2 left-2 px-2 py-1 bg-red-600 text-white text-xs font-bold rounded">SALE</span>
+                                    [%/if%]
+                                    <img src="[@product_image@]" alt="[@product_name@]" class="w-full h-full object-contain p-4">
+                                </div>
+                                <div class="p-4">
+                                    <h3 class="text-sm font-medium text-gray-900 line-clamp-2 mb-2">[@product_name@]</h3>
+                                    <div class="flex items-center gap-2">
+                                        <span class="text-lg font-bold text-red-600">[@product_price_formatted@]</span>
+                                        [%if [@product_compare_price@]%]
+                                        <span class="text-sm text-gray-400 line-through">[@product_compare_price_formatted@]</span>
+                                        [%/if%]
+                                    </div>
+                                </div>
+                            </a>
+                        </div>
+                        [%/product_list%]
                     </div>
                 </div>
             </div>
         </div>
+        
+        <!-- Product Page Scripts -->
+        <script>
+            // Tab functionality
+            document.querySelectorAll('.tab-btn').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    const tabId = btn.dataset.tab;
+                    
+                    // Update button states
+                    document.querySelectorAll('.tab-btn').forEach(b => {
+                        b.classList.remove('active', 'text-red-600', 'border-b-2', 'border-red-600');
+                        b.classList.add('text-gray-500');
+                    });
+                    btn.classList.add('active', 'text-red-600', 'border-b-2', 'border-red-600');
+                    btn.classList.remove('text-gray-500');
+                    
+                    // Show/hide panels
+                    document.querySelectorAll('.tab-panel').forEach(panel => panel.classList.add('hidden'));
+                    document.getElementById('tab-' + tabId).classList.remove('hidden');
+                });
+            });
+            
+            // Quantity controls
+            function changeQty(delta) {
+                const input = document.getElementById('product-qty');
+                const newVal = Math.max(1, parseInt(input.value) + delta);
+                input.value = newVal;
+            }
+            
+            // Thumbnail click
+            function changeMainImage(thumb) {
+                const mainImg = document.getElementById('main-product-image');
+                const thumbImg = thumb.querySelector('img');
+                mainImg.src = thumbImg.src;
+                
+                // Update active thumbnail
+                document.querySelectorAll('.product-thumb').forEach(t => {
+                    t.classList.remove('border-red-600');
+                    t.classList.add('border-gray-200');
+                });
+                thumb.classList.remove('border-gray-200');
+                thumb.classList.add('border-red-600');
+            }
+            
+            // Image modal (placeholder)
+            function openImageModal() {
+                const mainImg = document.getElementById('main-product-image');
+                window.open(mainImg.src, '_blank');
+            }
+        </script>
