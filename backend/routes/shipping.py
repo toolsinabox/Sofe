@@ -565,18 +565,18 @@ async def get_rate_import_template():
     output = io.StringIO()
     writer = csv.writer(output)
     
-    # Write header
+    # Write header - matches Maropost export format
     writer.writerow([
         "Zone Code", "Zone Name", "Courier Name", "Minimum Charge", "1st Parcel",
-        "Per Subsequent Parcel", "Per Kg", "Minimum", "Maximum", "Add weight",
-        "Delivery Time", "Internal Note"
+        "Per Subsequent Parcel", "Per Kg", "Minimum", "Maximum", "Maximum Length",
+        "Add weight", "Delivery Time", "Internal Note"
     ])
     
     # Add sample rows
-    writer.writerow(["SYD-METRO", "Sydney Metro", "StarTrack", "18.48", "12.14", "", "0.43", "0", "", "", "2", ""])
-    writer.writerow(["MEL-METRO", "Melbourne Metro", "StarTrack", "20.72", "12.14", "", "0.58", "0", "", "", "3", ""])
-    writer.writerow(["BNE-METRO", "Brisbane Metro", "StarTrack", "21.22", "12.14", "", "0.61", "0", "", "", "3", ""])
-    writer.writerow(["REGIONAL", "Regional", "Australia Post", "28.48", "13.82", "", "0.98", "0", "", "", "5", ""])
+    writer.writerow(["SYD-METRO", "Sydney Metro", "StarTrack", "18.48", "12.14", "", "0.43", "0", "", "2000", "", "2", ""])
+    writer.writerow(["MEL-METRO", "Melbourne Metro", "StarTrack", "20.72", "12.14", "", "0.58", "0", "", "2000", "", "3", ""])
+    writer.writerow(["BNE-METRO", "Brisbane Metro", "StarTrack", "21.22", "12.14", "", "0.61", "0", "", "2000", "", "3", ""])
+    writer.writerow(["REGIONAL", "Regional", "Australia Post", "28.48", "13.82", "", "0.98", "0", "", "1500", "", "5", ""])
     
     output.seek(0)
     
