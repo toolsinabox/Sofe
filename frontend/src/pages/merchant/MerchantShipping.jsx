@@ -1704,7 +1704,7 @@ const MerchantShipping = () => {
                     ].map(carrier => (
                       <button
                         key={carrier.value}
-                        onClick={() => setServiceForm({...serviceForm, carrier: carrier.value})}
+                        onClick={() => handleServiceFormChange('carrier', carrier.value)}
                         className={`p-2 rounded-lg border text-center transition-all text-sm ${
                           serviceForm.carrier === carrier.value 
                             ? 'border-emerald-500 bg-emerald-500/10 text-white' 
