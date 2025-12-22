@@ -1843,7 +1843,6 @@ class MaropostTemplateEngine:
             
             if cache_enabled:
                 # Generate cache key from URL and model data
-                import hashlib
                 cache_data = f"{url}:{json.dumps(model_data, sort_keys=True, default=str)}"
                 cache_key_hash = hashlib.md5(cache_data.encode()).hexdigest()
                 
