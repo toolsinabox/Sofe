@@ -49,6 +49,11 @@ const MerchantLayout = () => {
     return 'Merchant';
   };
 
+  // Determine the margin class based on sidebar state
+  const mainContentClass = sidebarCollapsed 
+    ? "transition-all duration-300 ml-0 lg:ml-[70px]" 
+    : "transition-all duration-300 ml-0 lg:ml-[260px]";
+
   return (
     <div className="min-h-screen bg-[#0a0e14]">
       {/* Mobile overlay */}
@@ -67,11 +72,8 @@ const MerchantLayout = () => {
         setMobileOpen={setMobileMenuOpen}
       />
       
-      {/* Main content - fixed margin classes for proper sidebar offset */}
-      <div 
-        className="transition-all duration-300 ml-0 lg:ml-[260px]"
-        style={{ marginLeft: typeof window !== 'undefined' && window.innerWidth >= 1024 ? (sidebarCollapsed ? '70px' : '260px') : '0' }}
-      >
+      {/* Main content - uses dynamic margin based on sidebar state */}
+      <div className={mainContentClass}>
         {!isPOSPage && (
           <MerchantHeader 
             title={getPageTitle()} 
