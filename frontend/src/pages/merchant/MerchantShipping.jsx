@@ -182,7 +182,7 @@ const MerchantShipping = () => {
     setServiceForm(prev => ({ ...prev, [field]: value }));
   }, []);
 
-  // Stable handler for service form text input changes
+  // Stable handler for service form text input changes - uses name attribute
   const handleServiceFormInputChange = useCallback((e) => {
     const { name, value, type, checked } = e.target;
     setServiceForm(prev => ({
@@ -191,7 +191,24 @@ const MerchantShipping = () => {
     }));
   }, []);
 
-  // Stable handler for numeric service form fields
+  // Stable handler for code input (lowercase conversion)
+  const handleServiceFormCodeChange = useCallback((e) => {
+    setServiceForm(prev => ({
+      ...prev,
+      code: e.target.value.toLowerCase()
+    }));
+  }, []);
+
+  // Stable handler for numeric service form fields - uses name attribute
+  const handleServiceFormNumericChange = useCallback((e) => {
+    const { name, value } = e.target;
+    setServiceForm(prev => ({
+      ...prev,
+      [name]: value === '' ? '' : parseFloat(value) || 0
+    }));
+  }, []);
+
+  // Stable handler for numeric service form fields with custom default
   const handleServiceFormNumberChange = useCallback((field, value, defaultValue = 0) => {
     setServiceForm(prev => ({
       ...prev,
