@@ -107,15 +107,28 @@ const MerchantSidebar = ({ collapsed, setCollapsed }) => {
       <div className="h-16 flex items-center justify-between px-4 border-b border-gray-800">
         {!collapsed && (
           <div className="flex items-center gap-2">
-            <div className="w-8 h-8 bg-gradient-to-br from-emerald-500 to-teal-600 rounded-lg flex items-center justify-center">
-              <span className="text-white font-bold text-sm">FH</span>
+            {storeSettings.store_logo ? (
+              <img 
+                src={storeSettings.store_logo} 
+                alt={storeSettings.store_name}
+                className="w-8 h-8 rounded-lg object-cover"
+                onError={(e) => {
+                  e.target.style.display = 'none';
+                  e.target.nextSibling.style.display = 'flex';
+                }}
+              />
+            ) : null}
+            <div 
+              className={`w-8 h-8 bg-gradient-to-br from-emerald-500 to-teal-600 rounded-lg items-center justify-center ${storeSettings.store_logo ? 'hidden' : 'flex'}`}
+            >
+              <span className="text-white font-bold text-sm">{getInitials(storeSettings.store_name)}</span>
             </div>
-            <span className="text-white font-semibold text-lg">Fashion Hub</span>
+            <span className="text-white font-semibold text-lg truncate max-w-[160px]">{storeSettings.store_name}</span>
           </div>
         )}
         {collapsed && (
           <div className="w-8 h-8 bg-gradient-to-br from-emerald-500 to-teal-600 rounded-lg flex items-center justify-center mx-auto">
-            <span className="text-white font-bold text-sm">FH</span>
+            <span className="text-white font-bold text-sm">{getInitials(storeSettings.store_name)}</span>
           </div>
         )}
         <button
