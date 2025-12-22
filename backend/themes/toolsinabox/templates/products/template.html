@@ -1058,6 +1058,61 @@
         /* Shipping */
         .shipping-calc-section { margin-bottom: 1.5rem; }
         .section-label { font-weight: 600; color: #333; margin-bottom: 0.75rem; font-size: 0.95rem; }
+        .shipping-form-grid { 
+            display: grid; 
+            grid-template-columns: 100px 1fr auto;
+            gap: 0.5rem; 
+            margin-bottom: 0.75rem; 
+        }
+        @media (max-width: 500px) {
+            .shipping-form-grid { 
+                grid-template-columns: 1fr;
+            }
+        }
+        .shipping-input-group input,
+        .shipping-input-group select {
+            width: 100%;
+            padding: 0.6rem 1rem;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            font-size: 0.9rem;
+        }
+        .shipping-input-group select:disabled {
+            background: #f5f5f5;
+            color: #999;
+        }
+        .shipping-form-grid button {
+            padding: 0.6rem 1.25rem;
+            background: #333;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            font-weight: 600;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            white-space: nowrap;
+        }
+        .shipping-form-grid button:hover { background: #1a1a1a; }
+        .shipping-form-grid button:disabled { background: #999; cursor: not-allowed; }
+        
+        .shipping-warning {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.75rem 1rem;
+            background: #fff3cd;
+            border-radius: 6px;
+            color: #856404;
+            font-size: 0.85rem;
+            margin-top: 0.5rem;
+        }
+        
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+        
         .shipping-form { display: flex; gap: 0.5rem; margin-bottom: 0.75rem; }
         .shipping-form input {
             flex: 1;
