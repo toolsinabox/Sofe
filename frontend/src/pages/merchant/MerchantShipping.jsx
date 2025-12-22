@@ -1848,7 +1848,7 @@ const MerchantShipping = () => {
                     </Select>
                     <Input
                       value={serviceForm.tracking_url || ''}
-                      onChange={(e) => setServiceForm({...serviceForm, tracking_url: e.target.value})}
+                      onChange={(e) => handleServiceFormChange('tracking_url', e.target.value)}
                       placeholder="https://carrier.com/track/#tracking_num#"
                       className="bg-gray-700 border-gray-600 text-white flex-1"
                     />
@@ -1873,7 +1873,7 @@ const MerchantShipping = () => {
                         type="number"
                         step="0.01"
                         value={serviceForm.min_charge || ''}
-                        onChange={(e) => setServiceForm({...serviceForm, min_charge: parseFloat(e.target.value) || 0})}
+                        onChange={(e) => handleServiceFormNumberChange('min_charge', e.target.value, 0)}
                         placeholder="0.00"
                         className="bg-gray-700 border-gray-600 text-white"
                       />
@@ -1887,7 +1887,7 @@ const MerchantShipping = () => {
                         type="number"
                         step="0.01"
                         value={serviceForm.max_charge || ''}
-                        onChange={(e) => setServiceForm({...serviceForm, max_charge: parseFloat(e.target.value) || null})}
+                        onChange={(e) => handleServiceFormChange('max_charge', e.target.value ? parseFloat(e.target.value) : null)}
                         placeholder="No max"
                         className="bg-gray-700 border-gray-600 text-white"
                       />
@@ -1901,7 +1901,7 @@ const MerchantShipping = () => {
                         type="number"
                         step="0.01"
                         value={serviceForm.handling_fee || ''}
-                        onChange={(e) => setServiceForm({...serviceForm, handling_fee: parseFloat(e.target.value) || 0})}
+                        onChange={(e) => handleServiceFormNumberChange('handling_fee', e.target.value, 0)}
                         placeholder="0.00"
                         className="bg-gray-700 border-gray-600 text-white"
                       />
@@ -1919,7 +1919,7 @@ const MerchantShipping = () => {
                         type="number"
                         step="0.01"
                         value={serviceForm.fuel_levy_amount || ''}
-                        onChange={(e) => setServiceForm({...serviceForm, fuel_levy_amount: parseFloat(e.target.value) || 0})}
+                        onChange={(e) => handleServiceFormNumberChange('fuel_levy_amount', e.target.value, 0)}
                         placeholder="0.00"
                         className="bg-gray-700 border-gray-600 text-white w-20"
                       />
@@ -1928,7 +1928,7 @@ const MerchantShipping = () => {
                         type="number"
                         step="0.1"
                         value={serviceForm.fuel_levy_percent || ''}
-                        onChange={(e) => setServiceForm({...serviceForm, fuel_levy_percent: parseFloat(e.target.value) || 0})}
+                        onChange={(e) => handleServiceFormNumberChange('fuel_levy_percent', e.target.value, 0)}
                         placeholder="0.0"
                         className="bg-gray-700 border-gray-600 text-white w-20"
                       />
@@ -1942,7 +1942,7 @@ const MerchantShipping = () => {
                         type="number"
                         step="0.1"
                         value={serviceForm.packaging_allowance_kg || ''}
-                        onChange={(e) => setServiceForm({...serviceForm, packaging_allowance_kg: parseFloat(e.target.value) || 0})}
+                        onChange={(e) => handleServiceFormNumberChange('packaging_allowance_kg', e.target.value, 0)}
                         placeholder="0"
                         className="bg-gray-700 border-gray-600 text-white w-16"
                       />
@@ -1952,7 +1952,7 @@ const MerchantShipping = () => {
                         type="number"
                         step="0.1"
                         value={serviceForm.packaging_allowance_percent || ''}
-                        onChange={(e) => setServiceForm({...serviceForm, packaging_allowance_percent: parseFloat(e.target.value) || 0})}
+                        onChange={(e) => handleServiceFormNumberChange('packaging_allowance_percent', e.target.value, 0)}
                         placeholder="0"
                         className="bg-gray-700 border-gray-600 text-white w-16"
                       />
@@ -1966,7 +1966,7 @@ const MerchantShipping = () => {
                     <input
                       type="checkbox"
                       checked={serviceForm.round_up_weight || false}
-                      onChange={(e) => setServiceForm({...serviceForm, round_up_weight: e.target.checked})}
+                      onChange={(e) => handleServiceFormChange('round_up_weight', e.target.checked)}
                       className="rounded border-gray-600 text-emerald-500"
                     />
                     <span className="text-gray-300 text-sm">Round Up to Nearest kg</span>
@@ -1975,7 +1975,7 @@ const MerchantShipping = () => {
                     <input
                       type="checkbox"
                       checked={serviceForm.ignore_physical_weight || false}
-                      onChange={(e) => setServiceForm({...serviceForm, ignore_physical_weight: e.target.checked})}
+                      onChange={(e) => handleServiceFormChange('ignore_physical_weight', e.target.checked)}
                       className="rounded border-gray-600 text-emerald-500"
                     />
                     <span className="text-gray-300 text-sm">Ignore physical weight of products in calculations</span>
