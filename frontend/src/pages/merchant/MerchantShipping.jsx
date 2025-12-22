@@ -334,6 +334,11 @@ const MerchantShipping = () => {
       sort_order: 0
     });
     const [postcodesInput, setPostcodesInput] = useState('');
+    const [showImportModal, setShowImportModal] = useState(false);
+    const [importing, setImporting] = useState(false);
+    const [importMode, setImportMode] = useState('merge');
+    const [importResult, setImportResult] = useState(null);
+    const fileInputRef = useRef(null);
 
     const openZoneModal = (zone = null) => {
       if (zone) {
@@ -395,16 +400,133 @@ const MerchantShipping = () => {
       }
     };
 
+    // Export zones to CSV
+    const handleExportZones = async () => {
+      try {
+        const response = await axios.get(`${API}/shipping/zones/export/csv`, {
+          responseType: 'blob'
+        });
+        
+        // Create download link
+        const url = window.URL.createObjectURL(new Blob([response.data]));
+        const link = document.createElement('a');
+        link.href = url;
+        link.setAttribute('download', `shipping_zones_${new Date().toISOString().split('T')[0]}.csv`);
+        document.body.appendChild(link);
+        link.click();
+        link.remove();
+        window.URL.revokeObjectURL(url);
+      } catch (error) {
+        console.error('Error exporting zones:', error);
+        alert('Failed to export zones');
+      }
+    };
+
+    // Download template
+    const handleDownloadTemplate = async () => {
+      try {
+        const response = await axios.get(`${API}/shipping/zones/export/template`, {
+          responseType: 'blob'
+        });
+        
+        const url = window.URL.createObjectURL(new Blob([response.data]));
+        const link = document.createElement('a');
+        link.href = url;
+        link.setAttribute('download', 'shipping_zones_template.csv');
+        document.body.appendChild(link);
+        link.click();
+        link.remove();
+        window.URL.revokeObjectURL(url);
+      } catch (error) {
+        console.error('Error downloading template:', error);
+        alert('Failed to download template');
+      }
+    };
+
+    // Import zones from CSV
+    const handleImportZones = async (event) => {
+      const file = event.target.files?.[0];
+      if (!file) return;
+      
+      setImporting(true);
+      setImportResult(null);
+      
+      try {
+        const formData = new FormData();
+        formData.append('file', file);
+        
+        const response = await axios.post(
+          `${API}/shipping/zones/import/csv?mode=${importMode}`,
+          formData,
+          {
+            headers: { 'Content-Type': 'multipart/form-data' }
+          }
+        );
+        
+        setImportResult({
+          success: true,
+          ...response.data
+        });
+        
+        await fetchAllData();
+      } catch (error) {
+        console.error('Error importing zones:', error);
+        setImportResult({
+          success: false,
+          error: error.response?.data?.detail || 'Failed to import zones'
+        });
+      } finally {
+        setImporting(false);
+        // Reset file input
+        if (fileInputRef.current) {
+          fileInputRef.current.value = '';
+        }
+      }
+    };
+
+    // Delete all zones
+    const handleDeleteAllZones = async () => {
+      if (!window.confirm('Are you sure you want to delete ALL shipping zones? This cannot be undone.')) return;
+      if (!window.confirm('This will remove all zone data. Please confirm again.')) return;
+      
+      try {
+        await axios.delete(`${API}/shipping/zones/bulk`);
+        await fetchAllData();
+      } catch (error) {
+        console.error('Error deleting all zones:', error);
+        alert('Failed to delete zones');
+      }
+    };
+
     return (
       <div className="space-y-4">
-        <div className="flex justify-between items-center">
+        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
           <div>
             <h2 className="text-xl font-bold text-white">Shipping Zones</h2>
             <p className="text-gray-400 text-sm">Define geographic regions for shipping rates</p>
           </div>
-          <Button onClick={() => openZoneModal()} className="bg-blue-600 hover:bg-blue-700">
-            <Plus className="w-4 h-4 mr-2" /> Add Zone
-          </Button>
+          <div className="flex flex-wrap gap-2">
+            <Button 
+              variant="outline" 
+              size="sm" 
+              onClick={handleExportZones}
+              className="border-gray-600"
+              disabled={zones.length === 0}
+            >
+              <Download className="w-4 h-4 mr-2" /> Export CSV
+            </Button>
+            <Button 
+              variant="outline" 
+              size="sm" 
+              onClick={() => setShowImportModal(true)}
+              className="border-gray-600"
+            >
+              <Upload className="w-4 h-4 mr-2" /> Import CSV
+            </Button>
+            <Button onClick={() => openZoneModal()} className="bg-blue-600 hover:bg-blue-700">
+              <Plus className="w-4 h-4 mr-2" /> Add Zone
+            </Button>
+          </div>
         </div>
 
         {/* Zones List */}
