@@ -40,6 +40,7 @@ class PageType(Enum):
     SEARCH = "search"
     CART = "cart"
     CHECKOUT = "checkout"
+    QUOTE = "quote"
     ACCOUNT = "account"
     STOCKISTS = "stockists"
     ERROR_404 = "404"
