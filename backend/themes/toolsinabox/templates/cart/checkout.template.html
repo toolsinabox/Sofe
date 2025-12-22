@@ -428,6 +428,38 @@
                     </div>
                 </div>
                 
+                <!-- Shipping Method Selection -->
+                <div class="checkout-section">
+                    <h2>Shipping Method <span class="required">*</span></h2>
+                    <p id="shipping-instruction" style="color: #666; font-size: 0.9rem; margin-bottom: 1rem;">
+                        Enter your postcode above to see available shipping options.
+                    </p>
+                    <div id="shipping-options-loading" style="display: none; padding: 1rem; text-align: center;">
+                        <div class="spinner" style="display: inline-block; width: 24px; height: 24px; border: 2px solid #ddd; border-top-color: #c41e3a; border-radius: 50%; animation: spin 1s linear infinite;"></div>
+                        <span style="margin-left: 0.5rem;">Calculating shipping options...</span>
+                    </div>
+                    <div id="shipping-options-container" style="display: none;">
+                        <!-- Pickup Option -->
+                        <label class="shipping-option" data-shipping-method="pickup" data-shipping-price="0">
+                            <input type="radio" name="shipping_method" value="pickup" onchange="selectShippingMethod(this)">
+                            <div class="shipping-option-info">
+                                <h4>Pickup - In Store</h4>
+                                <p>Pick up from our warehouse</p>
+                            </div>
+                            <div class="shipping-option-price">FREE</div>
+                        </label>
+                        <!-- Calculated Shipping Options -->
+                        <div id="calculated-shipping-options"></div>
+                    </div>
+                    <div id="no-shipping-available" style="display: none; padding: 1rem; background: #fff3cd; border-radius: 8px; color: #856404;">
+                        <svg viewBox="0 0 20 20" fill="currentColor" width="16" height="16" style="vertical-align: middle; margin-right: 0.5rem;"><path fill-rule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clip-rule="evenodd"/></svg>
+                        No shipping options available for this location. Please select Pickup or enter a different postcode.
+                    </div>
+                    <p id="shipping-required-error" style="display: none; color: #dc2626; font-size: 0.85rem; margin-top: 0.5rem;">
+                        ⚠️ Please select a shipping method to continue.
+                    </p>
+                </div>
+                
                 <!-- Billing Address -->
                 <div class="checkout-section">
                     <h2>Billing Address</h2>
