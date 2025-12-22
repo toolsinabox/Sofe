@@ -723,7 +723,7 @@ async function loadCheckoutCart() {
     }
     
     try {
-        const response = await fetch(`${API_BASE}/cart/${cartId}`);
+        const response = await fetch(`${CHECKOUT_API_BASE}/cart/${cartId}`);
         if (!response.ok) throw new Error('Failed to load cart');
         
         cartData = await response.json();
