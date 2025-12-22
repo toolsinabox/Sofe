@@ -28,7 +28,8 @@ import {
   Menu,
   FileText,
   Mail,
-  X
+  X,
+  Monitor
 } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
 
