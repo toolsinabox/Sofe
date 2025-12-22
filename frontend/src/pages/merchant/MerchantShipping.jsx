@@ -1422,8 +1422,10 @@ const MerchantShipping = () => {
                               <th className="pb-2 font-medium">Zone</th>
                               <th className="pb-2 font-medium">Min Charge</th>
                               <th className="pb-2 font-medium">1st Parcel</th>
+                              <th className="pb-2 font-medium">Per Subseq.</th>
                               <th className="pb-2 font-medium">Per kg</th>
                               <th className="pb-2 font-medium">Days</th>
+                              <th className="pb-2 font-medium">Internal Note</th>
                               <th className="pb-2 font-medium">Status</th>
                             </tr>
                           </thead>
@@ -1436,8 +1438,10 @@ const MerchantShipping = () => {
                                 </td>
                                 <td className="py-2 text-emerald-400">${(rate.base_rate || 0).toFixed(2)}</td>
                                 <td className="py-2 text-gray-300">${(rate.first_parcel || rate.base_rate || 0).toFixed(2)}</td>
+                                <td className="py-2 text-gray-300">{rate.per_subsequent ? `$${rate.per_subsequent.toFixed(2)}` : '-'}</td>
                                 <td className="py-2 text-gray-300">${(rate.per_kg_rate || 0).toFixed(2)}</td>
                                 <td className="py-2 text-gray-300">{rate.delivery_days || '-'}</td>
+                                <td className="py-2 text-gray-500 text-xs max-w-32 truncate">{rate.internal_note || '-'}</td>
                                 <td className="py-2">
                                   <span className={`px-2 py-0.5 rounded text-xs ${rate.is_active !== false ? 'bg-emerald-500/20 text-emerald-400' : 'bg-gray-700 text-gray-400'}`}>
                                     {rate.is_active !== false ? 'Active' : 'Inactive'}
