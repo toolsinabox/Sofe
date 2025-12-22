@@ -1894,8 +1894,8 @@ const MerchantShipping = () => {
                       <Input
                         type="number"
                         step="0.01"
-                        value={serviceForm.fuel_levy_fixed || ''}
-                        onChange={(e) => setServiceForm({...serviceForm, fuel_levy_fixed: parseFloat(e.target.value) || 0})}
+                        value={serviceForm.fuel_levy_amount || ''}
+                        onChange={(e) => setServiceForm({...serviceForm, fuel_levy_amount: parseFloat(e.target.value) || 0})}
                         placeholder="0.00"
                         className="bg-gray-700 border-gray-600 text-white w-20"
                       />
