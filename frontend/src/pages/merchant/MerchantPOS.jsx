@@ -103,7 +103,21 @@ const MerchantPOS = () => {
   
   // Customer Management State
   const [showAddCustomer, setShowAddCustomer] = useState(false);
-  const [newCustomer, setNewCustomer] = useState({ name: '', email: '', phone: '' });
+  const [newCustomer, setNewCustomer] = useState({ 
+    name: '', 
+    company: '',
+    email: '', 
+    phone: '',
+    billingAddress: '',
+    billingCity: '',
+    billingState: '',
+    billingPostcode: '',
+    sameAsDelivery: true,
+    deliveryAddress: '',
+    deliveryCity: '',
+    deliveryState: '',
+    deliveryPostcode: ''
+  });
   const [addingCustomer, setAddingCustomer] = useState(false);
   
   // Discount Permission State
