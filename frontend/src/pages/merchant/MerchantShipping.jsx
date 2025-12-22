@@ -853,6 +853,12 @@ const MerchantShipping = () => {
       rates: []
     });
     const [expandedService, setExpandedService] = useState(null);
+    const [showRateImportModal, setShowRateImportModal] = useState(false);
+    const [selectedServiceForImport, setSelectedServiceForImport] = useState(null);
+    const [importingRates, setImportingRates] = useState(false);
+    const [rateImportMode, setRateImportMode] = useState('merge');
+    const [rateImportResult, setRateImportResult] = useState(null);
+    const rateFileInputRef = useRef(null);
 
     const openServiceModal = (service = null) => {
       if (service) {
@@ -893,6 +899,26 @@ const MerchantShipping = () => {
       setShowServiceModal(true);
     };
 
+    // Add all zones as rates
+    const addAllZonesAsRates = () => {
+      const newRates = zones.map(zone => ({
+        zone_code: zone.code,
+        zone_name: zone.name,
+        min_weight: 0,
+        max_weight: 999,
+        base_rate: 0,
+        first_parcel: 0,
+        per_subsequent: 0,
+        per_kg_rate: 0,
+        delivery_days: 3,
+        is_active: true
+      }));
+      setServiceForm({
+        ...serviceForm,
+        rates: newRates
+      });
+    };
+
     const addRateRow = () => {
       setServiceForm({
         ...serviceForm,
@@ -902,6 +928,8 @@ const MerchantShipping = () => {
           min_weight: 0,
           max_weight: 999,
           base_rate: 0,
+          first_parcel: 0,
+          per_subsequent: 0,
           per_kg_rate: 0,
           delivery_days: 3,
           is_active: true
@@ -957,16 +985,109 @@ const MerchantShipping = () => {
       }
     };
 
+    // Export rates to CSV
+    const handleExportRates = async (service) => {
+      try {
+        const response = await axios.get(`${API}/shipping/services/${service.id}/rates/export/csv`, {
+          responseType: 'blob'
+        });
+        
+        const url = window.URL.createObjectURL(new Blob([response.data]));
+        const link = document.createElement('a');
+        link.href = url;
+        link.setAttribute('download', `ShippingRate_${service.name.replace(/\s+/g, '_')}_${new Date().toISOString().split('T')[0]}.csv`);
+        document.body.appendChild(link);
+        link.click();
+        link.remove();
+        window.URL.revokeObjectURL(url);
+      } catch (error) {
+        console.error('Error exporting rates:', error);
+        alert('Failed to export rates');
+      }
+    };
+
+    // Download rate template
+    const handleDownloadRateTemplate = async () => {
+      try {
+        const response = await axios.get(`${API}/shipping/rates/export/template`, {
+          responseType: 'blob'
+        });
+        
+        const url = window.URL.createObjectURL(new Blob([response.data]));
+        const link = document.createElement('a');
+        link.href = url;
+        link.setAttribute('download', 'shipping_rates_template.csv');
+        document.body.appendChild(link);
+        link.click();
+        link.remove();
+        window.URL.revokeObjectURL(url);
+      } catch (error) {
+        console.error('Error downloading template:', error);
+        alert('Failed to download template');
+      }
+    };
+
+    // Open import modal for a service
+    const openRateImportModal = (service) => {
+      setSelectedServiceForImport(service);
+      setRateImportResult(null);
+      setShowRateImportModal(true);
+    };
+
+    // Import rates from CSV
+    const handleImportRates = async (event) => {
+      const file = event.target.files?.[0];
+      if (!file || !selectedServiceForImport) return;
+      
+      setImportingRates(true);
+      setRateImportResult(null);
+      
+      try {
+        const formData = new FormData();
+        formData.append('file', file);
+        
+        const response = await axios.post(
+          `${API}/shipping/services/${selectedServiceForImport.id}/rates/import/csv?mode=${rateImportMode}`,
+          formData,
+          { headers: { 'Content-Type': 'multipart/form-data' } }
+        );
+        
+        setRateImportResult({ success: true, ...response.data });
+        await fetchAllData();
+      } catch (error) {
+        console.error('Error importing rates:', error);
+        setRateImportResult({
+          success: false,
+          error: error.response?.data?.detail || 'Failed to import rates'
+        });
+      } finally {
+        setImportingRates(false);
+        if (rateFileInputRef.current) {
+          rateFileInputRef.current.value = '';
+        }
+      }
+    };
+
     return (
       <div className="space-y-4">
-        <div className="flex justify-between items-center">
+        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
           <div>
             <h2 className="text-xl font-bold text-white">Shipping Services & Rates</h2>
             <p className="text-gray-400 text-sm">Configure shipping methods and pricing</p>
           </div>
-          <Button onClick={() => openServiceModal()} className="bg-emerald-600 hover:bg-emerald-700">
-            <Plus className="w-4 h-4 mr-2" /> Add Service
-          </Button>
+          <div className="flex flex-wrap gap-2">
+            <Button 
+              variant="outline" 
+              size="sm" 
+              onClick={handleDownloadRateTemplate}
+              className="border-gray-600"
+            >
+              <FileDown className="w-4 h-4 mr-2" /> Rate Template
+            </Button>
+            <Button onClick={() => openServiceModal()} className="bg-emerald-600 hover:bg-emerald-700">
+              <Plus className="w-4 h-4 mr-2" /> Add Service
+            </Button>
+          </div>
         </div>
 
         {/* Services List */}
