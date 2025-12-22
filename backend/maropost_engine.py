@@ -806,6 +806,18 @@ class MaropostTemplateEngine:
                 limit = int(params.get('limit', 5))
                 items = items[:limit]
             
+            elif tag_name == 'content_zone':
+                # Content zone tag: [%content_zone name:'zone_name'%]...[%/content_zone%]
+                zone_name = params.get('name', '')
+                if zone_name:
+                    zones = context.get('content_zones', {})
+                    zone = zones.get(zone_name, {})
+                    if zone and zone.get('is_active', True):
+                        # Render zone blocks
+                        zone_html = self._render_content_zone(zone, context)
+                        return zone_html
+                return ''  # Empty if zone not found
+            
             elif tag_name == 'cart_items':
                 cart = context.get('cart', {})
                 items = cart.get('items', [])
