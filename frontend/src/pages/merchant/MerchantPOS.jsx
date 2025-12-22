@@ -552,12 +552,15 @@ const MerchantPOS = () => {
     const taxRate = 0.10;
     const taxableAmount = subtotal - discountAmount;
     const tax = taxableAmount * taxRate;
-    const total = taxableAmount + tax;
     
-    return { subtotal, discountAmount, tax, total };
+    // Add shipping cost
+    const shippingCost = shipToCustomer && selectedShipping ? selectedShipping.price : 0;
+    const total = taxableAmount + tax + shippingCost;
+    
+    return { subtotal, discountAmount, tax, shippingCost, total };
   };
 
-  const { subtotal, discountAmount, tax, total } = calculateTotals();
+  const { subtotal, discountAmount, tax, shippingCost, total } = calculateTotals();
 
   // Calculate initial payment amount for Pay Later / Layby
   const calculateInitialPayment = () => {
