@@ -1918,13 +1918,3 @@ async def search_suburbs(
         "results": unique_results[:50],  # Limit to 50 results
         "count": len(unique_results)
     }
-
-        "packages": packages,
-        "summary": {
-            "total_zones": len(zones),
-            "total_services": len(services),
-            "total_categories": len(categories),
-            "total_options": len(options),
-            "total_packages": len(packages)
-        }
-    }
