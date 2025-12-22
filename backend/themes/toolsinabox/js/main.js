@@ -407,7 +407,8 @@ async function updateCartItemQty(productId, quantity) {
 }
 
 // Show the "Added to Cart" modal
-function showCartModal(name, price, image) {
+// Accepts: name, price, image, qty (optional), total (optional)
+function showCartModal(name, price, image, qty, total) {
     const overlay = document.getElementById('cart-modal-overlay');
     if (!overlay) {
         console.error('Modal overlay not found');
@@ -418,18 +419,53 @@ function showCartModal(name, price, image) {
     const modalProductName = document.getElementById('modal-product-name');
     const modalProductPrice = document.getElementById('modal-product-price');
     const modalProductImage = document.getElementById('modal-product-image');
+    const modalProductQty = document.getElementById('modal-product-qty');
     const modalCartTotal = document.getElementById('modal-cart-total');
     
     if (modalProductName) modalProductName.textContent = name;
-    if (modalProductPrice) modalProductPrice.textContent = price;
+    
+    // Handle price - ensure it has $ prefix and proper formatting
+    if (modalProductPrice) {
+        let priceDisplay = price;
+        if (typeof price === 'number') {
+            priceDisplay = '$' + price.toFixed(2);
+        } else if (typeof price === 'string' && !price.startsWith('$')) {
+            priceDisplay = '$' + price;
+        }
+        modalProductPrice.textContent = priceDisplay;
+    }
+    
     if (modalProductImage) {
-        modalProductImage.src = image;
+        modalProductImage.src = image || 'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="80" height="80"%3E%3Crect fill="%23374151" width="80" height="80"/%3E%3C/svg%3E';
         modalProductImage.onerror = function() { this.src = 'https://placehold.co/80x80?text=Product'; };
     }
-    if (modalCartTotal) modalCartTotal.textContent = '$' + (tiabCart.total || 0).toFixed(2);
+    
+    // Update quantity if provided
+    if (modalProductQty) {
+        modalProductQty.textContent = 'Qty: ' + (qty || 1);
+    }
+    
+    // Calculate cart total - use provided total, or tiabCart.total, or fallback to localStorage cart
+    let cartTotal = 0;
+    if (typeof total === 'number' && total > 0) {
+        cartTotal = total;
+    } else if (tiabCart && tiabCart.total > 0) {
+        cartTotal = tiabCart.total;
+    } else {
+        // Fallback to localStorage cart
+        try {
+            const localCart = JSON.parse(localStorage.getItem('cart') || '{"total":0}');
+            cartTotal = localCart.total || 0;
+        } catch(e) {}
+    }
+    
+    if (modalCartTotal) {
+        modalCartTotal.textContent = '$' + cartTotal.toFixed(2);
+    }
     
     // Show modal
     overlay.classList.add('show');
+    document.body.style.overflow = 'hidden';
 }
 
 // Close the cart modal
