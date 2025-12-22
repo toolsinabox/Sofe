@@ -232,7 +232,11 @@ const MerchantPOS = () => {
 
   // Handle outlet/register selection
   const handleSetupComplete = async () => {
-    if (!selectedOutlet || !selectedRegister) return;
+    console.log('handleSetupComplete called', { selectedOutlet, selectedRegister });
+    if (!selectedOutlet || !selectedRegister) {
+      console.log('Missing outlet or register');
+      return;
+    }
     
     // Save to localStorage
     localStorage.setItem('pos_outlet', selectedOutlet.id);
@@ -240,17 +244,22 @@ const MerchantPOS = () => {
     
     // Check for existing shift
     try {
+      console.log('Checking for existing shift...');
       const shiftRes = await axios.get(`${API}/pos/shifts/current`, {
         params: { register_id: selectedRegister.id }
       });
+      
+      console.log('Shift response:', shiftRes.data);
       
       if (shiftRes.data) {
         setCurrentShift(shiftRes.data);
         setShowSetup(false);
       } else {
+        console.log('No shift found, showing open shift modal');
         setShowOpenShift(true);
       }
     } catch (error) {
+      console.error('Error checking shift:', error);
       setShowOpenShift(true);
     }
   };
