@@ -884,6 +884,63 @@ const MerchantPOS = () => {
     window.print();
   };
 
+  // Complete sale with status
+  const completeSale = async () => {
+    if (!lastTransaction) return;
+    
+    setCompletingSale(true);
+    try {
+      // Update order status based on selection
+      await axios.put(`${API}/pos/transactions/${lastTransaction.id}/status`, null, {
+        params: {
+          status: saleStatus,
+          notes: saleNote || null
+        }
+      });
+      
+      // Send email receipt if enabled
+      if (emailReceipt && receiptEmail) {
+        await sendEmailReceipt();
+      }
+      
+      setShowConfirmSale(false);
+      setShowReceipt(true);
+      
+    } catch (error) {
+      console.error('Error completing sale:', error);
+      alert(error.response?.data?.detail || 'Failed to complete sale');
+    } finally {
+      setCompletingSale(false);
+    }
+  };
+
+  // Send email receipt
+  const sendEmailReceipt = async () => {
+    if (!lastTransaction || !receiptEmail) return;
+    
+    setSendingEmail(true);
+    try {
+      await axios.post(`${API}/pos/transactions/${lastTransaction.id}/email-receipt`, null, {
+        params: { email: receiptEmail }
+      });
+      return true;
+    } catch (error) {
+      console.error('Error sending email receipt:', error);
+      alert('Failed to send email receipt');
+      return false;
+    } finally {
+      setSendingEmail(false);
+    }
+  };
+
+  // Send email receipt manually (from receipt screen)
+  const handleSendEmailReceipt = async () => {
+    const success = await sendEmailReceipt();
+    if (success) {
+      alert('Email receipt sent successfully!');
+    }
+  };
+
   const quickCashAmounts = [20, 50, 100, 200];
 
   // Format time elapsed
