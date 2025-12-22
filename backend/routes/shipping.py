@@ -167,6 +167,221 @@ async def delete_shipping_zone(zone_id: str):
     return {"message": "Zone deleted successfully"}
 
 
+# ============== ZONES IMPORT/EXPORT ==============
+
+class ZoneImportRow(BaseModel):
+    country: str
+    courier: str
+    from_post_code: str
+    to_post_code: str
+    zone_code: str
+    zone_name: str
+
+@router.get("/zones/export/csv")
+async def export_shipping_zones_csv():
+    """
+    Export all shipping zones to CSV in Maropost format
+    Format: Country, Courier, From Post Code, To Post Code, Zone Code, Zone Name
+    """
+    zones = await db.shipping_zones.find({}, {"_id": 0}).sort("sort_order", 1).to_list(1000)
+    
+    # Create CSV in memory
+    output = io.StringIO()
+    writer = csv.writer(output)
+    
+    # Write header
+    writer.writerow(["Country", "Courier", "From Post Code", "To Post Code", "Zone Code", "Zone Name"])
+    
+    # Write zone data - expand postcode ranges into rows
+    for zone in zones:
+        country = zone.get("country", "AU")
+        courier = zone.get("carrier", "Custom")
+        zone_code = zone.get("code", "")
+        zone_name = zone.get("name", "")
+        
+        for postcode_range in zone.get("postcodes", []):
+            if "-" in postcode_range:
+                # It's a range like "2000-2500"
+                parts = postcode_range.split("-")
+                from_pc = parts[0].strip()
+                to_pc = parts[1].strip() if len(parts) > 1 else from_pc
+            else:
+                # Single postcode
+                from_pc = postcode_range.strip()
+                to_pc = postcode_range.strip()
+            
+            writer.writerow([country, courier, from_pc, to_pc, zone_code, zone_name])
+    
+    # Prepare response
+    output.seek(0)
+    
+    return StreamingResponse(
+        iter([output.getvalue()]),
+        media_type="text/csv",
+        headers={
+            "Content-Disposition": f"attachment; filename=shipping_zones_export_{datetime.now().strftime('%Y%m%d_%H%M%S')}.csv"
+        }
+    )
+
+@router.get("/zones/export/template")
+async def get_zone_import_template():
+    """
+    Get a blank CSV template for importing shipping zones
+    """
+    output = io.StringIO()
+    writer = csv.writer(output)
+    
+    # Write header
+    writer.writerow(["Country", "Courier", "From Post Code", "To Post Code", "Zone Code", "Zone Name"])
+    
+    # Add sample rows
+    writer.writerow(["AU", "Australia Post", "2000", "2500", "SYD", "Sydney Metro"])
+    writer.writerow(["AU", "Australia Post", "3000", "3500", "MEL", "Melbourne Metro"])
+    writer.writerow(["AU", "Custom", "4000", "4500", "BNE", "Brisbane Metro"])
+    
+    output.seek(0)
+    
+    return StreamingResponse(
+        iter([output.getvalue()]),
+        media_type="text/csv",
+        headers={
+            "Content-Disposition": "attachment; filename=shipping_zones_template.csv"
+        }
+    )
+
+@router.post("/zones/import/csv")
+async def import_shipping_zones_csv(
+    file: UploadFile = File(...),
+    mode: str = Query("merge", description="Import mode: 'merge' (add/update) or 'replace' (clear and import)")
+):
+    """
+    Import shipping zones from CSV in Maropost format
+    Format: Country, Courier, From Post Code, To Post Code, Zone Code, Zone Name
+    
+    Modes:
+    - merge: Add new zones and update existing ones (based on zone_code)
+    - replace: Clear all zones and import fresh
+    """
+    if not file.filename.endswith('.csv'):
+        raise HTTPException(status_code=400, detail="File must be a CSV")
+    
+    try:
+        # Read file content
+        content = await file.read()
+        decoded = content.decode('utf-8-sig')  # Handle BOM if present
+        
+        # Parse CSV
+        reader = csv.DictReader(io.StringIO(decoded))
+        
+        # Group rows by zone_code to consolidate postcodes
+        zones_dict = {}
+        import_count = 0
+        
+        for row in reader:
+            zone_code = row.get("Zone Code", "").strip().upper()
+            if not zone_code:
+                continue
+                
+            from_pc = row.get("From Post Code", "").strip()
+            to_pc = row.get("To Post Code", "").strip()
+            
+            # Create postcode range string
+            if from_pc and to_pc:
+                if from_pc == to_pc:
+                    postcode_range = from_pc
+                else:
+                    postcode_range = f"{from_pc}-{to_pc}"
+            elif from_pc:
+                postcode_range = from_pc
+            else:
+                continue
+            
+            if zone_code not in zones_dict:
+                zones_dict[zone_code] = {
+                    "code": zone_code,
+                    "name": row.get("Zone Name", "").strip() or zone_code,
+                    "country": row.get("Country", "AU").strip().upper(),
+                    "carrier": row.get("Courier", "Custom").strip(),
+                    "postcodes": [],
+                    "is_active": True
+                }
+            
+            # Add postcode if not already present
+            if postcode_range and postcode_range not in zones_dict[zone_code]["postcodes"]:
+                zones_dict[zone_code]["postcodes"].append(postcode_range)
+            
+            import_count += 1
+        
+        if not zones_dict:
+            raise HTTPException(status_code=400, detail="No valid zones found in CSV")
+        
+        # Handle import mode
+        if mode == "replace":
+            # Clear existing zones
+            await db.shipping_zones.delete_many({})
+        
+        # Process zones
+        created = 0
+        updated = 0
+        
+        for zone_code, zone_data in zones_dict.items():
+            existing = await db.shipping_zones.find_one({"code": zone_code})
+            
+            if existing:
+                # Update existing zone - merge postcodes
+                if mode == "merge":
+                    existing_postcodes = set(existing.get("postcodes", []))
+                    new_postcodes = set(zone_data["postcodes"])
+                    merged_postcodes = list(existing_postcodes.union(new_postcodes))
+                    
+                    await db.shipping_zones.update_one(
+                        {"code": zone_code},
+                        {"$set": {
+                            "name": zone_data["name"],
+                            "country": zone_data["country"],
+                            "postcodes": merged_postcodes
+                        }}
+                    )
+                else:
+                    await db.shipping_zones.update_one(
+                        {"code": zone_code},
+                        {"$set": zone_data}
+                    )
+                updated += 1
+            else:
+                # Create new zone
+                zone_data["id"] = str(uuid.uuid4())
+                zone_data["sort_order"] = created
+                zone_data["created_at"] = datetime.now(timezone.utc).isoformat()
+                await db.shipping_zones.insert_one(zone_data)
+                created += 1
+        
+        return {
+            "message": f"Import completed successfully",
+            "mode": mode,
+            "rows_processed": import_count,
+            "zones_created": created,
+            "zones_updated": updated,
+            "total_zones": created + updated
+        }
+        
+    except csv.Error as e:
+        raise HTTPException(status_code=400, detail=f"CSV parsing error: {str(e)}")
+    except UnicodeDecodeError:
+        raise HTTPException(status_code=400, detail="File encoding error. Please use UTF-8 encoded CSV.")
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Import error: {str(e)}")
+
+@router.delete("/zones/bulk")
+async def delete_all_shipping_zones():
+    """Delete all shipping zones"""
+    result = await db.shipping_zones.delete_many({})
+    return {
+        "message": f"Deleted {result.deleted_count} shipping zones",
+        "deleted_count": result.deleted_count
+    }
+
+
 # ============== SHIPPING CATEGORIES ==============
 
 @router.get("/categories")
