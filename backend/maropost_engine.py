@@ -1003,6 +1003,11 @@ class MaropostTemplateEngine:
                 limit = int(params.get('limit', 20))
                 items = items[:limit]
             
+            elif tag_name == 'search_results':
+                items = context.get('search_results', [])
+                limit = int(params.get('limit', 50))
+                items = items[:limit]
+            
             elif tag_name == 'category_list' or tag_name == 'categories':
                 items = context.get('categories', [])
                 limit = int(params.get('limit', 10))
