@@ -5284,6 +5284,460 @@ async def update_inventory(product_id: str, stock: int):
         raise HTTPException(status_code=404, detail="Product not found")
     return {"message": "Inventory updated successfully"}
 
+# ==================== POS SYSTEM ====================
+
+# POS Models
+class POSCartItem(BaseModel):
+    product_id: str
+    name: str
+    sku: str
+    price: float
+    quantity: int
+    discount: float = 0
+    discount_type: str = "fixed"  # fixed or percentage
+    subtotal: float
+
+class POSPayment(BaseModel):
+    method: str  # cash, card, split
+    amount: float
+    reference: Optional[str] = None  # For card payments
+    change_given: float = 0  # For cash payments
+
+class POSTransactionCreate(BaseModel):
+    items: List[POSCartItem]
+    payments: List[POSPayment]
+    customer_id: Optional[str] = None
+    customer_name: Optional[str] = None
+    customer_email: Optional[str] = None
+    subtotal: float
+    discount_total: float = 0
+    tax_total: float = 0
+    total: float
+    notes: Optional[str] = None
+    outlet_id: Optional[str] = None
+    register_id: Optional[str] = None
+    staff_id: Optional[str] = None
+    staff_name: Optional[str] = None
+
+class POSOutlet(BaseModel):
+    id: str = Field(default_factory=lambda: str(uuid.uuid4()))
+    name: str
+    address: Optional[str] = None
+    phone: Optional[str] = None
+    email: Optional[str] = None
+    is_active: bool = True
+    created_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
+
+class POSRegister(BaseModel):
+    id: str = Field(default_factory=lambda: str(uuid.uuid4()))
+    name: str
+    outlet_id: str
+    is_active: bool = True
+    current_float: float = 0
+    created_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
+
+class POSShift(BaseModel):
+    id: str = Field(default_factory=lambda: str(uuid.uuid4()))
+    register_id: str
+    outlet_id: str
+    staff_id: str
+    staff_name: str
+    opening_float: float = 0
+    closing_float: Optional[float] = None
+    expected_cash: float = 0
+    actual_cash: Optional[float] = None
+    variance: Optional[float] = None
+    status: str = "open"  # open, closed
+    opened_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
+    closed_at: Optional[datetime] = None
+    notes: Optional[str] = None
+
+class POSCashMovement(BaseModel):
+    id: str = Field(default_factory=lambda: str(uuid.uuid4()))
+    shift_id: str
+    register_id: str
+    type: str  # in, out
+    amount: float
+    reason: str
+    staff_id: str
+    staff_name: str
+    created_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
+
+# POS Endpoints
+
+@api_router.get("/pos/products")
+async def get_pos_products(search: Optional[str] = None, barcode: Optional[str] = None):
+    """Get products optimized for POS - fast search by name, SKU, or barcode"""
+    query = {"is_active": True}
+    
+    if barcode:
+        # Exact barcode match
+        query["barcode"] = barcode
+    elif search:
+        # Search by name or SKU
+        query["$or"] = [
+            {"name": {"$regex": search, "$options": "i"}},
+            {"sku": {"$regex": search, "$options": "i"}},
+            {"barcode": {"$regex": search, "$options": "i"}}
+        ]
+    
+    products = await db.products.find(query, {"_id": 0}).to_list(50)
+    
+    # Return simplified product data for POS
+    return [{
+        "id": p["id"],
+        "name": p["name"],
+        "sku": p["sku"],
+        "barcode": p.get("barcode"),
+        "price": p["price"],
+        "stock": p.get("stock", 0),
+        "image": p.get("images", [None])[0],
+        "category_id": p.get("category_id"),
+        "tax_class": p.get("tax_class", "standard")
+    } for p in products]
+
+@api_router.post("/pos/transactions")
+async def create_pos_transaction(transaction: POSTransactionCreate):
+    """Create a new POS transaction (sale)"""
+    # Generate transaction number
+    count = await db.pos_transactions.count_documents({})
+    transaction_number = f"POS-{datetime.now(timezone.utc).strftime('%Y%m%d')}-{count + 1:04d}"
+    
+    # Create transaction record
+    trans_data = {
+        "id": str(uuid.uuid4()),
+        "transaction_number": transaction_number,
+        "type": "sale",
+        "items": [item.dict() for item in transaction.items],
+        "payments": [payment.dict() for payment in transaction.payments],
+        "customer_id": transaction.customer_id,
+        "customer_name": transaction.customer_name,
+        "customer_email": transaction.customer_email,
+        "subtotal": transaction.subtotal,
+        "discount_total": transaction.discount_total,
+        "tax_total": transaction.tax_total,
+        "total": transaction.total,
+        "notes": transaction.notes,
+        "outlet_id": transaction.outlet_id,
+        "register_id": transaction.register_id,
+        "staff_id": transaction.staff_id,
+        "staff_name": transaction.staff_name,
+        "status": "completed",
+        "created_at": datetime.now(timezone.utc).isoformat(),
+        "synced": True
+    }
+    
+    await db.pos_transactions.insert_one(trans_data)
+    
+    # Update inventory - reduce stock for each item sold
+    for item in transaction.items:
+        await db.products.update_one(
+            {"id": item.product_id},
+            {"$inc": {"stock": -item.quantity}}
+        )
+    
+    # If there's a shift open for this register, update expected cash
+    if transaction.register_id:
+        cash_amount = sum(p.amount for p in transaction.payments if p.method == "cash")
+        if cash_amount > 0:
+            await db.pos_shifts.update_one(
+                {"register_id": transaction.register_id, "status": "open"},
+                {"$inc": {"expected_cash": cash_amount}}
+            )
+    
+    return {
+        "id": trans_data["id"],
+        "transaction_number": transaction_number,
+        "message": "Transaction completed successfully"
+    }
+
+@api_router.get("/pos/transactions")
+async def get_pos_transactions(
+    limit: int = 50,
+    offset: int = 0,
+    register_id: Optional[str] = None,
+    date_from: Optional[str] = None,
+    date_to: Optional[str] = None
+):
+    """Get POS transaction history"""
+    query = {}
+    
+    if register_id:
+        query["register_id"] = register_id
+    
+    if date_from:
+        query["created_at"] = {"$gte": date_from}
+    
+    if date_to:
+        if "created_at" in query:
+            query["created_at"]["$lte"] = date_to
+        else:
+            query["created_at"] = {"$lte": date_to}
+    
+    transactions = await db.pos_transactions.find(query, {"_id": 0}).sort("created_at", -1).skip(offset).limit(limit).to_list(limit)
+    total = await db.pos_transactions.count_documents(query)
+    
+    return {
+        "transactions": transactions,
+        "total": total,
+        "limit": limit,
+        "offset": offset
+    }
+
+@api_router.get("/pos/transactions/{transaction_id}")
+async def get_pos_transaction(transaction_id: str):
+    """Get a single POS transaction"""
+    transaction = await db.pos_transactions.find_one({"id": transaction_id}, {"_id": 0})
+    if not transaction:
+        raise HTTPException(status_code=404, detail="Transaction not found")
+    return transaction
+
+# POS Outlets
+@api_router.get("/pos/outlets")
+async def get_pos_outlets():
+    """Get all POS outlets"""
+    outlets = await db.pos_outlets.find({"is_active": True}, {"_id": 0}).to_list(100)
+    return outlets
+
+@api_router.post("/pos/outlets")
+async def create_pos_outlet(outlet: POSOutlet):
+    """Create a new POS outlet"""
+    outlet_data = outlet.dict()
+    outlet_data["created_at"] = datetime.now(timezone.utc).isoformat()
+    await db.pos_outlets.insert_one(outlet_data)
+    return outlet_data
+
+@api_router.put("/pos/outlets/{outlet_id}")
+async def update_pos_outlet(outlet_id: str, outlet: POSOutlet):
+    """Update a POS outlet"""
+    outlet_data = outlet.dict()
+    outlet_data["updated_at"] = datetime.now(timezone.utc).isoformat()
+    result = await db.pos_outlets.update_one({"id": outlet_id}, {"$set": outlet_data})
+    if result.matched_count == 0:
+        raise HTTPException(status_code=404, detail="Outlet not found")
+    return {"message": "Outlet updated successfully"}
+
+# POS Registers
+@api_router.get("/pos/registers")
+async def get_pos_registers(outlet_id: Optional[str] = None):
+    """Get all POS registers, optionally filtered by outlet"""
+    query = {"is_active": True}
+    if outlet_id:
+        query["outlet_id"] = outlet_id
+    registers = await db.pos_registers.find(query, {"_id": 0}).to_list(100)
+    return registers
+
+@api_router.post("/pos/registers")
+async def create_pos_register(register: POSRegister):
+    """Create a new POS register"""
+    register_data = register.dict()
+    register_data["created_at"] = datetime.now(timezone.utc).isoformat()
+    await db.pos_registers.insert_one(register_data)
+    return register_data
+
+# POS Shifts
+@api_router.post("/pos/shifts/open")
+async def open_pos_shift(register_id: str, outlet_id: str, staff_id: str, staff_name: str, opening_float: float = 0):
+    """Open a new shift for a register"""
+    # Check if there's already an open shift
+    existing = await db.pos_shifts.find_one({"register_id": register_id, "status": "open"})
+    if existing:
+        raise HTTPException(status_code=400, detail="There is already an open shift for this register")
+    
+    shift = POSShift(
+        register_id=register_id,
+        outlet_id=outlet_id,
+        staff_id=staff_id,
+        staff_name=staff_name,
+        opening_float=opening_float,
+        expected_cash=opening_float
+    )
+    
+    shift_data = shift.dict()
+    shift_data["opened_at"] = datetime.now(timezone.utc).isoformat()
+    await db.pos_shifts.insert_one(shift_data)
+    
+    return shift_data
+
+@api_router.get("/pos/shifts/current")
+async def get_current_shift(register_id: str):
+    """Get the current open shift for a register"""
+    shift = await db.pos_shifts.find_one({"register_id": register_id, "status": "open"}, {"_id": 0})
+    return shift
+
+@api_router.post("/pos/shifts/{shift_id}/close")
+async def close_pos_shift(shift_id: str, actual_cash: float, closing_float: float, notes: Optional[str] = None):
+    """Close a shift and perform cash-up"""
+    shift = await db.pos_shifts.find_one({"id": shift_id})
+    if not shift:
+        raise HTTPException(status_code=404, detail="Shift not found")
+    
+    if shift["status"] == "closed":
+        raise HTTPException(status_code=400, detail="Shift is already closed")
+    
+    variance = actual_cash - shift["expected_cash"]
+    
+    update_data = {
+        "status": "closed",
+        "closing_float": closing_float,
+        "actual_cash": actual_cash,
+        "variance": variance,
+        "closed_at": datetime.now(timezone.utc).isoformat(),
+        "notes": notes
+    }
+    
+    await db.pos_shifts.update_one({"id": shift_id}, {"$set": update_data})
+    
+    return {
+        "message": "Shift closed successfully",
+        "expected_cash": shift["expected_cash"],
+        "actual_cash": actual_cash,
+        "variance": variance
+    }
+
+# Cash Movements (Money In/Out)
+@api_router.post("/pos/cash-movements")
+async def create_cash_movement(movement: POSCashMovement):
+    """Record a cash movement (money in/out of register)"""
+    movement_data = movement.dict()
+    movement_data["created_at"] = datetime.now(timezone.utc).isoformat()
+    await db.pos_cash_movements.insert_one(movement_data)
+    
+    # Update shift expected cash
+    adjustment = movement.amount if movement.type == "in" else -movement.amount
+    await db.pos_shifts.update_one(
+        {"id": movement.shift_id},
+        {"$inc": {"expected_cash": adjustment}}
+    )
+    
+    return movement_data
+
+@api_router.get("/pos/cash-movements")
+async def get_cash_movements(shift_id: Optional[str] = None, register_id: Optional[str] = None):
+    """Get cash movements for a shift or register"""
+    query = {}
+    if shift_id:
+        query["shift_id"] = shift_id
+    if register_id:
+        query["register_id"] = register_id
+    
+    movements = await db.pos_cash_movements.find(query, {"_id": 0}).sort("created_at", -1).to_list(100)
+    return movements
+
+# POS Reports
+@api_router.get("/pos/reports/daily")
+async def get_pos_daily_report(date: Optional[str] = None, outlet_id: Optional[str] = None):
+    """Get daily POS sales report"""
+    if not date:
+        date = datetime.now(timezone.utc).strftime("%Y-%m-%d")
+    
+    query = {
+        "created_at": {"$regex": f"^{date}"}
+    }
+    if outlet_id:
+        query["outlet_id"] = outlet_id
+    
+    transactions = await db.pos_transactions.find(query, {"_id": 0}).to_list(1000)
+    
+    # Calculate totals
+    total_sales = sum(t["total"] for t in transactions)
+    total_transactions = len(transactions)
+    total_items = sum(sum(item["quantity"] for item in t["items"]) for t in transactions)
+    
+    # Payment breakdown
+    payment_breakdown = {}
+    for trans in transactions:
+        for payment in trans.get("payments", []):
+            method = payment["method"]
+            if method not in payment_breakdown:
+                payment_breakdown[method] = 0
+            payment_breakdown[method] += payment["amount"]
+    
+    # Average transaction value
+    avg_transaction = total_sales / total_transactions if total_transactions > 0 else 0
+    
+    return {
+        "date": date,
+        "total_sales": total_sales,
+        "total_transactions": total_transactions,
+        "total_items": total_items,
+        "average_transaction": avg_transaction,
+        "payment_breakdown": payment_breakdown,
+        "transactions": transactions
+    }
+
+@api_router.get("/pos/reports/summary")
+async def get_pos_summary():
+    """Get POS summary statistics"""
+    today = datetime.now(timezone.utc).strftime("%Y-%m-%d")
+    
+    # Today's transactions
+    today_transactions = await db.pos_transactions.find(
+        {"created_at": {"$regex": f"^{today}"}}, {"_id": 0}
+    ).to_list(1000)
+    
+    today_sales = sum(t["total"] for t in today_transactions)
+    today_count = len(today_transactions)
+    
+    # Total all time
+    all_transactions = await db.pos_transactions.find({}, {"_id": 0}).to_list(10000)
+    total_sales = sum(t["total"] for t in all_transactions)
+    total_count = len(all_transactions)
+    
+    # Open shifts
+    open_shifts = await db.pos_shifts.count_documents({"status": "open"})
+    
+    return {
+        "today": {
+            "sales": today_sales,
+            "transactions": today_count
+        },
+        "all_time": {
+            "sales": total_sales,
+            "transactions": total_count
+        },
+        "open_shifts": open_shifts
+    }
+
+# Initialize default outlet and register
+@api_router.post("/pos/init")
+async def init_pos():
+    """Initialize POS with default outlet and register"""
+    # Check if already initialized
+    outlets = await db.pos_outlets.count_documents({})
+    if outlets > 0:
+        return {"message": "POS already initialized", "initialized": False}
+    
+    # Create default outlet
+    outlet = {
+        "id": str(uuid.uuid4()),
+        "name": "Main Store",
+        "address": "",
+        "phone": "",
+        "email": "",
+        "is_active": True,
+        "created_at": datetime.now(timezone.utc).isoformat()
+    }
+    await db.pos_outlets.insert_one(outlet)
+    
+    # Create default register
+    register = {
+        "id": str(uuid.uuid4()),
+        "name": "Register 1",
+        "outlet_id": outlet["id"],
+        "is_active": True,
+        "current_float": 0,
+        "created_at": datetime.now(timezone.utc).isoformat()
+    }
+    await db.pos_registers.insert_one(register)
+    
+    return {
+        "message": "POS initialized successfully",
+        "initialized": True,
+        "outlet": outlet,
+        "register": register
+    }
+
 # ==================== SEED DATA ====================
 
 @api_router.post("/seed")
