@@ -2141,6 +2141,517 @@ async def render_content_zone(zone_name: str):
     
     return {"html": "\n".join(html_parts), "found": True, "zone": zone}
 
+# ==================== PRODUCT REVIEWS ====================
+
+@api_router.get("/reviews")
+async def get_all_reviews(
+    status: Optional[str] = None,
+    product_id: Optional[str] = None,
+    limit: int = 50
+):
+    """Get all reviews with optional filters"""
+    query = {}
+    if status:
+        query["status"] = status
+    if product_id:
+        query["product_id"] = product_id
+    
+    reviews = await db.reviews.find(query, {"_id": 0}).sort("created_at", -1).to_list(limit)
+    return reviews
+
+@api_router.get("/reviews/product/{product_id}")
+async def get_product_reviews(product_id: str):
+    """Get approved reviews for a product"""
+    reviews = await db.reviews.find(
+        {"product_id": product_id, "status": "approved"},
+        {"_id": 0}
+    ).sort("created_at", -1).to_list(100)
+    
+    # Calculate average rating
+    if reviews:
+        avg_rating = sum(r["rating"] for r in reviews) / len(reviews)
+    else:
+        avg_rating = 0
+    
+    return {
+        "reviews": reviews,
+        "count": len(reviews),
+        "average_rating": round(avg_rating, 1)
+    }
+
+@api_router.post("/reviews", response_model=ProductReview)
+async def create_review(review: ProductReviewCreate):
+    """Submit a new product review"""
+    new_review = ProductReview(
+        **review.dict(),
+        status="pending"  # All reviews start as pending
+    )
+    await db.reviews.insert_one(new_review.dict())
+    return new_review
+
+@api_router.put("/reviews/{review_id}")
+async def update_review(review_id: str, update: ProductReviewUpdate):
+    """Update a review (mainly for moderation)"""
+    update_data = {k: v for k, v in update.dict().items() if v is not None}
+    update_data["updated_at"] = datetime.now(timezone.utc)
+    
+    result = await db.reviews.update_one(
+        {"id": review_id},
+        {"$set": update_data}
+    )
+    if result.matched_count == 0:
+        raise HTTPException(status_code=404, detail="Review not found")
+    
+    return {"message": "Review updated"}
+
+@api_router.delete("/reviews/{review_id}")
+async def delete_review(review_id: str):
+    """Delete a review"""
+    result = await db.reviews.delete_one({"id": review_id})
+    if result.deleted_count == 0:
+        raise HTTPException(status_code=404, detail="Review not found")
+    return {"message": "Review deleted"}
+
+@api_router.post("/reviews/{review_id}/helpful")
+async def mark_review_helpful(review_id: str):
+    """Mark a review as helpful"""
+    await db.reviews.update_one(
+        {"id": review_id},
+        {"$inc": {"helpful_votes": 1}}
+    )
+    return {"message": "Vote recorded"}
+
+# ==================== SHIPPING ZONES & RATES ====================
+
+@api_router.get("/shipping/zones")
+async def get_shipping_zones():
+    """Get all shipping zones"""
+    zones = await db.shipping_zones.find({}, {"_id": 0}).to_list(100)
+    return zones
+
+@api_router.get("/shipping/zones/{zone_id}")
+async def get_shipping_zone(zone_id: str):
+    """Get a single shipping zone"""
+    zone = await db.shipping_zones.find_one({"id": zone_id}, {"_id": 0})
+    if not zone:
+        raise HTTPException(status_code=404, detail="Shipping zone not found")
+    return zone
+
+@api_router.post("/shipping/zones", response_model=ShippingZone)
+async def create_shipping_zone(zone: ShippingZoneCreate):
+    """Create a new shipping zone"""
+    new_zone = ShippingZone(**zone.dict())
+    # Convert rates to ShippingRate objects
+    new_zone.rates = [ShippingRate(**r) for r in zone.rates]
+    await db.shipping_zones.insert_one(new_zone.dict())
+    return new_zone
+
+@api_router.put("/shipping/zones/{zone_id}")
+async def update_shipping_zone(zone_id: str, update: ShippingZoneUpdate):
+    """Update a shipping zone"""
+    update_data = {k: v for k, v in update.dict().items() if v is not None}
+    
+    # Process rates if provided
+    if "rates" in update_data:
+        update_data["rates"] = [
+            ShippingRate(**r).dict() if isinstance(r, dict) else r 
+            for r in update_data["rates"]
+        ]
+    
+    result = await db.shipping_zones.update_one(
+        {"id": zone_id},
+        {"$set": update_data}
+    )
+    if result.matched_count == 0:
+        raise HTTPException(status_code=404, detail="Shipping zone not found")
+    
+    updated = await db.shipping_zones.find_one({"id": zone_id}, {"_id": 0})
+    return updated
+
+@api_router.delete("/shipping/zones/{zone_id}")
+async def delete_shipping_zone(zone_id: str):
+    """Delete a shipping zone"""
+    result = await db.shipping_zones.delete_one({"id": zone_id})
+    if result.deleted_count == 0:
+        raise HTTPException(status_code=404, detail="Shipping zone not found")
+    return {"message": "Shipping zone deleted"}
+
+@api_router.post("/shipping/calculate")
+async def calculate_shipping(
+    country: str = "AU",
+    state: Optional[str] = None,
+    postcode: Optional[str] = None,
+    weight: float = 0,
+    order_total: float = 0
+):
+    """Calculate available shipping options for an address"""
+    zones = await db.shipping_zones.find({"is_active": True}, {"_id": 0}).to_list(100)
+    
+    available_rates = []
+    for zone in zones:
+        # Check if address matches zone
+        matches = False
+        if country in zone.get("countries", []):
+            matches = True
+        if state and state in zone.get("states", []):
+            matches = True
+        if postcode:
+            for pattern in zone.get("postcodes", []):
+                if "-" in pattern:
+                    start, end = pattern.split("-")
+                    if start <= postcode <= end:
+                        matches = True
+                        break
+                elif postcode.startswith(pattern):
+                    matches = True
+                    break
+        
+        if matches or not zone.get("countries") and not zone.get("states") and not zone.get("postcodes"):
+            # Check rates within this zone
+            for rate in zone.get("rates", []):
+                if not rate.get("is_active", True):
+                    continue
+                
+                # Check weight limits
+                if weight < rate.get("min_weight", 0):
+                    continue
+                if rate.get("max_weight") and weight > rate["max_weight"]:
+                    continue
+                
+                # Check order value limits
+                if order_total < rate.get("min_order", 0):
+                    continue
+                if rate.get("max_order") and order_total > rate["max_order"]:
+                    continue
+                
+                available_rates.append({
+                    "zone_name": zone["name"],
+                    "rate_name": rate["name"],
+                    "price": rate["price"],
+                    "estimated_days": rate.get("estimated_days", "3-5 business days")
+                })
+    
+    return {"rates": available_rates}
+
+# ==================== ABANDONED CART RECOVERY ====================
+
+@api_router.get("/abandoned-carts")
+async def get_abandoned_carts(
+    recovered: Optional[bool] = None,
+    days: int = 7
+):
+    """Get abandoned carts from the last N days"""
+    cutoff = datetime.now(timezone.utc) - timedelta(days=days)
+    query = {"created_at": {"$gte": cutoff}}
+    
+    if recovered is not None:
+        query["recovered"] = recovered
+    
+    carts = await db.abandoned_carts.find(query, {"_id": 0}).sort("created_at", -1).to_list(200)
+    return carts
+
+@api_router.get("/abandoned-carts/stats")
+async def get_abandoned_cart_stats():
+    """Get abandoned cart statistics"""
+    # Total abandoned carts (last 30 days)
+    cutoff = datetime.now(timezone.utc) - timedelta(days=30)
+    total = await db.abandoned_carts.count_documents({"created_at": {"$gte": cutoff}})
+    recovered = await db.abandoned_carts.count_documents({
+        "created_at": {"$gte": cutoff},
+        "recovered": True
+    })
+    
+    # Calculate total value
+    pipeline = [
+        {"$match": {"created_at": {"$gte": cutoff}}},
+        {"$group": {
+            "_id": None,
+            "total_value": {"$sum": "$subtotal"},
+            "recovered_value": {
+                "$sum": {"$cond": [{"$eq": ["$recovered", True]}, "$subtotal", 0]}
+            }
+        }}
+    ]
+    result = await db.abandoned_carts.aggregate(pipeline).to_list(1)
+    
+    stats = result[0] if result else {"total_value": 0, "recovered_value": 0}
+    
+    return {
+        "total_carts": total,
+        "recovered_carts": recovered,
+        "recovery_rate": round(recovered / total * 100, 1) if total > 0 else 0,
+        "total_abandoned_value": stats.get("total_value", 0),
+        "recovered_value": stats.get("recovered_value", 0)
+    }
+
+@api_router.post("/abandoned-carts/track")
+async def track_abandoned_cart(
+    cart_id: str,
+    email: str,
+    name: Optional[str] = None,
+    items: List[dict] = [],
+    subtotal: float = 0
+):
+    """Track or update an abandoned cart"""
+    existing = await db.abandoned_carts.find_one({"cart_id": cart_id})
+    
+    if existing:
+        # Update existing
+        await db.abandoned_carts.update_one(
+            {"cart_id": cart_id},
+            {"$set": {
+                "items": items,
+                "subtotal": subtotal,
+                "last_activity": datetime.now(timezone.utc)
+            }}
+        )
+    else:
+        # Create new
+        cart = AbandonedCart(
+            cart_id=cart_id,
+            customer_email=email,
+            customer_name=name,
+            items=items,
+            subtotal=subtotal
+        )
+        await db.abandoned_carts.insert_one(cart.dict())
+    
+    return {"message": "Cart tracked"}
+
+@api_router.post("/abandoned-carts/{cart_id}/send-recovery")
+async def send_recovery_email(cart_id: str, email_type: str = "reminder"):
+    """Send a recovery email for an abandoned cart"""
+    cart = await db.abandoned_carts.find_one({"cart_id": cart_id}, {"_id": 0})
+    if not cart:
+        raise HTTPException(status_code=404, detail="Abandoned cart not found")
+    
+    # In a real implementation, this would send an email
+    # For now, we'll just update the tracking
+    await db.abandoned_carts.update_one(
+        {"cart_id": cart_id},
+        {
+            "$inc": {"recovery_emails_sent": 1},
+            "$set": {"last_email_sent": datetime.now(timezone.utc)}
+        }
+    )
+    
+    return {
+        "message": f"Recovery email ({email_type}) queued for {cart['customer_email']}",
+        "email_type": email_type,
+        "cart_id": cart_id
+    }
+
+@api_router.post("/abandoned-carts/{cart_id}/mark-recovered")
+async def mark_cart_recovered(cart_id: str, order_id: str):
+    """Mark an abandoned cart as recovered"""
+    result = await db.abandoned_carts.update_one(
+        {"cart_id": cart_id},
+        {"$set": {
+            "recovered": True,
+            "recovered_order_id": order_id
+        }}
+    )
+    if result.matched_count == 0:
+        raise HTTPException(status_code=404, detail="Abandoned cart not found")
+    
+    return {"message": "Cart marked as recovered"}
+
+# ==================== SEO TOOLS ====================
+
+@api_router.get("/seo/global")
+async def get_global_seo_settings():
+    """Get global SEO settings"""
+    settings = await db.seo_settings.find_one({"id": "global_seo"}, {"_id": 0})
+    if not settings:
+        return GlobalSEOSettings().dict()
+    return settings
+
+@api_router.put("/seo/global")
+async def update_global_seo_settings(settings: dict):
+    """Update global SEO settings"""
+    settings["id"] = "global_seo"
+    await db.seo_settings.update_one(
+        {"id": "global_seo"},
+        {"$set": settings},
+        upsert=True
+    )
+    return await db.seo_settings.find_one({"id": "global_seo"}, {"_id": 0})
+
+@api_router.get("/seo/{entity_type}/{entity_id}")
+async def get_entity_seo(entity_type: str, entity_id: str):
+    """Get SEO settings for a specific entity"""
+    seo = await db.seo_settings.find_one(
+        {"entity_type": entity_type, "entity_id": entity_id},
+        {"_id": 0}
+    )
+    if not seo:
+        return SEOSettings(entity_type=entity_type, entity_id=entity_id).dict()
+    return seo
+
+@api_router.put("/seo/{entity_type}/{entity_id}")
+async def update_entity_seo(entity_type: str, entity_id: str, settings: SEOSettingsUpdate):
+    """Update SEO settings for a specific entity"""
+    update_data = {k: v for k, v in settings.dict().items() if v is not None}
+    update_data["entity_type"] = entity_type
+    update_data["entity_id"] = entity_id
+    update_data["updated_at"] = datetime.now(timezone.utc)
+    
+    await db.seo_settings.update_one(
+        {"entity_type": entity_type, "entity_id": entity_id},
+        {"$set": update_data},
+        upsert=True
+    )
+    
+    return await db.seo_settings.find_one(
+        {"entity_type": entity_type, "entity_id": entity_id},
+        {"_id": 0}
+    )
+
+@api_router.get("/sitemap.xml")
+async def generate_sitemap():
+    """Generate XML sitemap"""
+    from fastapi.responses import Response
+    
+    # Get store URL
+    store_settings = await db.store_settings.find_one({"id": "store_settings"})
+    base_url = store_settings.get("store_url", "") if store_settings else ""
+    if not base_url:
+        base_url = "https://example.com"
+    
+    urls = []
+    
+    # Homepage
+    urls.append({"loc": f"{base_url}/live", "priority": "1.0", "changefreq": "daily"})
+    
+    # Products
+    products = await db.products.find({"is_active": True}, {"id": 1, "updated_at": 1}).to_list(1000)
+    for p in products:
+        urls.append({
+            "loc": f"{base_url}/live/product/{p['id']}",
+            "priority": "0.8",
+            "changefreq": "weekly",
+            "lastmod": p.get("updated_at", datetime.now(timezone.utc)).strftime("%Y-%m-%d")
+        })
+    
+    # Categories
+    categories = await db.categories.find({}, {"id": 1}).to_list(100)
+    for c in categories:
+        urls.append({
+            "loc": f"{base_url}/live/category/{c['id']}",
+            "priority": "0.7",
+            "changefreq": "weekly"
+        })
+    
+    # Build XML
+    xml_parts = ['<?xml version="1.0" encoding="UTF-8"?>']
+    xml_parts.append('<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">')
+    
+    for url in urls:
+        xml_parts.append("  <url>")
+        xml_parts.append(f"    <loc>{url['loc']}</loc>")
+        if url.get("lastmod"):
+            xml_parts.append(f"    <lastmod>{url['lastmod']}</lastmod>")
+        xml_parts.append(f"    <changefreq>{url.get('changefreq', 'weekly')}</changefreq>")
+        xml_parts.append(f"    <priority>{url.get('priority', '0.5')}</priority>")
+        xml_parts.append("  </url>")
+    
+    xml_parts.append("</urlset>")
+    
+    return Response(content="\n".join(xml_parts), media_type="application/xml")
+
+@api_router.get("/robots.txt")
+async def get_robots_txt():
+    """Get robots.txt content"""
+    from fastapi.responses import PlainTextResponse
+    
+    seo = await db.seo_settings.find_one({"id": "global_seo"}, {"_id": 0})
+    if seo and seo.get("robots_txt"):
+        content = seo["robots_txt"]
+    else:
+        content = "User-agent: *\nAllow: /\n\nSitemap: /api/sitemap.xml"
+    
+    return PlainTextResponse(content=content)
+
+# ==================== MEGA MENU ====================
+
+@api_router.get("/mega-menu")
+async def get_mega_menus():
+    """Get all mega menu configurations"""
+    menus = await db.mega_menus.find({}, {"_id": 0}).sort("sort_order", 1).to_list(50)
+    return menus
+
+@api_router.get("/mega-menu/{menu_id}")
+async def get_mega_menu(menu_id: str):
+    """Get a single mega menu"""
+    menu = await db.mega_menus.find_one({"id": menu_id}, {"_id": 0})
+    if not menu:
+        raise HTTPException(status_code=404, detail="Mega menu not found")
+    return menu
+
+@api_router.post("/mega-menu", response_model=MegaMenu)
+async def create_mega_menu(menu: MegaMenu):
+    """Create a new mega menu"""
+    await db.mega_menus.insert_one(menu.dict())
+    return menu
+
+@api_router.put("/mega-menu/{menu_id}")
+async def update_mega_menu(menu_id: str, update: MegaMenuUpdate):
+    """Update a mega menu"""
+    update_data = {k: v for k, v in update.dict().items() if v is not None}
+    
+    result = await db.mega_menus.update_one(
+        {"id": menu_id},
+        {"$set": update_data}
+    )
+    if result.matched_count == 0:
+        raise HTTPException(status_code=404, detail="Mega menu not found")
+    
+    return await db.mega_menus.find_one({"id": menu_id}, {"_id": 0})
+
+@api_router.delete("/mega-menu/{menu_id}")
+async def delete_mega_menu(menu_id: str):
+    """Delete a mega menu"""
+    result = await db.mega_menus.delete_one({"id": menu_id})
+    if result.deleted_count == 0:
+        raise HTTPException(status_code=404, detail="Mega menu not found")
+    return {"message": "Mega menu deleted"}
+
+@api_router.post("/mega-menu/generate-from-categories")
+async def generate_mega_menu_from_categories():
+    """Auto-generate mega menu from existing categories"""
+    categories = await db.categories.find({}, {"_id": 0}).to_list(100)
+    
+    # Create mega menu entries for each top-level category
+    created = []
+    for i, cat in enumerate(categories):
+        menu = MegaMenu(
+            category_id=cat.get("id"),
+            title=cat.get("name", "Category"),
+            columns=[
+                MegaMenuColumn(
+                    title="Shop All",
+                    items=[
+                        MegaMenuItem(
+                            title=f"View All {cat.get('name', 'Products')}",
+                            url=f"/live/category/{cat.get('id')}",
+                            type="category"
+                        )
+                    ]
+                )
+            ],
+            featured_image=cat.get("image"),
+            sort_order=i
+        )
+        
+        await db.mega_menus.update_one(
+            {"category_id": cat.get("id")},
+            {"$set": menu.dict()},
+            upsert=True
+        )
+        created.append(menu.dict())
+    
+    return {"message": f"Generated {len(created)} mega menus", "menus": created}
+
 # ==================== STORE SETTINGS ====================
 
 @api_router.get("/store/settings", response_model=StoreSettings)
