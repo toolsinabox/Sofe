@@ -2149,7 +2149,6 @@ const MerchantShipping = () => {
                     <Loader2 className="w-6 h-6 text-emerald-400 animate-spin" />
                     <div>
                       <p className="text-white font-medium">Uploading & Processing...</p>
-                      <p className="text-gray-400 text-sm">{selectedRateFile?.name}</p>
                     </div>
                   </div>
                   <div className="w-full bg-gray-700 rounded-full h-2">
