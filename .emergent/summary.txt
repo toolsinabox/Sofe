@@ -1,0 +1,165 @@
+<analysis>**original_problem_statement:**
+The initial request was to build a clone of the Maropost e-commerce platform. This has since expanded to include a merchant dashboard, a Point of Sale (POS) system, and now a highly detailed shipping calculation and management system.
+
+The most recent set of requests focused on perfecting this shipping system. The user asked for:
+- A suburb field in the shipping calculator that auto-populates from a postcode.
+- A fix for various UI bugs in the merchant shipping dashboard, such as input fields losing focus and edit modals not populating with data.
+- Implementation of cubic (volumetric) weight calculations based on new shipping dimension fields for products.
+- Implementation of GST handling via a Rates Include GST toggle for each shipping service.
+- A deep investigation and correction of the shipping calculation logic to exactly match Maropost's order of operations, specifically regarding how the fuel levy and handling fees are applied.
+- The final, and currently active, request is to integrate this perfected shipping calculator into the customer-facing storefront on the **Product Detail, Cart, and Checkout pages**.
+
+**User's preferred language**: English
+
+**what currently exists?**
+- A full-stack application (React/FastAPI/MongoDB) with a merchant dashboard and POS.
+- A comprehensive backend shipping module () with a highly accurate calculation engine that now handles:
+    - Cubic/volumetric weight.
+    - A specific order of operations (Base Rate -> Fuel Levy -> Handling Fee -> GST) to match Maropost.
+    - GST calculations based on a  flag on each shipping service.
+    - An API endpoint for postcode-to-suburb lookup.
+- A feature-rich merchant shipping dashboard () with a fully functional shipping calculator and UI bug fixes applied.
+- The agent has started integrating the calculator into the storefront by overwriting the  and  files.
+
+**Last working item**:
+-   **Last item agent was working:** Integrating the newly perfected shipping calculation logic into the customer-facing storefront pages. The agent had just overwritten the  and  files with new code and was about to address the  page.
+-   **Status:** IN PROGRESS
+-   **Agent Testing Done:** N
+-   **Which testing method agent to use?** Frontend testing agent to verify the complete shipping flow on the storefront: from the product page calculator, to the cart page, and finally selecting a shipping option on the checkout page.
+-   **User Testing Done:** N
+
+**All Pending/In progress Issue list**:
+-   **Issue 1: Product Data Mismatch (P1)**
+-   **Issue 2: No Backend Negative Stock Validation (P2)**
+
+Issues Detail:
+-   **Issue 1: Product Data Mismatch**
+    -   **Attempted fixes:** None.
+    -   **Next debug checklist:** Update the  collection in the database with product data that aligns with the TOOLS IN A BOX brand identity.
+    -   **Why fix this issue and what will be achieved with this?** To create a consistent and believable user experience.
+    -   **Status:** NOT STARTED
+    -   **Is recurring issue?** Y
+    -   **Should Test frontend/backend/both after fix?** Frontend
+-   **Issue 2: No Backend Negative Stock Validation**
+    -   **Attempted fixes:** None.
+    -   **Next debug checklist:** Modify the order creation logic to check if requested quantity exceeds available stock.
+    -   **Why fix this issue and what will be achieved with this?** Prevents overselling and ensures inventory accuracy.
+    -   **Status:** NOT STARTED
+    -   **Is recurring issue?** Y
+    -   **Should Test frontend/backend/both after fix?** Backend
+
+**In progress Task List**:
+-   **Task 1: Integrate Shipping Calculator into Storefront (P0)**
+    -   **Where to resume:**
+        1.  **Review  and :** The agent used . The code in these files must be reviewed to ensure the shipping calculator is implemented correctly and no previous functionality was lost.
+        2.  **Implement on :** Modify the checkout page to calculate shipping for the entire cart based on the customer's address. It must require the user to select a shipping option (e.g., Pickup or a calculated rate) before the payment section is enabled.
+        3.  **End-to-End Test:** Verify the entire customer journey works as expected.
+    -   **What will be achieved with this?** Customers will be able to get accurate shipping quotes on product pages and be required to select a final shipping method during checkout to complete a purchase.
+    -   **Status:** IN PROGRESS
+    -   **Blocked on something:** None.
+
+**Upcoming and Future Tasks**
+-   **Upcoming Tasks:**
+    -   **P0:** Connect the new shipping system to the POS and storefront checkout to calculate and display real shipping rates.
+    -   **P1:** Implement Park Sale and Void Sale functionalities in the POS.
+    -   **P1:** Implement the logic for Pay Later and Layby transactions.
+-   **Future Tasks:**
+    -   **P2:** Add Privacy Policy and Terms of Service CMS pages.
+    -   **P2:** Ensure all footer links in the storefront are functional.
+    -   **P2:** Implement POS offline sync capability.
+
+**Completed work in this session**
+-   **Feature: Advanced Shipping Calculation:**
+    -   Implemented cubic/volumetric weight calculation based on new product shipping dimensions.
+    -   Corrected the calculation order of operations (Fuel Levy on base rate only, then add Handling Fee) to exactly match Maropost.
+    -   Added full GST handling based on a Rates Include GST toggle per service.
+-   **Feature: Suburb Autocomplete:** Added a backend API and frontend UI for looking up Australian suburbs from a postcode in the shipping calculator.
+-   **Bug Fix:  UI Issues:**
+    -   Resolved the input losing focus bug by refactoring nested components and using memoization.
+    -   Fixed edit modals not showing saved data by lifting form state to the parent component.
+-   **Bug Fix: Shipping Rate & Display Issues:**
+    -   Fixed the 1st Parcel rate not saving by updating the backend model.
+    -   Fixed the calculator displaying  by correcting the data key used in the frontend.
+    -   Fixed the Rates Include GST toggle not saving its state.
+-   **Backend Model Updates:** Added  to products and  to services.
+
+**Earlier issues found/mentioned but not fixed**
+-   **Issue 1: Linting Errors in **: While the agent fixed the primary UI bugs, the file remains very large (over 3000 lines) and has numerous linting warnings about its structure. The original recommendation to break it into smaller components still stands.
+
+**Known issue recurrence from previous fork**
+-   None.
+
+**Code Architecture**
+
+
+**Key Technical Concepts**
+-   **Complex Calculation Logic:** The shipping price calculation now follows a precise order of operations to match a third-party system: .
+-   **Frontend State Refactoring:** Solved critical UI bugs (input focus loss) in a large React component by lifting state out of nested functional components and using  to prevent unnecessary re-renders.
+-   **Cubic Weight Calculation:** Shipping is based on the greater of actual weight or volumetric weight, calculated as .
+
+**key DB schema**
+-   **products:** added , , .
+-   **shipping_rates:** added .
+-   **shipping_services:** added , .
+
+**changes in tech stack**
+-   None.
+
+**All files of reference**
+-   **/app/backend/routes/shipping.py**: Core backend shipping calculation logic.
+-   **/app/frontend/src/pages/merchant/MerchantShipping.jsx**: The merchant-facing shipping dashboard.
+-   **/app/frontend/src/pages/store/ProductDetail.jsx**: Customer-facing product page.
+-   **/app/frontend/src/pages/store/Cart.jsx**: Customer-facing cart page.
+-   **/app/frontend/src/pages/store/Checkout.jsx**: Customer-facing checkout page.
+
+**Areas that need refactoring**:
+-   **/app/frontend/src/pages/merchant/MerchantShipping.jsx**: This file is over 3000 lines and, despite recent fixes, remains a source of technical debt. It should be broken down into smaller components for each tab.
+-   The use of  on  and  requires the next agent to carefully review the new code to ensure no existing logic was unintentionally removed.
+
+**key api endpoints**
+-   : (New) Looks up suburbs by postcode.
+-   : (Modified) Heavily updated calculation logic.
+-   : (Modified) Correctly saves  flag.
+
+**Critical Info for New Agent**
+-   **Top Priority:** Your main task is to complete the integration of the shipping calculator into the customer storefront.
+-   **Review First:** Since the previous agent used , you **must** start by reviewing the code in  and .
+-   **Checkout Page Logic:** The checkout page is the final piece. It needs to calculate shipping for the entire cart and require the user to select a shipping option before payment can be made.
+-   **Calculation is Sensitive:** The shipping calculation in  is now finely tuned to match Maropost. Do not change the order of operations without careful consideration.
+
+**documents and test_reports created in this job**
+-    was updated to include test cases for the suburb feature.
+
+**Last 10 User Messages and any pending HUMAN messages**
+-   
+-   
+-   
+-   
+-   
+-   
+-   
+-   
+-   
+-   
+
+**Project Health Check:**
+-   **Broken:** The storefront checkout flow is broken. A customer cannot select a shipping method or complete a purchase.
+-   **Mocked:** None.
+
+**3rd Party Integrations**
+-   Stripe (Payments)
+
+**Testing status**
+-   **Testing agent used after significant changes:** NO
+-   **Troubleshoot agent used after agent stuck in loop:** NO
+-   **Test files created:** None (only ad-hoc  and  commands were used).
+-   **Known regressions:** None.
+
+**Credentials to test flow:**
+-   **Merchant Role:**
+    -   **Username:** 
+    -   **Password:** 
+
+**What agent forgot to execute**
+-   The agent started the task of integrating the shipping calculator into the storefront but did not complete it. The  page still needs to be implemented.
+-   The agent used  for  and  but did not perform a review to ensure the new code was correct and complete.</analysis>
