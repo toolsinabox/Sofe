@@ -1,119 +1,291 @@
-        <!-- Shopping Cart Page -->
-        <div class="bg-gray-50 py-8 min-h-screen">
-            <div class="max-w-7xl mx-auto px-4">
-                <h1 class="text-3xl font-bold text-gray-900 mb-8">Shopping Cart</h1>
+        <!-- Shopping Cart Page - Maropost Style -->
+        <div class="cart-page-wrapper" style="background: #f5f5f5; min-height: 100vh; padding: 30px 0;">
+            <div style="max-width: 1200px; margin: 0 auto; padding: 0 20px;">
+                <h1 style="font-size: 28px; font-weight: 700; color: #333; margin-bottom: 25px;">Shopping Cart</h1>
                 
-                <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
-                    <!-- Cart Items -->
-                    <div class="lg:col-span-2">
-                        <div class="bg-white rounded-xl shadow-sm overflow-hidden">
-                            <!-- Cart Header -->
-                            <div class="hidden md:grid grid-cols-12 gap-4 p-4 bg-gray-50 border-b text-sm font-medium text-gray-600">
-                                <div class="col-span-6">Product</div>
-                                <div class="col-span-2 text-center">Price</div>
-                                <div class="col-span-2 text-center">Quantity</div>
-                                <div class="col-span-2 text-right">Total</div>
-                            </div>
-                            
-                            <!-- Cart Items Container -->
-                            <div class="divide-y" id="cart-items-container">
-                                <!-- Items will be loaded via JavaScript -->
-                                <div class="p-8 text-center text-gray-500" id="cart-loading">
-                                    <svg class="animate-spin h-8 w-8 mx-auto mb-2 text-blue-600" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                                        <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-                                        <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                                    </svg>
-                                    Loading cart...
-                                </div>
-                            </div>
-                            
-                            <!-- Empty Cart Message -->
-                            <div class="p-12 text-center hidden" id="empty-cart-message">
-                                <svg class="w-16 h-16 mx-auto text-gray-300 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z"></path>
+                <div style="display: grid; grid-template-columns: 1fr 380px; gap: 25px;">
+                    <!-- Left Column: Cart Items -->
+                    <div style="background: #fff; border-radius: 4px; box-shadow: 0 1px 3px rgba(0,0,0,0.1);">
+                        <!-- Cart Table Header -->
+                        <div style="display: grid; grid-template-columns: minmax(300px, 1fr) 100px 120px 100px; gap: 15px; padding: 15px 20px; background: #f8f8f8; border-bottom: 1px solid #e5e5e5; font-weight: 600; color: #666; font-size: 13px;">
+                            <div>Item</div>
+                            <div style="text-align: center;">Quantity</div>
+                            <div style="text-align: right;">Total</div>
+                            <div></div>
+                        </div>
+                        
+                        <!-- Cart Items Container -->
+                        <div id="cart-items-container">
+                            <!-- Loading state -->
+                            <div id="cart-loading" style="padding: 40px; text-align: center; color: #666;">
+                                <svg style="animation: spin 1s linear infinite; width: 30px; height: 30px; margin: 0 auto 10px;" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <circle cx="12" cy="12" r="10" stroke-opacity="0.25"/>
+                                    <path d="M12 2a10 10 0 0 1 10 10" stroke-opacity="0.75"/>
                                 </svg>
-                                <h3 class="text-lg font-medium text-gray-900 mb-2">Your cart is empty</h3>
-                                <p class="text-gray-500 mb-6">Looks like you haven't added any items yet.</p>
-                                <a href="/live" class="inline-block bg-red-600 text-white px-6 py-3 rounded-lg font-medium hover:bg-red-700 transition">Continue Shopping</a>
+                                <p>Loading cart...</p>
                             </div>
+                        </div>
+                        
+                        <!-- Empty Cart Message -->
+                        <div id="empty-cart-message" class="hidden" style="padding: 60px 40px; text-align: center;">
+                            <svg style="width: 60px; height: 60px; color: #ccc; margin-bottom: 15px;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z"/>
+                            </svg>
+                            <h3 style="font-size: 18px; font-weight: 600; color: #333; margin-bottom: 10px;">Your cart is empty</h3>
+                            <p style="color: #666; margin-bottom: 20px;">Looks like you haven't added any items yet.</p>
+                            <a href="/live" style="display: inline-block; background: #c41e3a; color: #fff; padding: 12px 30px; border-radius: 4px; text-decoration: none; font-weight: 600;">Continue Shopping</a>
+                        </div>
+                        
+                        <!-- Cart Actions -->
+                        <div id="cart-actions" style="display: flex; justify-content: space-between; padding: 20px; border-top: 1px solid #e5e5e5;">
+                            <a href="/live" style="display: inline-flex; align-items: center; gap: 8px; padding: 12px 24px; border: 1px solid #ddd; border-radius: 4px; color: #333; text-decoration: none; font-weight: 500; background: #fff;">
+                                <svg style="width: 16px; height: 16px;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/>
+                                </svg>
+                                Continue Shopping
+                            </a>
+                            <button onclick="updateCart()" style="padding: 12px 24px; background: #333; color: #fff; border: none; border-radius: 4px; font-weight: 500; cursor: pointer;">
+                                Update Cart
+                            </button>
                         </div>
                     </div>
                     
-                    <!-- Order Summary -->
-                    <div class="lg:col-span-1">
-                        <div class="bg-white rounded-xl shadow-sm p-6 sticky top-24">
-                            <h2 class="text-lg font-semibold text-gray-900 mb-6">Order Summary</h2>
-                            
-                            <div class="space-y-4 mb-6">
-                                <div class="flex justify-between text-gray-600">
-                                    <span>Subtotal (<span id="summary-item-count">0</span> items)</span>
-                                    <span class="font-medium" id="summary-subtotal">$0.00</span>
-                                </div>
-                                <div class="flex justify-between text-gray-600">
-                                    <span>Shipping</span>
-                                    <span class="font-medium text-green-600">FREE</span>
-                                </div>
-                                <div class="flex justify-between text-gray-600">
-                                    <span>Tax (GST)</span>
-                                    <span class="font-medium" id="summary-tax">Included</span>
-                                </div>
-                                <hr>
-                                <div class="flex justify-between text-xl font-bold text-gray-900">
-                                    <span>Total</span>
-                                    <span id="summary-total">$0.00</span>
+                    <!-- Right Sidebar -->
+                    <div style="display: flex; flex-direction: column; gap: 20px;">
+                        <!-- Discount Code Section -->
+                        <div style="background: #fff; border-radius: 4px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); overflow: hidden;">
+                            <div onclick="toggleSection('discount-section')" style="display: flex; justify-content: space-between; align-items: center; padding: 15px 20px; background: #f8f8f8; cursor: pointer; border-bottom: 1px solid #e5e5e5;">
+                                <span style="font-weight: 600; color: #333;">Discount Code</span>
+                                <svg id="discount-arrow" style="width: 16px; height: 16px; transition: transform 0.3s;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
+                                </svg>
+                            </div>
+                            <div id="discount-section" style="padding: 20px;">
+                                <p style="color: #666; font-size: 13px; margin-bottom: 15px;">If you have a coupon or discount code enter it below.</p>
+                                <div style="display: flex; gap: 10px;">
+                                    <input type="text" id="coupon-code" placeholder="Coupon Code" style="flex: 1; padding: 10px 15px; border: 1px solid #ddd; border-radius: 4px; font-size: 14px;">
+                                    <button onclick="applyCoupon()" style="padding: 10px 20px; background: #4CAF50; color: #fff; border: none; border-radius: 4px; font-weight: 600; cursor: pointer;">Apply</button>
                                 </div>
                             </div>
+                        </div>
+                        
+                        <!-- Shipping Calculator Section -->
+                        <div style="background: #fff; border-radius: 4px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); overflow: hidden;">
+                            <div onclick="toggleSection('shipping-section')" style="display: flex; justify-content: space-between; align-items: center; padding: 15px 20px; background: #f8f8f8; cursor: pointer; border-bottom: 1px solid #e5e5e5;">
+                                <span style="font-weight: 600; color: #333;">Shipping Calculator</span>
+                                <svg id="shipping-arrow" style="width: 16px; height: 16px; transition: transform 0.3s;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
+                                </svg>
+                            </div>
+                            <div id="shipping-section" style="padding: 20px;">
+                                <p style="color: #666; font-size: 13px; margin-bottom: 15px;">Enter your post code to calculate.</p>
+                                <div style="display: flex; flex-direction: column; gap: 10px;">
+                                    <input type="text" id="postal-code" placeholder="Postal Code" style="padding: 10px 15px; border: 1px solid #ddd; border-radius: 4px; font-size: 14px;">
+                                    <select id="suburb-select" style="padding: 10px 15px; border: 1px solid #ddd; border-radius: 4px; font-size: 14px; color: #999;">
+                                        <option value="">-- Enter Valid Postal Code --</option>
+                                    </select>
+                                    <button onclick="calculateShipping()" style="padding: 12px 20px; background: #333; color: #fff; border: none; border-radius: 4px; font-weight: 500; cursor: pointer;">Calculate Shipping</button>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Order Summary Section -->
+                        <div style="background: #fff; border-radius: 4px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); padding: 20px;">
+                            <div style="display: flex; justify-content: space-between; margin-bottom: 15px;">
+                                <span style="color: #666;">Sub Total</span>
+                                <span id="summary-subtotal" style="font-weight: 600;">$0.00</span>
+                            </div>
                             
-                            <button id="checkout-btn" class="block w-full bg-red-600 text-white text-center py-4 rounded-lg font-bold text-lg hover:bg-red-700 transition mb-4 disabled:opacity-50 disabled:cursor-not-allowed">
-                                Proceed to Checkout
+                            <div style="margin-bottom: 15px; padding: 15px; background: #f8f8f8; border-radius: 4px;">
+                                <p style="font-weight: 600; color: #333; margin-bottom: 10px;">Delivery & Pickup Options</p>
+                                <label style="display: flex; align-items: flex-start; gap: 10px; cursor: pointer; margin-bottom: 10px;">
+                                    <input type="radio" name="delivery" value="pickup" checked style="margin-top: 3px;">
+                                    <div>
+                                        <span style="font-weight: 500;">Pickup - In Store - FREE</span>
+                                        <p style="font-size: 12px; color: #666; margin-top: 3px;">Pickup From: Our Store Location</p>
+                                    </div>
+                                </label>
+                                <label style="display: flex; align-items: flex-start; gap: 10px; cursor: pointer;">
+                                    <input type="radio" name="delivery" value="shipping" style="margin-top: 3px;">
+                                    <div>
+                                        <span style="font-weight: 500;">Shipping</span>
+                                        <span id="shipping-cost" style="color: #666; margin-left: 5px;">$0.00</span>
+                                    </div>
+                                </label>
+                            </div>
+                            
+                            <div style="display: flex; justify-content: space-between; padding: 15px 0; border-top: 2px solid #333; margin-top: 15px;">
+                                <span style="font-size: 18px; font-weight: 700;">Order Total</span>
+                                <span id="summary-total" style="font-size: 18px; font-weight: 700; color: #c41e3a;">$0.00</span>
+                            </div>
+                            
+                            <div style="display: flex; justify-content: space-between; color: #666; font-size: 13px; margin-bottom: 20px;">
+                                <span>GST</span>
+                                <span id="summary-gst">$0.00</span>
+                            </div>
+                            
+                            <!-- Checkout Button -->
+                            <button id="checkout-btn" onclick="proceedToCheckout()" style="width: 100%; padding: 16px; background: #4CAF50; color: #fff; border: none; border-radius: 4px; font-size: 16px; font-weight: 700; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 10px; margin-bottom: 10px;">
+                                <svg style="width: 20px; height: 20px;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z"/>
+                                </svg>
+                                Checkout Now
                             </button>
                             
-                            <a href="/live" class="block w-full border border-gray-300 text-gray-700 text-center py-3 rounded-lg font-medium hover:bg-gray-50 transition">
-                                Continue Shopping
-                            </a>
-                            
-                            <!-- Payment Methods -->
-                            <div class="mt-6 pt-6 border-t">
-                                <p class="text-xs text-gray-500 text-center mb-3">We Accept</p>
-                                <div class="flex items-center justify-center gap-3">
-                                    <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/5/5e/Visa_Inc._logo.svg/200px-Visa_Inc._logo.svg.png" alt="Visa" class="h-6 object-contain">
-                                    <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/2/2a/Mastercard-logo.svg/200px-Mastercard-logo.svg.png" alt="Mastercard" class="h-6 object-contain">
-                                    <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/b/b5/PayPal.svg/200px-PayPal.svg.png" alt="PayPal" class="h-5 object-contain">
-                                </div>
+                            <!-- Create Quote Button -->
+                            <button style="width: 100%; padding: 12px; background: #fff; color: #333; border: 1px solid #ddd; border-radius: 4px; font-weight: 500; cursor: pointer;">
+                                Create Quote From Cart
+                            </button>
+                        </div>
+                        
+                        <!-- Afterpay Section -->
+                        <div style="background: #fff; border-radius: 4px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); padding: 20px;">
+                            <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 15px;">
+                                <img src="https://static.afterpay.com/integration/product-page/logo-afterpay-colour.png" alt="Afterpay" style="height: 20px;">
                             </div>
-                            
-                            <!-- Trust Badges -->
-                            <div class="mt-4 pt-4 border-t">
-                                <div class="flex items-center justify-center gap-2 text-gray-500">
-                                    <svg class="w-5 h-5" viewBox="0 0 24 24" fill="currentColor"><path d="M18 8h-1V6c0-2.76-2.24-5-5-5S7 3.24 7 6v2H6c-1.1 0-2 .9-2 2v10c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V10c0-1.1-.9-2-2-2zm-6 9c-1.1 0-2-.9-2-2s.9-2 2-2 2 .9 2 2-.9 2-2 2zm3.1-9H8.9V6c0-1.71 1.39-3.1 3.1-3.1 1.71 0 3.1 1.39 3.1 3.1v2z"/></svg>
-                                    <span class="text-xs">Secure SSL Checkout</span>
-                                </div>
-                            </div>
+                            <p style="font-weight: 600; color: #333; margin-bottom: 10px;">No payment today. Buy now, pay 4 interest-free payments over 8 weeks.</p>
+                            <ul style="list-style: none; padding: 0; margin: 0 0 15px 0; font-size: 13px; color: #666;">
+                                <li style="display: flex; align-items: center; gap: 8px; margin-bottom: 5px;">
+                                    <svg style="width: 14px; height: 14px; color: #4CAF50;" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/></svg>
+                                    4 simple payments
+                                </li>
+                                <li style="display: flex; align-items: center; gap: 8px; margin-bottom: 5px;">
+                                    <svg style="width: 14px; height: 14px; color: #4CAF50;" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/></svg>
+                                    100% interest-free, no hidden fees
+                                </li>
+                                <li style="display: flex; align-items: center; gap: 8px;">
+                                    <svg style="width: 14px; height: 14px; color: #4CAF50;" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/></svg>
+                                    Instant approval online
+                                </li>
+                            </ul>
+                            <p style="font-size: 12px; color: #666;">Just select Afterpay as your payment method on checkout.</p>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
 
+        <style>
+            @keyframes spin {
+                to { transform: rotate(360deg); }
+            }
+            .hidden { display: none !important; }
+            .cart-item-row {
+                display: grid;
+                grid-template-columns: minmax(300px, 1fr) 100px 120px 100px;
+                gap: 15px;
+                padding: 20px;
+                border-bottom: 1px solid #e5e5e5;
+                align-items: center;
+            }
+            .cart-item-row:last-child {
+                border-bottom: none;
+            }
+            .cart-item-info {
+                display: flex;
+                gap: 15px;
+                align-items: flex-start;
+            }
+            .cart-item-image {
+                width: 80px;
+                height: 80px;
+                object-fit: cover;
+                border-radius: 4px;
+                border: 1px solid #e5e5e5;
+            }
+            .cart-item-details h3 {
+                font-size: 14px;
+                font-weight: 600;
+                color: #333;
+                margin: 0 0 5px 0;
+                line-height: 1.4;
+            }
+            .cart-item-details h3 a {
+                color: #333;
+                text-decoration: none;
+            }
+            .cart-item-details h3 a:hover {
+                color: #c41e3a;
+            }
+            .cart-item-price {
+                font-size: 14px;
+                color: #333;
+                font-weight: 500;
+            }
+            .cart-item-remove {
+                color: #c41e3a;
+                font-size: 13px;
+                cursor: pointer;
+                display: inline-flex;
+                align-items: center;
+                gap: 4px;
+                margin-top: 8px;
+            }
+            .cart-item-remove:hover {
+                text-decoration: underline;
+            }
+            .qty-input-group {
+                display: flex;
+                align-items: center;
+                border: 1px solid #ddd;
+                border-radius: 4px;
+                overflow: hidden;
+                width: fit-content;
+                margin: 0 auto;
+            }
+            .qty-input-group button {
+                width: 32px;
+                height: 36px;
+                border: none;
+                background: #f5f5f5;
+                cursor: pointer;
+                font-size: 16px;
+                color: #333;
+            }
+            .qty-input-group button:hover {
+                background: #e5e5e5;
+            }
+            .qty-input-group input {
+                width: 45px;
+                height: 36px;
+                border: none;
+                border-left: 1px solid #ddd;
+                border-right: 1px solid #ddd;
+                text-align: center;
+                font-size: 14px;
+            }
+            .cart-item-total {
+                font-weight: 600;
+                font-size: 15px;
+                text-align: right;
+            }
+            @media (max-width: 900px) {
+                .cart-page-wrapper > div > div {
+                    grid-template-columns: 1fr !important;
+                }
+                .cart-item-row {
+                    grid-template-columns: 1fr !important;
+                    gap: 10px;
+                }
+            }
+        </style>
+
         <script>
-        // Shopping Cart Page JavaScript
         const API_BASE = window.location.origin + '/api';
         
-        // Initialize cart page
         document.addEventListener('DOMContentLoaded', function() {
             loadCartPage();
         });
         
         async function loadCartPage() {
             const cartId = localStorage.getItem('tiab_cart_id');
-            const container = document.getElementById('cart-items-container');
             const loading = document.getElementById('cart-loading');
             const emptyMessage = document.getElementById('empty-cart-message');
+            const cartActions = document.getElementById('cart-actions');
             
             try {
                 let cartData = null;
                 
-                // Try to get cart from backend first
                 if (cartId) {
                     const response = await fetch(`${API_BASE}/cart/${cartId}`);
                     if (response.ok) {
@@ -121,7 +293,6 @@
                     }
                 }
                 
-                // Fallback to localStorage backup
                 if (!cartData || !cartData.items || cartData.items.length === 0) {
                     const backup = localStorage.getItem('tiab_cart_backup');
                     if (backup) {
@@ -129,24 +300,23 @@
                     }
                 }
                 
-                // Hide loading
                 if (loading) loading.style.display = 'none';
                 
-                // Check if cart is empty
                 if (!cartData || !cartData.items || cartData.items.length === 0) {
                     if (emptyMessage) emptyMessage.classList.remove('hidden');
+                    if (cartActions) cartActions.style.display = 'none';
                     updateSummary(0, 0);
                     return;
                 }
                 
-                // Render cart items
                 renderCartItems(cartData);
-                updateSummary(cartData.item_count || cartData.items.length, cartData.total || cartData.subtotal || 0);
+                updateSummary(cartData.item_count || cartData.items.reduce((s, i) => s + i.quantity, 0), cartData.total || cartData.subtotal || 0);
                 
             } catch (error) {
                 console.error('Error loading cart:', error);
                 if (loading) loading.style.display = 'none';
                 if (emptyMessage) emptyMessage.classList.remove('hidden');
+                if (cartActions) cartActions.style.display = 'none';
             }
         }
         
@@ -157,47 +327,33 @@
             if (loading) loading.remove();
             
             const itemsHtml = cartData.items.map(item => `
-                <div class="p-4 grid grid-cols-1 md:grid-cols-12 gap-4 items-center cart-item" data-product-id="${item.product_id}">
-                    <div class="col-span-6 flex items-center gap-4">
+                <div class="cart-item-row" data-product-id="${item.product_id}">
+                    <div class="cart-item-info">
                         <a href="/live/product/${item.product_id}">
                             <img src="${item.image || 'https://placehold.co/80x80?text=Product'}" 
                                  alt="${item.name}" 
-                                 class="w-20 h-20 object-cover rounded-lg border"
+                                 class="cart-item-image"
                                  onerror="this.src='https://placehold.co/80x80?text=Product'">
                         </a>
-                        <div>
-                            <a href="/live/product/${item.product_id}" class="font-medium text-gray-900 hover:text-red-600">
-                                ${item.name}
-                            </a>
-                            <p class="text-sm text-gray-500">${item.sku ? 'SKU: ' + item.sku : ''}</p>
-                            <button class="text-sm text-red-600 hover:text-red-700 mt-1 font-medium remove-item-btn" 
-                                    onclick="removeCartItem('${item.product_id}')">
-                                Remove
-                            </button>
+                        <div class="cart-item-details">
+                            <h3><a href="/live/product/${item.product_id}">${item.name}</a></h3>
+                            <div class="cart-item-price">$${(item.price || 0).toFixed(2)}</div>
+                            <div class="cart-item-remove" onclick="removeCartItem('${item.product_id}')">
+                                <span style="color: #c41e3a;">×</span> Remove
+                            </div>
                         </div>
                     </div>
-                    <div class="col-span-2 text-center">
-                        <span class="md:hidden text-sm text-gray-500">Price: </span>
-                        <span class="font-medium">$${(item.price || 0).toFixed(2)}</span>
-                    </div>
-                    <div class="col-span-2 flex justify-center">
-                        <div class="flex items-center border rounded-lg overflow-hidden">
-                            <button class="px-3 py-2 text-gray-600 hover:bg-gray-100 transition" 
-                                    onclick="updateItemQty('${item.product_id}', ${item.quantity - 1})">−</button>
-                            <input type="number" 
-                                   value="${item.quantity}" 
-                                   min="1" 
-                                   class="w-14 text-center border-x py-2 cart-qty-input"
-                                   data-product-id="${item.product_id}"
-                                   onchange="updateItemQty('${item.product_id}', parseInt(this.value))">
-                            <button class="px-3 py-2 text-gray-600 hover:bg-gray-100 transition" 
-                                    onclick="updateItemQty('${item.product_id}', ${item.quantity + 1})">+</button>
+                    <div style="text-align: center;">
+                        <div class="qty-input-group">
+                            <button type="button" onclick="updateItemQty('${item.product_id}', ${item.quantity - 1})">−</button>
+                            <input type="number" value="${item.quantity}" min="1" 
+                                   onchange="updateItemQty('${item.product_id}', parseInt(this.value))"
+                                   data-product-id="${item.product_id}">
+                            <button type="button" onclick="updateItemQty('${item.product_id}', ${item.quantity + 1})">+</button>
                         </div>
                     </div>
-                    <div class="col-span-2 text-right">
-                        <span class="md:hidden text-sm text-gray-500">Total: </span>
-                        <span class="font-bold text-gray-900">$${(item.line_total || item.price * item.quantity).toFixed(2)}</span>
-                    </div>
+                    <div class="cart-item-total">$${(item.line_total || item.price * item.quantity).toFixed(2)}</div>
+                    <div></div>
                 </div>
             `).join('');
             
@@ -205,22 +361,23 @@
         }
         
         function updateSummary(itemCount, total) {
-            const countEl = document.getElementById('summary-item-count');
             const subtotalEl = document.getElementById('summary-subtotal');
             const totalEl = document.getElementById('summary-total');
+            const gstEl = document.getElementById('summary-gst');
             const checkoutBtn = document.getElementById('checkout-btn');
+            const badge = document.getElementById('cart-count');
             
-            if (countEl) countEl.textContent = itemCount;
+            const gst = total / 11; // GST is 1/11 of total in Australia
+            
             if (subtotalEl) subtotalEl.textContent = '$' + (total || 0).toFixed(2);
             if (totalEl) totalEl.textContent = '$' + (total || 0).toFixed(2);
-            
-            // Update cart badge in header
-            const badge = document.getElementById('cart-count');
+            if (gstEl) gstEl.textContent = '$' + gst.toFixed(2);
             if (badge) badge.textContent = itemCount;
             
-            // Disable checkout if cart is empty
             if (checkoutBtn) {
                 checkoutBtn.disabled = itemCount === 0;
+                checkoutBtn.style.opacity = itemCount === 0 ? '0.5' : '1';
+                checkoutBtn.style.cursor = itemCount === 0 ? 'not-allowed' : 'pointer';
             }
         }
         
@@ -245,16 +402,13 @@
                     const cart = data.cart;
                     localStorage.setItem('tiab_cart_backup', JSON.stringify(cart));
                     
-                    // Update global tiabCart if exists
                     if (typeof tiabCart !== 'undefined') {
                         Object.assign(tiabCart, cart);
                     }
                     
-                    // Re-render cart
                     renderCartItems(cart);
                     updateSummary(cart.item_count, cart.total);
                     
-                    // Update mini-cart if function exists
                     if (typeof updateCartUI === 'function') {
                         updateCartUI();
                     }
@@ -278,22 +432,20 @@
                     const cart = data.cart;
                     localStorage.setItem('tiab_cart_backup', JSON.stringify(cart));
                     
-                    // Update global tiabCart if exists
                     if (typeof tiabCart !== 'undefined') {
                         Object.assign(tiabCart, cart);
                     }
                     
-                    // Check if cart is now empty
                     if (!cart.items || cart.items.length === 0) {
                         document.getElementById('cart-items-container').innerHTML = '';
                         document.getElementById('empty-cart-message').classList.remove('hidden');
+                        document.getElementById('cart-actions').style.display = 'none';
                         updateSummary(0, 0);
                     } else {
                         renderCartItems(cart);
                         updateSummary(cart.item_count, cart.total);
                     }
                     
-                    // Update mini-cart if function exists
                     if (typeof updateCartUI === 'function') {
                         updateCartUI();
                     }
@@ -303,30 +455,50 @@
             }
         }
         
-        // Clear entire cart
-        async function clearCart() {
-            const cartId = localStorage.getItem('tiab_cart_id');
-            if (!cartId) return;
+        function toggleSection(sectionId) {
+            const section = document.getElementById(sectionId);
+            const arrowId = sectionId.replace('-section', '-arrow');
+            const arrow = document.getElementById(arrowId);
             
-            if (!confirm('Are you sure you want to clear your cart?')) return;
-            
-            try {
-                const response = await fetch(`${API_BASE}/cart/${cartId}/clear`, {
-                    method: 'DELETE'
-                });
-                
-                if (response.ok) {
-                    localStorage.removeItem('tiab_cart_backup');
-                    document.getElementById('cart-items-container').innerHTML = '';
-                    document.getElementById('empty-cart-message').classList.remove('hidden');
-                    updateSummary(0, 0);
-                    
-                    if (typeof updateCartUI === 'function') {
-                        updateCartUI();
-                    }
-                }
-            } catch (error) {
-                console.error('Error clearing cart:', error);
+            if (section.style.display === 'none') {
+                section.style.display = 'block';
+                if (arrow) arrow.style.transform = 'rotate(0deg)';
+            } else {
+                section.style.display = 'none';
+                if (arrow) arrow.style.transform = 'rotate(-90deg)';
             }
+        }
+        
+        function applyCoupon() {
+            const code = document.getElementById('coupon-code').value.trim();
+            if (!code) {
+                alert('Please enter a coupon code');
+                return;
+            }
+            // TODO: Implement coupon validation
+            alert('Coupon functionality coming soon!');
+        }
+        
+        function calculateShipping() {
+            const postalCode = document.getElementById('postal-code').value.trim();
+            if (!postalCode) {
+                alert('Please enter a postal code');
+                return;
+            }
+            // TODO: Implement shipping calculation
+            alert('Shipping calculation coming soon!');
+        }
+        
+        function updateCart() {
+            loadCartPage();
+        }
+        
+        function proceedToCheckout() {
+            const cartId = localStorage.getItem('tiab_cart_id');
+            if (!cartId) {
+                alert('Your cart is empty');
+                return;
+            }
+            window.location.href = '/live/checkout';
         }
         </script>
