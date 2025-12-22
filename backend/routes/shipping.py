@@ -367,7 +367,7 @@ async def import_shipping_zones_csv(
                 created += 1
         
         return {
-            "message": f"Import completed successfully",
+            "message": "Import completed successfully",
             "mode": mode,
             "rows_processed": import_count,
             "zones_created": created,
