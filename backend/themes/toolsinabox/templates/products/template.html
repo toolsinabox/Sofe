@@ -33,12 +33,68 @@
                             </div>
                         </div>
                         
-                        <!-- Thumbnails -->
+                        <!-- Thumbnails - supports up to 12 images -->
                         <div class="thumbnail-row" id="thumbnail-container">
+                            [%if [@image1@] ne ''%]
                             <button class="thumb-btn active" data-index="0" data-type="image" onclick="selectThumbnail(this, 0)">
-                                <img src="[@image@]" alt="[@name@]">
+                                <img src="[@image1@]" alt="[@name@] - Image 1">
                             </button>
-                            <!-- Additional thumbnails will be added via JS if product has more images -->
+                            [%/if%]
+                            [%if [@image2@] ne ''%]
+                            <button class="thumb-btn" data-index="1" data-type="image" onclick="selectThumbnail(this, 1)">
+                                <img src="[@image2@]" alt="[@name@] - Image 2">
+                            </button>
+                            [%/if%]
+                            [%if [@image3@] ne ''%]
+                            <button class="thumb-btn" data-index="2" data-type="image" onclick="selectThumbnail(this, 2)">
+                                <img src="[@image3@]" alt="[@name@] - Image 3">
+                            </button>
+                            [%/if%]
+                            [%if [@image4@] ne ''%]
+                            <button class="thumb-btn" data-index="3" data-type="image" onclick="selectThumbnail(this, 3)">
+                                <img src="[@image4@]" alt="[@name@] - Image 4">
+                            </button>
+                            [%/if%]
+                            [%if [@image5@] ne ''%]
+                            <button class="thumb-btn" data-index="4" data-type="image" onclick="selectThumbnail(this, 4)">
+                                <img src="[@image5@]" alt="[@name@] - Image 5">
+                            </button>
+                            [%/if%]
+                            [%if [@image6@] ne ''%]
+                            <button class="thumb-btn" data-index="5" data-type="image" onclick="selectThumbnail(this, 5)">
+                                <img src="[@image6@]" alt="[@name@] - Image 6">
+                            </button>
+                            [%/if%]
+                            [%if [@image7@] ne ''%]
+                            <button class="thumb-btn" data-index="6" data-type="image" onclick="selectThumbnail(this, 6)">
+                                <img src="[@image7@]" alt="[@name@] - Image 7">
+                            </button>
+                            [%/if%]
+                            [%if [@image8@] ne ''%]
+                            <button class="thumb-btn" data-index="7" data-type="image" onclick="selectThumbnail(this, 7)">
+                                <img src="[@image8@]" alt="[@name@] - Image 8">
+                            </button>
+                            [%/if%]
+                            [%if [@image9@] ne ''%]
+                            <button class="thumb-btn" data-index="8" data-type="image" onclick="selectThumbnail(this, 8)">
+                                <img src="[@image9@]" alt="[@name@] - Image 9">
+                            </button>
+                            [%/if%]
+                            [%if [@image10@] ne ''%]
+                            <button class="thumb-btn" data-index="9" data-type="image" onclick="selectThumbnail(this, 9)">
+                                <img src="[@image10@]" alt="[@name@] - Image 10">
+                            </button>
+                            [%/if%]
+                            [%if [@image11@] ne ''%]
+                            <button class="thumb-btn" data-index="10" data-type="image" onclick="selectThumbnail(this, 10)">
+                                <img src="[@image11@]" alt="[@name@] - Image 11">
+                            </button>
+                            [%/if%]
+                            [%if [@image12@] ne ''%]
+                            <button class="thumb-btn" data-index="11" data-type="image" onclick="selectThumbnail(this, 11)">
+                                <img src="[@image12@]" alt="[@name@] - Image 12">
+                            </button>
+                            [%/if%]
                         </div>
                     </div>
                     
