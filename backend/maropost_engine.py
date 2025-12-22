@@ -672,6 +672,19 @@ class MaropostTemplateEngine:
                         'per_page': 20,
                         'total': len(products)
                     }
+            else:
+                # All products listing
+                context['page'] = {'title': 'All Products', 'slug': 'products'}
+                context['content_name'] = 'All Products'
+                context['content_description'] = 'Browse our complete range of products'
+                products = await self.db.products.find({}, {"_id": 0}).to_list(100)
+                context['products'] = products
+                context['filters'] = {}
+                context['pagination'] = {
+                    'page': 1,
+                    'per_page': 20,
+                    'total': len(products)
+                }
         
         elif page_type == PageType.HOME:
             # Fetch the homepage CMS page for content
