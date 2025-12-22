@@ -1773,7 +1773,7 @@ const MerchantShipping = () => {
                         type="number"
                         step="0.1"
                         value={serviceForm.max_length || ''}
-                        onChange={(e) => setServiceForm({...serviceForm, max_length: parseFloat(e.target.value) || 0})}
+                        onChange={(e) => handleServiceFormNumberChange('max_length', e.target.value, 0)}
                         placeholder="1.4"
                         className="bg-gray-700 border-gray-600 text-white"
                       />
@@ -1787,7 +1787,7 @@ const MerchantShipping = () => {
                         type="number"
                         step="0.001"
                         value={serviceForm.cubic_weight_modifier || 250}
-                        onChange={(e) => setServiceForm({...serviceForm, cubic_weight_modifier: parseFloat(e.target.value) || 250})}
+                        onChange={(e) => handleServiceFormNumberChange('cubic_weight_modifier', e.target.value, 250)}
                         placeholder="250"
                         className="bg-gray-700 border-gray-600 text-white"
                       />
@@ -1798,7 +1798,7 @@ const MerchantShipping = () => {
                     <Label className="text-gray-300 text-sm">Internal Description</Label>
                     <Input
                       value={serviceForm.internal_description || ''}
-                      onChange={(e) => setServiceForm({...serviceForm, internal_description: e.target.value})}
+                      onChange={(e) => handleServiceFormChange('internal_description', e.target.value)}
                       placeholder="e.g., New rates from July 2024"
                       className="bg-gray-700 border-gray-600 text-white mt-1"
                     />
@@ -1810,7 +1810,7 @@ const MerchantShipping = () => {
                     <input
                       type="checkbox"
                       checked={serviceForm.tax_inclusive || false}
-                      onChange={(e) => setServiceForm({...serviceForm, tax_inclusive: e.target.checked})}
+                      onChange={(e) => handleServiceFormChange('tax_inclusive', e.target.checked)}
                       className="rounded border-gray-600 text-emerald-500"
                     />
                     <div>
@@ -1822,7 +1822,7 @@ const MerchantShipping = () => {
                     <input
                       type="checkbox"
                       checked={serviceForm.ship_to_po_box || false}
-                      onChange={(e) => setServiceForm({...serviceForm, ship_to_po_box: e.target.checked})}
+                      onChange={(e) => handleServiceFormChange('ship_to_po_box', e.target.checked)}
                       className="rounded border-gray-600 text-emerald-500"
                     />
                     <span className="text-gray-300 text-sm">Ship to PO Box</span>
@@ -1833,7 +1833,7 @@ const MerchantShipping = () => {
                 <div className="mt-4">
                   <Label className="text-gray-300 text-sm">Tracking URL</Label>
                   <div className="flex gap-2 mt-1">
-                    <Select value={serviceForm.tracking_carrier || 'other'} onValueChange={(v) => setServiceForm({...serviceForm, tracking_carrier: v})}>
+                    <Select value={serviceForm.tracking_carrier || 'other'} onValueChange={(v) => handleServiceFormChange('tracking_carrier', v)}>
                       <SelectTrigger className="bg-gray-700 border-gray-600 text-white w-32">
                         <SelectValue />
                       </SelectTrigger>
