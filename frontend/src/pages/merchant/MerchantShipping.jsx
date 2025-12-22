@@ -233,10 +233,13 @@ const MerchantShipping = () => {
   // Stable handler for service form text input changes - uses name attribute
   const handleServiceFormInputChange = useCallback((e) => {
     const { name, value, type, checked } = e.target;
-    setServiceForm(prev => ({
-      ...prev,
-      [name]: type === 'checkbox' ? checked : value
-    }));
+    // Debounce state update to prevent focus loss
+    requestAnimationFrame(() => {
+      setServiceForm(prev => ({
+        ...prev,
+        [name]: type === 'checkbox' ? checked : value
+      }));
+    });
   }, []);
 
   // Stable handler for code input (lowercase conversion)
