@@ -574,15 +574,32 @@ const MerchantPOS = () => {
   const processPayment = async () => {
     if (cart.length === 0) return;
     
+    // For Pay Later and Layby, customer is required
+    if (paymentTerm !== 'pay_in_full' && !customer) {
+      alert('Please add a customer for Pay Later or Layby orders');
+      return;
+    }
+    
     setProcessing(true);
     
     try {
+      const paymentAmount = paymentTerm === 'pay_in_full' ? total : initialPayment;
+      
       const payments = [{
         method: paymentMethod,
-        amount: total,
+        amount: paymentAmount,
         reference: paymentMethod === 'card' ? `CARD-${Date.now()}` : null,
         change_given: change
       }];
+      
+      // Build payment terms data
+      const paymentTermsData = {
+        type: paymentTerm,
+        initial_payment: initialPayment,
+        remaining_balance: remainingBalance,
+        due_date: paymentTerm === 'layby' ? calculateLaybyDueDate() : null,
+        status: paymentTerm === 'pay_in_full' ? 'paid' : 'partial'
+      };
       
       const transactionData = {
         items: cart,
@@ -598,7 +615,8 @@ const MerchantPOS = () => {
         outlet_id: selectedOutlet?.id || null,
         register_id: selectedRegister?.id || null,
         staff_id: user?.id || null,
-        staff_name: user?.name || 'Staff'
+        staff_name: user?.name || 'Staff',
+        payment_terms: paymentTermsData
       };
       
       const response = await axios.post(`${API}/pos/transactions`, transactionData);
@@ -607,7 +625,8 @@ const MerchantPOS = () => {
         ...transactionData,
         transaction_number: response.data.transaction_number,
         id: response.data.id,
-        created_at: new Date().toISOString()
+        created_at: new Date().toISOString(),
+        payment_terms: paymentTermsData
       });
       
       // Update shift expected cash if cash payment
