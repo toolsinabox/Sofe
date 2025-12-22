@@ -881,10 +881,52 @@ const ProductEditor = ({ product, categories, onSave, onClose, templateTags }) =
                   
                   {/* Pre-Order Section */}
                   <div className="border-t border-gray-700 pt-6 mt-6">
-                    <h3 className="text-lg font-medium text-white mb-4 flex items-center gap-2">
-                      <Package size={20} className="text-blue-400" />
-                      Pre-Order Settings
-                    </h3>
+                    <div className="flex items-center gap-3 mb-4">
+                      <h3 className="text-lg font-medium text-white flex items-center gap-2">
+                        <Package size={20} className="text-blue-400" />
+                        Pre-Order Settings
+                      </h3>
+                      <TooltipProvider>
+                        <Tooltip delayDuration={0}>
+                          <TooltipTrigger asChild>
+                            <button type="button" className="text-blue-400 hover:text-blue-300 transition-colors">
+                              <HelpCircle size={18} />
+                            </button>
+                          </TooltipTrigger>
+                          <TooltipContent side="right" className="max-w-sm bg-gray-800 border border-gray-700 p-4 text-left">
+                            <div className="space-y-3 text-sm">
+                              <p className="font-semibold text-blue-400">How Pre-Order Works</p>
+                              <div className="space-y-2 text-gray-300">
+                                <p><strong>1. When to use:</strong> Enable pre-order when your stock is 0 or low, but you have new inventory arriving soon.</p>
+                                <p><strong>2. Customer experience:</strong> Customers see a "Pre-Order" button instead of "Add to Cart" when stock is 0.</p>
+                                <p><strong>3. Pre-Order Qty:</strong> This is the quantity you're expecting to receive. It does NOT add to current stock until arrival date.</p>
+                                <p><strong>4. Auto-conversion:</strong> When the arrival date passes, the system automatically:</p>
+                                <ul className="list-disc list-inside pl-2 text-gray-400">
+                                  <li>Disables pre-order mode</li>
+                                  <li>Adds pre-order qty to stock</li>
+                                </ul>
+                                <p className="text-yellow-400 mt-2"><strong>Note:</strong> Stock can go negative if more pre-orders are placed than expected. Monitor your pre-order quantities!</p>
+                              </div>
+                            </div>
+                          </TooltipContent>
+                        </Tooltip>
+                      </TooltipProvider>
+                    </div>
+                    
+                    {/* Pre-Order Info Card - Always Visible */}
+                    <div className="p-4 bg-gray-800/50 border border-gray-700 rounded-lg mb-4">
+                      <div className="flex items-start gap-3">
+                        <Info size={20} className="text-blue-400 mt-0.5 flex-shrink-0" />
+                        <div className="text-sm text-gray-400">
+                          <p className="mb-2">Pre-order allows customers to purchase products before they're in stock. Use this when:</p>
+                          <ul className="list-disc list-inside space-y-1 text-gray-500">
+                            <li>You have a new shipment arriving on a specific date</li>
+                            <li>A product is temporarily out of stock</li>
+                            <li>You want to gauge demand before restocking</li>
+                          </ul>
+                        </div>
+                      </div>
+                    </div>
                     
                     <div className="flex items-center justify-between p-4 bg-blue-900/20 border border-blue-800/50 rounded-lg mb-4">
                       <div>
@@ -899,26 +941,68 @@ const ProductEditor = ({ product, categories, onSave, onClose, templateTags }) =
                     
                     {formData.preorder_enabled && (
                       <div className="space-y-4 pl-4 border-l-2 border-blue-600">
+                        {/* Current Stock vs Pre-Order Display */}
+                        <div className="p-3 bg-gray-800/50 rounded-lg flex items-center justify-between">
+                          <div className="text-sm">
+                            <span className="text-gray-400">Current Stock:</span>
+                            <span className={`ml-2 font-medium ${parseInt(formData.stock) <= 0 ? 'text-red-400' : 'text-green-400'}`}>
+                              {formData.stock || 0} units
+                            </span>
+                          </div>
+                          <div className="text-sm">
+                            <span className="text-gray-400">Expected Arrival:</span>
+                            <span className="ml-2 font-medium text-blue-400">
+                              +{formData.preorder_qty || 0} units
+                            </span>
+                          </div>
+                          <div className="text-sm">
+                            <span className="text-gray-400">After Arrival:</span>
+                            <span className="ml-2 font-medium text-green-400">
+                              {(parseInt(formData.stock) || 0) + (parseInt(formData.preorder_qty) || 0)} units
+                            </span>
+                          </div>
+                        </div>
+                        
                         <div className="grid grid-cols-2 gap-4">
                           <div className="space-y-2">
                             <Label className="text-gray-300 flex items-center gap-2">
                               Pre-Order Quantity
                               <span className="text-xs text-gray-500 font-mono">[@preorder_qty@]</span>
+                              <TooltipProvider>
+                                <Tooltip delayDuration={0}>
+                                  <TooltipTrigger asChild>
+                                    <HelpCircle size={14} className="text-gray-500 hover:text-gray-400 cursor-help" />
+                                  </TooltipTrigger>
+                                  <TooltipContent className="bg-gray-800 border border-gray-700 max-w-xs">
+                                    <p className="text-sm">Number of units arriving. This will be added to your current stock when the arrival date passes.</p>
+                                  </TooltipContent>
+                                </Tooltip>
+                              </TooltipProvider>
                             </Label>
                             <Input
                               type="number"
+                              min="0"
                               className="bg-gray-800/50 border-gray-700 text-white"
                               placeholder="Qty arriving"
                               value={formData.preorder_qty}
                               onChange={(e) => handleChange('preorder_qty', e.target.value)}
                             />
-                            <p className="text-xs text-gray-500">How many units are arriving</p>
                           </div>
                           
                           <div className="space-y-2">
                             <Label className="text-gray-300 flex items-center gap-2">
                               Arrival Date
                               <span className="text-xs text-gray-500 font-mono">[@preorder_date@]</span>
+                              <TooltipProvider>
+                                <Tooltip delayDuration={0}>
+                                  <TooltipTrigger asChild>
+                                    <HelpCircle size={14} className="text-gray-500 hover:text-gray-400 cursor-help" />
+                                  </TooltipTrigger>
+                                  <TooltipContent className="bg-gray-800 border border-gray-700 max-w-xs">
+                                    <p className="text-sm">When this date passes, pre-order automatically disables and the pre-order quantity is added to stock.</p>
+                                  </TooltipContent>
+                                </Tooltip>
+                              </TooltipProvider>
                             </Label>
                             <Input
                               type="date"
@@ -926,7 +1010,6 @@ const ProductEditor = ({ product, categories, onSave, onClose, templateTags }) =
                               value={formData.preorder_arrival_date || ''}
                               onChange={(e) => handleChange('preorder_arrival_date', e.target.value)}
                             />
-                            <p className="text-xs text-gray-500">Auto-disables pre-order when date passes</p>
                           </div>
                         </div>
                         
@@ -941,11 +1024,18 @@ const ProductEditor = ({ product, categories, onSave, onClose, templateTags }) =
                             value={formData.preorder_message || ''}
                             onChange={(e) => handleChange('preorder_message', e.target.value)}
                           />
+                          <p className="text-xs text-gray-500">This message is shown to customers on the product page</p>
                         </div>
                         
-                        <div className="p-3 bg-blue-900/30 rounded-lg text-sm text-blue-200">
-                          <strong>How it works:</strong> When stock is 0 and pre-order is enabled, customers will see a "Pre-Order" button instead of "Add to Cart". When the arrival date passes, pre-order will automatically disable and the pre-order quantity will be added to stock.
-                        </div>
+                        {/* Warning for negative stock potential */}
+                        {parseInt(formData.stock) < 0 && (
+                          <div className="p-3 bg-red-900/30 border border-red-800/50 rounded-lg text-sm text-red-300 flex items-start gap-2">
+                            <Info size={16} className="mt-0.5 flex-shrink-0" />
+                            <div>
+                              <strong>Warning:</strong> Stock is currently negative ({formData.stock}). This means more pre-orders were placed than expected. Consider increasing pre-order quantity or contacting affected customers.
+                            </div>
+                          </div>
+                        )}
                       </div>
                     )}
                   </div>
