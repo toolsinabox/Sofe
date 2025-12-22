@@ -40,23 +40,28 @@ const TABS = [
   { id: 'options', label: 'Options', icon: Settings },
 ];
 
-// Uncontrolled native input to prevent focus loss - completely bypasses React's controlled input pattern
-const NativeInput = React.forwardRef(({ name, defaultValue, onChange, className, ...props }, ref) => {
+// Uncontrolled native input to prevent focus loss - syncs on blur only
+const NativeInput = React.forwardRef(({ name, defaultValue, onBlur, onChange, className, ...props }, ref) => {
   const internalRef = React.useRef(null);
   const inputRef = ref || internalRef;
   
-  const handleChange = React.useCallback((e) => {
+  // Handle blur to sync state
+  const handleBlur = React.useCallback((e) => {
+    if (onBlur) {
+      onBlur(e);
+    }
+    // Also call onChange on blur to update state
     if (onChange) {
       onChange(e);
     }
-  }, [onChange]);
+  }, [onBlur, onChange]);
   
   return (
     <input
       ref={inputRef}
       name={name}
       defaultValue={defaultValue || ''}
-      onChange={handleChange}
+      onBlur={handleBlur}
       className={`flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 ${className || ''}`}
       {...props}
     />
@@ -65,23 +70,13 @@ const NativeInput = React.forwardRef(({ name, defaultValue, onChange, className,
 NativeInput.displayName = 'NativeInput';
 
 // Uncontrolled input wrapper to prevent focus loss
-const StableInput = React.memo(({ name, defaultValue, onChange, ...props }) => {
-  const inputRef = React.useRef(null);
-  const initialValueRef = React.useRef(defaultValue);
-  
-  // Only update on initial render or when component remounts with new key
-  React.useLayoutEffect(() => {
-    if (inputRef.current) {
-      inputRef.current.value = initialValueRef.current || '';
-    }
-  }, []);
-  
+const StableInput = React.memo(({ name, defaultValue, onChange, onBlur, ...props }) => {
   return (
     <NativeInput
-      ref={inputRef}
       name={name}
-      defaultValue={initialValueRef.current}
+      defaultValue={defaultValue}
       onChange={onChange}
+      onBlur={onBlur}
       {...props}
     />
   );
