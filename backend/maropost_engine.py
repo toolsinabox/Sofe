@@ -730,13 +730,26 @@ class MaropostTemplateEngine:
         
         elif page_type == PageType.SEARCH:
             query = model_data.get('query', '')
+            context['search_query'] = query
             if query:
+                # Use regex search similar to products API
                 products = await self.db.products.find(
-                    {"$text": {"$search": query}},
+                    {
+                        "$or": [
+                            {"name": {"$regex": query, "$options": "i"}},
+                            {"description": {"$regex": query, "$options": "i"}},
+                            {"sku": {"$regex": query, "$options": "i"}}
+                        ]
+                    },
                     {"_id": 0}
                 ).to_list(100)
                 context['products'] = products
-                context['search_query'] = query
+                context['search_results'] = products
+                context['search_results_count'] = str(len(products))
+            else:
+                context['products'] = []
+                context['search_results'] = []
+                context['search_results_count'] = '0'
         
         elif page_type == PageType.CMS:
             page_slug = model_data.get('page_slug')
