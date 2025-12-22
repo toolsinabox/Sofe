@@ -1107,12 +1107,15 @@ async def calculate_shipping(request: ShippingCalculationRequest):
             "is_free": is_free
         })
     
+    # Use the first matching zone for response (or None if no options)
+    primary_zone = matching_zones[0] if matching_zones else None
+    
     return ShippingCalculationResponse(
         options=calculated_options,
         zone={
-            "code": zone.get("code"),
-            "name": zone.get("name")
-        }
+            "code": primary_zone.get("code") if primary_zone else None,
+            "name": primary_zone.get("name") if primary_zone else None
+        } if primary_zone else None
     )
 
 
