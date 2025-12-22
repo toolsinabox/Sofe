@@ -104,7 +104,8 @@ const MerchantPOS = () => {
   // Customer Management State
   const [showAddCustomer, setShowAddCustomer] = useState(false);
   const [newCustomer, setNewCustomer] = useState({ 
-    name: '', 
+    firstName: '',
+    lastName: '', 
     company: '',
     email: '', 
     phone: '',
