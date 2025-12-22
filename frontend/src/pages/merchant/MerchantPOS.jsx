@@ -1617,7 +1617,7 @@ const MerchantPOS = () => {
                     
                     <div className="flex items-center gap-1">
                       <button
-                        onClick={() => updateQuantity(index, -1)}
+                        onClick={() => updateQuantity(index, item.quantity - 1)}
                         className="w-6 h-6 flex items-center justify-center bg-gray-700 rounded text-gray-300 hover:bg-gray-600"
                       >
                         <Minus className="w-3 h-3" />
@@ -1626,7 +1626,7 @@ const MerchantPOS = () => {
                         {item.quantity}
                       </span>
                       <button
-                        onClick={() => updateQuantity(index, 1)}
+                        onClick={() => updateQuantity(index, item.quantity + 1)}
                         className="w-6 h-6 flex items-center justify-center bg-gray-700 rounded text-gray-300 hover:bg-gray-600"
                       >
                         <Plus className="w-3 h-3" />
