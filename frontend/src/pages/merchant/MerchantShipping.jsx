@@ -207,7 +207,7 @@ const MerchantShipping = () => {
           <Calculator className="w-5 h-5 text-emerald-400" />
           Shipping Rate Calculator
         </h3>
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+        <div className="grid grid-cols-1 md:grid-cols-5 gap-4">
           <div>
             <Label className="text-gray-400 text-sm">Postcode</Label>
             <Input 
@@ -216,6 +216,31 @@ const MerchantShipping = () => {
               onChange={(e) => setCalcPostcode(e.target.value)}
               className="bg-gray-700 border-gray-600 text-white mt-1"
             />
+          </div>
+          <div>
+            <Label className="text-gray-400 text-sm flex items-center gap-2">
+              Suburb
+              {loadingSuburbs && <Loader2 className="w-3 h-3 animate-spin text-gray-500" />}
+            </Label>
+            <Select 
+              value={calcSuburb} 
+              onValueChange={setCalcSuburb}
+              disabled={calcSuburbs.length === 0}
+            >
+              <SelectTrigger className="bg-gray-700 border-gray-600 text-white mt-1">
+                <SelectValue placeholder={calcSuburbs.length === 0 ? "Enter postcode first" : "Select suburb"} />
+              </SelectTrigger>
+              <SelectContent className="bg-gray-800 border-gray-700 max-h-60">
+                {calcSuburbs.map((s, idx) => (
+                  <SelectItem key={idx} value={s.suburb}>
+                    {s.suburb} ({s.state})
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+            {calcPostcode.length >= 4 && calcSuburbs.length === 0 && !loadingSuburbs && (
+              <p className="text-gray-500 text-xs mt-1">No suburbs found</p>
+            )}
           </div>
           <div>
             <Label className="text-gray-400 text-sm">Weight (kg)</Label>
@@ -257,9 +282,16 @@ const MerchantShipping = () => {
             ) : (
               <>
                 {calcResult.zone && (
-                  <p className="text-gray-400 text-sm mb-3">
-                    Zone: <span className="text-white font-medium">{calcResult.zone.name}</span> ({calcResult.zone.code})
-                  </p>
+                  <div className="mb-3">
+                    <p className="text-gray-400 text-sm">
+                      Zone: <span className="text-white font-medium">{calcResult.zone.name}</span> ({calcResult.zone.code})
+                    </p>
+                    {calcSuburb && (
+                      <p className="text-gray-400 text-sm">
+                        Suburb: <span className="text-emerald-400 font-medium">{calcSuburb}</span>
+                      </p>
+                    )}
+                  </div>
                 )}
                 <div className="space-y-2">
                   {calcResult.options?.map((option, i) => (
