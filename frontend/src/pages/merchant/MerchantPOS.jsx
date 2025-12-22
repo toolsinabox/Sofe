@@ -85,6 +85,26 @@ const MerchantPOS = () => {
   const [cartDiscount, setCartDiscount] = useState({ type: 'fixed', value: 0 });
   const [showDiscount, setShowDiscount] = useState(false);
   
+  // Returns/Refunds State
+  const [showReturns, setShowReturns] = useState(false);
+  const [returnTransactionSearch, setReturnTransactionSearch] = useState('');
+  const [returnTransaction, setReturnTransaction] = useState(null);
+  const [returnableItems, setReturnableItems] = useState([]);
+  const [returnItems, setReturnItems] = useState([]);
+  const [returnReason, setReturnReason] = useState('');
+  const [refundMethod, setRefundMethod] = useState('cash');
+  const [processingReturn, setProcessingReturn] = useState(false);
+  
+  // Customer Management State
+  const [showAddCustomer, setShowAddCustomer] = useState(false);
+  const [newCustomer, setNewCustomer] = useState({ name: '', email: '', phone: '' });
+  const [addingCustomer, setAddingCustomer] = useState(false);
+  
+  // Discount Permission State
+  const [discountSettings, setDiscountSettings] = useState(null);
+  const [showDiscountApproval, setShowDiscountApproval] = useState(false);
+  const [pendingDiscount, setPendingDiscount] = useState(null);
+  
   // Outlet/Register/Shift State
   const [outlets, setOutlets] = useState([]);
   const [registers, setRegisters] = useState([]);
