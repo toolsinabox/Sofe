@@ -1567,3 +1567,53 @@ ul {
     grid-template-columns: repeat(2, 1fr);
   }
 }
+
+/* ================================
+   SVG & ICON SIZING UTILITIES
+   ================================ */
+.w-4 { width: 1rem; }
+.h-4 { height: 1rem; }
+.w-5 { width: 1.25rem; }
+.h-5 { height: 1.25rem; }
+.w-6 { width: 1.5rem; }
+.h-6 { height: 1.5rem; }
+.w-8 { width: 2rem; }
+.h-8 { height: 2rem; }
+.w-10 { width: 2.5rem; }
+.h-10 { height: 2.5rem; }
+.w-12 { width: 3rem; }
+.h-12 { height: 3rem; }
+.w-16 { width: 4rem; }
+.h-16 { height: 4rem; }
+.w-20 { width: 5rem; }
+.h-20 { height: 5rem; }
+
+/* Flex shrink */
+.flex-shrink-0 { flex-shrink: 0; }
+.flex-1 { flex: 1 1 0%; }
+
+/* Aspect ratio */
+.aspect-square { aspect-ratio: 1 / 1; }
+.aspect-video { aspect-ratio: 16 / 9; }
+
+/* Object fit */
+.object-contain { object-fit: contain; }
+.object-cover { object-fit: cover; }
+
+/* Position */
+.absolute { position: absolute; }
+.relative { position: relative; }
+.bottom-4 { bottom: 1rem; }
+.right-4 { right: 1rem; }
+.top-2 { top: 0.5rem; }
+.left-2 { left: 0.5rem; }
+
+/* Prose / Content Styling */
+.prose { color: var(--gray-700); }
+.prose h2 { font-size: 1.5rem; font-weight: 700; margin-bottom: 1rem; }
+.prose h3 { font-size: 1.25rem; font-weight: 600; margin-bottom: 0.75rem; }
+.prose p { margin-bottom: 1rem; }
+.prose table { width: 100%; }
+
+/* Hidden utility */
+.hidden { display: none; }
