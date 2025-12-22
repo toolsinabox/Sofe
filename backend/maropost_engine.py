@@ -1328,6 +1328,57 @@ class MaropostTemplateEngine:
         
         return content
     
+    def _replace_mega_menu_item_tags(self, content: str, menu: Dict) -> str:
+        """Replace mega menu item tags within a loop."""
+        import json
+        
+        # Build columns HTML
+        columns_html = ''
+        columns = menu.get('columns', [])
+        for col in columns:
+            col_items_html = ''
+            for item in col.get('items', []):
+                col_items_html += f'<li><a href="{item.get("url", "#")}">{item.get("title", "")}</a></li>'
+            
+            columns_html += f'''
+            <div class="mega-menu-column">
+                <h4 class="mega-menu-column-title">{col.get("title", "")}</h4>
+                <ul class="mega-menu-links">{col_items_html}</ul>
+            </div>
+            '''
+        
+        # Featured section HTML
+        featured_html = ''
+        if menu.get('featured_image'):
+            featured_html = f'''
+            <div class="mega-menu-featured">
+                <a href="{menu.get("featured_link", "#")}">
+                    <img src="{menu.get("featured_image", "")}" alt="{menu.get("featured_title", "")}">
+                    <span>{menu.get("featured_title", "")}</span>
+                </a>
+            </div>
+            '''
+        
+        replacements = {
+            '[@menu_id@]': menu.get('id', ''),
+            '[@menu_title@]': menu.get('title', ''),
+            '[@menu_category_id@]': menu.get('category_id', ''),
+            '[@menu_columns@]': columns_html,
+            '[@menu_columns_count@]': str(len(columns)),
+            '[@menu_columns_json@]': json.dumps(columns),
+            '[@menu_featured_image@]': menu.get('featured_image', ''),
+            '[@menu_featured_title@]': menu.get('featured_title', ''),
+            '[@menu_featured_link@]': menu.get('featured_link', ''),
+            '[@menu_featured_html@]': featured_html,
+            '[@menu_is_active@]': 'y' if menu.get('is_active', True) else 'n',
+            '[@menu_sort_order@]': str(menu.get('sort_order', 0)),
+        }
+        
+        for tag, value in replacements.items():
+            content = content.replace(tag, str(value))
+        
+        return content
+    
     async def process_conditionals(self, content: str, context: Dict) -> str:
         """
         Process [%if condition%]...[%else%]...[%/if%] tags.
