@@ -157,6 +157,28 @@ const MerchantShipping = () => {
     return () => clearTimeout(debounceTimer);
   }, [calcPostcode]);
 
+  // Stable handler for service form changes to prevent focus loss
+  const handleServiceFormChange = useCallback((field, value) => {
+    setServiceForm(prev => ({ ...prev, [field]: value }));
+  }, []);
+
+  // Stable handler for service form text input changes
+  const handleServiceFormInputChange = useCallback((e) => {
+    const { name, value, type, checked } = e.target;
+    setServiceForm(prev => ({
+      ...prev,
+      [name]: type === 'checkbox' ? checked : value
+    }));
+  }, []);
+
+  // Stable handler for numeric service form fields
+  const handleServiceFormNumberChange = useCallback((field, value, defaultValue = 0) => {
+    setServiceForm(prev => ({
+      ...prev,
+      [field]: parseFloat(value) || defaultValue
+    }));
+  }, []);
+
   const fetchAllData = async () => {
     setLoading(true);
     try {
