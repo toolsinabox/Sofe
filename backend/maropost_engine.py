@@ -895,6 +895,9 @@ class MaropostTemplateEngine:
                 cart = context.get('cart', {})
                 items = cart.get('items', [])
             
+            elif tag_name == 'mega_menu_list' or tag_name == 'mega_menus':
+                items = context.get('mega_menus', [])
+            
             # Render each item
             output = []
             for i, item in enumerate(items):
