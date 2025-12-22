@@ -2469,14 +2469,146 @@ async def send_order_email(order_id: str, email_data: dict):
     return {"message": f"Email sent to {order.get('customer_email')}"}
 
 @api_router.get("/orders/{order_id}/invoice")
-async def get_order_invoice(order_id: str, print: bool = False):
-    """Generate invoice HTML for an order"""
+async def get_order_invoice(order_id: str, format: str = "html"):
+    """Generate invoice for an order (HTML or PDF)"""
     order = await db.orders.find_one({"id": order_id}, {"_id": 0})
     if not order:
         raise HTTPException(status_code=404, detail="Order not found")
     
-    # TODO: Generate proper invoice template
-    return HTMLResponse(content=f"<html><body><h1>Invoice {order.get('order_number')}</h1></body></html>")
+    store_settings = await db.store_settings.find_one({"id": "store_settings"}, {"_id": 0})
+    
+    if format == "pdf":
+        pdf_bytes = PDFGenerator.generate_invoice_pdf(order, store_settings)
+        return Response(
+            content=pdf_bytes,
+            media_type="application/pdf",
+            headers={
+                "Content-Disposition": f"attachment; filename=invoice-{order.get('order_number', order_id)}.pdf"
+            }
+        )
+    
+    # Return HTML for print preview
+    currency = store_settings.get('currency_symbol', '$') if store_settings else '$'
+    store_name = store_settings.get('store_name', 'TOOLS IN A BOX') if store_settings else 'TOOLS IN A BOX'
+    
+    items_html = ""
+    for item in order.get('items', []):
+        qty = item.get('quantity', 1)
+        price = item.get('price', 0)
+        total = qty * price
+        items_html += f"""
+        <tr>
+            <td style="padding: 12px; border-bottom: 1px solid #e5e5e5;">{item.get('name', 'Product')}</td>
+            <td style="padding: 12px; border-bottom: 1px solid #e5e5e5;">{item.get('sku', 'N/A')}</td>
+            <td style="padding: 12px; border-bottom: 1px solid #e5e5e5; text-align: center;">{qty}</td>
+            <td style="padding: 12px; border-bottom: 1px solid #e5e5e5; text-align: right;">{currency}{price:.2f}</td>
+            <td style="padding: 12px; border-bottom: 1px solid #e5e5e5; text-align: right;">{currency}{total:.2f}</td>
+        </tr>
+        """
+    
+    subtotal = order.get('subtotal', order.get('total', 0))
+    shipping = order.get('shipping', 0)
+    tax = order.get('tax', subtotal * 0.1)
+    total = order.get('total', subtotal + shipping + tax)
+    
+    html = f"""
+    <!DOCTYPE html>
+    <html>
+    <head>
+        <title>Invoice - {order.get('order_number')}</title>
+        <style>
+            body {{ font-family: Arial, sans-serif; margin: 40px; color: #333; }}
+            .header {{ margin-bottom: 30px; }}
+            .header h1 {{ margin: 0; font-size: 28px; }}
+            .header h2 {{ margin: 10px 0 0 0; font-size: 18px; color: #666; }}
+            .details {{ display: flex; justify-content: space-between; margin-bottom: 30px; }}
+            .details-box {{ flex: 1; }}
+            .details-box h3 {{ margin: 0 0 10px 0; font-size: 14px; color: #666; }}
+            table {{ width: 100%; border-collapse: collapse; }}
+            th {{ background: #1a1a1a; color: white; padding: 12px; text-align: left; }}
+            .totals {{ margin-top: 20px; text-align: right; }}
+            .totals table {{ width: 300px; margin-left: auto; }}
+            .totals td {{ padding: 8px 0; }}
+            .totals .total-row {{ font-weight: bold; font-size: 18px; border-top: 2px solid #333; }}
+            @media print {{ body {{ margin: 20px; }} }}
+        </style>
+    </head>
+    <body>
+        <div class="header">
+            <h1>{store_name}</h1>
+            <h2>TAX INVOICE</h2>
+        </div>
+        
+        <div class="details">
+            <div class="details-box">
+                <h3>Invoice Details</h3>
+                <p><strong>Invoice #:</strong> {order.get('order_number', 'N/A')}</p>
+                <p><strong>Date:</strong> {str(order.get('created_at', ''))[:10]}</p>
+                <p><strong>Status:</strong> {order.get('payment_status', 'Pending').title()}</p>
+            </div>
+            <div class="details-box">
+                <h3>Bill To</h3>
+                <p>{order.get('customer_name', 'N/A')}</p>
+                <p>{order.get('customer_email', '')}</p>
+                <p>{order.get('customer_phone', '')}</p>
+            </div>
+            <div class="details-box">
+                <h3>Ship To</h3>
+                <p>{order.get('shipping_address', {}).get('street', '')}</p>
+                <p>{order.get('shipping_address', {}).get('city', '')}, {order.get('shipping_address', {}).get('state', '')} {order.get('shipping_address', {}).get('postcode', '')}</p>
+                <p>{order.get('shipping_address', {}).get('country', 'Australia')}</p>
+            </div>
+        </div>
+        
+        <table>
+            <thead>
+                <tr>
+                    <th>Product</th>
+                    <th>SKU</th>
+                    <th style="text-align: center;">Qty</th>
+                    <th style="text-align: right;">Unit Price</th>
+                    <th style="text-align: right;">Total</th>
+                </tr>
+            </thead>
+            <tbody>
+                {items_html}
+            </tbody>
+        </table>
+        
+        <div class="totals">
+            <table>
+                <tr><td>Subtotal:</td><td style="text-align: right;">{currency}{subtotal:.2f}</td></tr>
+                <tr><td>Shipping:</td><td style="text-align: right;">{currency}{shipping:.2f}</td></tr>
+                <tr><td>GST (10%):</td><td style="text-align: right;">{currency}{tax:.2f}</td></tr>
+                <tr class="total-row"><td>Total:</td><td style="text-align: right;">{currency}{total:.2f}</td></tr>
+            </table>
+        </div>
+        
+        <p style="margin-top: 40px; text-align: center; color: #666; font-size: 12px;">
+            Thank you for your business!
+        </p>
+    </body>
+    </html>
+    """
+    return HTMLResponse(content=html)
+
+@api_router.get("/orders/{order_id}/packing-slip")
+async def get_packing_slip(order_id: str, format: str = "pdf"):
+    """Generate packing slip for an order"""
+    order = await db.orders.find_one({"id": order_id}, {"_id": 0})
+    if not order:
+        raise HTTPException(status_code=404, detail="Order not found")
+    
+    store_settings = await db.store_settings.find_one({"id": "store_settings"}, {"_id": 0})
+    
+    pdf_bytes = PDFGenerator.generate_packing_slip_pdf(order, store_settings)
+    return Response(
+        content=pdf_bytes,
+        media_type="application/pdf",
+        headers={
+            "Content-Disposition": f"attachment; filename=packing-slip-{order.get('order_number', order_id)}.pdf"
+        }
+    )
 
 @api_router.get("/orders/export")
 async def export_orders(format: str = "csv"):
