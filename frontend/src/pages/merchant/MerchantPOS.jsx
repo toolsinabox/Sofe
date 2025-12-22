@@ -85,6 +85,12 @@ const MerchantPOS = () => {
   const [cartDiscount, setCartDiscount] = useState({ type: 'fixed', value: 0 });
   const [showDiscount, setShowDiscount] = useState(false);
   
+  // All products for browsing
+  const [allProducts, setAllProducts] = useState([]);
+  const [loadingProducts, setLoadingProducts] = useState(false);
+  const [selectedCategory, setSelectedCategory] = useState('all');
+  const [categories, setCategories] = useState([]);
+  
   // Returns/Refunds State
   const [showReturns, setShowReturns] = useState(false);
   const [returnTransactionSearch, setReturnTransactionSearch] = useState('');
