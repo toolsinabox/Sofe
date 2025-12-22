@@ -249,6 +249,7 @@ function App() {
               <Route path="mega-menu" element={<MerchantMegaMenu />} />
               <Route path="pages" element={<MerchantPages />} />
               <Route path="emails" element={<MerchantEmails />} />
+              <Route path="pos" element={<MerchantPOS />} />
             </Route>
 
             {/* Live Theme Storefront - Main customer-facing store */}
