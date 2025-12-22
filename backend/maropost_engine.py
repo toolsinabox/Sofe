@@ -1043,7 +1043,7 @@ class MaropostTemplateEngine:
                 item_content = inner_content
                 
                 # Replace item-specific tags
-                if tag_name in ['product_list', 'products']:
+                if tag_name in ['product_list', 'products', 'search_results']:
                     item_content = self._replace_product_item_tags(item_content, item, context.get('store', {}))
                 elif tag_name in ['category_list', 'categories']:
                     item_content = self._replace_category_item_tags(item_content, item)
