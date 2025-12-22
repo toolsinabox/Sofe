@@ -148,6 +148,25 @@ const MerchantPOS = () => {
   const [shiftHistory, setShiftHistory] = useState([]);
   const [loading, setLoading] = useState(true);
 
+  // Confirm Sale State (Phase 1)
+  const [showConfirmSale, setShowConfirmSale] = useState(false);
+  const [saleStatus, setSaleStatus] = useState('completed');
+  const [saleNote, setSaleNote] = useState('');
+  const [showSaleNote, setShowSaleNote] = useState(false);
+  const [emailReceipt, setEmailReceipt] = useState(true);
+  const [receiptEmail, setReceiptEmail] = useState('');
+  const [sendingEmail, setSendingEmail] = useState(false);
+  const [completingSale, setCompletingSale] = useState(false);
+
+  // Sale status options matching Maropost
+  const saleStatusOptions = [
+    { value: 'new', label: 'New' },
+    { value: 'on_hold', label: 'On Hold' },
+    { value: 'pick', label: 'Pick' },
+    { value: 'pack', label: 'Pack' },
+    { value: 'completed', label: 'Completed' }
+  ];
+
   // Initialize POS
   useEffect(() => {
     initializePOS();
