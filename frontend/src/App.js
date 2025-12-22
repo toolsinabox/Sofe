@@ -31,6 +31,7 @@ import MerchantShipping from "./pages/merchant/MerchantShipping";
 import MerchantAbandonedCarts from "./pages/merchant/MerchantAbandonedCarts";
 import MerchantSEO from "./pages/merchant/MerchantSEO";
 import MerchantMegaMenu from "./pages/merchant/MerchantMegaMenu";
+import MerchantPages from "./pages/merchant/MerchantPages";
 import MerchantLogin from "./pages/merchant/MerchantLogin";
 
 // Live Storefront (Theme-rendered)
