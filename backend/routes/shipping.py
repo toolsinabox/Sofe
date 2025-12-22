@@ -1040,12 +1040,33 @@ async def calculate_shipping(request: ShippingCalculationRequest):
                         is_free = True
                         break
         
-        final_price = 0 if is_free else round(base_price, 2)
+        # Calculate GST
+        tax_inclusive = service.get("tax_inclusive", False)
+        tax_rate = service.get("tax_rate", 10.0)  # Default 10% GST for Australia
+        
+        if is_free:
+            final_price = 0
+            gst_amount = 0
+            price_ex_gst = 0
+        elif tax_inclusive:
+            # Rates already include GST - extract GST from total
+            final_price = round(base_price, 2)
+            gst_amount = round(base_price - (base_price / (1 + tax_rate / 100)), 2)
+            price_ex_gst = round(base_price - gst_amount, 2)
+        else:
+            # Rates exclude GST - add GST to total
+            price_ex_gst = round(base_price, 2)
+            gst_amount = round(base_price * (tax_rate / 100), 2)
+            final_price = round(base_price + gst_amount, 2)
         
         calculated_options.append({
             "id": service["id"],
             "name": service["name"],
             "price": final_price,
+            "price_ex_gst": price_ex_gst,
+            "gst_amount": gst_amount,
+            "tax_inclusive": tax_inclusive,
+            "tax_rate": tax_rate,
             "delivery_days": rate.get("delivery_days", 3),
             "description": f"{rate.get('delivery_days', 3)} business days" if not is_free else "Free shipping",
             "service_code": service["code"],
