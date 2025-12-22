@@ -87,7 +87,10 @@
                                         <option value="GB">United Kingdom</option>
                                         <option value="CA">Canada</option>
                                     </select>
-                                    <input type="text" id="postal-code" placeholder="Postcode (e.g., 3000)" style="padding: 10px 15px; border: 1px solid #ddd; border-radius: 4px; font-size: 14px;">
+                                    <input type="text" id="postal-code" placeholder="Postcode" maxlength="4" oninput="onCartPostcodeInput()" style="padding: 10px 15px; border: 1px solid #ddd; border-radius: 4px; font-size: 14px; width: 100px;">
+                                    <select id="suburb-select" disabled style="padding: 10px 15px; border: 1px solid #ddd; border-radius: 4px; font-size: 14px; flex: 1; min-width: 150px;">
+                                        <option value="">Enter postcode first</option>
+                                    </select>
                                     <button id="calc-shipping-btn" onclick="calculateShipping()" style="padding: 12px 20px; background: #333; color: #fff; border: none; border-radius: 4px; font-weight: 500; cursor: pointer;">
                                         Calculate Shipping
                                     </button>
