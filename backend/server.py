@@ -6662,6 +6662,7 @@ app.include_router(api_router)
 
 # Include modular route routers under /api prefix
 app.include_router(auth_router, prefix="/api")
+app.include_router(shipping_router, prefix="/api")
 
 app.add_middleware(
     CORSMiddleware,
