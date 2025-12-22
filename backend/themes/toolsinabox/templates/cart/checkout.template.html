@@ -809,7 +809,7 @@ async function calculateCheckoutShipping() {
         
         const cartTotal = cartData.items.reduce((sum, item) => sum + (item.price * item.quantity), 0);
         
-        const response = await fetch(`${API_BASE}/shipping/calculate`, {
+        const response = await fetch(`${CHECKOUT_API_BASE}/shipping/calculate`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
