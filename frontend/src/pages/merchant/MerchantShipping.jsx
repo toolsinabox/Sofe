@@ -136,6 +136,7 @@ const MerchantShipping = () => {
     try {
       const response = await axios.post(`${API}/shipping/calculate`, {
         postcode: calcPostcode,
+        suburb: calcSuburb || null,
         country: 'AU',
         items: [{ weight: parseFloat(calcWeight) || 1, quantity: 1 }],
         cart_total: parseFloat(calcTotal) || 100
