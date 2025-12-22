@@ -303,12 +303,14 @@
         </style>
 
         <script>
-        const API_BASE = window.location.origin + '/api';
+        // Use a unique variable name to avoid conflict with main.js
+        const CART_API_BASE = window.location.origin + '/api';
         
         // Global state for shipping
         let currentSubtotal = 0;
         let selectedShippingRate = null;
         let availableShippingRates = [];
+        let cartItems = []; // Store cart items for shipping calculation
         
         document.addEventListener('DOMContentLoaded', function() {
             loadCartPage();
