@@ -23,13 +23,8 @@ from passlib.context import CryptContext
 from maropost_engine import MaropostTemplateEngine as NewMaropostEngine, PageType, WrapperContext, create_engine
 import stripe
 
-# PDF Generation imports
-from reportlab.lib import colors
-from reportlab.lib.pagesizes import A4
-from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
-from reportlab.lib.units import mm, cm
-from reportlab.platypus import SimpleDocTemplate, Table, TableStyle, Paragraph, Spacer, Image as RLImage
-from reportlab.lib.enums import TA_LEFT, TA_CENTER, TA_RIGHT
+# Import PDFGenerator from utils
+from utils.pdf import PDFGenerator
 
 ROOT_DIR = Path(__file__).parent
 load_dotenv(ROOT_DIR / '.env')
