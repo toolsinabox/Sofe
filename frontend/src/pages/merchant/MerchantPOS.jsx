@@ -214,10 +214,20 @@ const MerchantPOS = () => {
     }
   };
 
-  // Filter products by category
-  const filteredProducts = selectedCategory === 'all' 
-    ? allProducts 
-    : allProducts.filter(p => p.category === selectedCategory);
+  // Filter products by category AND search query
+  const filteredProducts = allProducts.filter(p => {
+    // Category filter
+    const categoryMatch = selectedCategory === 'all' || p.category === selectedCategory;
+    
+    // Search filter - match against name, SKU, or barcode
+    const query = searchQuery.toLowerCase().trim();
+    const searchMatch = !query || 
+      p.name?.toLowerCase().includes(query) ||
+      p.sku?.toLowerCase().includes(query) ||
+      p.barcode?.toLowerCase().includes(query);
+    
+    return categoryMatch && searchMatch;
+  });
 
   // Handle outlet/register selection
   const handleSetupComplete = async () => {
