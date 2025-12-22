@@ -181,6 +181,30 @@ const MerchantPOS = () => {
     }
   };
 
+  // Fetch all products for browsing
+  const fetchAllProducts = async () => {
+    setLoadingProducts(true);
+    try {
+      const response = await axios.get(`${API}/pos/products`, {
+        params: { limit: 100 }
+      });
+      setAllProducts(response.data);
+      
+      // Extract unique categories
+      const uniqueCategories = [...new Set(response.data.map(p => p.category).filter(Boolean))];
+      setCategories(uniqueCategories);
+    } catch (error) {
+      console.error('Error fetching products:', error);
+    } finally {
+      setLoadingProducts(false);
+    }
+  };
+
+  // Filter products by category
+  const filteredProducts = selectedCategory === 'all' 
+    ? allProducts 
+    : allProducts.filter(p => p.category === selectedCategory);
+
   // Handle outlet/register selection
   const handleSetupComplete = async () => {
     if (!selectedOutlet || !selectedRegister) return;
