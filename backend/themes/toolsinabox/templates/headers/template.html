@@ -31,11 +31,15 @@
             <div class="flex items-center justify-between py-4">
                 <!-- Logo -->
                 <a href="/live" class="logo-container">
+                    [%if [@store_logo@] ne ''%]
+                    <img src="[@store_logo@]" alt="[@store_name@]" class="header-logo-image">
+                    [%else%]
                     <div class="logo-box">TIB</div>
                     <div class="logo-text">
-                        TOOLS IN A BOX
+                        [@store_name@]
                         <span>Australia's #1 Toolbox Supplier</span>
                     </div>
+                    [%/if%]
                 </a>
                 
                 <!-- Search Bar -->
