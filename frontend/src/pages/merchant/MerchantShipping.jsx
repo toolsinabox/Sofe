@@ -3067,7 +3067,7 @@ const MerchantShipping = () => {
 
       {/* Tab Content */}
       <div>
-        {activeTab === 'overview' && <OverviewTab />}
+        {activeTab === 'overview' && overviewContent}
         {activeTab === 'zones' && <ZonesTab />}
         {activeTab === 'services' && <ServicesTab />}
         {activeTab === 'categories' && <CategoriesTab />}
