@@ -257,7 +257,15 @@ const ProductEditor = ({ product, categories, onSave, onClose, templateTags }) =
         width: product.width?.toString() || '',
         height: product.height?.toString() || '',
         tags: product.tags || [],
-        images: product.images || [],
+        // Convert images array to 12-slot format
+        images: (() => {
+          const slots = Array(12).fill(null);
+          const productImages = product.images || [];
+          productImages.forEach((img, idx) => {
+            if (idx < 12 && img) slots[idx] = img;
+          });
+          return slots;
+        })(),
       }));
     }
   }, [product]);
