@@ -1722,7 +1722,7 @@ const MerchantShipping = () => {
                     <Label className="text-gray-300 text-sm">Name</Label>
                     <Input
                       value={serviceForm.name}
-                      onChange={(e) => setServiceForm({...serviceForm, name: e.target.value})}
+                      onChange={(e) => handleServiceFormChange('name', e.target.value)}
                       placeholder="e.g., StarTrack"
                       className="bg-gray-700 border-gray-600 text-white mt-1"
                     />
@@ -1731,14 +1731,14 @@ const MerchantShipping = () => {
                     <Label className="text-gray-300 text-sm">Code</Label>
                     <Input
                       value={serviceForm.code}
-                      onChange={(e) => setServiceForm({...serviceForm, code: e.target.value.toLowerCase()})}
+                      onChange={(e) => handleServiceFormChange('code', e.target.value.toLowerCase())}
                       placeholder="e.g., startrack"
                       className="bg-gray-700 border-gray-600 text-white mt-1"
                     />
                   </div>
                   <div>
                     <Label className="text-gray-300 text-sm">Status</Label>
-                    <Select value={serviceForm.is_active ? 'active' : 'inactive'} onValueChange={(v) => setServiceForm({...serviceForm, is_active: v === 'active'})}>
+                    <Select value={serviceForm.is_active ? 'active' : 'inactive'} onValueChange={(v) => handleServiceFormChange('is_active', v === 'active')}>
                       <SelectTrigger className="bg-gray-700 border-gray-600 text-white mt-1">
                         <SelectValue />
                       </SelectTrigger>
@@ -1750,7 +1750,7 @@ const MerchantShipping = () => {
                   </div>
                   <div>
                     <Label className="text-gray-300 text-sm">Charge Type</Label>
-                    <Select value={serviceForm.charge_type} onValueChange={(v) => setServiceForm({...serviceForm, charge_type: v})}>
+                    <Select value={serviceForm.charge_type} onValueChange={(v) => handleServiceFormChange('charge_type', v)}>
                       <SelectTrigger className="bg-gray-700 border-gray-600 text-white mt-1">
                         <SelectValue />
                       </SelectTrigger>
