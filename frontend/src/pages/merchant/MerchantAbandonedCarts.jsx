@@ -157,7 +157,7 @@ const MerchantAbandonedCarts = () => {
                     <p className="text-white font-bold">${cart.subtotal?.toFixed(2)}</p>
                   </td>
                   <td className="p-4">
-                    <p className="text-gray-300">{cart.items?.length || 0} items</p>
+                    <p className="text-gray-300">{cart.items?.length || 0} {(cart.items?.length || 0) === 1 ? 'item' : 'items'}</p>
                   </td>
                   <td className="p-4">
                     <div className="flex items-center gap-2 text-gray-400">
