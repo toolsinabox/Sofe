@@ -5485,7 +5485,7 @@ async def create_pos_transaction(transaction: POSTransactionCreate):
     for item in transaction.items:
         order_items.append({
             "product_id": item.product_id,
-            "name": item.name,
+            "product_name": item.name,
             "sku": item.sku,
             "quantity": item.quantity,
             "price": item.price,
