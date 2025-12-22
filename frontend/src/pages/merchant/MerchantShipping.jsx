@@ -921,6 +921,8 @@ const MerchantShipping = () => {
     const [importingRates, setImportingRates] = useState(false);
     const [rateImportMode, setRateImportMode] = useState('merge');
     const [rateImportResult, setRateImportResult] = useState(null);
+    const [selectedRateFile, setSelectedRateFile] = useState(null);
+    const [rateUploadProgress, setRateUploadProgress] = useState(0);
     const rateFileInputRef = useRef(null);
 
     const openServiceModal = (service = null) => {
