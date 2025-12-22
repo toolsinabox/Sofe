@@ -505,6 +505,12 @@ const MerchantPOS = () => {
     setCart([]);
     setCustomer(null);
     setCartDiscount({ type: 'fixed', value: 0 });
+    // Reset payment terms
+    setPaymentTerm('pay_in_full');
+    setInitialPaymentType('none');
+    setInitialPaymentAmount('');
+    setLaybyDueDate('');
+    setLaybyDuePeriod('');
   };
 
   // Calculate totals
