@@ -522,6 +522,242 @@ const MerchantPOS = () => {
     }
   };
 
+  // Quick add customer
+  const handleQuickAddCustomer = async () => {
+    if (!newCustomer.name || !newCustomer.email) {
+      alert('Name and email are required');
+      return;
+    }
+    
+    setAddingCustomer(true);
+    try {
+      const response = await axios.post(`${API}/pos/customers/quick-add`, null, {
+        params: {
+          name: newCustomer.name,
+          email: newCustomer.email,
+          phone: newCustomer.phone || null
+        }
+      });
+      
+      setCustomer(response.data);
+      setShowAddCustomer(false);
+      setShowCustomerSearch(false);
+      setNewCustomer({ name: '', email: '', phone: '' });
+      
+      if (response.data.existing) {
+        alert('Existing customer found and selected');
+      }
+    } catch (error) {
+      console.error('Error adding customer:', error);
+      alert('Failed to add customer');
+    } finally {
+      setAddingCustomer(false);
+    }
+  };
+
+  // Fetch discount settings
+  const fetchDiscountSettings = async () => {
+    try {
+      const response = await axios.get(`${API}/pos/discount-settings`);
+      setDiscountSettings(response.data);
+    } catch (error) {
+      console.error('Error fetching discount settings:', error);
+    }
+  };
+
+  // Check discount permission
+  const checkDiscountPermission = (discountValue, discountType) => {
+    if (!discountSettings) return { allowed: true };
+    
+    const userRole = user?.role || 'staff';
+    const roleSettings = discountSettings.roles?.[userRole] || discountSettings.roles?.staff;
+    
+    if (!roleSettings) return { allowed: true };
+    
+    if (discountType === 'percentage') {
+      if (discountValue > roleSettings.max_percentage) {
+        return {
+          allowed: false,
+          maxAllowed: roleSettings.max_percentage,
+          requiresApproval: roleSettings.requires_approval
+        };
+      }
+    } else {
+      if (discountValue > roleSettings.max_fixed) {
+        return {
+          allowed: false,
+          maxAllowed: roleSettings.max_fixed,
+          requiresApproval: roleSettings.requires_approval
+        };
+      }
+    }
+    
+    return { allowed: true };
+  };
+
+  // Apply discount with permission check
+  const applyDiscount = (type, value) => {
+    const permission = checkDiscountPermission(value, type);
+    
+    if (!permission.allowed) {
+      if (permission.requiresApproval) {
+        setPendingDiscount({ type, value });
+        setShowDiscountApproval(true);
+      } else {
+        alert(`Discount exceeds your limit. Maximum ${type === 'percentage' ? permission.maxAllowed + '%' : '$' + permission.maxAllowed}`);
+        setCartDiscount({ type, value: permission.maxAllowed });
+      }
+    } else {
+      setCartDiscount({ type, value });
+    }
+    setShowDiscount(false);
+  };
+
+  // Request discount approval
+  const requestDiscountApproval = async () => {
+    if (!pendingDiscount) return;
+    
+    try {
+      await axios.post(`${API}/pos/discount-approval`, null, {
+        params: {
+          amount: pendingDiscount.value,
+          discount_type: pendingDiscount.type,
+          reason: 'Manager approval requested',
+          staff_id: user?.id || 'staff',
+          staff_name: user?.name || 'Staff'
+        }
+      });
+      alert('Approval request submitted. Please wait for manager authorization.');
+      setShowDiscountApproval(false);
+      setPendingDiscount(null);
+    } catch (error) {
+      console.error('Error requesting approval:', error);
+      alert('Failed to submit approval request');
+    }
+  };
+
+  // Search for transaction to return
+  const searchReturnTransaction = async () => {
+    if (!returnTransactionSearch) return;
+    
+    try {
+      // Try to find by transaction number or ID
+      const response = await axios.get(`${API}/pos/transactions`, {
+        params: { limit: 10 }
+      });
+      
+      const found = response.data.transactions?.find(t => 
+        t.transaction_number?.toLowerCase().includes(returnTransactionSearch.toLowerCase()) ||
+        t.id === returnTransactionSearch
+      );
+      
+      if (found) {
+        // Get returnable items
+        const returnableRes = await axios.get(`${API}/pos/transactions/${found.id}/returnable`);
+        setReturnTransaction(returnableRes.data.transaction);
+        setReturnableItems(returnableRes.data.returnable_items);
+        setReturnItems([]);
+      } else {
+        alert('Transaction not found');
+      }
+    } catch (error) {
+      console.error('Error searching transaction:', error);
+      alert('Failed to find transaction');
+    }
+  };
+
+  // Toggle item for return
+  const toggleReturnItem = (item) => {
+    setReturnItems(prev => {
+      const existing = prev.find(i => i.product_id === item.product_id);
+      if (existing) {
+        return prev.filter(i => i.product_id !== item.product_id);
+      } else {
+        return [...prev, { ...item, return_qty: 1 }];
+      }
+    });
+  };
+
+  // Update return quantity
+  const updateReturnQty = (productId, qty) => {
+    setReturnItems(prev => prev.map(item => {
+      if (item.product_id === productId) {
+        const maxQty = returnableItems.find(ri => ri.product_id === productId)?.max_returnable || 1;
+        return { ...item, return_qty: Math.min(Math.max(1, qty), maxQty) };
+      }
+      return item;
+    }));
+  };
+
+  // Calculate return total
+  const calculateReturnTotal = () => {
+    return returnItems.reduce((sum, item) => sum + (item.price * item.return_qty), 0);
+  };
+
+  // Process return
+  const processReturn = async () => {
+    if (returnItems.length === 0 || !returnReason) {
+      alert('Please select items and provide a reason');
+      return;
+    }
+    
+    setProcessingReturn(true);
+    try {
+      const returnData = {
+        original_transaction_id: returnTransaction.id,
+        items: returnItems.map(item => ({
+          product_id: item.product_id,
+          name: item.name,
+          sku: item.sku,
+          price: item.price,
+          quantity: item.return_qty,
+          reason: returnReason
+        })),
+        refund_method: refundMethod,
+        refund_amount: calculateReturnTotal(),
+        reason: returnReason,
+        notes: null,
+        outlet_id: selectedOutlet?.id,
+        register_id: selectedRegister?.id,
+        staff_id: user?.id,
+        staff_name: user?.name || 'Staff'
+      };
+      
+      const response = await axios.post(`${API}/pos/returns`, returnData);
+      
+      alert(`Return processed successfully!\nReturn #: ${response.data.return_number}\nRefund: $${calculateReturnTotal().toFixed(2)} (${refundMethod})`);
+      
+      // Refresh shift if cash refund
+      if (refundMethod === 'cash' && currentShift) {
+        const shiftRes = await axios.get(`${API}/pos/shifts/current`, {
+          params: { register_id: selectedRegister.id }
+        });
+        if (shiftRes.data) {
+          setCurrentShift(shiftRes.data);
+        }
+      }
+      
+      // Reset return state
+      setShowReturns(false);
+      setReturnTransaction(null);
+      setReturnableItems([]);
+      setReturnItems([]);
+      setReturnReason('');
+      setReturnTransactionSearch('');
+      
+    } catch (error) {
+      console.error('Error processing return:', error);
+      alert(error.response?.data?.detail || 'Failed to process return');
+    } finally {
+      setProcessingReturn(false);
+    }
+  };
+
+  // Fetch discount settings on mount
+  useEffect(() => {
+    fetchDiscountSettings();
+  }, []);
+
   // Print receipt
   const printReceipt = () => {
     window.print();
