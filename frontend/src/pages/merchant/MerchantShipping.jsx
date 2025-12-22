@@ -418,10 +418,10 @@ const MerchantShipping = () => {
                       <div key={idx} className="flex items-center justify-between p-3 bg-gray-800 rounded-lg">
                         <div>
                           <p className="text-white font-medium">{opt.service_name || opt.name}</p>
-                          <p className="text-gray-500 text-xs">{opt.delivery_estimate || `${opt.min_days || 0} business days`}</p>
+                          <p className="text-gray-500 text-xs">{opt.delivery_estimate || opt.description || `${opt.delivery_days || 0} business days`}</p>
                         </div>
-                        <p className={`font-bold ${opt.rate === 0 ? 'text-emerald-400' : 'text-white'}`}>
-                          {opt.rate === 0 ? 'FREE' : `$${opt.rate?.toFixed(2)}`}
+                        <p className={`font-bold ${(opt.price === 0 || opt.is_free) ? 'text-emerald-400' : 'text-white'}`}>
+                          {(opt.price === 0 || opt.is_free) ? 'FREE' : `$${(opt.price || 0).toFixed(2)}`}
                         </p>
                       </div>
                     ))}
