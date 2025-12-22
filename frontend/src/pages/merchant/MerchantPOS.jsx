@@ -1185,7 +1185,8 @@ const MerchantPOS = () => {
             </CardContent>
           </Card>
         </div>
-1188_REMOVE
+
+        {/* Right Panel - Summary & Actions */}
         <div className="w-full lg:w-80 xl:w-96 flex flex-col gap-3">
           {/* Customer */}
           <Card className="bg-[#151b28] border-gray-800">
