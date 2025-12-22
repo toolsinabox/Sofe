@@ -274,21 +274,69 @@ const ProductEditor = ({ product, categories, onSave, onClose, templateTags }) =
     setFormData(prev => ({ ...prev, [field]: value }));
   };
   
+  // Image slot management
+  const handleImageChange = (index, url) => {
+    setFormData(prev => {
+      const newImages = [...prev.images];
+      newImages[index] = url;
+      return { ...prev, images: newImages };
+    });
+  };
+  
+  const handleImageRemove = (index) => {
+    setFormData(prev => {
+      const newImages = [...prev.images];
+      newImages[index] = null;
+      return { ...prev, images: newImages };
+    });
+  };
+  
+  // Drag and drop state
+  const [draggedIndex, setDraggedIndex] = useState(null);
+  
+  const handleDragStart = (e, index) => {
+    setDraggedIndex(index);
+    e.dataTransfer.effectAllowed = 'move';
+  };
+  
+  const handleDragOver = (e) => {
+    e.preventDefault();
+    e.dataTransfer.dropEffect = 'move';
+  };
+  
+  const handleDrop = (e, targetIndex) => {
+    e.preventDefault();
+    if (draggedIndex === null || draggedIndex === targetIndex) {
+      setDraggedIndex(null);
+      return;
+    }
+    
+    setFormData(prev => {
+      const newImages = [...prev.images];
+      // Swap images
+      const temp = newImages[draggedIndex];
+      newImages[draggedIndex] = newImages[targetIndex];
+      newImages[targetIndex] = temp;
+      return { ...prev, images: newImages };
+    });
+    setDraggedIndex(null);
+  };
+  
   const addImage = () => {
     if (newImageUrl.trim()) {
-      setFormData(prev => ({
-        ...prev,
-        images: [...prev.images, newImageUrl.trim()]
-      }));
+      // Find first empty slot
+      const emptyIndex = formData.images.findIndex(img => !img);
+      if (emptyIndex !== -1) {
+        handleImageChange(emptyIndex, newImageUrl.trim());
+      } else {
+        alert('All 12 image slots are filled');
+      }
       setNewImageUrl('');
     }
   };
   
   const removeImage = (index) => {
-    setFormData(prev => ({
-      ...prev,
-      images: prev.images.filter((_, i) => i !== index)
-    }));
+    handleImageRemove(index);
   };
   
   const addTag = () => {
