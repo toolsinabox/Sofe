@@ -243,6 +243,7 @@ function App() {
               <Route path="shipping" element={<MerchantShipping />} />
               <Route path="abandoned-carts" element={<MerchantAbandonedCarts />} />
               <Route path="seo" element={<MerchantSEO />} />
+              <Route path="invoice-settings" element={<MerchantInvoiceSettings />} />
               <Route path="mega-menu" element={<MerchantMegaMenu />} />
               <Route path="pages" element={<MerchantPages />} />
             </Route>
