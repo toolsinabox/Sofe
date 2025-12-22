@@ -1952,13 +1952,162 @@
         function productEnquiry() {
             window.location.href = 'mailto:info@toolsinabox.com.au?subject=Product Enquiry: ' + encodeURIComponent(document.title);
         }
-        function calculateShipping() {
-            const postalCode = document.getElementById('postal-code').value;
+        
+        // ================================
+        // SHIPPING CALCULATOR FUNCTIONS
+        // ================================
+        const API_BASE = window.location.origin + '/api';
+        let currentSuburbs = [];
+        let postcodeDebounceTimer = null;
+        
+        // Product data for shipping calculation
+        const PRODUCT_PRICE = parseFloat('[@price@]') || 0;
+        const PRODUCT_WEIGHT = parseFloat('[@weight@]') || 0.5;
+        const PRODUCT_SHIPPING_LENGTH = parseFloat('[@shipping_length@]') || 0;
+        const PRODUCT_SHIPPING_WIDTH = parseFloat('[@shipping_width@]') || 0;
+        const PRODUCT_SHIPPING_HEIGHT = parseFloat('[@shipping_height@]') || 0;
+        
+        function onPostcodeInput() {
+            const postalCode = document.getElementById('postal-code').value.trim();
+            
+            // Clear previous timer
+            if (postcodeDebounceTimer) clearTimeout(postcodeDebounceTimer);
+            
+            // Debounce the suburb fetch
+            postcodeDebounceTimer = setTimeout(() => {
+                if (postalCode.length >= 4) {
+                    fetchSuburbs(postalCode);
+                } else {
+                    resetSuburbSelect();
+                }
+            }, 300);
+        }
+        
+        async function fetchSuburbs(postcode) {
+            const suburbSelect = document.getElementById('suburb-select');
+            
+            try {
+                suburbSelect.innerHTML = '<option value="">Loading...</option>';
+                suburbSelect.disabled = true;
+                
+                const response = await fetch(`${API_BASE}/shipping/suburbs?postcode=${postcode}`);
+                const data = await response.json();
+                
+                currentSuburbs = data.suburbs || [];
+                
+                if (currentSuburbs.length === 0) {
+                    suburbSelect.innerHTML = '<option value="">No suburbs found</option>';
+                    suburbSelect.disabled = true;
+                } else if (currentSuburbs.length === 1) {
+                    // Auto-select if only one suburb
+                    suburbSelect.innerHTML = `<option value="${currentSuburbs[0].suburb}">${currentSuburbs[0].suburb} (${currentSuburbs[0].state})</option>`;
+                    suburbSelect.disabled = false;
+                    suburbSelect.value = currentSuburbs[0].suburb;
+                } else {
+                    suburbSelect.innerHTML = '<option value="">Select suburb</option>' +
+                        currentSuburbs.map(s => `<option value="${s.suburb}">${s.suburb} (${s.state})</option>`).join('');
+                    suburbSelect.disabled = false;
+                }
+            } catch (error) {
+                console.error('Error fetching suburbs:', error);
+                suburbSelect.innerHTML = '<option value="">Error loading suburbs</option>';
+                suburbSelect.disabled = true;
+            }
+        }
+        
+        function resetSuburbSelect() {
+            const suburbSelect = document.getElementById('suburb-select');
+            suburbSelect.innerHTML = '<option value="">Enter postcode first</option>';
+            suburbSelect.disabled = true;
+            currentSuburbs = [];
+        }
+        
+        async function calculateShipping() {
+            const postalCode = document.getElementById('postal-code').value.trim();
+            const suburbSelect = document.getElementById('suburb-select');
+            const suburb = suburbSelect.value;
+            const calcBtn = document.getElementById('calc-shipping-btn');
+            const btnText = document.getElementById('calc-btn-text');
+            const btnSpinner = document.getElementById('calc-btn-spinner');
+            const resultsContainer = document.getElementById('calculated-shipping-options');
+            const noShippingMsg = document.getElementById('no-shipping-msg');
+            
             if (postalCode.length !== 4) {
                 alert('Please enter a valid 4-digit postal code');
                 return;
             }
-            alert('Shipping calculated! Standard delivery: $25.00');
+            
+            // Show loading state
+            btnText.textContent = 'Calculating...';
+            btnSpinner.style.display = 'inline';
+            calcBtn.disabled = true;
+            noShippingMsg.style.display = 'none';
+            
+            try {
+                // Get quantity from the qty input
+                const qtyInput = document.getElementById('product-qty');
+                const quantity = parseInt(qtyInput?.value) || 1;
+                
+                // Build the item data
+                const itemData = {
+                    weight: PRODUCT_WEIGHT,
+                    quantity: quantity
+                };
+                
+                // Add shipping dimensions if available
+                if (PRODUCT_SHIPPING_LENGTH > 0 && PRODUCT_SHIPPING_WIDTH > 0 && PRODUCT_SHIPPING_HEIGHT > 0) {
+                    itemData.shipping_length = PRODUCT_SHIPPING_LENGTH;
+                    itemData.shipping_width = PRODUCT_SHIPPING_WIDTH;
+                    itemData.shipping_height = PRODUCT_SHIPPING_HEIGHT;
+                }
+                
+                const response = await fetch(`${API_BASE}/shipping/calculate`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        postcode: postalCode,
+                        suburb: suburb || null,
+                        country: 'AU',
+                        items: [itemData],
+                        cart_total: PRODUCT_PRICE * quantity
+                    })
+                });
+                
+                if (!response.ok) throw new Error('Failed to calculate shipping');
+                
+                const data = await response.json();
+                const options = data.options || [];
+                
+                if (options.length === 0) {
+                    resultsContainer.innerHTML = '';
+                    noShippingMsg.style.display = 'flex';
+                } else {
+                    noShippingMsg.style.display = 'none';
+                    resultsContainer.innerHTML = options.map(opt => `
+                        <div class="shipping-option-item">
+                            <div>
+                                <div class="shipping-option-name">${opt.name}</div>
+                                <div class="shipping-option-desc">${opt.description || ''}</div>
+                            </div>
+                            <div style="text-align: right;">
+                                <div class="shipping-option-price ${opt.price === 0 ? 'free' : ''}">
+                                    ${opt.price === 0 ? 'FREE' : '$' + opt.price.toFixed(2)}
+                                </div>
+                                ${opt.gst_amount > 0 ? `<div class="shipping-option-gst">${opt.tax_inclusive ? 'incl. GST' : '+ GST'}</div>` : ''}
+                            </div>
+                        </div>
+                    `).join('');
+                }
+                
+            } catch (error) {
+                console.error('Error calculating shipping:', error);
+                resultsContainer.innerHTML = '';
+                noShippingMsg.style.display = 'flex';
+            } finally {
+                btnText.textContent = 'Calculate';
+                btnSpinner.style.display = 'none';
+                calcBtn.disabled = false;
+            }
         }
         
         // ================================
