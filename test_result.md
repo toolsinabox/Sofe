@@ -897,6 +897,55 @@ A complete Maropost-style shipping management interface with 6 tabs:
 
 ### Status: COMPLETE ✓
 
+## Import/Export Feature Added - 2025-12-22
+
+### Features Implemented ✓
+
+#### Zones Import/Export (Maropost Compatible)
+Added full import/export functionality for shipping zones matching Maropost's CSV format:
+
+**CSV Format:**
+| Column | Description |
+|--------|-------------|
+| Country | Country code (e.g., AU) |
+| Courier | Carrier name (e.g., Australia Post) |
+| From Post Code | Starting postcode range |
+| To Post Code | Ending postcode range |
+| Zone Code | Short zone code (e.g., SYD) |
+| Zone Name | Full zone name (e.g., Sydney Metro) |
+
+**Backend Endpoints Added:**
+- `GET /api/shipping/zones/export/csv` - Export all zones to CSV
+- `GET /api/shipping/zones/export/template` - Download blank template with sample rows
+- `POST /api/shipping/zones/import/csv` - Import zones from CSV
+  - `mode=merge` - Add new zones and update existing (postcodes merged)
+  - `mode=replace` - Clear all zones and import fresh
+- `DELETE /api/shipping/zones/bulk` - Delete all zones
+
+**Frontend UI Added:**
+- "Export CSV" button - Downloads current zones as CSV
+- "Import CSV" button - Opens import modal with:
+  - CSV format documentation
+  - "Download Sample Template" button
+  - Import Mode selection (Merge/Replace)
+  - Replace mode warning
+  - File upload input
+  - Import progress/result display
+  - "Delete All Zones" button
+  - Success/error feedback
+
+### Files Modified
+- `/app/backend/routes/shipping.py` - Added import/export endpoints
+- `/app/frontend/src/pages/merchant/MerchantShipping.jsx` - Added import/export UI
+
+### API Testing ✓
+- Template download: Working
+- Export existing zones: Working (expands postcode ranges to rows)
+- Import new zones: Working (merge mode tested)
+- Bulk delete: Working
+
+### Status: COMPLETE ✓
+
 ## Test Cases for Frontend Testing Agent - Shipping Management
 
 ### Shipping Management Test Cases
