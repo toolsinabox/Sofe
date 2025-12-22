@@ -714,6 +714,9 @@ class MaropostTemplateEngine:
         
         # Build replacements map
         replacements = {
+            # Page tags
+            'page_title': page.get('title', product.get('name', category.get('name', store.get('store_name', 'Home')))),
+            
             # Store tags
             'store_name': store.get('store_name', ''),
             'store_email': store.get('store_email', ''),
