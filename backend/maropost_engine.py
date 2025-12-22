@@ -723,6 +723,22 @@ class MaropostTemplateEngine:
         
         return context
     
+    def _get_availability_status(self, product: Dict) -> str:
+        """Get the availability status of a product"""
+        if not product:
+            return 'out_of_stock'
+        
+        stock = product.get('stock', 0) or 0
+        preorder_enabled = product.get('preorder_enabled', False)
+        preorder_qty = product.get('preorder_qty', 0) or 0
+        
+        if stock > 0:
+            return 'in_stock'
+        elif preorder_enabled and preorder_qty > 0:
+            return 'preorder'
+        else:
+            return 'out_of_stock'
+    
     # ==================== TAG PROCESSING ====================
     
     async def process_data_tags(self, content: str, context: Dict) -> str:
