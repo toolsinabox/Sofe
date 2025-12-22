@@ -896,3 +896,61 @@ A complete Maropost-style shipping management interface with 6 tabs:
 - `/app/frontend/src/pages/merchant/MerchantShipping.jsx` - Complete rewrite with tabbed dashboard
 
 ### Status: COMPLETE ✓
+
+## Test Cases for Frontend Testing Agent - Shipping Management
+
+### Shipping Management Test Cases
+
+1. **Login Flow**
+   - Navigate to `/merchant/login`
+   - Login with email: `edwardenayah@live.com.au` password: `qazxsw12`
+   - Verify redirect to dashboard
+
+2. **Shipping Management Overview**
+   - Navigate to `/merchant/shipping`
+   - Verify 4 stats cards showing counts (Zones, Services, Categories, Packages)
+   - Verify 6 tabs are displayed (Overview, Shipping Zones, Services & Rates, Categories, Packages, Options)
+   - Verify shipping rate calculator section is visible
+
+3. **Shipping Calculator Test**
+   - Enter postcode "2000" in calculator
+   - Enter weight "5" kg
+   - Enter cart total "200"
+   - Click Calculate button
+   - Verify zone detected as "Sydney Metro"
+   - Verify Standard Delivery shows as FREE (over $150 threshold)
+   - Verify Express Delivery shows price
+
+4. **Shipping Zones Tab**
+   - Click "Shipping Zones" tab
+   - Verify zones list shows Sydney Metro, Melbourne Metro, Brisbane Metro etc
+   - Verify zone codes displayed (SYD_METRO, MEL_METRO, etc)
+   - Verify postcodes are shown
+   - Click "Add Zone" button - verify modal opens
+
+5. **Services & Rates Tab**
+   - Click "Services & Rates" tab
+   - Verify Standard Delivery and Express Delivery services shown
+   - Verify rate counts displayed (12 rates each)
+   - Click on a service to expand - verify rates table shows
+   - Click "Add Service" - verify modal opens
+
+6. **Categories Tab**
+   - Click "Categories" tab
+   - Verify 4 categories displayed (Default, Dangerous Goods, Bulky Items, Fragile)
+   - Verify "Add Category" button works
+
+7. **Packages Tab**
+   - Click "Packages" tab
+   - Verify 6 packages displayed (satchels and boxes)
+   - Verify dimensions shown for each package
+
+8. **Options Tab**
+   - Click "Options" tab
+   - Verify 2 options displayed (Standard Shipping, Express Shipping)
+   - Verify free shipping threshold ($150) displayed
+
+### Credentials
+- **Merchant Role:**
+  - Username: `edwardenayah@live.com.au`
+  - Password: `qazxsw12`
