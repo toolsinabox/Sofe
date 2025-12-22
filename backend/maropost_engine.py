@@ -744,6 +744,8 @@ class MaropostTemplateEngine:
             'page_heading': page.get('seo_heading', ''),
             'page_description': page.get('seo_description', ''),
             'page_keywords': page.get('seo_keywords', ''),
+            'page_image': page.get('main_image', ''),
+            'page_alt_image': page.get('alt_image', ''),
             
             # Store tags
             'store_name': store.get('store_name', ''),
