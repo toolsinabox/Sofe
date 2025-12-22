@@ -795,7 +795,7 @@ class MaropostTemplateEngine:
             'qty': str(product.get('stock', 0)),
             'stock': str(product.get('stock', 0)),
             'in_stock': 'y' if product.get('stock', 0) > 0 else 'n',
-            'on_sale': 'y' if product.get('compare_price', 0) > product.get('price', 0) else 'n',
+            'on_sale': 'y' if (product.get('compare_price') or 0) > (product.get('price') or 0) else 'n',
             'id': product.get('id', page.get('id', '')),
             'url': f"/live/product/{product.get('id', '')}" if product else f"/live/{page.get('slug', '')}",
             'weight': product.get('weight', '') if product else '',
