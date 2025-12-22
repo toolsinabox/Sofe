@@ -1067,7 +1067,19 @@ async def calculate_shipping(request: ShippingCalculationRequest):
         # Multiply by total quantity to get total price for all parcels
         base_price = single_parcel_price * total_qty
         
-        # Apply min/max charge
+        # Apply rate-level min_charge (zone-specific minimum)
+        # This is applied to the price BEFORE GST, as it's the minimum rate ex-GST
+        rate_min_charge = rate.get("min_charge", 0)
+        if rate_min_charge > 0:
+            # The min_charge is ex-GST, apply fuel levy to it as well for comparison
+            min_with_fuel = rate_min_charge
+            if fuel_levy_percent > 0:
+                min_with_fuel = rate_min_charge * (1 + fuel_levy_percent / 100)
+            if fuel_levy_amount > 0:
+                min_with_fuel += fuel_levy_amount
+            base_price = max(base_price, min_with_fuel)
+        
+        # Apply service-level min/max charge (overrides rate-level)
         if service.get("min_charge", 0) > 0:
             base_price = max(base_price, service.get("min_charge", 0))
         if service.get("max_charge") and service.get("max_charge") > 0:
