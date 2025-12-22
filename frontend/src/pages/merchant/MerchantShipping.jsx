@@ -1820,7 +1820,7 @@ const MerchantShipping = () => {
                       key={`service-name-${editingItem?.id || 'new'}`}
                       name="name"
                       defaultValue={serviceForm.name}
-                      onChange={handleServiceFormInputChange}
+                      onBlur={handleServiceFormBlur}
                       placeholder="e.g., StarTrack"
                       className="bg-gray-700 border-gray-600 text-white mt-1"
                       autoComplete="off"
@@ -1832,7 +1832,7 @@ const MerchantShipping = () => {
                       key={`service-code-${editingItem?.id || 'new'}`}
                       name="code"
                       defaultValue={serviceForm.code}
-                      onChange={handleServiceFormCodeChange}
+                      onBlur={handleServiceFormBlur}
                       placeholder="e.g., startrack"
                       className="bg-gray-700 border-gray-600 text-white mt-1"
                       autoComplete="off"
