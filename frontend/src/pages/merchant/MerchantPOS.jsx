@@ -577,8 +577,14 @@ const MerchantPOS = () => {
         }
       }
       
+      // Set default email for receipt
+      setReceiptEmail(transactionData.customer_email || '');
+      setEmailReceipt(!!transactionData.customer_email);
+      setSaleStatus('completed');
+      setSaleNote('');
+      
       setShowPayment(false);
-      setShowReceipt(true);
+      setShowConfirmSale(true);  // Show confirm sale instead of receipt
       clearCart();
       setCashReceived('');
       
