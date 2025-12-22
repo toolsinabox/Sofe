@@ -99,6 +99,7 @@ class PredefinedPackage(BaseModel):
 
 class ShippingCalculationRequest(BaseModel):
     postcode: str
+    suburb: Optional[str] = None  # Suburb for more accurate rate calculation
     country: str = "AU"
     items: List[Dict[str, Any]]  # [{product_id, quantity, weight, length, width, height, shipping_category}]
     cart_total: float
@@ -106,6 +107,15 @@ class ShippingCalculationRequest(BaseModel):
 class ShippingCalculationResponse(BaseModel):
     options: List[Dict[str, Any]]
     zone: Optional[Dict[str, Any]] = None
+
+
+# ============== SUBURB LOOKUP MODEL ==============
+
+class SuburbEntry(BaseModel):
+    postcode: str
+    suburb: str
+    state: str
+    country: str = "AU"
 
 
 # ============== SHIPPING ZONES ==============
