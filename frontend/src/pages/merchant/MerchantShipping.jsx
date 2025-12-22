@@ -1075,6 +1075,27 @@ const MerchantShipping = () => {
       setServiceForm({ ...serviceForm, rates: newRates });
     };
 
+    // Select all zones from filtered list
+    const selectAllZonesFiltered = (filteredZones) => {
+      const newRates = filteredZones.map(zone => {
+        // Keep existing rate data if already selected
+        const existing = serviceForm.rates.find(r => r.zone_code === zone.code);
+        return existing || {
+          zone_code: zone.code,
+          zone_name: zone.name,
+          min_weight: 0,
+          max_weight: 999,
+          base_rate: 0,
+          first_parcel: 0,
+          per_subsequent: 0,
+          per_kg_rate: 0,
+          delivery_days: 3,
+          is_active: true
+        };
+      });
+      setServiceForm({ ...serviceForm, rates: newRates });
+    };
+
     // Clear all zones
     const clearAllZones = () => {
       setServiceForm({ ...serviceForm, rates: [] });
