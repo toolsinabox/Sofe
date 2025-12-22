@@ -5599,6 +5599,198 @@ async def get_pos_transaction(transaction_id: str):
         raise HTTPException(status_code=404, detail="Transaction not found")
     return transaction
 
+@api_router.put("/pos/transactions/{transaction_id}/status")
+async def update_pos_transaction_status(transaction_id: str, status: str, notes: Optional[str] = None):
+    """Update POS transaction and corresponding order status"""
+    # Find the transaction
+    transaction = await db.pos_transactions.find_one({"id": transaction_id})
+    if not transaction:
+        raise HTTPException(status_code=404, detail="Transaction not found")
+    
+    # Map POS status to order status/fulfillment
+    status_mapping = {
+        "new": {"status": "pending", "fulfillment_status": "unfulfilled"},
+        "on_hold": {"status": "on_hold", "fulfillment_status": "unfulfilled"},
+        "pick": {"status": "processing", "fulfillment_status": "pick"},
+        "pack": {"status": "processing", "fulfillment_status": "pack"},
+        "completed": {"status": "completed", "fulfillment_status": "fulfilled"}
+    }
+    
+    order_updates = status_mapping.get(status, {"status": status, "fulfillment_status": "unfulfilled"})
+    
+    # Update POS transaction
+    update_data = {
+        "status": status,
+        "updated_at": datetime.now(timezone.utc).isoformat()
+    }
+    if notes:
+        update_data["notes"] = notes
+    
+    await db.pos_transactions.update_one(
+        {"id": transaction_id},
+        {"$set": update_data}
+    )
+    
+    # Update corresponding order if exists
+    if transaction.get("order_id"):
+        order_update = {
+            **order_updates,
+            "updated_at": datetime.now(timezone.utc).isoformat()
+        }
+        if notes:
+            order_update["notes"] = (transaction.get("notes", "") + f"\n{notes}").strip()
+        
+        await db.orders.update_one(
+            {"id": transaction["order_id"]},
+            {"$set": order_update}
+        )
+    else:
+        # Find order by POS transaction ID
+        order = await db.orders.find_one({"pos_transaction_id": transaction_id})
+        if order:
+            order_update = {
+                **order_updates,
+                "updated_at": datetime.now(timezone.utc).isoformat()
+            }
+            if notes:
+                existing_notes = order.get("notes", "")
+                order_update["notes"] = (existing_notes + f"\n{notes}").strip() if existing_notes else notes
+            
+            await db.orders.update_one(
+                {"pos_transaction_id": transaction_id},
+                {"$set": order_update}
+            )
+    
+    return {"message": "Status updated successfully", "status": status}
+
+@api_router.post("/pos/transactions/{transaction_id}/email-receipt")
+async def email_pos_receipt(transaction_id: str, email: str):
+    """Send email receipt/tax invoice for a POS transaction"""
+    # Find the transaction
+    transaction = await db.pos_transactions.find_one({"id": transaction_id}, {"_id": 0})
+    if not transaction:
+        raise HTTPException(status_code=404, detail="Transaction not found")
+    
+    # Get store settings for email details
+    settings = await db.store_settings.find_one({}, {"_id": 0})
+    store_name = settings.get("store_name", "Store") if settings else "Store"
+    store_email = settings.get("support_email", "") if settings else ""
+    store_phone = settings.get("phone", "") if settings else ""
+    store_address = settings.get("address", "") if settings else ""
+    
+    # Build email content
+    items_html = ""
+    for item in transaction.get("items", []):
+        items_html += f"""
+        <tr>
+            <td style="padding: 8px; border-bottom: 1px solid #e5e5e5;">{item.get('name', 'Item')}</td>
+            <td style="padding: 8px; border-bottom: 1px solid #e5e5e5; text-align: center;">{item.get('quantity', 1)}</td>
+            <td style="padding: 8px; border-bottom: 1px solid #e5e5e5; text-align: right;">${item.get('price', 0):.2f}</td>
+            <td style="padding: 8px; border-bottom: 1px solid #e5e5e5; text-align: right;">${(item.get('price', 0) * item.get('quantity', 1)):.2f}</td>
+        </tr>
+        """
+    
+    email_html = f"""
+    <!DOCTYPE html>
+    <html>
+    <head>
+        <meta charset="utf-8">
+        <title>Tax Invoice - {transaction.get('transaction_number', '')}</title>
+    </head>
+    <body style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px;">
+        <div style="text-align: center; margin-bottom: 30px;">
+            <h1 style="color: #333; margin: 0;">{store_name}</h1>
+            <p style="color: #666; margin: 5px 0;">TAX INVOICE</p>
+        </div>
+        
+        <div style="background: #f9f9f9; padding: 15px; border-radius: 8px; margin-bottom: 20px;">
+            <p style="margin: 5px 0;"><strong>Invoice #:</strong> {transaction.get('transaction_number', 'N/A')}</p>
+            <p style="margin: 5px 0;"><strong>Date:</strong> {transaction.get('created_at', '')[:10]}</p>
+            <p style="margin: 5px 0;"><strong>Customer:</strong> {transaction.get('customer_name', 'Walk-in Customer')}</p>
+        </div>
+        
+        <table style="width: 100%; border-collapse: collapse; margin-bottom: 20px;">
+            <thead>
+                <tr style="background: #333; color: white;">
+                    <th style="padding: 10px; text-align: left;">Item</th>
+                    <th style="padding: 10px; text-align: center;">Qty</th>
+                    <th style="padding: 10px; text-align: right;">Price</th>
+                    <th style="padding: 10px; text-align: right;">Total</th>
+                </tr>
+            </thead>
+            <tbody>
+                {items_html}
+            </tbody>
+        </table>
+        
+        <div style="text-align: right; margin-bottom: 20px;">
+            <p style="margin: 5px 0;"><strong>Subtotal:</strong> ${transaction.get('subtotal', 0):.2f}</p>
+            {'<p style="margin: 5px 0; color: #dc2626;"><strong>Discount:</strong> -$' + f"{transaction.get('discount_total', 0):.2f}" + '</p>' if transaction.get('discount_total', 0) > 0 else ''}
+            <p style="margin: 5px 0;"><strong>GST (10%):</strong> ${transaction.get('tax_total', 0):.2f}</p>
+            <p style="margin: 10px 0; font-size: 1.2em;"><strong>Total:</strong> ${transaction.get('total', 0):.2f}</p>
+            <p style="margin: 5px 0; color: #059669;"><strong>Payment:</strong> {transaction.get('payments', [{}])[0].get('method', 'cash').upper()} - PAID</p>
+        </div>
+        
+        <div style="text-align: center; padding-top: 20px; border-top: 1px solid #e5e5e5; color: #666;">
+            <p style="margin: 5px 0;">Thank you for your purchase!</p>
+            {f'<p style="margin: 5px 0;">{store_address}</p>' if store_address else ''}
+            {f'<p style="margin: 5px 0;">Phone: {store_phone}</p>' if store_phone else ''}
+            {f'<p style="margin: 5px 0;">Email: {store_email}</p>' if store_email else ''}
+        </div>
+    </body>
+    </html>
+    """
+    
+    # Try to send email using available email service
+    try:
+        # Check if we have email configuration
+        email_settings = await db.email_settings.find_one({}, {"_id": 0})
+        
+        if email_settings and email_settings.get("smtp_host"):
+            import smtplib
+            from email.mime.text import MIMEText
+            from email.mime.multipart import MIMEMultipart
+            
+            msg = MIMEMultipart('alternative')
+            msg['Subject'] = f"Tax Invoice - {transaction.get('transaction_number', '')}"
+            msg['From'] = email_settings.get("from_email", store_email)
+            msg['To'] = email
+            
+            msg.attach(MIMEText(email_html, 'html'))
+            
+            with smtplib.SMTP(email_settings["smtp_host"], email_settings.get("smtp_port", 587)) as server:
+                if email_settings.get("smtp_use_tls", True):
+                    server.starttls()
+                if email_settings.get("smtp_username") and email_settings.get("smtp_password"):
+                    server.login(email_settings["smtp_username"], email_settings["smtp_password"])
+                server.send_message(msg)
+            
+            return {"message": "Email sent successfully", "email": email}
+        else:
+            # Log email for later sending or return success for demo
+            await db.email_queue.insert_one({
+                "id": str(uuid.uuid4()),
+                "to": email,
+                "subject": f"Tax Invoice - {transaction.get('transaction_number', '')}",
+                "html": email_html,
+                "status": "queued",
+                "created_at": datetime.now(timezone.utc).isoformat()
+            })
+            return {"message": "Email queued for sending", "email": email}
+            
+    except Exception as e:
+        # Queue the email for later
+        await db.email_queue.insert_one({
+            "id": str(uuid.uuid4()),
+            "to": email,
+            "subject": f"Tax Invoice - {transaction.get('transaction_number', '')}",
+            "html": email_html,
+            "status": "failed",
+            "error": str(e),
+            "created_at": datetime.now(timezone.utc).isoformat()
+        })
+        raise HTTPException(status_code=500, detail=f"Failed to send email: {str(e)}")
+
 # POS Outlets
 @api_router.get("/pos/outlets")
 async def get_pos_outlets():
