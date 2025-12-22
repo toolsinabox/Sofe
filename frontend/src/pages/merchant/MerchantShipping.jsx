@@ -1148,38 +1148,69 @@ const MerchantShipping = () => {
                 </div>
 
                 {/* Expanded Rates Table */}
-                {expandedService === service.id && service.rates?.length > 0 && (
+                {expandedService === service.id && (
                   <div className="px-5 pb-5 border-t border-gray-700">
-                    <div className="overflow-x-auto mt-4">
-                      <table className="w-full text-sm">
-                        <thead>
-                          <tr className="text-gray-400 text-left">
-                            <th className="pb-2 font-medium">Zone</th>
-                            <th className="pb-2 font-medium">Weight Range</th>
-                            <th className="pb-2 font-medium">Base Rate</th>
-                            <th className="pb-2 font-medium">Per kg</th>
-                            <th className="pb-2 font-medium">Days</th>
-                            <th className="pb-2 font-medium">Status</th>
-                          </tr>
-                        </thead>
-                        <tbody>
-                          {service.rates.map((rate, i) => (
-                            <tr key={i} className="border-t border-gray-700/50">
-                              <td className="py-2 text-white">{rate.zone_name}</td>
-                              <td className="py-2 text-gray-300">{rate.min_weight}kg - {rate.max_weight}kg</td>
-                              <td className="py-2 text-emerald-400">${rate.base_rate?.toFixed(2)}</td>
-                              <td className="py-2 text-gray-300">${rate.per_kg_rate?.toFixed(2)}</td>
-                              <td className="py-2 text-gray-300">{rate.delivery_days}</td>
-                              <td className="py-2">
-                                <span className={`px-2 py-0.5 rounded text-xs ${rate.is_active ? 'bg-emerald-500/20 text-emerald-400' : 'bg-gray-700 text-gray-400'}`}>
-                                  {rate.is_active ? 'Active' : 'Inactive'}
-                                </span>
-                              </td>
-                            </tr>
-                          ))}
-                        </tbody>
-                      </table>
+                    {/* Import/Export buttons for rates */}
+                    <div className="flex flex-wrap gap-2 mt-4 mb-4">
+                      <Button 
+                        variant="outline" 
+                        size="sm" 
+                        onClick={(e) => { e.stopPropagation(); handleExportRates(service); }}
+                        className="border-gray-600"
+                        disabled={!service.rates?.length}
+                      >
+                        <Download className="w-4 h-4 mr-1" /> Export Rates
+                      </Button>
+                      <Button 
+                        variant="outline" 
+                        size="sm" 
+                        onClick={(e) => { e.stopPropagation(); openRateImportModal(service); }}
+                        className="border-gray-600"
+                      >
+                        <Upload className="w-4 h-4 mr-1" /> Import Rates
+                      </Button>
                     </div>
+                    
+                    {service.rates?.length > 0 ? (
+                      <div className="overflow-x-auto">
+                        <table className="w-full text-sm">
+                          <thead>
+                            <tr className="text-gray-400 text-left">
+                              <th className="pb-2 font-medium">Zone</th>
+                              <th className="pb-2 font-medium">Min Charge</th>
+                              <th className="pb-2 font-medium">1st Parcel</th>
+                              <th className="pb-2 font-medium">Per kg</th>
+                              <th className="pb-2 font-medium">Days</th>
+                              <th className="pb-2 font-medium">Status</th>
+                            </tr>
+                          </thead>
+                          <tbody>
+                            {service.rates.map((rate, i) => (
+                              <tr key={i} className="border-t border-gray-700/50">
+                                <td className="py-2">
+                                  <div className="text-white">{rate.zone_name || rate.zone_code}</div>
+                                  <div className="text-gray-500 text-xs">{rate.zone_code}</div>
+                                </td>
+                                <td className="py-2 text-emerald-400">${(rate.base_rate || 0).toFixed(2)}</td>
+                                <td className="py-2 text-gray-300">${(rate.first_parcel || rate.base_rate || 0).toFixed(2)}</td>
+                                <td className="py-2 text-gray-300">${(rate.per_kg_rate || 0).toFixed(2)}</td>
+                                <td className="py-2 text-gray-300">{rate.delivery_days || '-'}</td>
+                                <td className="py-2">
+                                  <span className={`px-2 py-0.5 rounded text-xs ${rate.is_active !== false ? 'bg-emerald-500/20 text-emerald-400' : 'bg-gray-700 text-gray-400'}`}>
+                                    {rate.is_active !== false ? 'Active' : 'Inactive'}
+                                  </span>
+                                </td>
+                              </tr>
+                            ))}
+                          </tbody>
+                        </table>
+                      </div>
+                    ) : (
+                      <div className="text-center py-6 text-gray-500">
+                        <p className="mb-2">No rates configured for this service</p>
+                        <p className="text-sm">Import rates from CSV or add them manually in the edit modal</p>
+                      </div>
+                    )}
                   </div>
                 )}
               </div>
