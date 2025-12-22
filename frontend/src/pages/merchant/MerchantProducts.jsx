@@ -208,8 +208,8 @@ const ProductEditor = ({ product, categories, onSave, onClose, templateTags }) =
     brand: '',
     manufacturer: '',
     tags: [],
-    // Images
-    images: [],
+    // Images - 12 slots (can be sparse, e.g., slot 12 filled but not 11)
+    images: Array(12).fill(null),
     thumbnail: '',
     // Inventory
     stock: '',
