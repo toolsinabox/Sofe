@@ -520,8 +520,16 @@
             calcBtn.disabled = true;
             
             try {
+                // Check if cart has items
+                if (!cartItems || cartItems.length === 0) {
+                    alert('Your cart is empty. Add items to calculate shipping.');
+                    calcBtn.innerHTML = originalText;
+                    calcBtn.disabled = false;
+                    return;
+                }
+                
                 // Build items array from cart with shipping dimensions
-                const items = tiabCart.items.map(item => ({
+                const items = cartItems.map(item => ({
                     weight: item.weight || 0.5,
                     quantity: item.quantity,
                     shipping_length: item.shipping_length || 0,
