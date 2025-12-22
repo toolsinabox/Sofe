@@ -727,6 +727,16 @@ class MaropostTemplateEngine:
                     context['page'] = page
                     context['content_blocks'] = page.get('content_blocks', [])
         
+        elif page_type == PageType.CHECKOUT:
+            context['page'] = {'title': 'Checkout', 'slug': 'checkout'}
+            context['page_title'] = 'Checkout'
+            context['secure_label'] = 'Secure Checkout'
+        
+        elif page_type == PageType.QUOTE:
+            context['page'] = {'title': 'Request a Quote', 'slug': 'quote'}
+            context['page_title'] = 'Request a Quote'
+            context['secure_label'] = 'Request a Quote'
+        
         return context
     
     def _get_availability_status(self, product: Dict) -> str:
