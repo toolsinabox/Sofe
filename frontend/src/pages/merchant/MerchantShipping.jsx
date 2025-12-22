@@ -1850,11 +1850,11 @@ const MerchantShipping = () => {
                   <div>
                     <Label className="text-gray-300 text-sm">Cubic Weight Modifier</Label>
                     <div className="flex items-center gap-2 mt-1">
-                      <Input
+                      <StableInput
                         type="number"
                         step="0.001"
                         name="cubic_weight_modifier"
-                        value={serviceForm.cubic_weight_modifier || 250}
+                        defaultValue={serviceForm.cubic_weight_modifier || 250}
                         onChange={handleServiceFormNumericChange}
                         placeholder="250"
                         className="bg-gray-700 border-gray-600 text-white"
@@ -1864,9 +1864,9 @@ const MerchantShipping = () => {
                   </div>
                   <div className="col-span-2">
                     <Label className="text-gray-300 text-sm">Internal Description</Label>
-                    <Input
+                    <StableInput
                       name="internal_description"
-                      value={serviceForm.internal_description || ''}
+                      defaultValue={serviceForm.internal_description || ''}
                       onChange={handleServiceFormInputChange}
                       placeholder="e.g., New rates from July 2024"
                       className="bg-gray-700 border-gray-600 text-white mt-1"
