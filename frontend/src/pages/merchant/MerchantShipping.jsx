@@ -1917,9 +1917,9 @@ const MerchantShipping = () => {
                         <SelectItem value="other">Other</SelectItem>
                       </SelectContent>
                     </Select>
-                    <Input
+                    <StableInput
                       name="tracking_url"
-                      value={serviceForm.tracking_url || ''}
+                      defaultValue={serviceForm.tracking_url || ''}
                       onChange={handleServiceFormInputChange}
                       placeholder="https://carrier.com/track/#tracking_num#"
                       className="bg-gray-700 border-gray-600 text-white flex-1"
@@ -1941,11 +1941,11 @@ const MerchantShipping = () => {
                     <Label className="text-gray-300 text-sm">Minimum Charge</Label>
                     <div className="flex items-center gap-1 mt-1">
                       <span className="text-gray-400">$</span>
-                      <Input
+                      <StableInput
                         type="number"
                         step="0.01"
                         name="min_charge"
-                        value={serviceForm.min_charge || ''}
+                        defaultValue={serviceForm.min_charge || ''}
                         onChange={handleServiceFormNumericChange}
                         placeholder="0.00"
                         className="bg-gray-700 border-gray-600 text-white"
@@ -1956,11 +1956,11 @@ const MerchantShipping = () => {
                     <Label className="text-gray-300 text-sm">Maximum Charge</Label>
                     <div className="flex items-center gap-1 mt-1">
                       <span className="text-gray-400">$</span>
-                      <Input
+                      <StableInput
                         type="number"
                         step="0.01"
                         name="max_charge"
-                        value={serviceForm.max_charge || ''}
+                        defaultValue={serviceForm.max_charge || ''}
                         onChange={handleServiceFormNumericChange}
                         placeholder="No max"
                         className="bg-gray-700 border-gray-600 text-white"
