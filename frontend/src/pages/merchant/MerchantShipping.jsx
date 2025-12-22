@@ -1876,7 +1876,7 @@ const MerchantShipping = () => {
                         step="0.1"
                         name="max_length"
                         defaultValue={serviceForm.max_length || ''}
-                        onChange={handleServiceFormNumericChange}
+                        onBlur={handleServiceFormNumericBlur}
                         placeholder="1.4"
                         className="bg-gray-700 border-gray-600 text-white"
                       />
@@ -1891,7 +1891,7 @@ const MerchantShipping = () => {
                         step="0.001"
                         name="cubic_weight_modifier"
                         defaultValue={serviceForm.cubic_weight_modifier || 250}
-                        onChange={handleServiceFormNumericChange}
+                        onBlur={handleServiceFormNumericBlur}
                         placeholder="250"
                         className="bg-gray-700 border-gray-600 text-white"
                       />
@@ -1903,7 +1903,7 @@ const MerchantShipping = () => {
                     <StableInput
                       name="internal_description"
                       defaultValue={serviceForm.internal_description || ''}
-                      onChange={handleServiceFormInputChange}
+                      onBlur={handleServiceFormBlur}
                       placeholder="e.g., New rates from July 2024"
                       className="bg-gray-700 border-gray-600 text-white mt-1"
                     />
@@ -1916,7 +1916,7 @@ const MerchantShipping = () => {
                       type="checkbox"
                       name="tax_inclusive"
                       checked={serviceForm.tax_inclusive || false}
-                      onChange={handleServiceFormInputChange}
+                      onBlur={handleServiceFormBlur}
                       className="rounded border-gray-600 text-emerald-500"
                     />
                     <div>
@@ -1929,7 +1929,7 @@ const MerchantShipping = () => {
                       type="checkbox"
                       name="ship_to_po_box"
                       checked={serviceForm.ship_to_po_box || false}
-                      onChange={handleServiceFormInputChange}
+                      onBlur={handleServiceFormBlur}
                       className="rounded border-gray-600 text-emerald-500"
                     />
                     <span className="text-gray-300 text-sm">Ship to PO Box</span>
@@ -1956,7 +1956,7 @@ const MerchantShipping = () => {
                     <StableInput
                       name="tracking_url"
                       defaultValue={serviceForm.tracking_url || ''}
-                      onChange={handleServiceFormInputChange}
+                      onBlur={handleServiceFormBlur}
                       placeholder="https://carrier.com/track/#tracking_num#"
                       className="bg-gray-700 border-gray-600 text-white flex-1"
                     />
@@ -1982,7 +1982,7 @@ const MerchantShipping = () => {
                         step="0.01"
                         name="min_charge"
                         defaultValue={serviceForm.min_charge || ''}
-                        onChange={handleServiceFormNumericChange}
+                        onBlur={handleServiceFormNumericBlur}
                         placeholder="0.00"
                         className="bg-gray-700 border-gray-600 text-white"
                       />
@@ -1997,7 +1997,7 @@ const MerchantShipping = () => {
                         step="0.01"
                         name="max_charge"
                         defaultValue={serviceForm.max_charge || ''}
-                        onChange={handleServiceFormNumericChange}
+                        onBlur={handleServiceFormNumericBlur}
                         placeholder="No max"
                         className="bg-gray-700 border-gray-600 text-white"
                       />
@@ -2012,7 +2012,7 @@ const MerchantShipping = () => {
                         step="0.01"
                         name="handling_fee"
                         defaultValue={serviceForm.handling_fee || ''}
-                        onChange={handleServiceFormNumericChange}
+                        onBlur={handleServiceFormNumericBlur}
                         placeholder="0.00"
                         className="bg-gray-700 border-gray-600 text-white"
                       />
@@ -2031,7 +2031,7 @@ const MerchantShipping = () => {
                         step="0.01"
                         name="fuel_levy_amount"
                         defaultValue={serviceForm.fuel_levy_amount || ''}
-                        onChange={handleServiceFormNumericChange}
+                        onBlur={handleServiceFormNumericBlur}
                         placeholder="0.00"
                         className="bg-gray-700 border-gray-600 text-white w-20"
                       />
@@ -2041,7 +2041,7 @@ const MerchantShipping = () => {
                         step="0.1"
                         name="fuel_levy_percent"
                         defaultValue={serviceForm.fuel_levy_percent || ''}
-                        onChange={handleServiceFormNumericChange}
+                        onBlur={handleServiceFormNumericBlur}
                         placeholder="0.0"
                         className="bg-gray-700 border-gray-600 text-white w-20"
                       />
@@ -2056,7 +2056,7 @@ const MerchantShipping = () => {
                         step="0.1"
                         name="packaging_allowance_kg"
                         defaultValue={serviceForm.packaging_allowance_kg || ''}
-                        onChange={handleServiceFormNumericChange}
+                        onBlur={handleServiceFormNumericBlur}
                         placeholder="0"
                         className="bg-gray-700 border-gray-600 text-white w-16"
                       />
@@ -2067,7 +2067,7 @@ const MerchantShipping = () => {
                         step="0.1"
                         name="packaging_allowance_percent"
                         defaultValue={serviceForm.packaging_allowance_percent || ''}
-                        onChange={handleServiceFormNumericChange}
+                        onBlur={handleServiceFormNumericBlur}
                         placeholder="0"
                         className="bg-gray-700 border-gray-600 text-white w-16"
                       />
@@ -2082,7 +2082,7 @@ const MerchantShipping = () => {
                       type="checkbox"
                       name="round_up_weight"
                       checked={serviceForm.round_up_weight || false}
-                      onChange={handleServiceFormInputChange}
+                      onBlur={handleServiceFormBlur}
                       className="rounded border-gray-600 text-emerald-500"
                     />
                     <span className="text-gray-300 text-sm">Round Up to Nearest kg</span>
@@ -2092,7 +2092,7 @@ const MerchantShipping = () => {
                       type="checkbox"
                       name="ignore_physical_weight"
                       checked={serviceForm.ignore_physical_weight || false}
-                      onChange={handleServiceFormInputChange}
+                      onBlur={handleServiceFormBlur}
                       className="rounded border-gray-600 text-emerald-500"
                     />
                     <span className="text-gray-300 text-sm">Ignore physical weight of products in calculations</span>
