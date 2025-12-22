@@ -31,6 +31,7 @@ const MerchantStoreSettings = () => {
     store_tiktok: '',
     free_shipping_threshold: 50,
     tax_rate: 0.08,
+    homepage_title: 'Home',
     meta_title: '',
     meta_description: '',
     google_analytics_id: ''
