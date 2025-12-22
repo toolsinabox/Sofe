@@ -5923,8 +5923,21 @@ async def request_discount_approval(
 # ==================== POS QUICK CUSTOMER ====================
 
 @api_router.post("/pos/customers/quick-add")
-async def quick_add_customer(name: str, email: str, phone: Optional[str] = None):
-    """Quickly add a customer from POS"""
+async def quick_add_customer(
+    name: str, 
+    email: str, 
+    phone: Optional[str] = None,
+    company: Optional[str] = None,
+    billing_address: Optional[str] = None,
+    billing_city: Optional[str] = None,
+    billing_state: Optional[str] = None,
+    billing_postcode: Optional[str] = None,
+    delivery_address: Optional[str] = None,
+    delivery_city: Optional[str] = None,
+    delivery_state: Optional[str] = None,
+    delivery_postcode: Optional[str] = None
+):
+    """Quickly add a customer from POS with full address details"""
     # Check if customer already exists
     existing = await db.customers.find_one({"email": email})
     if existing:
@@ -5935,12 +5948,16 @@ async def quick_add_customer(name: str, email: str, phone: Optional[str] = None)
         "name": name,
         "email": email,
         "phone": phone or "",
-        "company": "",
-        "address": "",
-        "city": "",
-        "state": "",
-        "postcode": "",
+        "company": company or "",
+        "address": billing_address or "",
+        "city": billing_city or "",
+        "state": billing_state or "",
+        "postcode": billing_postcode or "",
         "country": "AU",
+        "delivery_address": delivery_address or billing_address or "",
+        "delivery_city": delivery_city or billing_city or "",
+        "delivery_state": delivery_state or billing_state or "",
+        "delivery_postcode": delivery_postcode or billing_postcode or "",
         "notes": "Added via POS",
         "total_orders": 0,
         "total_spent": 0,
