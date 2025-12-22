@@ -515,10 +515,10 @@ const MerchantPOS = () => {
   };
 
   // Update quantity
-  const updateQuantity = (index, delta) => {
+  const updateQuantity = (index, newQuantity) => {
     setCart(prevCart => {
       const newCart = [...prevCart];
-      newCart[index].quantity = Math.max(1, newCart[index].quantity + delta);
+      newCart[index].quantity = Math.max(1, newQuantity);
       newCart[index].subtotal = newCart[index].price * newCart[index].quantity;
       return newCart;
     });
