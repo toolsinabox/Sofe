@@ -920,7 +920,39 @@ class MaropostTemplateEngine:
                 # Tag wasn't replaced - treat as falsy
                 return False
             
-            # Check for equality operators
+            # Maropost-style operators: ne, eq, gt, lt, ge, le
+            if ' ne ' in condition:
+                left, right = condition.split(' ne ', 1)
+                return left.strip() != right.strip().strip("'\"")
+            if ' eq ' in condition:
+                left, right = condition.split(' eq ', 1)
+                return left.strip() == right.strip().strip("'\"")
+            if ' gt ' in condition:
+                left, right = condition.split(' gt ', 1)
+                try:
+                    return float(left.strip()) > float(right.strip().strip("'\""))
+                except (ValueError, TypeError):
+                    return False
+            if ' lt ' in condition:
+                left, right = condition.split(' lt ', 1)
+                try:
+                    return float(left.strip()) < float(right.strip().strip("'\""))
+                except (ValueError, TypeError):
+                    return False
+            if ' ge ' in condition:
+                left, right = condition.split(' ge ', 1)
+                try:
+                    return float(left.strip()) >= float(right.strip().strip("'\""))
+                except (ValueError, TypeError):
+                    return False
+            if ' le ' in condition:
+                left, right = condition.split(' le ', 1)
+                try:
+                    return float(left.strip()) <= float(right.strip().strip("'\""))
+                except (ValueError, TypeError):
+                    return False
+            
+            # Check for equality operators (fallback)
             if '==' in condition:
                 left, right = condition.split('==', 1)
                 return left.strip() == right.strip().strip("'\"")
