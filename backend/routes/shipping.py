@@ -485,6 +485,246 @@ async def delete_shipping_service(service_id: str):
     return {"message": "Service deleted successfully"}
 
 
+# ============== RATES IMPORT/EXPORT (Maropost Format) ==============
+
+@router.get("/services/{service_id}/rates/export/csv")
+async def export_service_rates_csv(service_id: str):
+    """
+    Export shipping service rates to CSV in Maropost format
+    Format: Zone Code, Zone Name, Courier Name, Minimum Charge, 1st Parcel, 
+            Per Subsequent Parcel, Per Kg, Minimum, Maximum, Add weight, Delivery Time, Internal Note
+    """
+    service = await db.shipping_services.find_one({"id": service_id}, {"_id": 0})
+    if not service:
+        raise HTTPException(status_code=404, detail="Service not found")
+    
+    output = io.StringIO()
+    writer = csv.writer(output)
+    
+    # Write header (Maropost format)
+    writer.writerow([
+        "Zone Code", "Zone Name", "Courier Name", "Minimum Charge", "1st Parcel",
+        "Per Subsequent Parcel", "Per Kg", "Minimum", "Maximum", "Add weight",
+        "Delivery Time", "Internal Note"
+    ])
+    
+    # Write rates
+    for rate in service.get("rates", []):
+        writer.writerow([
+            rate.get("zone_code", ""),
+            rate.get("zone_name", rate.get("zone_code", "")),
+            service.get("carrier", "Custom"),
+            rate.get("base_rate", 0),           # Minimum Charge
+            rate.get("first_parcel", rate.get("base_rate", 0)),  # 1st Parcel
+            rate.get("per_subsequent", ""),     # Per Subsequent Parcel
+            rate.get("per_kg_rate", 0),         # Per Kg
+            rate.get("min_weight", 0),          # Minimum weight
+            rate.get("max_weight", ""),         # Maximum weight
+            rate.get("add_weight", ""),         # Add weight
+            rate.get("delivery_days", ""),      # Delivery Time
+            rate.get("internal_note", "")       # Internal Note
+        ])
+    
+    output.seek(0)
+    
+    service_name = service.get("name", "service").replace(" ", "_")
+    return StreamingResponse(
+        iter([output.getvalue()]),
+        media_type="text/csv",
+        headers={
+            "Content-Disposition": f"attachment; filename=ShippingRate_{service_name}_{datetime.now().strftime('%Y%m%d%H%M%S')}.csv"
+        }
+    )
+
+@router.get("/rates/export/template")
+async def get_rate_import_template():
+    """
+    Get a blank CSV template for importing shipping rates (Maropost format)
+    """
+    output = io.StringIO()
+    writer = csv.writer(output)
+    
+    # Write header
+    writer.writerow([
+        "Zone Code", "Zone Name", "Courier Name", "Minimum Charge", "1st Parcel",
+        "Per Subsequent Parcel", "Per Kg", "Minimum", "Maximum", "Add weight",
+        "Delivery Time", "Internal Note"
+    ])
+    
+    # Add sample rows
+    writer.writerow(["SYD-METRO", "Sydney Metro", "StarTrack", "18.48", "12.14", "", "0.43", "0", "", "", "2", ""])
+    writer.writerow(["MEL-METRO", "Melbourne Metro", "StarTrack", "20.72", "12.14", "", "0.58", "0", "", "", "3", ""])
+    writer.writerow(["BNE-METRO", "Brisbane Metro", "StarTrack", "21.22", "12.14", "", "0.61", "0", "", "", "3", ""])
+    writer.writerow(["REGIONAL", "Regional", "Australia Post", "28.48", "13.82", "", "0.98", "0", "", "", "5", ""])
+    
+    output.seek(0)
+    
+    return StreamingResponse(
+        iter([output.getvalue()]),
+        media_type="text/csv",
+        headers={
+            "Content-Disposition": "attachment; filename=shipping_rates_template.csv"
+        }
+    )
+
+@router.post("/services/{service_id}/rates/import/csv")
+async def import_service_rates_csv(
+    service_id: str,
+    file: UploadFile = File(...),
+    mode: str = Query("merge", description="Import mode: 'merge' (add/update) or 'replace' (clear and import)")
+):
+    """
+    Import shipping rates from CSV in Maropost format
+    Format: Zone Code, Zone Name, Courier Name, Minimum Charge, 1st Parcel, 
+            Per Subsequent Parcel, Per Kg, Minimum, Maximum, Add weight, Delivery Time, Internal Note
+    
+    Modes:
+    - merge: Add new rates and update existing ones (by zone_code)
+    - replace: Clear all rates and import fresh
+    """
+    service = await db.shipping_services.find_one({"id": service_id}, {"_id": 0})
+    if not service:
+        raise HTTPException(status_code=404, detail="Service not found")
+    
+    if not file.filename.endswith('.csv'):
+        raise HTTPException(status_code=400, detail="File must be a CSV")
+    
+    try:
+        content = await file.read()
+        decoded = content.decode('utf-8-sig')
+        reader = csv.DictReader(io.StringIO(decoded))
+        
+        imported_rates = []
+        for row in reader:
+            zone_code = row.get("Zone Code", "").strip()
+            if not zone_code:
+                continue
+            
+            rate = {
+                "zone_code": zone_code,
+                "zone_name": row.get("Zone Name", "").strip() or zone_code,
+                "base_rate": float(row.get("Minimum Charge", 0) or 0),
+                "first_parcel": float(row.get("1st Parcel", 0) or 0),
+                "per_subsequent": float(row.get("Per Subsequent Parcel", 0) or 0) if row.get("Per Subsequent Parcel") else 0,
+                "per_kg_rate": float(row.get("Per Kg", 0) or 0),
+                "min_weight": float(row.get("Minimum", 0) or 0),
+                "max_weight": float(row.get("Maximum", 999) or 999) if row.get("Maximum") else 999,
+                "add_weight": float(row.get("Add weight", 0) or 0) if row.get("Add weight") else 0,
+                "delivery_days": int(row.get("Delivery Time", 0) or 0) if row.get("Delivery Time") else 0,
+                "internal_note": row.get("Internal Note", "").strip(),
+                "is_active": True
+            }
+            imported_rates.append(rate)
+        
+        if not imported_rates:
+            raise HTTPException(status_code=400, detail="No valid rates found in CSV")
+        
+        # Handle import mode
+        if mode == "replace":
+            # Replace all rates
+            new_rates = imported_rates
+        else:
+            # Merge: update existing by zone_code, add new ones
+            existing_rates = {r["zone_code"]: r for r in service.get("rates", [])}
+            for rate in imported_rates:
+                existing_rates[rate["zone_code"]] = rate
+            new_rates = list(existing_rates.values())
+        
+        # Update service with new rates
+        await db.shipping_services.update_one(
+            {"id": service_id},
+            {"$set": {"rates": new_rates}}
+        )
+        
+        return {
+            "message": "Rates imported successfully",
+            "mode": mode,
+            "rates_imported": len(imported_rates),
+            "total_rates": len(new_rates)
+        }
+        
+    except csv.Error as e:
+        raise HTTPException(status_code=400, detail=f"CSV parsing error: {str(e)}")
+    except ValueError as e:
+        raise HTTPException(status_code=400, detail=f"Invalid number format: {str(e)}")
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Import error: {str(e)}")
+
+@router.post("/services/create-with-zones")
+async def create_service_with_zones(
+    name: str = Query(..., description="Service name"),
+    code: str = Query(..., description="Service code"),
+    carrier: str = Query("custom", description="Carrier name"),
+    zone_ids: Optional[str] = Query(None, description="Comma-separated zone IDs to auto-add")
+):
+    """
+    Create a new shipping service and optionally auto-populate rates from zones.
+    If zone_ids provided, creates a rate entry for each zone with default values.
+    """
+    # Check if code already exists
+    existing = await db.shipping_services.find_one({"code": code})
+    if existing:
+        raise HTTPException(status_code=400, detail="Service code already exists")
+    
+    rates = []
+    
+    # If zone_ids provided, create rate entries for each zone
+    if zone_ids:
+        zone_id_list = [z.strip() for z in zone_ids.split(",") if z.strip()]
+        
+        for zone_id in zone_id_list:
+            zone = await db.shipping_zones.find_one({"id": zone_id}, {"_id": 0})
+            if zone:
+                rates.append({
+                    "zone_code": zone["code"],
+                    "zone_name": zone["name"],
+                    "base_rate": 0,
+                    "first_parcel": 0,
+                    "per_subsequent": 0,
+                    "per_kg_rate": 0,
+                    "min_weight": 0,
+                    "max_weight": 999,
+                    "delivery_days": 3,
+                    "is_active": True
+                })
+    
+    service_data = {
+        "id": str(uuid.uuid4()),
+        "name": name,
+        "code": code,
+        "carrier": carrier,
+        "charge_type": "weight",
+        "min_charge": 0,
+        "max_charge": None,
+        "handling_fee": 0,
+        "fuel_levy_percent": 0,
+        "cubic_weight_modifier": 250,
+        "categories": ["default"],
+        "is_active": True,
+        "sort_order": 0,
+        "rates": rates,
+        "created_at": datetime.now(timezone.utc).isoformat()
+    }
+    
+    await db.shipping_services.insert_one(service_data)
+    service_data.pop("_id", None)
+    
+    return {
+        "message": "Service created successfully",
+        "service": service_data,
+        "rates_created": len(rates)
+    }
+
+@router.get("/zones/by-carrier/{carrier}")
+async def get_zones_by_carrier(carrier: str):
+    """Get all shipping zones associated with a specific carrier"""
+    zones = await db.shipping_zones.find(
+        {"carrier": {"$regex": carrier, "$options": "i"}},
+        {"_id": 0}
+    ).to_list(1000)
+    return zones
+
+
 # ============== SHIPPING OPTIONS ==============
 
 @router.get("/options")
