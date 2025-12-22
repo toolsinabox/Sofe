@@ -883,7 +883,7 @@ class MaropostTemplateEngine:
                         return zone_html
                 return ''  # Empty if zone not found
             
-            elif tag_name == 'cart_items':
+            elif tag_name == 'cart_items' or tag_name == 'cart_list':
                 cart = context.get('cart', {})
                 items = cart.get('items', [])
             
