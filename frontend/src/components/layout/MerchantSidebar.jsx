@@ -78,6 +78,7 @@ const MerchantSidebar = ({ collapsed, setCollapsed, mobileOpen, setMobileOpen })
   const navItems = [
     { path: '/merchant', icon: LayoutDashboard, label: 'Dashboard', exact: true },
     { path: '/merchant/pos', icon: Monitor, label: 'POS', highlight: true },
+    { path: '/merchant/pos/reports', icon: BarChart3, label: 'POS Reports' },
     { path: '/merchant/orders', icon: ShoppingCart, label: 'Orders' },
     { path: '/merchant/quotes', icon: FileText, label: 'Quotes' },
     { path: '/merchant/emails', icon: Mail, label: 'Emails' },
