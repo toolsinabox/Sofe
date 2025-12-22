@@ -2061,7 +2061,7 @@
                     itemData.shipping_height = PRODUCT_SHIPPING_HEIGHT;
                 }
                 
-                const response = await fetch(`${API_BASE}/shipping/calculate`, {
+                const response = await fetch(`${SHIPPING_API_BASE}/shipping/calculate`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({
