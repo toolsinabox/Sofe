@@ -530,8 +530,44 @@ const MerchantPOS = () => {
 
   const { subtotal, discountAmount, tax, total } = calculateTotals();
 
+  // Calculate initial payment amount for Pay Later / Layby
+  const calculateInitialPayment = () => {
+    if (paymentTerm === 'pay_in_full') return total;
+    
+    switch (initialPaymentType) {
+      case 'none':
+        return 0;
+      case 'percent_10':
+        return total * 0.10;
+      case 'percent_20':
+        return total * 0.20;
+      case 'custom':
+        return parseFloat(initialPaymentAmount) || 0;
+      default:
+        return 0;
+    }
+  };
+
+  // Calculate layby due date
+  const calculateLaybyDueDate = () => {
+    if (laybyDuePeriod === 'custom' && laybyDueDate) {
+      return laybyDueDate;
+    }
+    
+    const today = new Date();
+    if (laybyDuePeriod === '4_weeks') {
+      today.setDate(today.getDate() + 28);
+    } else if (laybyDuePeriod === '8_weeks') {
+      today.setDate(today.getDate() + 56);
+    }
+    return today.toISOString().split('T')[0];
+  };
+
+  const initialPayment = calculateInitialPayment();
+  const remainingBalance = total - initialPayment;
+
   const change = paymentMethod === 'cash' && cashReceived 
-    ? Math.max(0, parseFloat(cashReceived) - total) 
+    ? Math.max(0, parseFloat(cashReceived) - (paymentTerm === 'pay_in_full' ? total : initialPayment)) 
     : 0;
 
   // Process payment
