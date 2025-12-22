@@ -1378,10 +1378,18 @@
             cart.total = cart.items.reduce((sum, item) => sum + (item.price * item.quantity), 0);
             localStorage.setItem('cart', JSON.stringify(cart));
             
+            // Update cart badge
             const cartCount = cart.items.reduce((sum, item) => sum + item.quantity, 0);
             const cartBadge = document.getElementById('cart-count');
             if (cartBadge) cartBadge.textContent = cartCount;
             
+            // Update mini-cart
+            updateMiniCart();
+            
+            // Show the cart modal
+            showCartModal(productName, productPrice, productImage, qty, cart.total);
+            
+            // Update button temporarily
             btn.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg> Added!';
             btn.style.background = '#16a34a';
             
@@ -1390,6 +1398,109 @@
                 btn.style.background = '#c41e3a';
             }, 2000);
         }
+        
+        // ================================
+        // CART MODAL FUNCTIONS
+        // ================================
+        function showCartModal(name, price, image, qty, total) {
+            const modal = document.getElementById('cart-modal-overlay');
+            if (!modal) return;
+            
+            // Update modal content
+            const modalImage = document.getElementById('modal-product-image');
+            const modalName = document.getElementById('modal-product-name');
+            const modalPrice = document.getElementById('modal-product-price');
+            const modalQty = document.getElementById('modal-product-qty');
+            const modalTotal = document.getElementById('modal-cart-total');
+            
+            if (modalImage) modalImage.src = image || 'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="80" height="80"%3E%3Crect fill="%23374151" width="80" height="80"/%3E%3C/svg%3E';
+            if (modalName) modalName.textContent = name;
+            if (modalPrice) modalPrice.textContent = '$' + price.toFixed(2);
+            if (modalQty) modalQty.textContent = 'Qty: ' + qty;
+            if (modalTotal) modalTotal.textContent = '$' + total.toFixed(2);
+            
+            // Show modal
+            modal.classList.add('show');
+            document.body.style.overflow = 'hidden';
+        }
+        
+        function closeCartModal() {
+            const modal = document.getElementById('cart-modal-overlay');
+            if (modal) {
+                modal.classList.remove('show');
+                document.body.style.overflow = '';
+            }
+        }
+        
+        // Close modal when clicking overlay
+        document.addEventListener('DOMContentLoaded', function() {
+            const modalOverlay = document.getElementById('cart-modal-overlay');
+            if (modalOverlay) {
+                modalOverlay.addEventListener('click', function(e) {
+                    if (e.target === modalOverlay) {
+                        closeCartModal();
+                    }
+                });
+            }
+        });
+        
+        // ================================
+        // MINI CART FUNCTIONS
+        // ================================
+        function updateMiniCart() {
+            const cart = JSON.parse(localStorage.getItem('cart') || '{"items":[],"total":0}');
+            const itemsContainer = document.getElementById('mini-cart-items');
+            const itemCount = document.getElementById('mini-cart-item-count');
+            const totalElement = document.getElementById('mini-cart-total');
+            const cartBadge = document.getElementById('cart-count');
+            
+            if (!itemsContainer) return;
+            
+            const totalQty = cart.items.reduce((sum, item) => sum + item.quantity, 0);
+            
+            // Update badge
+            if (cartBadge) cartBadge.textContent = totalQty;
+            
+            // Update item count text
+            if (itemCount) itemCount.textContent = totalQty + ' item' + (totalQty !== 1 ? 's' : '');
+            
+            // Update total
+            if (totalElement) totalElement.textContent = '$' + cart.total.toFixed(2);
+            
+            // Update items list
+            if (cart.items.length === 0) {
+                itemsContainer.innerHTML = '<div class="mini-cart-empty"><p>Your cart is empty</p></div>';
+            } else {
+                itemsContainer.innerHTML = cart.items.map(item => `
+                    <div class="mini-cart-item">
+                        <img src="${item.image || 'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="60" height="60"%3E%3Crect fill="%23f3f4f6" width="60" height="60"/%3E%3C/svg%3E'}" alt="${item.name}">
+                        <div class="mini-cart-item-info">
+                            <div class="mini-cart-item-name">${item.name}</div>
+                            <div class="mini-cart-item-price">$${item.price.toFixed(2)}</div>
+                            <div class="mini-cart-item-qty">Qty: ${item.quantity}</div>
+                        </div>
+                        <button class="mini-cart-item-remove" onclick="removeFromMiniCart('${item.id}')" title="Remove">
+                            <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2">
+                                <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
+                            </svg>
+                        </button>
+                    </div>
+                `).join('');
+            }
+        }
+        
+        function removeFromMiniCart(productId) {
+            let cart = JSON.parse(localStorage.getItem('cart') || '{"items":[],"total":0}');
+            cart.items = cart.items.filter(item => item.id !== productId);
+            cart.total = cart.items.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+            localStorage.setItem('cart', JSON.stringify(cart));
+            updateMiniCart();
+        }
+        
+        // Initialize mini-cart on page load
+        document.addEventListener('DOMContentLoaded', function() {
+            updateMiniCart();
+        });
         
         function addToWishlist() { alert('Added to wishlist!'); }
         function shareProduct() {
