@@ -950,7 +950,7 @@ const MerchantPOS = () => {
   }
 
   return (
-    <div className="h-[calc(100vh-120px)] flex flex-col">
+    <div className="h-screen flex flex-col bg-[#0a0e14]">
       {/* Shift Status Bar */}
       {currentShift && (
         <div className="bg-gray-800/50 border-b border-gray-700 px-3 py-2 flex items-center justify-between gap-2 flex-wrap">
