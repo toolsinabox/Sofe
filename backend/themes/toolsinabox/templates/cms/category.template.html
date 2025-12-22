@@ -24,6 +24,11 @@
                                 [%if [@product_sale@] == 'y'%]
                                 <span class="sale-badge">SALE</span>
                                 [%/if%]
+                                [%if [@product_stock@] le '0'%]
+                                <span class="stock-badge out-of-stock">Out of Stock</span>
+                                [%else%]
+                                <span class="stock-badge in-stock">In Stock</span>
+                                [%/if%]
                                 <img src="[@product_image@]" alt="[@product_name@]" onerror="this.src='https://via.placeholder.com/400?text=Product'">
                             </div>
                             <div class="product-info">
@@ -36,7 +41,11 @@
                                 </div>
                             </div>
                         </a>
+                        [%if [@product_stock@] le '0'%]
+                        <button class="add-to-cart-btn out-of-stock-btn" disabled>Out of Stock</button>
+                        [%else%]
                         <button class="add-to-cart-btn" data-product-id="[@product_id@]">Add to Cart</button>
+                        [%/if%]
                     </div>
                     [%/product_list%]
                 </div>
