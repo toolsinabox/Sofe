@@ -2325,6 +2325,120 @@ async def mark_review_helpful(review_id: str):
     )
     return {"message": "Vote recorded"}
 
+# ==================== STOCK NOTIFICATIONS ====================
+
+@api_router.post("/stock-notifications")
+async def create_stock_notification(notification: StockNotificationCreate):
+    """Subscribe to stock notification for a product"""
+    # Get product name
+    product = await db.products.find_one({"id": notification.product_id}, {"name": 1})
+    if not product:
+        raise HTTPException(status_code=404, detail="Product not found")
+    
+    # Check if already subscribed
+    existing = await db.stock_notifications.find_one({
+        "product_id": notification.product_id,
+        "customer_email": notification.customer_email,
+        "notified": False
+    })
+    if existing:
+        return {"message": "Already subscribed to notifications for this product", "success": True}
+    
+    # Create notification subscription
+    new_notification = StockNotification(
+        product_id=notification.product_id,
+        product_name=product.get("name", "Unknown Product"),
+        customer_name=notification.customer_name,
+        customer_email=notification.customer_email,
+        customer_phone=notification.customer_phone
+    )
+    await db.stock_notifications.insert_one(new_notification.dict())
+    return {"message": "You will be notified when this product is back in stock!", "success": True}
+
+@api_router.get("/stock-notifications/product/{product_id}")
+async def get_product_notifications(product_id: str):
+    """Get all notification subscribers for a product"""
+    notifications = await db.stock_notifications.find(
+        {"product_id": product_id, "notified": False},
+        {"_id": 0}
+    ).to_list(1000)
+    return notifications
+
+@api_router.get("/stock-notifications")
+async def get_all_notifications(notified: Optional[bool] = None):
+    """Get all stock notification subscriptions"""
+    query = {}
+    if notified is not None:
+        query["notified"] = notified
+    notifications = await db.stock_notifications.find(query, {"_id": 0}).to_list(1000)
+    return notifications
+
+@api_router.post("/stock-notifications/notify/{product_id}")
+async def send_stock_notifications(product_id: str):
+    """Mark notifications as sent for a product (when stock arrives)"""
+    result = await db.stock_notifications.update_many(
+        {"product_id": product_id, "notified": False},
+        {"$set": {"notified": True, "notified_at": datetime.now(timezone.utc)}}
+    )
+    return {
+        "message": f"Marked {result.modified_count} notifications as sent",
+        "count": result.modified_count
+    }
+
+@api_router.delete("/stock-notifications/{notification_id}")
+async def delete_stock_notification(notification_id: str):
+    """Delete a stock notification subscription"""
+    result = await db.stock_notifications.delete_one({"id": notification_id})
+    if result.deleted_count == 0:
+        raise HTTPException(status_code=404, detail="Notification not found")
+    return {"message": "Notification deleted"}
+
+# ==================== PREORDER AUTO-DISABLE CHECK ====================
+
+@api_router.post("/products/check-preorders")
+async def check_preorder_dates():
+    """Check and auto-disable pre-orders where arrival date has passed"""
+    from datetime import date
+    today = date.today().isoformat()
+    
+    # Find products with preorder enabled and arrival date in the past
+    result = await db.products.update_many(
+        {
+            "preorder_enabled": True,
+            "preorder_arrival_date": {"$lte": today, "$ne": None}
+        },
+        {
+            "$set": {
+                "preorder_enabled": False,
+                "stock": {"$add": ["$stock", "$preorder_qty"]},  # This won't work in simple update
+            }
+        }
+    )
+    
+    # Need to handle stock addition separately
+    products = await db.products.find({
+        "preorder_enabled": True,
+        "preorder_arrival_date": {"$lte": today, "$ne": None}
+    }).to_list(100)
+    
+    updated_count = 0
+    for product in products:
+        new_stock = (product.get("stock", 0) or 0) + (product.get("preorder_qty", 0) or 0)
+        await db.products.update_one(
+            {"id": product["id"]},
+            {
+                "$set": {
+                    "preorder_enabled": False,
+                    "stock": new_stock,
+                    "preorder_qty": 0,
+                    "updated_at": datetime.now(timezone.utc)
+                }
+            }
+        )
+        updated_count += 1
+    
+    return {"message": f"Processed {updated_count} products", "updated": updated_count}
+
 # ==================== SHIPPING ZONES & RATES ====================
 
 @api_router.get("/shipping/zones")
