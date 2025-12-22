@@ -1057,3 +1057,75 @@ Added suburb lookup functionality to the shipping calculator, allowing for more 
 - `/app/frontend/src/pages/merchant/MerchantShipping.jsx` - Updated calculator with suburb field
 
 ### Status: COMPLETE ✓
+
+---
+
+## Storefront Shipping Integration - 2025-12-22
+
+### Feature Implemented ✓
+
+Integrated the shipping calculator into the customer-facing storefront pages (Product Detail, Cart, and Checkout).
+
+#### Changes Made
+
+**1. Product Detail Page** (`/app/backend/themes/toolsinabox/templates/products/template.html`):
+- Added functional `calculateShipping()` function that calls `/api/shipping/calculate`
+- Added postcode input with suburb auto-lookup dropdown
+- Added loading state with spinner during calculation
+- Displays calculated shipping options with prices and GST info
+- Shows "No shipping available" message when no options found
+- Uses product's shipping dimensions for cubic weight calculation
+
+**2. Checkout Page** (`/app/backend/themes/toolsinabox/templates/cart/checkout.template.html`):
+- Added "Shipping Method" section with required field indicator
+- Pickup option (FREE) always available
+- Calculated shipping options appear when postcode is entered
+- Shipping calculation is triggered automatically when postcode field has 4 digits
+- **CRITICAL**: Payment is blocked until shipping method is selected
+- Error message displayed if user tries to submit without selecting shipping
+- Selected shipping method and cost are included in order submission
+
+**3. Bug Fixes**:
+- Fixed duplicate `API_BASE` declaration causing JavaScript errors
+- Used unique variable names (`SHIPPING_API_BASE`, `CHECKOUT_API_BASE`) to avoid conflicts with `main.js`
+
+#### Frontend Test Cases
+
+1. **Product Page Shipping Calculator**
+   - Navigate to any product page (e.g., `/live/product/{product_id}`)
+   - Scroll down to "Calculate Shipping" section
+   - Enter postcode "2170"
+   - Verify suburb dropdown populates with suburbs (e.g., "Casula (NSW)")
+   - Click "Calculate" button
+   - Verify "Pickup - In Store FREE" option appears
+   - Verify calculated shipping rate appears (e.g., "Startrack - $42.39 + GST")
+
+2. **Cart Page Shipping Calculator**
+   - Add a product to cart
+   - Navigate to cart page (`/live/cart`)
+   - Enter postcode in shipping calculator
+   - Select suburb from dropdown
+   - Click "Calculate"
+   - Verify shipping options appear
+   - Select a shipping option
+   - Verify "Checkout Now" button is enabled
+
+3. **Checkout Page Shipping Requirement**
+   - Add items to cart and proceed to checkout
+   - Verify "Shipping Method" section shows "Enter your postcode above to see available shipping options."
+   - Enter postcode "2170" in Shipping Address section
+   - Verify "Calculating shipping options..." loading appears
+   - Verify Pickup option and calculated rates appear
+   - Try to click "Place Order" without selecting shipping - verify error message
+   - Select a shipping method (e.g., "Pickup - In Store")
+   - Verify shipping cost updates in Order Summary
+   - Verify "Place Order" button now works
+
+#### Files Modified
+- `/app/backend/themes/toolsinabox/templates/products/template.html` - Added shipping calculator JavaScript
+- `/app/backend/themes/toolsinabox/templates/cart/checkout.template.html` - Added shipping method selection section
+
+### Credentials
+- **Test Postcode:** 2170 (Casula, NSW)
+
+### Status: COMPLETE ✓
