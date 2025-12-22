@@ -1169,34 +1169,34 @@ const MerchantPOS = () => {
                 <PlayCircle className="w-5 h-5 text-cyan-500" />
                 Open Shift
               </DialogTitle>
-              <DialogDescription className="text-gray-400">
+              <DialogDescription className="text-slate-500">
                 Enter your opening cash float to begin selling
               </DialogDescription>
             </DialogHeader>
             
             <div className="py-4 space-y-4">
-              <div className="p-3 bg-gray-800/50 rounded-lg">
-                <div className="flex items-center gap-2 text-sm text-gray-400 mb-1">
+              <div className="p-3 bg-slate-100 rounded-xl">
+                <div className="flex items-center gap-2 text-sm text-slate-600 mb-1">
                   <Building2 className="w-4 h-4" />
                   <span>{selectedOutlet?.name}</span>
                 </div>
-                <div className="flex items-center gap-2 text-sm text-gray-400">
+                <div className="flex items-center gap-2 text-sm text-slate-600">
                   <Monitor className="w-4 h-4" />
                   <span>{selectedRegister?.name}</span>
                 </div>
               </div>
               
               <div>
-                <Label className="text-gray-400 text-sm mb-2 block">Opening Float ($)</Label>
+                <Label className="text-slate-600 text-sm mb-2 block">Opening Float ($)</Label>
                 <Input
                   type="number"
                   value={openingFloat}
                   onChange={(e) => setOpeningFloat(e.target.value)}
                   placeholder="0.00"
-                  className="bg-gray-800 border-gray-700 text-white text-xl text-center py-3"
+                  className="bg-white border-slate-200 text-slate-800 text-xl text-center py-3 rounded-xl"
                   autoFocus
                 />
-                <p className="text-xs text-gray-500 mt-2">Enter the starting cash amount in the drawer</p>
+                <p className="text-xs text-slate-500 mt-2">Enter the starting cash amount in the drawer</p>
               </div>
               
               <div className="grid grid-cols-4 gap-2">
@@ -1205,7 +1205,7 @@ const MerchantPOS = () => {
                     key={amount}
                     variant="outline"
                     onClick={() => setOpeningFloat(amount.toString())}
-                    className="border-gray-700 text-gray-300 hover:bg-gray-800"
+                    className="border-slate-200 text-slate-600 hover:bg-slate-100 rounded-lg"
                   >
                     ${amount}
                   </Button>
@@ -1217,7 +1217,7 @@ const MerchantPOS = () => {
               <Button
                 onClick={handleOpenShift}
                 disabled={processing || !openingFloat}
-                className="w-full bg-emerald-600 hover:bg-emerald-700 text-white"
+                className="w-full bg-gradient-to-r from-cyan-500 to-teal-500 hover:from-cyan-600 hover:to-teal-600 text-white rounded-xl"
               >
                 {processing ? (
                   <><Loader2 className="w-4 h-4 mr-2 animate-spin" /> Opening...</>
