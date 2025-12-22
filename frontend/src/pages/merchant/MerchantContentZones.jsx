@@ -172,6 +172,7 @@ const BLOCK_TYPES = [
 // Block Editor Component
 const BlockEditor = ({ block, onUpdate, onDelete, onMoveUp, onMoveDown, isFirst, isLast }) => {
   const [isExpanded, setIsExpanded] = useState(true);
+  const [showTagsPanel, setShowTagsPanel] = useState(false);
   const blockType = BLOCK_TYPES.find(t => t.id === block.type) || BLOCK_TYPES[0];
   const Icon = blockType.icon;
 
