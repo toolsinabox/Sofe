@@ -621,6 +621,7 @@ class MaropostTemplateEngine:
                 product = await self.db.products.find_one({"id": product_id}, {"_id": 0})
                 if product:
                     context['product'] = product
+                    context['page'] = {'title': product.get('name', 'Product'), 'slug': f"product/{product_id}"}
                     context['variants'] = product.get('variants', [])
                     context['images'] = product.get('images', [])
                     context['pricing'] = {
@@ -639,6 +640,7 @@ class MaropostTemplateEngine:
                 category = await self.db.categories.find_one({"id": category_id}, {"_id": 0})
                 if category:
                     context['category'] = category
+                    context['page'] = {'title': category.get('name', 'Category'), 'slug': f"category/{category_id}"}
                     # Get products in category
                     products = await self.db.products.find(
                         {"category_id": category_id}, 
