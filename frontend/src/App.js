@@ -39,6 +39,7 @@ import MerchantQuoteDetail from "./pages/merchant/MerchantQuoteDetail";
 import MerchantInvoiceSettings from "./pages/merchant/MerchantInvoiceSettings";
 import MerchantEmails from "./pages/merchant/MerchantEmails";
 import MerchantPOS from "./pages/merchant/MerchantPOS";
+import MerchantPOSReports from "./pages/merchant/MerchantPOSReports";
 
 // Live Storefront (Theme-rendered)
 import LiveThemeStorefront from "./pages/store/LiveThemeStorefront";
@@ -250,6 +251,7 @@ function App() {
               <Route path="pages" element={<MerchantPages />} />
               <Route path="emails" element={<MerchantEmails />} />
               <Route path="pos" element={<MerchantPOS />} />
+              <Route path="pos/reports" element={<MerchantPOSReports />} />
             </Route>
 
             {/* Live Theme Storefront - Main customer-facing store */}
