@@ -2112,13 +2112,27 @@ async def get_order_emails(order_id: str):
     return order.get("email_history", [])
 
 @api_router.post("/orders/{order_id}/email")
-async def send_order_email(order_id: str, template: str = "custom", subject: str = "", body: str = ""):
+async def send_order_email(order_id: str, email_data: dict):
     """Send email to customer about their order"""
     order = await db.orders.find_one({"id": order_id})
     if not order:
         raise HTTPException(status_code=404, detail="Order not found")
     
-    # TODO: Implement actual email sending
+    # Save to email history
+    email_record = {
+        "template": email_data.get("template", "custom"),
+        "subject": email_data.get("subject", ""),
+        "body": email_data.get("body", ""),
+        "to": email_data.get("to", order.get("customer_email")),
+        "sent_at": datetime.now(timezone.utc).isoformat()
+    }
+    
+    await db.orders.update_one(
+        {"id": order_id},
+        {"$push": {"email_history": email_record}}
+    )
+    
+    # TODO: Implement actual email sending via email service
     
     return {"message": f"Email sent to {order.get('customer_email')}"}
 
