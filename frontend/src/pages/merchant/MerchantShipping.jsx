@@ -435,22 +435,7 @@ const MerchantShipping = () => {
 
   // ============== ZONES TAB ==============
   const ZonesTab = () => {
-    const [zoneForm, setZoneForm] = useState({
-      code: '',
-      name: '',
-      country: 'AU',
-      postcodes: [],
-      is_active: true,
-      sort_order: 0
-    });
-    const [postcodesInput, setPostcodesInput] = useState('');
-    const [showImportModal, setShowImportModal] = useState(false);
-    const [importing, setImporting] = useState(false);
-    const [importMode, setImportMode] = useState('merge');
-    const [importResult, setImportResult] = useState(null);
-    const [selectedFile, setSelectedFile] = useState(null);
-    const [uploadProgress, setUploadProgress] = useState(0);
-    const fileInputRef = useRef(null);
+    // Use parent-level state - removed local state declarations
 
     const openZoneModal = (zone = null) => {
       if (zone) {
