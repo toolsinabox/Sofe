@@ -3681,6 +3681,27 @@ async def update_store_settings(settings: StoreSettingsUpdate):
     updated = await db.store_settings.find_one({"id": "store_settings"})
     return StoreSettings(**updated)
 
+# ==================== INVOICE SETTINGS ====================
+
+@api_router.get("/settings/invoice-template")
+async def get_invoice_template():
+    """Get invoice template settings"""
+    template = await db.invoice_settings.find_one({"id": "invoice_template"}, {"_id": 0})
+    return template or {}
+
+@api_router.put("/settings/invoice-template")
+async def update_invoice_template(template: dict):
+    """Update invoice template settings"""
+    template["id"] = "invoice_template"
+    template["updated_at"] = datetime.now(timezone.utc).isoformat()
+    
+    await db.invoice_settings.update_one(
+        {"id": "invoice_template"},
+        {"$set": template},
+        upsert=True
+    )
+    return {"message": "Invoice template saved successfully"}
+
 # ==================== FILE UPLOAD ====================
 
 @api_router.post("/upload/{upload_type}")
