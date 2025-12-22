@@ -35,9 +35,10 @@
                         
                         <!-- Thumbnails - supports up to 12 images -->
                         <div class="thumbnail-row" id="thumbnail-container">
-                            [%if [@image1@] ne ''%]
+                            <!-- Always show main image as first thumbnail -->
+                            [%if [@image@] ne ''%]
                             <button class="thumb-btn active" data-index="0" data-type="image" onclick="selectThumbnail(this, 0)">
-                                <img src="[@image1@]" alt="[@name@] - Image 1">
+                                <img src="[@image@]" alt="[@name@] - Main Image">
                             </button>
                             [%/if%]
                             [%if [@image2@] ne ''%]
