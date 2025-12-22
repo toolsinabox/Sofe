@@ -904,10 +904,10 @@ async def calculate_shipping(request: ShippingCalculationRequest):
         {"_id": 0}
     ).to_list(1000)
     
-    # Find the zone for the destination postcode
-    zone = find_zone_for_postcode(request.postcode, zones)
+    # Find ALL zones for the destination postcode (multiple carriers may have different zones)
+    matching_zones = find_all_zones_for_postcode(request.postcode, zones)
     
-    if not zone:
+    if not matching_zones:
         # Return pickup only if no zone found
         return ShippingCalculationResponse(
             options=[{
