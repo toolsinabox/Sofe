@@ -5056,6 +5056,8 @@ async def render_page_v2(
         request_params['print'] = True
     if embed:
         request_params['embed'] = True
+    if q:
+        request_params['q'] = q
     
     try:
         # Render the page
