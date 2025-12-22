@@ -944,8 +944,9 @@ class MaropostTemplateEngine:
             # Pattern that matches ONLY innermost [%if%]...[%/if%] blocks
             # Uses negative lookahead to ensure no nested [%if inside the content
             # This pattern matches blocks that don't contain other [%if tags inside
+            # Changed [^%\]]*? to [^%]*? to allow ] in conditions (for [@tag@] syntax)
             inner_pattern = re.compile(
-                r'\[%if\s*([^%\]]*?)%\]((?:(?!\[%if\s)(?!\[%/if%\]).)*?)(?:\[%else%\]((?:(?!\[%if\s)(?!\[%/if%\]).)*?))?\[%/if%\]',
+                r'\[%if\s*([^%]*?)%\]((?:(?!\[%if\s)(?!\[%/if%\]).)*?)(?:\[%else%\]((?:(?!\[%if\s)(?!\[%/if%\]).)*?))?\[%/if%\]',
                 re.DOTALL
             )
             
