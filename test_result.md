@@ -168,3 +168,36 @@ Incorporate User Feedback:
 - DELETE /api/pages/{id}: Deletes non-system pages
 
 ### Status: COMPLETE
+
+## Add to Cart Modal & Mini-Cart Fix - $(date +%Y-%m-%d)
+
+### Issue Fixed ✓
+- Add to Cart modal popup now shows correctly with:
+  - Product name, image, price with $ prefix
+  - Quantity (respects qty selector value)
+  - Correct cart total (calculates from all items)
+- Mini-cart dropdown shows items from localStorage cart
+- Continue Shopping button closes the modal
+- Cart badge in header updates correctly
+
+### Root Cause
+- Two `showCartModal` functions existed: one in products/template.html and one in main.js
+- The main.js version was overriding the inline version but had different parameter signature
+- The main.js version used `tiabCart.total` which wasn't updated by the product page's localStorage cart
+
+### Fix Applied
+1. Updated `/app/backend/themes/toolsinabox/js/main.js`:
+   - Extended `showCartModal` to accept 5 parameters (name, price, image, qty, total)
+   - Added fallback logic to get cart total from localStorage if tiabCart not available
+   - Fixed price formatting to always include $ prefix
+   - Added qty display update
+   - Added body overflow hidden when modal open
+2. Removed duplicate functions from `/app/backend/themes/toolsinabox/templates/products/template.html`
+3. Keep `updateMiniCart` and `removeFromMiniCart` in product template for localStorage cart management
+
+### Testing ✓
+- Tested adding single item to cart - modal shows $129.99, Qty: 1, Total: $129.99
+- Tested adding multiple quantities (3) - modal shows Qty: 3, Total: $389.97
+- Tested mini-cart dropdown - shows items with image, name, price, qty
+- Tested Continue Shopping button - modal closes correctly
+- Cart badge updates correctly in header
