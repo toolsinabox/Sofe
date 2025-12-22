@@ -556,7 +556,7 @@ const ProductEditor = ({ product, categories, onSave, onClose, templateTags }) =
                           onChange={(e) => handleChange('compare_price', e.target.value)}
                         />
                       </div>
-                      <p className="text-xs text-gray-500">If higher than selling price, product shows as "On Sale"</p>
+                      <p className="text-xs text-gray-500">If higher than selling price, product shows as &quot;On Sale&quot;</p>
                     </div>
                   </div>
                   
