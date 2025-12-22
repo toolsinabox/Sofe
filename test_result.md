@@ -241,3 +241,72 @@ Integrated shipping rate calculation into the shopping cart page, allowing custo
 - GST calculation includes shipping
 
 ### Status: COMPLETE
+
+## Checkout & Quote Pages Implementation - 2025-12-22
+
+### Features Implemented ✓
+
+#### Checkout Page (`/live/checkout`)
+- **Contact Information Section**: Full Name, Email, Phone, Company (optional)
+- **Shipping Address Section**: Street, City, State (dropdown), Postcode, Country
+- **Billing Address Section**: Same as shipping checkbox, separate address fields
+- **Payment Methods**: Credit Card (Stripe), Bank Transfer, Pay on Invoice
+- **Order Summary**: Cart items, Subtotal, Shipping, GST (10%), Total
+- **Place Order Button**: With loading state and validation
+- **Success Modal**: Shows order number on successful placement
+
+#### Quote Page (`/live/quote`)
+- **Same Contact/Address Fields**: As checkout page for consistency
+- **Quote-Specific Features**:
+  - Orange/amber theme to differentiate from checkout
+  - "How Quotes Work" info box explaining stock isn't reserved
+  - Shipping marked as "TBD" (to be determined)
+  - 30-day quote validity
+  - Quote notes and PO number fields
+- **Submit Quote Button**: Creates quote without deducting inventory
+
+### Backend APIs Tested ✓
+
+1. **POST /api/checkout/process**
+   - Creates orders with payment_method (card/bank_transfer/pay_later)
+   - Calculates totals with tax (10% GST)
+   - Deducts stock immediately
+   - Returns order_number (e.g., "ORD-20251222-132E4BA9")
+
+2. **POST /api/quotes**
+   - Creates quotes WITHOUT deducting stock
+   - Sets 30-day validity automatically
+   - Returns quote_number (e.g., "QTE-20251222-970D261B")
+   - Status: pending
+
+3. **POST /api/quotes/{quote_id}/convert-to-order**
+   - Converts quote to order
+   - NOW deducts stock (Maropost behavior)
+   - Updates quote status to "converted"
+   - Returns new order_number
+
+### Technical Changes
+
+1. **Updated `/app/backend/maropost_engine.py`**:
+   - Added Quote page type to use CHECKOUT wrapper (clean minimal header)
+   - Added context data for `page_title` and `secure_label` tags
+   - Fixed data tag processing for checkout/quote specific tags
+
+2. **Updated `/app/backend/themes/toolsinabox/checkout.template.html`**:
+   - Dynamic page title using `[@page_title@]`
+   - Dynamic secure label using `[@secure_label@]`
+   - Shows "Secure Checkout" or "Request a Quote" based on page
+
+3. **Templates Created**:
+   - `/app/backend/themes/toolsinabox/templates/cart/checkout.template.html`: Full checkout form
+   - `/app/backend/themes/toolsinabox/templates/cart/quote.template.html`: Full quote request form
+
+### Testing Results ✓
+- Checkout page renders correctly at `/live/checkout`
+- Quote page renders correctly at `/live/quote`
+- Order creation API works with bank_transfer payment
+- Quote creation API works with 30-day validity
+- Quote to order conversion works correctly
+- Cart navigation buttons work from `/live/cart`
+
+### Status: COMPLETE
