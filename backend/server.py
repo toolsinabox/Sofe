@@ -714,6 +714,55 @@ class GlobalSEOSettings(BaseModel):
     sitemap_enabled: bool = True
     structured_data_enabled: bool = True
 
+# ==================== CMS PAGES ====================
+
+class CMSPage(BaseModel):
+    id: str = Field(default_factory=lambda: str(uuid.uuid4()))
+    name: str  # Internal name
+    slug: str  # URL slug (e.g., "home", "about", "contact")
+    is_homepage: bool = False
+    is_system: bool = False  # System pages can't be deleted
+    is_active: bool = True
+    
+    # SEO Settings
+    seo_title: str = ""  # Browser tab title
+    seo_keywords: str = ""
+    seo_description: str = ""
+    seo_heading: str = ""  # H1 heading on page
+    canonical_url: Optional[str] = None
+    
+    # Content
+    content: str = ""  # HTML content
+    template: str = "default"  # Template to use
+    
+    # Meta
+    created_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
+    updated_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
+
+class CMSPageCreate(BaseModel):
+    name: str
+    slug: str
+    is_active: bool = True
+    seo_title: str = ""
+    seo_keywords: str = ""
+    seo_description: str = ""
+    seo_heading: str = ""
+    canonical_url: Optional[str] = None
+    content: str = ""
+    template: str = "default"
+
+class CMSPageUpdate(BaseModel):
+    name: Optional[str] = None
+    slug: Optional[str] = None
+    is_active: Optional[bool] = None
+    seo_title: Optional[str] = None
+    seo_keywords: Optional[str] = None
+    seo_description: Optional[str] = None
+    seo_heading: Optional[str] = None
+    canonical_url: Optional[str] = None
+    content: Optional[str] = None
+    template: Optional[str] = None
+
 # ==================== MEGA MENU ====================
 
 class MegaMenuItem(BaseModel):
