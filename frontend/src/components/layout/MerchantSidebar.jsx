@@ -19,7 +19,12 @@ import {
   Image,
   Code,
   Store,
-  LayoutGrid
+  LayoutGrid,
+  Star,
+  Truck,
+  ShoppingBag,
+  Search,
+  Menu
 } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
 
@@ -38,11 +43,16 @@ const MerchantSidebar = ({ collapsed, setCollapsed }) => {
     { path: '/merchant/categories', icon: FolderOpen, label: 'Categories' },
     { path: '/merchant/inventory', icon: Boxes, label: 'Inventory' },
     { path: '/merchant/customers', icon: Users, label: 'Customers' },
+    { path: '/merchant/reviews', icon: Star, label: 'Reviews' },
     { path: '/merchant/banners', icon: Image, label: 'Banners' },
     { path: '/merchant/content-zones', icon: LayoutGrid, label: 'Content Zones' },
+    { path: '/merchant/mega-menu', icon: Menu, label: 'Mega Menu' },
     { path: '/merchant/theme-editor', icon: Code, label: 'Theme Editor' },
     { path: '/merchant/store-settings', icon: Store, label: 'Store Settings' },
+    { path: '/merchant/shipping', icon: Truck, label: 'Shipping' },
     { path: '/merchant/discounts', icon: Tag, label: 'Discounts' },
+    { path: '/merchant/abandoned-carts', icon: ShoppingBag, label: 'Abandoned Carts' },
+    { path: '/merchant/seo', icon: Search, label: 'SEO Tools' },
     { path: '/merchant/analytics', icon: BarChart3, label: 'Analytics' },
     { path: '/merchant/payments', icon: CreditCard, label: 'Payments' },
     { path: '/merchant/settings', icon: Settings, label: 'Settings' },
