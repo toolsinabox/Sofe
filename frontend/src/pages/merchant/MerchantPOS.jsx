@@ -2400,6 +2400,28 @@ const MerchantPOS = () => {
                 )}
               </div>
               
+              {/* Shipping Info */}
+              {lastTransaction.shipping && (
+                <div className="bg-orange-500/10 border border-orange-500/30 rounded-lg p-3">
+                  <div className="flex items-center gap-2 mb-2">
+                    <Truck className="w-4 h-4 text-orange-400" />
+                    <span className="text-orange-400 text-sm font-medium">Shipping</span>
+                  </div>
+                  <div className="text-xs space-y-1">
+                    <p className="text-gray-300">{lastTransaction.shipping.method}</p>
+                    <p className="text-orange-300 font-medium">
+                      {lastTransaction.shipping.cost === 0 ? 'FREE' : `$${lastTransaction.shipping.cost.toFixed(2)}`}
+                    </p>
+                    {lastTransaction.shipping.signature_required && (
+                      <p className="text-gray-400">✍️ Signature required</p>
+                    )}
+                    {lastTransaction.shipping.delivery_instructions && (
+                      <p className="text-gray-500 italic text-xs">"{lastTransaction.shipping.delivery_instructions}"</p>
+                    )}
+                  </div>
+                </div>
+              )}
+              
               {/* Set Sale Status */}
               <div className="space-y-2">
                 <Label className="text-gray-300 text-sm flex items-center gap-2">
