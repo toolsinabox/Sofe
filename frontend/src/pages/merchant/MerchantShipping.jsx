@@ -40,6 +40,29 @@ const TABS = [
   { id: 'options', label: 'Options', icon: Settings },
 ];
 
+// Uncontrolled input wrapper to prevent focus loss
+const StableInput = React.memo(({ name, defaultValue, onChange, ...props }) => {
+  const inputRef = React.useRef(null);
+  
+  // Update ref value when defaultValue changes (e.g., when editing)
+  React.useEffect(() => {
+    if (inputRef.current && inputRef.current.value !== defaultValue) {
+      inputRef.current.value = defaultValue || '';
+    }
+  }, [defaultValue]);
+  
+  return (
+    <Input
+      ref={inputRef}
+      name={name}
+      defaultValue={defaultValue}
+      onChange={onChange}
+      {...props}
+    />
+  );
+});
+StableInput.displayName = 'StableInput';
+
 // Memoized service form input component to prevent focus loss
 const ServiceFormInput = React.memo(({ label, name, value, onChange, placeholder, type = 'text', step, className = '', prefix, suffix }) => (
   <div>
