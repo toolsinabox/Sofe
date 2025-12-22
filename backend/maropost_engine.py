@@ -861,6 +861,21 @@ class MaropostTemplateEngine:
             'product_sales': str(product.get('sales_count', 0)) if product else '0',
             'product_views': str(product.get('views_count', 0)) if product else '0',
             
+            # Pre-order tags
+            'preorder_enabled': 'y' if product.get('preorder_enabled', False) else 'n',
+            'preorder_qty': str(product.get('preorder_qty', 0)) if product else '0',
+            'preorder_date': product.get('preorder_arrival_date', '') if product else '',
+            'preorder_message': product.get('preorder_message', 'Pre-order now! Expected arrival: ') if product else '',
+            'product_preorder': 'y' if product.get('preorder_enabled', False) else 'n',
+            'product_preorder_qty': str(product.get('preorder_qty', 0)) if product else '0',
+            'product_preorder_date': product.get('preorder_arrival_date', '') if product else '',
+            'product_preorder_message': product.get('preorder_message', '') if product else '',
+            # Computed availability status
+            'availability_status': self._get_availability_status(product) if product else 'out_of_stock',
+            'show_preorder': 'y' if product and product.get('stock', 0) <= 0 and product.get('preorder_enabled', False) else 'n',
+            'show_notify': 'y' if product and product.get('stock', 0) <= 0 and not product.get('preorder_enabled', False) else 'n',
+            'show_add_to_cart': 'y' if product and (product.get('stock', 0) > 0 or product.get('preorder_enabled', False)) else 'n',
+            
             # Category tags
             'category_name': category.get('name', '') if category else '',
             'category_id': category.get('id', '') if category else '',
