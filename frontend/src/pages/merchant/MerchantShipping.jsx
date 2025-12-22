@@ -1506,7 +1506,7 @@ const MerchantShipping = () => {
 
         {/* Service Modal */}
         <Dialog open={showServiceModal} onOpenChange={setShowServiceModal}>
-          <DialogContent className="bg-gray-800 border-gray-700 text-white max-w-4xl max-h-[90vh] overflow-y-auto">
+          <DialogContent className="bg-gray-800 border-gray-700 text-white max-w-5xl max-h-[90vh] overflow-y-auto">
             <DialogHeader>
               <DialogTitle>{editingItem ? 'Edit Shipping Service' : 'Create Shipping Service'}</DialogTitle>
               <DialogDescription className="text-gray-400">
@@ -1514,115 +1514,301 @@ const MerchantShipping = () => {
               </DialogDescription>
             </DialogHeader>
             <div className="space-y-6 py-4">
-              {/* Carrier Selection - Prominent */}
+              
+              {/* Section: Details */}
               <div className="bg-gray-900 rounded-lg p-4 border border-gray-700">
-                <div className="flex items-center gap-3 mb-3">
-                  <Truck className="w-5 h-5 text-emerald-400" />
-                  <Label className="text-white text-base font-medium">Select Carrier</Label>
-                </div>
-                <p className="text-gray-400 text-sm mb-3">Choose a carrier to load its zones, or select "Custom" to see all zones</p>
-                <div className="grid grid-cols-2 md:grid-cols-4 gap-2">
-                  {[
-                    { value: 'custom', label: 'Custom / All Zones' },
-                    { value: 'startrack', label: 'StarTrack' },
-                    { value: 'australia_post', label: 'Australia Post' },
-                    { value: 'tnt', label: 'TNT' },
-                    { value: 'fedex', label: 'FedEx' },
-                    { value: 'dhl', label: 'DHL' },
-                  ].map(carrier => (
-                    <button
-                      key={carrier.value}
-                      onClick={() => {
-                        setServiceForm({...serviceForm, carrier: carrier.value, rates: []});
-                      }}
-                      className={`p-3 rounded-lg border text-center transition-all ${
-                        serviceForm.carrier === carrier.value 
-                          ? 'border-emerald-500 bg-emerald-500/10 text-white' 
-                          : 'border-gray-700 text-gray-400 hover:border-gray-600'
-                      }`}
-                    >
-                      <span className="text-sm font-medium">{carrier.label}</span>
-                    </button>
-                  ))}
-                </div>
-              </div>
-
-              {/* Basic Info */}
-              <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
-                <div>
-                  <Label className="text-gray-300">Service Name</Label>
-                  <Input
-                    value={serviceForm.name}
-                    onChange={(e) => setServiceForm({...serviceForm, name: e.target.value})}
-                    placeholder="e.g., Standard Delivery"
-                    className="bg-gray-700 border-gray-600 text-white mt-1"
-                  />
-                </div>
-                <div>
-                  <Label className="text-gray-300">Service Code</Label>
-                  <Input
-                    value={serviceForm.code}
-                    onChange={(e) => setServiceForm({...serviceForm, code: e.target.value.toLowerCase()})}
-                    placeholder="e.g., standard"
-                    className="bg-gray-700 border-gray-600 text-white mt-1"
-                  />
-                </div>
-                <div>
-                  <Label className="text-gray-300">Charge Type</Label>
-                  <Select value={serviceForm.charge_type} onValueChange={(v) => setServiceForm({...serviceForm, charge_type: v})}>
-                    <SelectTrigger className="bg-gray-700 border-gray-600 text-white mt-1">
-                      <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent className="bg-gray-800 border-gray-700">
-                      <SelectItem value="weight">Weight-based</SelectItem>
-                      <SelectItem value="cubic">Cubic weight</SelectItem>
-                      <SelectItem value="fixed">Fixed price</SelectItem>
-                      <SelectItem value="flat">Flat rate</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
-              </div>
-
-              {/* Charge Settings */}
-              <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                <div>
-                  <Label className="text-gray-300">Min Charge ($)</Label>
-                  <Input
-                    type="number"
-                    step="0.01"
-                    value={serviceForm.min_charge}
-                    onChange={(e) => setServiceForm({...serviceForm, min_charge: parseFloat(e.target.value) || 0})}
-                    className="bg-gray-700 border-gray-600 text-white mt-1"
-                  />
-                </div>
-                <div>
-                  <Label className="text-gray-300">Handling Fee ($)</Label>
-                  <Input
-                    type="number"
-                    step="0.01"
-                    value={serviceForm.handling_fee}
-                    onChange={(e) => setServiceForm({...serviceForm, handling_fee: parseFloat(e.target.value) || 0})}
-                    className="bg-gray-700 border-gray-600 text-white mt-1"
-                  />
-                </div>
-                <div>
-                  <Label className="text-gray-300">Fuel Levy (%)</Label>
-                  <Input
-                    type="number"
-                    step="0.1"
-                    value={serviceForm.fuel_levy_percent}
-                    onChange={(e) => setServiceForm({...serviceForm, fuel_levy_percent: parseFloat(e.target.value) || 0})}
-                    className="bg-gray-700 border-gray-600 text-white mt-1"
-                  />
-                </div>
-                <div className="flex items-end">
-                  <div className="flex items-center gap-2 h-10">
-                    <Switch
-                      checked={serviceForm.is_active}
-                      onCheckedChange={(checked) => setServiceForm({...serviceForm, is_active: checked})}
-                    />
-                    <Label className="text-gray-300">Active</Label>
+                <h3 className="text-white font-medium mb-4 flex items-center gap-2">
+                  <FileText className="w-4 h-4 text-blue-400" />
+                  Details
+                </h3>
+                
+                {/* Carrier Selection */}
+                <div className="mb-4">
+                  <Label className="text-gray-300 text-sm mb-2 block">Carrier</Label>
+                  <div className="grid grid-cols-3 md:grid-cols-6 gap-2">
+                    {[
+                      { value: 'custom', label: 'Custom' },
+                      { value: 'startrack', label: 'StarTrack' },
+                      { value: 'australia_post', label: 'Australia Post' },
+                      { value: 'tnt', label: 'TNT' },
+                      { value: 'fedex', label: 'FedEx' },
+                      { value: 'dhl', label: 'DHL' },
+                    ].map(carrier => (
+                      <button
+                        key={carrier.value}
+                        onClick={() => setServiceForm({...serviceForm, carrier: carrier.value})}
+                        className={`p-2 rounded-lg border text-center transition-all text-sm ${
+                          serviceForm.carrier === carrier.value 
+                            ? 'border-emerald-500 bg-emerald-500/10 text-white' 
+                            : 'border-gray-700 text-gray-400 hover:border-gray-600'
+                        }`}
+                      >
+                        {carrier.label}
+                      </button>
+                    ))}
                   </div>
+                </div>
+
+                <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                  <div>
+                    <Label className="text-gray-300 text-sm">Name</Label>
+                    <Input
+                      value={serviceForm.name}
+                      onChange={(e) => setServiceForm({...serviceForm, name: e.target.value})}
+                      placeholder="e.g., StarTrack"
+                      className="bg-gray-700 border-gray-600 text-white mt-1"
+                    />
+                  </div>
+                  <div>
+                    <Label className="text-gray-300 text-sm">Code</Label>
+                    <Input
+                      value={serviceForm.code}
+                      onChange={(e) => setServiceForm({...serviceForm, code: e.target.value.toLowerCase()})}
+                      placeholder="e.g., startrack"
+                      className="bg-gray-700 border-gray-600 text-white mt-1"
+                    />
+                  </div>
+                  <div>
+                    <Label className="text-gray-300 text-sm">Status</Label>
+                    <Select value={serviceForm.is_active ? 'active' : 'inactive'} onValueChange={(v) => setServiceForm({...serviceForm, is_active: v === 'active'})}>
+                      <SelectTrigger className="bg-gray-700 border-gray-600 text-white mt-1">
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent className="bg-gray-800 border-gray-700">
+                        <SelectItem value="active">Active</SelectItem>
+                        <SelectItem value="inactive">Inactive</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  <div>
+                    <Label className="text-gray-300 text-sm">Charge Type</Label>
+                    <Select value={serviceForm.charge_type} onValueChange={(v) => setServiceForm({...serviceForm, charge_type: v})}>
+                      <SelectTrigger className="bg-gray-700 border-gray-600 text-white mt-1">
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent className="bg-gray-800 border-gray-700">
+                        <SelectItem value="weight">Weight</SelectItem>
+                        <SelectItem value="weight_cubic">Weight / Cubic</SelectItem>
+                        <SelectItem value="cubic">Cubic</SelectItem>
+                        <SelectItem value="fixed">Fixed Price</SelectItem>
+                        <SelectItem value="flat">Flat Rate</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mt-4">
+                  <div>
+                    <Label className="text-gray-300 text-sm">Maximum Length</Label>
+                    <div className="flex items-center gap-2 mt-1">
+                      <Input
+                        type="number"
+                        step="0.1"
+                        value={serviceForm.max_length || ''}
+                        onChange={(e) => setServiceForm({...serviceForm, max_length: parseFloat(e.target.value) || 0})}
+                        placeholder="1.4"
+                        className="bg-gray-700 border-gray-600 text-white"
+                      />
+                      <span className="text-gray-400 text-sm">m</span>
+                    </div>
+                  </div>
+                  <div>
+                    <Label className="text-gray-300 text-sm">Cubic Weight Modifier</Label>
+                    <div className="flex items-center gap-2 mt-1">
+                      <Input
+                        type="number"
+                        step="0.001"
+                        value={serviceForm.cubic_weight_modifier || 250}
+                        onChange={(e) => setServiceForm({...serviceForm, cubic_weight_modifier: parseFloat(e.target.value) || 250})}
+                        placeholder="250"
+                        className="bg-gray-700 border-gray-600 text-white"
+                      />
+                      <span className="text-gray-400 text-sm whitespace-nowrap">kg/m³</span>
+                    </div>
+                  </div>
+                  <div className="col-span-2">
+                    <Label className="text-gray-300 text-sm">Internal Description</Label>
+                    <Input
+                      value={serviceForm.internal_description || ''}
+                      onChange={(e) => setServiceForm({...serviceForm, internal_description: e.target.value})}
+                      placeholder="e.g., New rates from July 2024"
+                      className="bg-gray-700 border-gray-600 text-white mt-1"
+                    />
+                  </div>
+                </div>
+
+                <div className="flex flex-wrap gap-6 mt-4">
+                  <label className="flex items-center gap-2 cursor-pointer">
+                    <input
+                      type="checkbox"
+                      checked={serviceForm.tax_inclusive || false}
+                      onChange={(e) => setServiceForm({...serviceForm, tax_inclusive: e.target.checked})}
+                      className="rounded border-gray-600 text-emerald-500"
+                    />
+                    <span className="text-gray-300 text-sm">Tax Inclusive</span>
+                  </label>
+                  <label className="flex items-center gap-2 cursor-pointer">
+                    <input
+                      type="checkbox"
+                      checked={serviceForm.ship_to_po_box || false}
+                      onChange={(e) => setServiceForm({...serviceForm, ship_to_po_box: e.target.checked})}
+                      className="rounded border-gray-600 text-emerald-500"
+                    />
+                    <span className="text-gray-300 text-sm">Ship to PO Box</span>
+                  </label>
+                </div>
+
+                {/* Tracking URL */}
+                <div className="mt-4">
+                  <Label className="text-gray-300 text-sm">Tracking URL</Label>
+                  <div className="flex gap-2 mt-1">
+                    <Select value={serviceForm.tracking_carrier || 'other'} onValueChange={(v) => setServiceForm({...serviceForm, tracking_carrier: v})}>
+                      <SelectTrigger className="bg-gray-700 border-gray-600 text-white w-32">
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent className="bg-gray-800 border-gray-700">
+                        <SelectItem value="startrack">StarTrack</SelectItem>
+                        <SelectItem value="auspost">Aus Post</SelectItem>
+                        <SelectItem value="tnt">TNT</SelectItem>
+                        <SelectItem value="fedex">FedEx</SelectItem>
+                        <SelectItem value="dhl">DHL</SelectItem>
+                        <SelectItem value="other">Other</SelectItem>
+                      </SelectContent>
+                    </Select>
+                    <Input
+                      value={serviceForm.tracking_url || ''}
+                      onChange={(e) => setServiceForm({...serviceForm, tracking_url: e.target.value})}
+                      placeholder="https://carrier.com/track/#tracking_num#"
+                      className="bg-gray-700 border-gray-600 text-white flex-1"
+                    />
+                  </div>
+                  <p className="text-gray-500 text-xs mt-1">Use #tracking_num# as placeholder for the tracking number</p>
+                </div>
+              </div>
+
+              {/* Section: Levies and Allowances */}
+              <div className="bg-gray-900 rounded-lg p-4 border border-gray-700">
+                <h3 className="text-white font-medium mb-4 flex items-center gap-2">
+                  <DollarSign className="w-4 h-4 text-emerald-400" />
+                  Levies and Allowances
+                </h3>
+
+                <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+                  <div>
+                    <Label className="text-gray-300 text-sm">Minimum Charge</Label>
+                    <div className="flex items-center gap-1 mt-1">
+                      <span className="text-gray-400">$</span>
+                      <Input
+                        type="number"
+                        step="0.01"
+                        value={serviceForm.min_charge || ''}
+                        onChange={(e) => setServiceForm({...serviceForm, min_charge: parseFloat(e.target.value) || 0})}
+                        placeholder="0.00"
+                        className="bg-gray-700 border-gray-600 text-white"
+                      />
+                    </div>
+                  </div>
+                  <div>
+                    <Label className="text-gray-300 text-sm">Maximum Charge</Label>
+                    <div className="flex items-center gap-1 mt-1">
+                      <span className="text-gray-400">$</span>
+                      <Input
+                        type="number"
+                        step="0.01"
+                        value={serviceForm.max_charge || ''}
+                        onChange={(e) => setServiceForm({...serviceForm, max_charge: parseFloat(e.target.value) || null})}
+                        placeholder="No max"
+                        className="bg-gray-700 border-gray-600 text-white"
+                      />
+                    </div>
+                  </div>
+                  <div>
+                    <Label className="text-gray-300 text-sm">Handling Cost</Label>
+                    <div className="flex items-center gap-1 mt-1">
+                      <span className="text-gray-400">$</span>
+                      <Input
+                        type="number"
+                        step="0.01"
+                        value={serviceForm.handling_fee || ''}
+                        onChange={(e) => setServiceForm({...serviceForm, handling_fee: parseFloat(e.target.value) || 0})}
+                        placeholder="0.00"
+                        className="bg-gray-700 border-gray-600 text-white"
+                      />
+                      <span className="text-gray-400 text-xs whitespace-nowrap">per item</span>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-2 md:grid-cols-3 gap-4 mt-4">
+                  <div>
+                    <Label className="text-gray-300 text-sm">Fuel Levy</Label>
+                    <div className="flex items-center gap-1 mt-1">
+                      <span className="text-gray-400">$</span>
+                      <Input
+                        type="number"
+                        step="0.01"
+                        value={serviceForm.fuel_levy_fixed || ''}
+                        onChange={(e) => setServiceForm({...serviceForm, fuel_levy_fixed: parseFloat(e.target.value) || 0})}
+                        placeholder="0.00"
+                        className="bg-gray-700 border-gray-600 text-white w-20"
+                      />
+                      <span className="text-gray-400">+</span>
+                      <Input
+                        type="number"
+                        step="0.1"
+                        value={serviceForm.fuel_levy_percent || ''}
+                        onChange={(e) => setServiceForm({...serviceForm, fuel_levy_percent: parseFloat(e.target.value) || 0})}
+                        placeholder="0.0"
+                        className="bg-gray-700 border-gray-600 text-white w-20"
+                      />
+                      <span className="text-gray-400">%</span>
+                    </div>
+                  </div>
+                  <div>
+                    <Label className="text-gray-300 text-sm">Packaging Allowance</Label>
+                    <div className="flex items-center gap-1 mt-1">
+                      <Input
+                        type="number"
+                        step="0.1"
+                        value={serviceForm.packaging_allowance_kg || ''}
+                        onChange={(e) => setServiceForm({...serviceForm, packaging_allowance_kg: parseFloat(e.target.value) || 0})}
+                        placeholder="0"
+                        className="bg-gray-700 border-gray-600 text-white w-16"
+                      />
+                      <span className="text-gray-400 text-xs">kg</span>
+                      <span className="text-gray-400">+</span>
+                      <Input
+                        type="number"
+                        step="0.1"
+                        value={serviceForm.packaging_allowance_percent || ''}
+                        onChange={(e) => setServiceForm({...serviceForm, packaging_allowance_percent: parseFloat(e.target.value) || 0})}
+                        placeholder="0"
+                        className="bg-gray-700 border-gray-600 text-white w-16"
+                      />
+                      <span className="text-gray-400">%</span>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="flex flex-wrap gap-6 mt-4">
+                  <label className="flex items-center gap-2 cursor-pointer">
+                    <input
+                      type="checkbox"
+                      checked={serviceForm.round_up_weight || false}
+                      onChange={(e) => setServiceForm({...serviceForm, round_up_weight: e.target.checked})}
+                      className="rounded border-gray-600 text-emerald-500"
+                    />
+                    <span className="text-gray-300 text-sm">Round Up to Nearest kg</span>
+                  </label>
+                  <label className="flex items-center gap-2 cursor-pointer">
+                    <input
+                      type="checkbox"
+                      checked={serviceForm.ignore_physical_weight || false}
+                      onChange={(e) => setServiceForm({...serviceForm, ignore_physical_weight: e.target.checked})}
+                      className="rounded border-gray-600 text-emerald-500"
+                    />
+                    <span className="text-gray-300 text-sm">Ignore physical weight of products in calculations</span>
+                  </label>
                 </div>
               </div>
 
