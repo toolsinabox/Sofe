@@ -1971,11 +1971,11 @@ const MerchantShipping = () => {
                     <Label className="text-gray-300 text-sm">Handling Cost</Label>
                     <div className="flex items-center gap-1 mt-1">
                       <span className="text-gray-400">$</span>
-                      <Input
+                      <StableInput
                         type="number"
                         step="0.01"
                         name="handling_fee"
-                        value={serviceForm.handling_fee || ''}
+                        defaultValue={serviceForm.handling_fee || ''}
                         onChange={handleServiceFormNumericChange}
                         placeholder="0.00"
                         className="bg-gray-700 border-gray-600 text-white"
@@ -1990,21 +1990,21 @@ const MerchantShipping = () => {
                     <Label className="text-gray-300 text-sm">Fuel Levy</Label>
                     <div className="flex items-center gap-1 mt-1">
                       <span className="text-gray-400">$</span>
-                      <Input
+                      <StableInput
                         type="number"
                         step="0.01"
                         name="fuel_levy_amount"
-                        value={serviceForm.fuel_levy_amount || ''}
+                        defaultValue={serviceForm.fuel_levy_amount || ''}
                         onChange={handleServiceFormNumericChange}
                         placeholder="0.00"
                         className="bg-gray-700 border-gray-600 text-white w-20"
                       />
                       <span className="text-gray-400">+</span>
-                      <Input
+                      <StableInput
                         type="number"
                         step="0.1"
                         name="fuel_levy_percent"
-                        value={serviceForm.fuel_levy_percent || ''}
+                        defaultValue={serviceForm.fuel_levy_percent || ''}
                         onChange={handleServiceFormNumericChange}
                         placeholder="0.0"
                         className="bg-gray-700 border-gray-600 text-white w-20"
@@ -2015,22 +2015,22 @@ const MerchantShipping = () => {
                   <div>
                     <Label className="text-gray-300 text-sm">Packaging Allowance</Label>
                     <div className="flex items-center gap-1 mt-1">
-                      <Input
+                      <StableInput
                         type="number"
                         step="0.1"
                         name="packaging_allowance_kg"
-                        value={serviceForm.packaging_allowance_kg || ''}
+                        defaultValue={serviceForm.packaging_allowance_kg || ''}
                         onChange={handleServiceFormNumericChange}
                         placeholder="0"
                         className="bg-gray-700 border-gray-600 text-white w-16"
                       />
                       <span className="text-gray-400 text-xs">kg</span>
                       <span className="text-gray-400">+</span>
-                      <Input
+                      <StableInput
                         type="number"
                         step="0.1"
                         name="packaging_allowance_percent"
-                        value={serviceForm.packaging_allowance_percent || ''}
+                        defaultValue={serviceForm.packaging_allowance_percent || ''}
                         onChange={handleServiceFormNumericChange}
                         placeholder="0"
                         className="bg-gray-700 border-gray-600 text-white w-16"
