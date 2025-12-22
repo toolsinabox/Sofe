@@ -244,7 +244,7 @@ class MaropostTemplateEngine:
     
     # Loop tag patterns
     LOOP_PATTERN = re.compile(
-        r'\[%(\w+)(?:\s+([^%]+))?%\](.*?)\[%/\1%\]',
+        r'\[%((?!if\b|else\b|/if\b)\w+)(?:\s+([^%]+))?%\](.*?)\[%/\1%\]',
         re.DOTALL
     )
     
