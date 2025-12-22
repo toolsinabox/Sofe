@@ -922,6 +922,24 @@ ul {
   text-transform: uppercase;
 }
 
+.stock-badge.in-stock {
+  background: var(--success);
+}
+
+.stock-badge.out-of-stock {
+  background: #dc2626;
+}
+
+.add-to-cart-btn.out-of-stock-btn {
+  background: var(--gray-400) !important;
+  cursor: not-allowed;
+  opacity: 0.7;
+}
+
+.add-to-cart-btn.out-of-stock-btn:hover {
+  background: var(--gray-400) !important;
+}
+
 .product-info {
   padding: 1rem;
 }
