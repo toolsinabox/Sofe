@@ -1186,3 +1186,36 @@ Replaced all inline handlers with these stable functions to prevent unnecessary 
 
 ### Status: COMPLETE ✓
 
+
+---
+
+## Bug Fix - Focus Loss in Edit Shipping Service Modal - RESOLVED ✓
+
+### Issue
+Input fields were losing focus when typing in the MerchantShipping.jsx "Edit/Create Shipping Service" modal. Each keystroke caused the cursor to jump away, making it impossible to type complete text.
+
+### Root Cause
+The React controlled input pattern was causing re-renders on every keystroke. When state was updated via `setServiceForm()`, the entire component re-rendered, causing the Dialog/form inputs to lose focus.
+
+### Solution
+Converted inputs from controlled to uncontrolled pattern:
+1. Created `StableInput` component using native HTML `<input>` with `defaultValue` 
+2. Changed state sync from `onChange` to `onBlur` (blur-only sync)
+3. Input values are now typed freely without React interference
+4. State syncs when user clicks away from the field (onBlur)
+
+### Code Changes
+- Added `NativeInput` and `StableInput` components at the top of MerchantShipping.jsx
+- Created `handleServiceFormBlur` and `handleServiceFormNumericBlur` handlers
+- Replaced all service form `Input` components with `StableInput` using `onBlur` instead of `onChange`
+
+### Files Modified
+- `/app/frontend/src/pages/merchant/MerchantShipping.jsx`
+
+### Testing
+- Verified typing "MyNewService" in Name field - retains full text ✓
+- Verified typing "my-service-code" in Code field - retains full text ✓
+- All form fields now work correctly without focus loss
+
+### Status: COMPLETE ✓
+
