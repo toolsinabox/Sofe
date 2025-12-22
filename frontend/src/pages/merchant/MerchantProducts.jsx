@@ -53,9 +53,113 @@ import {
   TabsList,
   TabsTrigger,
 } from '../../components/ui/tabs';
+import { useDropzone } from 'react-dropzone';
 
 const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
 const API = `${BACKEND_URL}/api`;
+
+// Image Slot Component with Drag & Drop
+const ImageSlot = ({ index, image, onImageChange, onImageRemove, onDragStart, onDragOver, onDrop, isDragging }) => {
+  const slotNumber = index + 1;
+  const [uploading, setUploading] = useState(false);
+  
+  const { getRootProps, getInputProps, isDragActive } = useDropzone({
+    accept: { 'image/*': ['.png', '.jpg', '.jpeg', '.webp', '.gif'] },
+    maxFiles: 1,
+    onDrop: async (acceptedFiles) => {
+      if (acceptedFiles.length > 0) {
+        setUploading(true);
+        const formData = new FormData();
+        formData.append('file', acceptedFiles[0]);
+        try {
+          const response = await axios.post(`${API}/upload/products`, formData, {
+            headers: { 'Content-Type': 'multipart/form-data' }
+          });
+          const imageUrl = `${BACKEND_URL}${response.data.url}`;
+          onImageChange(index, imageUrl);
+        } catch (error) {
+          console.error('Upload failed:', error);
+          alert('Failed to upload image');
+        }
+        setUploading(false);
+      }
+    }
+  });
+  
+  return (
+    <div
+      draggable={!!image}
+      onDragStart={(e) => image && onDragStart(e, index)}
+      onDragOver={onDragOver}
+      onDrop={(e) => onDrop(e, index)}
+      className={`relative aspect-square rounded-lg border-2 transition-all ${
+        isDragging ? 'border-blue-500 bg-blue-500/10' : 
+        image ? 'border-gray-600 bg-gray-800' : 'border-dashed border-gray-700 bg-gray-800/30'
+      } ${image ? 'cursor-grab active:cursor-grabbing' : ''}`}
+    >
+      {/* Slot Number Badge */}
+      <div className="absolute top-1 left-1 z-10 px-1.5 py-0.5 bg-black/70 rounded text-[10px] font-mono text-gray-400">
+        {slotNumber}
+      </div>
+      
+      {/* Template Tag Badge */}
+      <div className="absolute top-1 right-1 z-10 px-1.5 py-0.5 bg-emerald-500/20 rounded text-[10px] font-mono text-emerald-400">
+        [@image{slotNumber}@]
+      </div>
+      
+      {image ? (
+        <>
+          <img 
+            src={image} 
+            alt={`Product image ${slotNumber}`} 
+            className="w-full h-full object-cover rounded-lg"
+            onError={(e) => {
+              e.target.src = 'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="100" height="100" viewBox="0 0 100 100"%3E%3Crect fill="%23374151" width="100" height="100"/%3E%3Ctext x="50" y="55" fill="%236b7280" font-size="12" text-anchor="middle"%3EError%3C/text%3E%3C/svg%3E';
+            }}
+          />
+          {/* Overlay with actions */}
+          <div className="absolute inset-0 bg-black/60 opacity-0 hover:opacity-100 transition-opacity rounded-lg flex items-center justify-center gap-2">
+            <button
+              onClick={(e) => { e.stopPropagation(); onImageRemove(index); }}
+              className="p-2 bg-red-500 rounded-full text-white hover:bg-red-600 transition-colors"
+              title="Remove image"
+            >
+              <Trash2 size={16} />
+            </button>
+          </div>
+          {/* Primary badge */}
+          {index === 0 && (
+            <span className="absolute bottom-1 left-1 px-2 py-0.5 bg-emerald-500 text-white text-[10px] font-medium rounded">
+              Primary
+            </span>
+          )}
+          {/* Drag handle indicator */}
+          <div className="absolute bottom-1 right-1 p-1 bg-black/50 rounded text-gray-400">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor">
+              <circle cx="5" cy="5" r="2"/><circle cx="12" cy="5" r="2"/><circle cx="19" cy="5" r="2"/>
+              <circle cx="5" cy="12" r="2"/><circle cx="12" cy="12" r="2"/><circle cx="19" cy="12" r="2"/>
+              <circle cx="5" cy="19" r="2"/><circle cx="12" cy="19" r="2"/><circle cx="19" cy="19" r="2"/>
+            </svg>
+          </div>
+        </>
+      ) : (
+        <div {...getRootProps()} className="w-full h-full flex flex-col items-center justify-center cursor-pointer">
+          <input {...getInputProps()} />
+          {uploading ? (
+            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-500" />
+          ) : (
+            <>
+              <Upload size={20} className={`mb-1 ${isDragActive ? 'text-blue-400' : 'text-gray-500'}`} />
+              <span className="text-[10px] text-gray-500 text-center px-1">
+                {isDragActive ? 'Drop here' : 'Drop or click'}
+              </span>
+            </>
+          )}
+        </div>
+      )}
+    </div>
+  );
+};
 
 // Template Tag Display Component
 const TemplateTag = ({ tag, description }) => {
