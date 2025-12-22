@@ -217,6 +217,7 @@ function App() {
               <Route path="banners" element={<MerchantBanners />} />
               <Route path="theme-editor" element={<MerchantThemeEditor />} />
               <Route path="store-settings" element={<MerchantStoreSettings />} />
+              <Route path="content-zones" element={<MerchantContentZones />} />
               <Route path="discounts" element={<MerchantDashboard />} />
               <Route path="analytics" element={<MerchantDashboard />} />
               <Route path="payments" element={<MerchantDashboard />} />
