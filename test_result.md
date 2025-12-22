@@ -1129,3 +1129,60 @@ Integrated the shipping calculator into the customer-facing storefront pages (Pr
 - **Test Postcode:** 2170 (Casula, NSW)
 
 ### Status: COMPLETE ✓
+
+---
+
+## Bug Fixes - 2025-12-22
+
+### Fix 1: Focus Loss Bug in "Edit Shipping Service" Modal ✓
+
+**Issue:** Input fields were losing focus when typing in the MerchantShipping.jsx edit modal, making it difficult to enter text.
+
+**Root Cause:** Inline `onChange` handlers like `onChange={(e) => setServiceForm({...serviceForm, field: e.target.value})}` were creating new function references on every render, causing React to lose track of the active input element.
+
+**Solution:** Implemented stable handler functions using `useCallback`:
+```javascript
+const handleServiceFormChange = useCallback((field, value) => {
+  setServiceForm(prev => ({ ...prev, [field]: value }));
+}, []);
+
+const handleServiceFormNumberChange = useCallback((field, value, defaultValue = 0) => {
+  setServiceForm(prev => ({
+    ...prev,
+    [field]: parseFloat(value) || defaultValue
+  }));
+}, []);
+```
+
+Replaced all inline handlers with these stable functions to prevent unnecessary re-renders.
+
+**Files Modified:**
+- `/app/frontend/src/pages/merchant/MerchantShipping.jsx`
+
+**Testing:** 
+- Verified typing in Name, Code, Internal Description, and Minimum Charge fields
+- All fields properly retain values without focus loss
+
+### Status: COMPLETE ✓
+
+---
+
+### Fix 2: Change Dimension Units from CM to MM + Display Cubic Size ✓
+
+**Changes Made:**
+1. Changed all dimension labels from "(cm)" to "(mm)" for:
+   - Product Dimensions: Length, Width, Height
+   - Shipping Box Dimensions: Shipping Length, Shipping Width, Shipping Height
+2. Added live cubic size calculation display next to each dimension section
+3. Updated the cubic weight formula explanation
+
+**Files Modified:**
+- `/app/frontend/src/pages/merchant/MerchantProducts.jsx`
+
+**Visual Changes:**
+- Labels now show "Length (mm)", "Width (mm)", "Height (mm)"
+- Cubic size displays as: `123456 mm³ | 0.0001 m³` when dimensions are entered
+- Formula updated to reference mm: "Cubic Weight = (L × W × H in mm) / 1,000,000,000 × Modifier (250 or 333)"
+
+### Status: COMPLETE ✓
+
