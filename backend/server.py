@@ -2462,6 +2462,9 @@ async def process_checkout(checkout: CheckoutRequest):
         notes=checkout.notes
     )
     
+    # Generate custom order number
+    new_order.order_number = await generate_order_number()
+    
     await db.orders.insert_one(new_order.dict())
     
     # Deduct stock for each item
