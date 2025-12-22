@@ -1896,6 +1896,10 @@ class MaropostTemplateEngine:
             # 8. Fix asset paths
             html = self.fix_asset_paths(html)
             
+            # 9. Cache the result for non-dynamic pages
+            if cache_enabled and cache_key_hash:
+                self.render_cache.set(page_type.value, url, cache_key_hash, html)
+            
             return html, self._debug_info
         
         finally:
