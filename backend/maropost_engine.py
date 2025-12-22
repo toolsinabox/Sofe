@@ -1668,8 +1668,8 @@ class MaropostTemplateEngine:
             'product_price': ('product', 'price'),
             'product_sale': ('product', 'sale'),
             'product_compare_price': ('product', 'compare_price'),
-            'in_stock': ('availability', 'in_stock'),
-            'on_sale': ('pricing', 'on_sale'),
+            'product_stock': ('product', 'stock'),
+            'product_preorder_enabled': ('product', 'preorder_enabled'),
             # Category tags
             'category_name': ('category', 'name'),
             'content_description': ('category', 'description'),
@@ -1680,6 +1680,44 @@ class MaropostTemplateEngine:
             'banner_link': ('banner', 'link'),
             'banner_image': ('banner', 'image'),
         }
+        
+        # Special computed values that need product context
+        product = context.get('product', {})
+        if path in ('in_stock', 'stock_status'):
+            stock = product.get('stock', 0) if product else 0
+            return 'y' if stock > 0 else 'n'
+        
+        if path in ('preorder_enabled', 'product_preorder'):
+            return 'y' if product.get('preorder_enabled', False) else 'n'
+        
+        if path == 'on_sale':
+            compare_price = product.get('compare_price') or 0
+            price = product.get('price') or 0
+            return 'y' if compare_price > price else 'n'
+        
+        if path == 'show_preorder':
+            stock = product.get('stock', 0) if product else 0
+            preorder = product.get('preorder_enabled', False) if product else False
+            return 'y' if stock <= 0 and preorder else 'n'
+        
+        if path == 'show_notify':
+            stock = product.get('stock', 0) if product else 0
+            preorder = product.get('preorder_enabled', False) if product else False
+            return 'y' if stock <= 0 and not preorder else 'n'
+        
+        if path == 'preorder_qty':
+            return str(product.get('preorder_qty', 0)) if product else '0'
+        
+        if path == 'preorder_date':
+            return product.get('preorder_arrival_date', '') if product else ''
+        
+        if path == 'preorder_message':
+            return product.get('preorder_message', '') if product else ''
+        
+        # Page content
+        if path == 'page_content':
+            page = context.get('page', {})
+            return page.get('content', '')
         
         if path in flat_mappings:
             keys = flat_mappings[path]
