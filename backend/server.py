@@ -374,9 +374,12 @@ class PDFGenerator:
         elements.append(Paragraph(f"{order.get('customer_name', 'N/A')}", styles['Normal']))
         shipping = order.get('shipping_address', {})
         if shipping:
-            elements.append(Paragraph(f"{shipping.get('street', '')}", styles['Normal']))
-            elements.append(Paragraph(f"{shipping.get('city', '')}, {shipping.get('state', '')} {shipping.get('postcode', '')}", styles['Normal']))
-            elements.append(Paragraph(f"{shipping.get('country', 'Australia')}", styles['Normal']))
+            if isinstance(shipping, str):
+                elements.append(Paragraph(shipping, styles['Normal']))
+            else:
+                elements.append(Paragraph(f"{shipping.get('street', '')}", styles['Normal']))
+                elements.append(Paragraph(f"{shipping.get('city', '')}, {shipping.get('state', '')} {shipping.get('postcode', '')}", styles['Normal']))
+                elements.append(Paragraph(f"{shipping.get('country', 'Australia')}", styles['Normal']))
         elements.append(Spacer(1, 0.5*cm))
         
         # Items table (no prices on packing slip)
