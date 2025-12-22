@@ -326,12 +326,60 @@
                     
                     <!-- Reviews Tab -->
                     <div id="tab-reviews" class="tab-content">
-                        <h2>Customer Reviews</h2>
-                        <div class="reviews-empty">
-                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
-                            <h3>Be The First To Review!</h3>
-                            <p>Share your experience to help other customers</p>
-                            <button class="write-review-btn">Write a Review</button>
+                        <div class="reviews-header">
+                            <div class="reviews-summary" id="reviews-summary">
+                                <div class="rating-average">
+                                    <span class="rating-number" id="avg-rating">0</span>
+                                    <div class="rating-stars" id="avg-stars"></div>
+                                    <span class="rating-count" id="review-count">0 reviews</span>
+                                </div>
+                            </div>
+                            <button class="write-review-btn" onclick="openReviewForm()">Write a Review</button>
+                        </div>
+                        
+                        <!-- Reviews List -->
+                        <div class="reviews-list" id="reviews-list">
+                            <div class="reviews-loading">Loading reviews...</div>
+                        </div>
+                        
+                        <!-- Write Review Form (hidden by default) -->
+                        <div class="review-form-overlay" id="review-form-overlay">
+                            <div class="review-form-modal">
+                                <div class="review-form-header">
+                                    <h3>Write a Review</h3>
+                                    <button class="close-review-form" onclick="closeReviewForm()">&times;</button>
+                                </div>
+                                <form id="review-form" onsubmit="submitReview(event)">
+                                    <div class="form-group">
+                                        <label>Your Rating</label>
+                                        <div class="star-rating-input" id="star-rating-input">
+                                            <button type="button" data-rating="1">★</button>
+                                            <button type="button" data-rating="2">★</button>
+                                            <button type="button" data-rating="3">★</button>
+                                            <button type="button" data-rating="4">★</button>
+                                            <button type="button" data-rating="5">★</button>
+                                        </div>
+                                        <input type="hidden" name="rating" id="rating-input" value="5">
+                                    </div>
+                                    <div class="form-group">
+                                        <label>Your Name</label>
+                                        <input type="text" name="customer_name" required placeholder="Enter your name">
+                                    </div>
+                                    <div class="form-group">
+                                        <label>Your Email</label>
+                                        <input type="email" name="customer_email" required placeholder="Enter your email">
+                                    </div>
+                                    <div class="form-group">
+                                        <label>Review Title</label>
+                                        <input type="text" name="title" required placeholder="Summarize your experience">
+                                    </div>
+                                    <div class="form-group">
+                                        <label>Your Review</label>
+                                        <textarea name="content" required placeholder="Tell us about your experience with this product..." rows="5"></textarea>
+                                    </div>
+                                    <button type="submit" class="submit-review-btn">Submit Review</button>
+                                </form>
+                            </div>
                         </div>
                     </div>
                 </div>
