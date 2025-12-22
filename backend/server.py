@@ -23,8 +23,13 @@ from passlib.context import CryptContext
 from maropost_engine import MaropostTemplateEngine as NewMaropostEngine, PageType, WrapperContext, create_engine
 import stripe
 
-# Import PDFGenerator from utils
-from utils.pdf import PDFGenerator
+# PDF Generation imports
+from reportlab.lib import colors
+from reportlab.lib.pagesizes import A4
+from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
+from reportlab.lib.units import mm, cm
+from reportlab.platypus import SimpleDocTemplate, Table, TableStyle, Paragraph, Spacer, Image as RLImage
+from reportlab.lib.enums import TA_LEFT, TA_CENTER, TA_RIGHT
 
 ROOT_DIR = Path(__file__).parent
 load_dotenv(ROOT_DIR / '.env')
@@ -74,12 +79,16 @@ logging.basicConfig(
 )
 logger = logging.getLogger(__name__)
 
-# PDFGenerator is imported from utils.pdf
+# ==================== PDF GENERATION ====================
 
-# ==================== MODELS ====================
-# Note: Models are defined locally here for now. Future refactoring will move them to models/schemas.py
-
-class CategoryBase(BaseModel):
+class PDFGenerator:
+    """Generate professional PDF invoices and quotes"""
+    
+    @staticmethod
+    def generate_invoice_pdf(order: dict, store_settings: dict = None) -> bytes:
+        """Generate an invoice PDF for an order"""
+        buffer = io.BytesIO()
+        doc = SimpleDocTemplate(buffer, pagesize=A4, rightMargin=2*cm, leftMargin=2*cm, topMargin=2*cm, bottomMargin=2*cm)
         
         styles = getSampleStyleSheet()
         styles.add(ParagraphStyle(name='RightAlign', parent=styles['Normal'], alignment=TA_RIGHT))
