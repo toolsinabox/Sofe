@@ -120,6 +120,12 @@ class ProductBase(BaseModel):
     track_inventory: bool = True  # [@product_track_inventory@]
     allow_backorder: bool = False  # [@product_backorder@]
     
+    # === PRE-ORDER ===
+    preorder_enabled: bool = False  # [@product_preorder@] - Enable pre-order when out of stock
+    preorder_qty: int = 0  # [@product_preorder_qty@] - Quantity arriving
+    preorder_arrival_date: Optional[str] = None  # [@product_preorder_date@] - Expected arrival date (YYYY-MM-DD)
+    preorder_message: Optional[str] = None  # [@product_preorder_message@] - Custom pre-order message
+    
     # === SHIPPING ===
     weight: Optional[float] = None  # [@product_weight@] in kg
     length: Optional[float] = None  # [@product_length@] in cm
