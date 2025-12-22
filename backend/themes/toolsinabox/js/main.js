@@ -32,8 +32,13 @@ function getVisibleSlides() {
         if (device === 'tablet' && !showTablet) shouldShow = false;
         if (device === 'desktop' && !showDesktop) shouldShow = false;
         
+        // Mark slide visibility with inline style
         if (shouldShow) {
-            visible.push({ element: slide, index: index });
+            slide.style.display = 'block';
+            slide.style.order = visible.length; // Reorder in flex
+            visible.push({ element: slide, index: visible.length });
+        } else {
+            slide.style.display = 'none';
         }
     });
     
@@ -46,15 +51,22 @@ function initCarousel() {
     
     if (!slidesContainer) return;
     
-    // Get visible slides based on device
+    // Get visible slides based on device (this also reorders them)
     visibleSlides = getVisibleSlides();
     
+    // If no visible slides, show a placeholder or hide carousel
+    if (visibleSlides.length === 0) {
+        document.querySelector('.hero-section').style.display = 'none';
+        return;
+    } else {
+        document.querySelector('.hero-section').style.display = 'block';
+    }
+    
     if (visibleSlides.length <= 1) {
-        // Hide navigation if only one or zero visible slides
+        // Hide navigation if only one slide
         document.querySelectorAll('.carousel-nav, .carousel-dots').forEach(el => {
             el.style.display = 'none';
         });
-        // If there's one slide, make sure it's visible
         if (visibleSlides.length === 1) {
             goToSlide(0);
         }
@@ -97,6 +109,23 @@ function initCarousel() {
 function goToSlide(visibleIndex) {
     const slidesContainer = document.getElementById('heroSlides');
     const dots = document.querySelectorAll('.carousel-dot');
+    
+    if (!slidesContainer || visibleSlides.length === 0) return;
+    
+    // Wrap around
+    if (visibleIndex >= visibleSlides.length) visibleIndex = 0;
+    if (visibleIndex < 0) visibleIndex = visibleSlides.length - 1;
+    
+    currentSlide = visibleIndex;
+    
+    // Transform based on visible slide index (not original DOM index)
+    slidesContainer.style.transform = `translateX(-${currentSlide * 100}%)`;
+    
+    // Update dots
+    dots.forEach((dot, i) => {
+        dot.classList.toggle('active', i === currentSlide);
+    });
+}
     
     if (!slidesContainer || visibleSlides.length === 0) return;
     
