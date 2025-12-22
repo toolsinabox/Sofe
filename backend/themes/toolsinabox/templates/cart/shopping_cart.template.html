@@ -1,5 +1,5 @@
         <!-- Shopping Cart Page -->
-        <div class="bg-gray-50 py-8">
+        <div class="bg-gray-50 py-8 min-h-screen">
             <div class="max-w-7xl mx-auto px-4">
                 <h1 class="text-3xl font-bold text-gray-900 mb-8">Shopping Cart</h1>
                 
@@ -15,45 +15,26 @@
                                 <div class="col-span-2 text-right">Total</div>
                             </div>
                             
-                            <!-- Cart Items -->
-                            <div class="divide-y" id="cart-items">
-                                [%cart_list%]
-                                <div class="p-4 grid grid-cols-1 md:grid-cols-12 gap-4 items-center cart-item" data-item-id="[@item_id@]">
-                                    <div class="col-span-6 flex items-center gap-4">
-                                        <img src="[@item_image@]" alt="[@item_name@]" class="w-20 h-20 object-cover rounded-lg">
-                                        <div>
-                                            <h3 class="font-medium text-gray-900">[@item_name@]</h3>
-                                            <p class="text-sm text-gray-500">SKU: [@item_sku@]</p>
-                                            <button class="text-sm text-red-600 hover:text-red-700 mt-1 remove-item" data-item-id="[@item_id@]">Remove</button>
-                                        </div>
-                                    </div>
-                                    <div class="col-span-2 text-center">
-                                        <span class="md:hidden text-sm text-gray-500">Price: </span>
-                                        <span class="font-medium">[@item_price_formatted@]</span>
-                                    </div>
-                                    <div class="col-span-2 flex justify-center">
-                                        <div class="flex items-center border rounded-lg">
-                                            <button class="px-3 py-1 text-gray-600 hover:bg-gray-100 cart-qty-btn" data-action="decrease">−</button>
-                                            <input type="number" value="[@item_quantity@]" min="1" class="w-12 text-center border-x py-1">
-                                            <button class="px-3 py-1 text-gray-600 hover:bg-gray-100 cart-qty-btn" data-action="increase">+</button>
-                                        </div>
-                                    </div>
-                                    <div class="col-span-2 text-right">
-                                        <span class="md:hidden text-sm text-gray-500">Total: </span>
-                                        <span class="font-bold text-gray-900">[@item_total_formatted@]</span>
-                                    </div>
+                            <!-- Cart Items Container -->
+                            <div class="divide-y" id="cart-items-container">
+                                <!-- Items will be loaded via JavaScript -->
+                                <div class="p-8 text-center text-gray-500" id="cart-loading">
+                                    <svg class="animate-spin h-8 w-8 mx-auto mb-2 text-blue-600" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                                        <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                                        <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                                    </svg>
+                                    Loading cart...
                                 </div>
-                                [%/cart_list%]
                             </div>
                             
                             <!-- Empty Cart Message -->
-                            <div class="p-12 text-center empty-cart-message hidden">
+                            <div class="p-12 text-center hidden" id="empty-cart-message">
                                 <svg class="w-16 h-16 mx-auto text-gray-300 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z"></path>
                                 </svg>
                                 <h3 class="text-lg font-medium text-gray-900 mb-2">Your cart is empty</h3>
                                 <p class="text-gray-500 mb-6">Looks like you haven't added any items yet.</p>
-                                <a href="/live/products" class="inline-block bg-blue-600 text-white px-6 py-3 rounded-lg font-medium hover:bg-blue-700 transition">Continue Shopping</a>
+                                <a href="/live" class="inline-block bg-red-600 text-white px-6 py-3 rounded-lg font-medium hover:bg-red-700 transition">Continue Shopping</a>
                             </div>
                         </div>
                     </div>
@@ -65,38 +46,47 @@
                             
                             <div class="space-y-4 mb-6">
                                 <div class="flex justify-between text-gray-600">
-                                    <span>Subtotal</span>
-                                    <span class="font-medium cart-subtotal">[@cart_subtotal@]</span>
+                                    <span>Subtotal (<span id="summary-item-count">0</span> items)</span>
+                                    <span class="font-medium" id="summary-subtotal">$0.00</span>
                                 </div>
                                 <div class="flex justify-between text-gray-600">
                                     <span>Shipping</span>
-                                    <span class="font-medium">Calculated at checkout</span>
+                                    <span class="font-medium text-green-600">FREE</span>
                                 </div>
                                 <div class="flex justify-between text-gray-600">
-                                    <span>Tax</span>
-                                    <span class="font-medium">Calculated at checkout</span>
+                                    <span>Tax (GST)</span>
+                                    <span class="font-medium" id="summary-tax">Included</span>
                                 </div>
                                 <hr>
-                                <div class="flex justify-between text-lg font-bold text-gray-900">
-                                    <span>Estimated Total</span>
-                                    <span class="cart-total">[@cart_total@]</span>
+                                <div class="flex justify-between text-xl font-bold text-gray-900">
+                                    <span>Total</span>
+                                    <span id="summary-total">$0.00</span>
                                 </div>
                             </div>
                             
-                            <a href="/live/checkout" class="block w-full bg-blue-600 text-white text-center py-3 rounded-lg font-medium hover:bg-blue-700 transition mb-4">
+                            <button id="checkout-btn" class="block w-full bg-red-600 text-white text-center py-4 rounded-lg font-bold text-lg hover:bg-red-700 transition mb-4 disabled:opacity-50 disabled:cursor-not-allowed">
                                 Proceed to Checkout
-                            </a>
+                            </button>
                             
-                            <a href="/live/products" class="block w-full border border-gray-300 text-gray-700 text-center py-3 rounded-lg font-medium hover:bg-gray-50 transition">
+                            <a href="/live" class="block w-full border border-gray-300 text-gray-700 text-center py-3 rounded-lg font-medium hover:bg-gray-50 transition">
                                 Continue Shopping
                             </a>
                             
-                            <!-- Trust Badges -->
+                            <!-- Payment Methods -->
                             <div class="mt-6 pt-6 border-t">
-                                <div class="flex items-center justify-center gap-4 text-gray-400">
-                                    <svg class="w-8 h-8" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/></svg>
-                                    <svg class="w-8 h-8" viewBox="0 0 24 24" fill="currentColor"><path d="M18 8h-1V6c0-2.76-2.24-5-5-5S7 3.24 7 6v2H6c-1.1 0-2 .9-2 2v10c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V10c0-1.1-.9-2-2-2zm-6 9c-1.1 0-2-.9-2-2s.9-2 2-2 2 .9 2 2-.9 2-2 2zm3.1-9H8.9V6c0-1.71 1.39-3.1 3.1-3.1 1.71 0 3.1 1.39 3.1 3.1v2z"/></svg>
-                                    <span class="text-sm">Secure Checkout</span>
+                                <p class="text-xs text-gray-500 text-center mb-3">We Accept</p>
+                                <div class="flex items-center justify-center gap-3">
+                                    <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/5/5e/Visa_Inc._logo.svg/200px-Visa_Inc._logo.svg.png" alt="Visa" class="h-6 object-contain">
+                                    <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/2/2a/Mastercard-logo.svg/200px-Mastercard-logo.svg.png" alt="Mastercard" class="h-6 object-contain">
+                                    <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/b/b5/PayPal.svg/200px-PayPal.svg.png" alt="PayPal" class="h-5 object-contain">
+                                </div>
+                            </div>
+                            
+                            <!-- Trust Badges -->
+                            <div class="mt-4 pt-4 border-t">
+                                <div class="flex items-center justify-center gap-2 text-gray-500">
+                                    <svg class="w-5 h-5" viewBox="0 0 24 24" fill="currentColor"><path d="M18 8h-1V6c0-2.76-2.24-5-5-5S7 3.24 7 6v2H6c-1.1 0-2 .9-2 2v10c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V10c0-1.1-.9-2-2-2zm-6 9c-1.1 0-2-.9-2-2s.9-2 2-2 2 .9 2 2-.9 2-2 2zm3.1-9H8.9V6c0-1.71 1.39-3.1 3.1-3.1 1.71 0 3.1 1.39 3.1 3.1v2z"/></svg>
+                                    <span class="text-xs">Secure SSL Checkout</span>
                                 </div>
                             </div>
                         </div>
@@ -104,3 +94,239 @@
                 </div>
             </div>
         </div>
+
+        <script>
+        // Shopping Cart Page JavaScript
+        const API_BASE = window.location.origin + '/api';
+        
+        // Initialize cart page
+        document.addEventListener('DOMContentLoaded', function() {
+            loadCartPage();
+        });
+        
+        async function loadCartPage() {
+            const cartId = localStorage.getItem('tiab_cart_id');
+            const container = document.getElementById('cart-items-container');
+            const loading = document.getElementById('cart-loading');
+            const emptyMessage = document.getElementById('empty-cart-message');
+            
+            try {
+                let cartData = null;
+                
+                // Try to get cart from backend first
+                if (cartId) {
+                    const response = await fetch(`${API_BASE}/cart/${cartId}`);
+                    if (response.ok) {
+                        cartData = await response.json();
+                    }
+                }
+                
+                // Fallback to localStorage backup
+                if (!cartData || !cartData.items || cartData.items.length === 0) {
+                    const backup = localStorage.getItem('tiab_cart_backup');
+                    if (backup) {
+                        cartData = JSON.parse(backup);
+                    }
+                }
+                
+                // Hide loading
+                if (loading) loading.style.display = 'none';
+                
+                // Check if cart is empty
+                if (!cartData || !cartData.items || cartData.items.length === 0) {
+                    if (emptyMessage) emptyMessage.classList.remove('hidden');
+                    updateSummary(0, 0);
+                    return;
+                }
+                
+                // Render cart items
+                renderCartItems(cartData);
+                updateSummary(cartData.item_count || cartData.items.length, cartData.total || cartData.subtotal || 0);
+                
+            } catch (error) {
+                console.error('Error loading cart:', error);
+                if (loading) loading.style.display = 'none';
+                if (emptyMessage) emptyMessage.classList.remove('hidden');
+            }
+        }
+        
+        function renderCartItems(cartData) {
+            const container = document.getElementById('cart-items-container');
+            const loading = document.getElementById('cart-loading');
+            
+            if (loading) loading.remove();
+            
+            const itemsHtml = cartData.items.map(item => `
+                <div class="p-4 grid grid-cols-1 md:grid-cols-12 gap-4 items-center cart-item" data-product-id="${item.product_id}">
+                    <div class="col-span-6 flex items-center gap-4">
+                        <a href="/live/product/${item.product_id}">
+                            <img src="${item.image || 'https://placehold.co/80x80?text=Product'}" 
+                                 alt="${item.name}" 
+                                 class="w-20 h-20 object-cover rounded-lg border"
+                                 onerror="this.src='https://placehold.co/80x80?text=Product'">
+                        </a>
+                        <div>
+                            <a href="/live/product/${item.product_id}" class="font-medium text-gray-900 hover:text-red-600">
+                                ${item.name}
+                            </a>
+                            <p class="text-sm text-gray-500">${item.sku ? 'SKU: ' + item.sku : ''}</p>
+                            <button class="text-sm text-red-600 hover:text-red-700 mt-1 font-medium remove-item-btn" 
+                                    onclick="removeCartItem('${item.product_id}')">
+                                Remove
+                            </button>
+                        </div>
+                    </div>
+                    <div class="col-span-2 text-center">
+                        <span class="md:hidden text-sm text-gray-500">Price: </span>
+                        <span class="font-medium">$${(item.price || 0).toFixed(2)}</span>
+                    </div>
+                    <div class="col-span-2 flex justify-center">
+                        <div class="flex items-center border rounded-lg overflow-hidden">
+                            <button class="px-3 py-2 text-gray-600 hover:bg-gray-100 transition" 
+                                    onclick="updateItemQty('${item.product_id}', ${item.quantity - 1})">−</button>
+                            <input type="number" 
+                                   value="${item.quantity}" 
+                                   min="1" 
+                                   class="w-14 text-center border-x py-2 cart-qty-input"
+                                   data-product-id="${item.product_id}"
+                                   onchange="updateItemQty('${item.product_id}', parseInt(this.value))">
+                            <button class="px-3 py-2 text-gray-600 hover:bg-gray-100 transition" 
+                                    onclick="updateItemQty('${item.product_id}', ${item.quantity + 1})">+</button>
+                        </div>
+                    </div>
+                    <div class="col-span-2 text-right">
+                        <span class="md:hidden text-sm text-gray-500">Total: </span>
+                        <span class="font-bold text-gray-900">$${(item.line_total || item.price * item.quantity).toFixed(2)}</span>
+                    </div>
+                </div>
+            `).join('');
+            
+            container.innerHTML = itemsHtml;
+        }
+        
+        function updateSummary(itemCount, total) {
+            const countEl = document.getElementById('summary-item-count');
+            const subtotalEl = document.getElementById('summary-subtotal');
+            const totalEl = document.getElementById('summary-total');
+            const checkoutBtn = document.getElementById('checkout-btn');
+            
+            if (countEl) countEl.textContent = itemCount;
+            if (subtotalEl) subtotalEl.textContent = '$' + (total || 0).toFixed(2);
+            if (totalEl) totalEl.textContent = '$' + (total || 0).toFixed(2);
+            
+            // Update cart badge in header
+            const badge = document.getElementById('cart-count');
+            if (badge) badge.textContent = itemCount;
+            
+            // Disable checkout if cart is empty
+            if (checkoutBtn) {
+                checkoutBtn.disabled = itemCount === 0;
+            }
+        }
+        
+        async function updateItemQty(productId, newQty) {
+            if (newQty < 1) {
+                removeCartItem(productId);
+                return;
+            }
+            
+            const cartId = localStorage.getItem('tiab_cart_id');
+            if (!cartId) return;
+            
+            try {
+                const response = await fetch(`${API_BASE}/cart/${cartId}/update`, {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ product_id: productId, quantity: newQty })
+                });
+                
+                if (response.ok) {
+                    const data = await response.json();
+                    const cart = data.cart;
+                    localStorage.setItem('tiab_cart_backup', JSON.stringify(cart));
+                    
+                    // Update global tiabCart if exists
+                    if (typeof tiabCart !== 'undefined') {
+                        Object.assign(tiabCart, cart);
+                    }
+                    
+                    // Re-render cart
+                    renderCartItems(cart);
+                    updateSummary(cart.item_count, cart.total);
+                    
+                    // Update mini-cart if function exists
+                    if (typeof updateCartUI === 'function') {
+                        updateCartUI();
+                    }
+                }
+            } catch (error) {
+                console.error('Error updating quantity:', error);
+            }
+        }
+        
+        async function removeCartItem(productId) {
+            const cartId = localStorage.getItem('tiab_cart_id');
+            if (!cartId) return;
+            
+            try {
+                const response = await fetch(`${API_BASE}/cart/${cartId}/remove/${productId}`, {
+                    method: 'DELETE'
+                });
+                
+                if (response.ok) {
+                    const data = await response.json();
+                    const cart = data.cart;
+                    localStorage.setItem('tiab_cart_backup', JSON.stringify(cart));
+                    
+                    // Update global tiabCart if exists
+                    if (typeof tiabCart !== 'undefined') {
+                        Object.assign(tiabCart, cart);
+                    }
+                    
+                    // Check if cart is now empty
+                    if (!cart.items || cart.items.length === 0) {
+                        document.getElementById('cart-items-container').innerHTML = '';
+                        document.getElementById('empty-cart-message').classList.remove('hidden');
+                        updateSummary(0, 0);
+                    } else {
+                        renderCartItems(cart);
+                        updateSummary(cart.item_count, cart.total);
+                    }
+                    
+                    // Update mini-cart if function exists
+                    if (typeof updateCartUI === 'function') {
+                        updateCartUI();
+                    }
+                }
+            } catch (error) {
+                console.error('Error removing item:', error);
+            }
+        }
+        
+        // Clear entire cart
+        async function clearCart() {
+            const cartId = localStorage.getItem('tiab_cart_id');
+            if (!cartId) return;
+            
+            if (!confirm('Are you sure you want to clear your cart?')) return;
+            
+            try {
+                const response = await fetch(`${API_BASE}/cart/${cartId}/clear`, {
+                    method: 'DELETE'
+                });
+                
+                if (response.ok) {
+                    localStorage.removeItem('tiab_cart_backup');
+                    document.getElementById('cart-items-container').innerHTML = '';
+                    document.getElementById('empty-cart-message').classList.remove('hidden');
+                    updateSummary(0, 0);
+                    
+                    if (typeof updateCartUI === 'function') {
+                        updateCartUI();
+                    }
+                }
+            } catch (error) {
+                console.error('Error clearing cart:', error);
+            }
+        }
+        </script>
