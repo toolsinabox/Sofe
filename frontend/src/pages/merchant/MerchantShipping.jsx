@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useMemo, useCallback } from 'react';
 import axios from 'axios';
 import { 
   Plus, Edit, Trash2, X, Save, Truck, MapPin, Package, DollarSign, 
