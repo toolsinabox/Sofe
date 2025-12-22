@@ -1770,7 +1770,7 @@ const MerchantShipping = () => {
                     <Input
                       name="code"
                       value={serviceForm.code}
-                      onChange={(e) => handleServiceFormChange('code', e.target.value.toLowerCase())}
+                      onChange={handleServiceFormCodeChange}
                       placeholder="e.g., startrack"
                       className="bg-gray-700 border-gray-600 text-white mt-1"
                     />
@@ -1811,8 +1811,9 @@ const MerchantShipping = () => {
                       <Input
                         type="number"
                         step="0.1"
+                        name="max_length"
                         value={serviceForm.max_length || ''}
-                        onChange={(e) => handleServiceFormNumberChange('max_length', e.target.value, 0)}
+                        onChange={handleServiceFormNumericChange}
                         placeholder="1.4"
                         className="bg-gray-700 border-gray-600 text-white"
                       />
