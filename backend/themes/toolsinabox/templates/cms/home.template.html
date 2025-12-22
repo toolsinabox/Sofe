@@ -1,26 +1,45 @@
         <!-- Hero Section - Banner Carousel -->
         <section class="hero-section">
-            [%banner_list limit:'1'%]
-            <div class="hero-slide">
-                <img src="[@banner_image@]" alt="[@banner_title@]" class="hero-image" onerror="this.src='https://images.unsplash.com/photo-1504148455328-c376907d081c?w=1920&h=600&fit=crop'">
-                [%if [@banner_title@]%]
-                <div class="hero-overlay"></div>
-                <div class="hero-content">
-                    <div class="max-w-7xl mx-auto px-4 w-full">
-                        <div class="max-w-xl">
-                            <h1 class="hero-title">[@banner_title@]</h1>
-                            [%if [@banner_subtitle@]%]
-                            <p class="hero-subtitle">[@banner_subtitle@]</p>
-                            [%/if%]
-                            [%if [@banner_button_text@]%]
-                            <a href="[@banner_link@]" class="hero-btn">[@banner_button_text@]</a>
-                            [%/if%]
+            <div class="hero-carousel">
+                <div class="hero-slides" id="heroSlides">
+                    [%banner_list limit:'10'%]
+                    <div class="hero-slide">
+                        <img src="[@banner_image@]" alt="[@banner_title@]" class="hero-image" onerror="this.src='https://images.unsplash.com/photo-1504148455328-c376907d081c?w=1920&h=600&fit=crop'">
+                        [%if [@banner_title@]%]
+                        <div class="hero-overlay"></div>
+                        <div class="hero-content">
+                            <div class="max-w-7xl mx-auto px-4 w-full">
+                                <div class="max-w-xl">
+                                    <h1 class="hero-title">[@banner_title@]</h1>
+                                    [%if [@banner_subtitle@]%]
+                                    <p class="hero-subtitle">[@banner_subtitle@]</p>
+                                    [%/if%]
+                                    [%if [@banner_button_text@]%]
+                                    <a href="[@banner_link@]" class="hero-btn">[@banner_button_text@]</a>
+                                    [%/if%]
+                                </div>
+                            </div>
                         </div>
+                        [%/if%]
                     </div>
+                    [%/banner_list%]
                 </div>
-                [%/if%]
+                
+                <!-- Navigation Arrows -->
+                <button class="carousel-nav carousel-prev" onclick="changeSlide(-1)" aria-label="Previous slide">
+                    <svg width="24" height="24" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/>
+                    </svg>
+                </button>
+                <button class="carousel-nav carousel-next" onclick="changeSlide(1)" aria-label="Next slide">
+                    <svg width="24" height="24" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
+                    </svg>
+                </button>
+                
+                <!-- Dots Navigation -->
+                <div class="carousel-dots" id="carouselDots"></div>
             </div>
-            [%/banner_list%]
         </section>
         
         <!-- Trust Badges -->
