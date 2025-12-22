@@ -207,6 +207,9 @@ class ProductUpdate(BaseModel):
     length: Optional[float] = None
     width: Optional[float] = None
     height: Optional[float] = None
+    shipping_length: Optional[float] = None  # Shipping box dimensions for cubic weight
+    shipping_width: Optional[float] = None
+    shipping_height: Optional[float] = None
     shipping_class: Optional[str] = None
     requires_shipping: Optional[bool] = None
     meta_title: Optional[str] = None
