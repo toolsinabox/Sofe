@@ -1014,7 +1014,7 @@ const MerchantPOS = () => {
             
             <DialogFooter>
               <Button
-                onClick={openShift}
+                onClick={handleOpenShift}
                 disabled={processing || !openingFloat}
                 className="w-full bg-emerald-600 hover:bg-emerald-700 text-white"
               >
