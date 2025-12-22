@@ -1014,29 +1014,28 @@ async def calculate_shipping(request: ShippingCalculationRequest):
         # Calculate total quantity across all items
         total_qty = sum(item.get("quantity", 1) for item in request.items)
         
-        # Calculate base price - use first_parcel if available, otherwise fall back to base_rate
+        # Calculate base price for a SINGLE PARCEL
+        # Maropost calculates the full price per parcel, then multiplies by quantity
         first_parcel = rate.get("first_parcel", rate.get("base_rate", 0))
         per_kg = rate.get("per_kg_rate", 0)
-        per_subsequent = rate.get("per_subsequent", first_parcel)  # Default to first_parcel if not set
         
-        # Calculate price based on number of parcels
-        # 1st parcel uses first_parcel rate, additional parcels use per_subsequent rate
-        if total_qty <= 1:
-            base_price = first_parcel
-        else:
-            # First parcel + (subsequent parcels × per_subsequent rate)
-            base_price = first_parcel + ((total_qty - 1) * per_subsequent)
+        # Calculate per-parcel chargeable weight (divide total by quantity)
+        per_parcel_weight = chargeable_weight / total_qty if total_qty > 0 else chargeable_weight
         
-        # Add per kg charge if applicable (based on chargeable weight)
-        if chargeable_weight > 0 and per_kg > 0:
-            base_price += chargeable_weight * per_kg
+        # Base price for ONE parcel
+        single_parcel_price = first_parcel
+        if per_parcel_weight > 0 and per_kg > 0:
+            single_parcel_price += per_parcel_weight * per_kg
         
         # Apply fuel levy to BASE ONLY (Maropost method - fuel levy doesn't apply to handling fee)
         if service.get("fuel_levy_percent", 0) > 0:
-            base_price += base_price * (service.get("fuel_levy_percent", 0) / 100)
+            single_parcel_price += single_parcel_price * (service.get("fuel_levy_percent", 0) / 100)
         
         # Add handling fee AFTER fuel levy (handling is not subject to fuel levy)
-        base_price += service.get("handling_fee", 0)
+        single_parcel_price += service.get("handling_fee", 0)
+        
+        # Multiply by total quantity to get total price for all parcels
+        base_price = single_parcel_price * total_qty
         
         # Apply min/max charge
         if service.get("min_charge", 0) > 0:
