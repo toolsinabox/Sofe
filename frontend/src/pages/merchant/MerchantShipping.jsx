@@ -733,101 +733,167 @@ const MerchantShipping = () => {
             </DialogHeader>
             
             <div className="space-y-4 py-4">
-              {/* Format Info */}
-              <div className="bg-gray-900 rounded-lg p-4 border border-gray-700">
-                <h4 className="text-sm font-medium text-white mb-2">CSV Format (Maropost Compatible)</h4>
-                <p className="text-gray-400 text-xs mb-2">Required columns:</p>
-                <div className="flex flex-wrap gap-2">
-                  {['Country', 'Courier', 'From Post Code', 'To Post Code', 'Zone Code', 'Zone Name'].map(col => (
-                    <span key={col} className="px-2 py-1 bg-gray-800 text-gray-300 text-xs rounded font-mono">
-                      {col}
-                    </span>
-                  ))}
-                </div>
-              </div>
-
-              {/* Download Template Button */}
-              <Button 
-                variant="outline" 
-                className="w-full border-gray-600 border-dashed"
-                onClick={handleDownloadTemplate}
-              >
-                <FileDown className="w-4 h-4 mr-2" />
-                Download Sample Template
-              </Button>
-
-              {/* Import Mode Selection */}
-              <div>
-                <Label className="text-gray-300 mb-2 block">Import Mode</Label>
-                <div className="grid grid-cols-2 gap-2">
-                  <button
-                    onClick={() => setImportMode('merge')}
-                    className={`p-3 rounded-lg border text-left transition-all ${
-                      importMode === 'merge' 
-                        ? 'border-blue-500 bg-blue-500/10 text-white' 
-                        : 'border-gray-700 text-gray-400 hover:border-gray-600'
-                    }`}
-                  >
-                    <div className="font-medium text-sm">Merge</div>
-                    <div className="text-xs mt-1 opacity-70">Add new & update existing zones</div>
-                  </button>
-                  <button
-                    onClick={() => setImportMode('replace')}
-                    className={`p-3 rounded-lg border text-left transition-all ${
-                      importMode === 'replace' 
-                        ? 'border-orange-500 bg-orange-500/10 text-white' 
-                        : 'border-gray-700 text-gray-400 hover:border-gray-600'
-                    }`}
-                  >
-                    <div className="font-medium text-sm">Replace</div>
-                    <div className="text-xs mt-1 opacity-70">Clear all & import fresh</div>
-                  </button>
-                </div>
-              </div>
-
-              {/* Warning for Replace Mode */}
-              {importMode === 'replace' && (
-                <div className="flex items-start gap-2 p-3 bg-orange-500/10 border border-orange-500/30 rounded-lg">
-                  <AlertTriangle className="w-5 h-5 text-orange-400 flex-shrink-0 mt-0.5" />
-                  <p className="text-orange-300 text-sm">
-                    Replace mode will delete all existing zones before importing. This cannot be undone.
-                  </p>
-                </div>
-              )}
-
-              {/* File Upload */}
-              <div>
-                <Label className="text-gray-300 mb-2 block">Select CSV File</Label>
-                <input
-                  ref={fileInputRef}
-                  type="file"
-                  accept=".csv"
-                  onChange={handleImportZones}
-                  disabled={importing}
-                  className="w-full text-sm text-gray-400 
-                    file:mr-4 file:py-2 file:px-4 
-                    file:rounded-lg file:border-0 
-                    file:text-sm file:font-medium 
-                    file:bg-blue-600 file:text-white 
-                    hover:file:bg-blue-700 
-                    file:cursor-pointer cursor-pointer
-                    file:disabled:opacity-50 file:disabled:cursor-not-allowed"
-                />
-              </div>
-
-              {/* Import Progress/Result */}
+              {/* Upload Progress - shown when importing */}
               {importing && (
-                <div className="flex items-center justify-center gap-2 p-4 bg-gray-900 rounded-lg">
-                  <Loader2 className="w-5 h-5 text-blue-400 animate-spin" />
-                  <span className="text-gray-300">Importing zones...</span>
+                <div className="bg-gray-900 rounded-lg p-6 border border-gray-700">
+                  <div className="flex items-center gap-3 mb-4">
+                    <Loader2 className="w-6 h-6 text-blue-400 animate-spin" />
+                    <div>
+                      <p className="text-white font-medium">Uploading & Processing...</p>
+                      <p className="text-gray-400 text-sm">{selectedFile?.name}</p>
+                    </div>
+                  </div>
+                  <div className="w-full bg-gray-700 rounded-full h-2">
+                    <div 
+                      className="bg-blue-500 h-2 rounded-full transition-all duration-300"
+                      style={{ width: `${uploadProgress}%` }}
+                    />
+                  </div>
+                  <p className="text-gray-400 text-xs mt-2 text-center">{uploadProgress}% complete</p>
                 </div>
               )}
 
-              {importResult && (
+              {/* Import Result - shown after import */}
+              {importResult && !importing && (
                 <div className={`p-4 rounded-lg border ${
                   importResult.success 
                     ? 'bg-emerald-500/10 border-emerald-500/30' 
                     : 'bg-red-500/10 border-red-500/30'
+                }`}>
+                  {importResult.success ? (
+                    <div className="space-y-2">
+                      <div className="flex items-center gap-2">
+                        <CheckCircle className="w-5 h-5 text-emerald-400" />
+                        <span className="text-emerald-400 font-medium">Import Successful!</span>
+                      </div>
+                      <div className="text-sm text-gray-300 space-y-1">
+                        <p>Mode: <span className="text-white">{importResult.mode}</span></p>
+                        {importResult.rows_processed !== undefined && (
+                          <p>Rows processed: <span className="text-white">{importResult.rows_processed}</span></p>
+                        )}
+                        <p>Zones created: <span className="text-emerald-400">{importResult.zones_created}</span></p>
+                        <p>Zones updated: <span className="text-blue-400">{importResult.zones_updated}</span></p>
+                      </div>
+                    </div>
+                  ) : (
+                    <div className="flex items-start gap-2">
+                      <AlertCircle className="w-5 h-5 text-red-400 flex-shrink-0 mt-0.5" />
+                      <div>
+                        <span className="text-red-400 font-medium">Import Failed</span>
+                        <p className="text-red-300 text-sm mt-1">{importResult.error}</p>
+                      </div>
+                    </div>
+                  )}
+                </div>
+              )}
+
+              {/* Show settings and upload button only when not importing */}
+              {!importing && !importResult && (
+                <>
+                  {/* Format Info */}
+                  <div className="bg-gray-900 rounded-lg p-4 border border-gray-700">
+                    <h4 className="text-sm font-medium text-white mb-2">CSV Format (Maropost Compatible)</h4>
+                    <p className="text-gray-400 text-xs mb-2">Required columns:</p>
+                    <div className="flex flex-wrap gap-2">
+                      {['Country', 'Courier', 'From Post Code', 'To Post Code', 'Zone Code', 'Zone Name'].map(col => (
+                        <span key={col} className="px-2 py-1 bg-gray-800 text-gray-300 text-xs rounded font-mono">
+                          {col}
+                        </span>
+                      ))}
+                    </div>
+                  </div>
+
+                  {/* Download Template Button */}
+                  <Button 
+                    variant="outline" 
+                    className="w-full border-gray-600 border-dashed"
+                    onClick={handleDownloadTemplate}
+                  >
+                    <FileDown className="w-4 h-4 mr-2" />
+                    Download Sample Template
+                  </Button>
+
+                  {/* Import Mode Selection */}
+                  <div>
+                    <Label className="text-gray-300 mb-2 block">Import Mode</Label>
+                    <div className="grid grid-cols-2 gap-2">
+                      <button
+                        onClick={() => setImportMode('merge')}
+                        className={`p-3 rounded-lg border text-left transition-all ${
+                          importMode === 'merge' 
+                            ? 'border-blue-500 bg-blue-500/10 text-white' 
+                            : 'border-gray-700 text-gray-400 hover:border-gray-600'
+                        }`}
+                      >
+                        <div className="font-medium text-sm">Merge</div>
+                        <div className="text-xs mt-1 opacity-70">Add new & update existing zones</div>
+                      </button>
+                      <button
+                        onClick={() => setImportMode('replace')}
+                        className={`p-3 rounded-lg border text-left transition-all ${
+                          importMode === 'replace' 
+                            ? 'border-orange-500 bg-orange-500/10 text-white' 
+                            : 'border-gray-700 text-gray-400 hover:border-gray-600'
+                        }`}
+                      >
+                        <div className="font-medium text-sm">Replace</div>
+                        <div className="text-xs mt-1 opacity-70">Clear all & import fresh</div>
+                      </button>
+                    </div>
+                  </div>
+
+                  {/* Warning for Replace Mode */}
+                  {importMode === 'replace' && (
+                    <div className="flex items-start gap-2 p-3 bg-orange-500/10 border border-orange-500/30 rounded-lg">
+                      <AlertTriangle className="w-5 h-5 text-orange-400 flex-shrink-0 mt-0.5" />
+                      <p className="text-orange-300 text-sm">
+                        Replace mode will delete all existing zones before importing. This cannot be undone.
+                      </p>
+                    </div>
+                  )}
+
+                  {/* Upload Button */}
+                  <Button 
+                    onClick={triggerFileUpload}
+                    className="w-full bg-blue-600 hover:bg-blue-700"
+                  >
+                    <Upload className="w-4 h-4 mr-2" />
+                    Select CSV File & Upload
+                  </Button>
+                </>
+              )}
+
+              {/* Import another or close after result */}
+              {importResult && !importing && (
+                <div className="flex gap-2">
+                  <Button 
+                    variant="outline"
+                    onClick={() => setImportResult(null)}
+                    className="flex-1 border-gray-600"
+                  >
+                    Import Another
+                  </Button>
+                </div>
+              )}
+            </div>
+
+            <DialogFooter className="flex-col sm:flex-row gap-2">
+              {zones.length > 0 && !importing && (
+                <Button 
+                  variant="outline" 
+                  onClick={handleDeleteAllZones}
+                  className="border-red-500/50 text-red-400 hover:bg-red-500/10 sm:mr-auto"
+                >
+                  <Trash2 className="w-4 h-4 mr-2" />
+                  Delete All Zones
+                </Button>
+              )}
+              <Button variant="outline" onClick={() => { setShowImportModal(false); setImportResult(null); }} className="border-gray-600">
+                Close
+              </Button>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
                 }`}>
                   {importResult.success ? (
                     <div className="space-y-2">
