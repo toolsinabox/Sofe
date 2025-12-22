@@ -1621,12 +1621,18 @@ class MaropostTemplateEngine:
             # If it contains special characters that aren't in typical context paths, treat as literal
             if any(c in path for c in [':', '//', '?', '&', '=']):
                 return path
+            # If it looks like HTML content (contains < and >), return as literal
+            if '<' in path and '>' in path:
+                return path
             # If it's a purely numeric string, return as literal
             try:
                 float(path)
                 return path
             except ValueError:
                 pass
+            # If the path contains spaces (like resolved content), treat as literal
+            if ' ' in path and not path.startswith('[@'):
+                return path
         
         # First, check common flat keys that map to nested context values
         flat_mappings = {
