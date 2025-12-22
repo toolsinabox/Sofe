@@ -180,6 +180,12 @@ class ProductUpdate(BaseModel):
     low_stock_threshold: Optional[int] = None
     track_inventory: Optional[bool] = None
     allow_backorder: Optional[bool] = None
+    # Pre-order fields
+    preorder_enabled: Optional[bool] = None
+    preorder_qty: Optional[int] = None
+    preorder_arrival_date: Optional[str] = None
+    preorder_message: Optional[str] = None
+    # Shipping fields
     weight: Optional[float] = None
     length: Optional[float] = None
     width: Optional[float] = None
