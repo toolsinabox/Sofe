@@ -2191,11 +2191,44 @@ const MerchantPOS = () => {
           {lastTransaction && (
             <div className="py-4 space-y-4">
               {/* Sale Summary */}
-              <div className="bg-emerald-500/10 border border-emerald-500/30 rounded-lg p-4 text-center">
-                <p className="text-emerald-400 text-2xl font-bold">
+              <div className={`rounded-lg p-4 text-center ${
+                lastTransaction.payment_terms?.type === 'pay_in_full' 
+                  ? 'bg-emerald-500/10 border border-emerald-500/30' 
+                  : lastTransaction.payment_terms?.type === 'layby'
+                    ? 'bg-purple-500/10 border border-purple-500/30'
+                    : 'bg-blue-500/10 border border-blue-500/30'
+              }`}>
+                <p className={`text-2xl font-bold ${
+                  lastTransaction.payment_terms?.type === 'pay_in_full' 
+                    ? 'text-emerald-400' 
+                    : lastTransaction.payment_terms?.type === 'layby'
+                      ? 'text-purple-400'
+                      : 'text-blue-400'
+                }`}>
                   ${lastTransaction.total.toFixed(2)}
                 </p>
-                <p className="text-emerald-300 text-sm mt-1">Fully Paid</p>
+                <p className={`text-sm mt-1 ${
+                  lastTransaction.payment_terms?.type === 'pay_in_full' 
+                    ? 'text-emerald-300' 
+                    : lastTransaction.payment_terms?.type === 'layby'
+                      ? 'text-purple-300'
+                      : 'text-blue-300'
+                }`}>
+                  {lastTransaction.payment_terms?.type === 'pay_in_full' 
+                    ? 'Fully Paid' 
+                    : lastTransaction.payment_terms?.type === 'layby'
+                      ? `Layby - $${lastTransaction.payment_terms.initial_payment.toFixed(2)} paid`
+                      : `Pay Later - $${lastTransaction.payment_terms.initial_payment.toFixed(2)} paid`
+                  }
+                </p>
+                {lastTransaction.payment_terms?.type !== 'pay_in_full' && (
+                  <p className="text-gray-400 text-xs mt-2">
+                    Remaining: ${lastTransaction.payment_terms.remaining_balance.toFixed(2)}
+                    {lastTransaction.payment_terms?.due_date && (
+                      <span className="ml-2">| Due: {lastTransaction.payment_terms.due_date}</span>
+                    )}
+                  </p>
+                )}
               </div>
               
               {/* Set Sale Status */}
