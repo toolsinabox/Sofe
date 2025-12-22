@@ -1400,51 +1400,6 @@
         }
         
         // ================================
-        // CART MODAL FUNCTIONS
-        // ================================
-        function showCartModal(name, price, image, qty, total) {
-            const modal = document.getElementById('cart-modal-overlay');
-            if (!modal) return;
-            
-            // Update modal content
-            const modalImage = document.getElementById('modal-product-image');
-            const modalName = document.getElementById('modal-product-name');
-            const modalPrice = document.getElementById('modal-product-price');
-            const modalQty = document.getElementById('modal-product-qty');
-            const modalTotal = document.getElementById('modal-cart-total');
-            
-            if (modalImage) modalImage.src = image || 'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="80" height="80"%3E%3Crect fill="%23374151" width="80" height="80"/%3E%3C/svg%3E';
-            if (modalName) modalName.textContent = name;
-            if (modalPrice) modalPrice.textContent = '$' + price.toFixed(2);
-            if (modalQty) modalQty.textContent = 'Qty: ' + qty;
-            if (modalTotal) modalTotal.textContent = '$' + total.toFixed(2);
-            
-            // Show modal
-            modal.classList.add('show');
-            document.body.style.overflow = 'hidden';
-        }
-        
-        function closeCartModal() {
-            const modal = document.getElementById('cart-modal-overlay');
-            if (modal) {
-                modal.classList.remove('show');
-                document.body.style.overflow = '';
-            }
-        }
-        
-        // Close modal when clicking overlay
-        document.addEventListener('DOMContentLoaded', function() {
-            const modalOverlay = document.getElementById('cart-modal-overlay');
-            if (modalOverlay) {
-                modalOverlay.addEventListener('click', function(e) {
-                    if (e.target === modalOverlay) {
-                        closeCartModal();
-                    }
-                });
-            }
-        });
-        
-        // ================================
         // MINI CART FUNCTIONS
         // ================================
         function updateMiniCart() {
