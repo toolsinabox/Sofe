@@ -130,6 +130,7 @@ const MerchantPOS = () => {
   const [loadingProducts, setLoadingProducts] = useState(false);
   const [selectedCategory, setSelectedCategory] = useState('all');
   const [categories, setCategories] = useState([]);
+  const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
   
   // Returns/Refunds State
   const [showReturns, setShowReturns] = useState(false);
