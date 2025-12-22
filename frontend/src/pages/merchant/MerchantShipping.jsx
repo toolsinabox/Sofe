@@ -1318,17 +1318,33 @@ const MerchantShipping = () => {
               <div>
                 <div className="flex items-center justify-between mb-3">
                   <Label className="text-gray-300 text-base">Zone Rates</Label>
-                  <Button variant="outline" size="sm" onClick={addRateRow} className="border-gray-600">
-                    <Plus className="w-4 h-4 mr-1" /> Add Rate
-                  </Button>
+                  <div className="flex gap-2">
+                    <Button 
+                      variant="outline" 
+                      size="sm" 
+                      onClick={addAllZonesAsRates} 
+                      className="border-gray-600"
+                      disabled={zones.length === 0}
+                    >
+                      <Globe className="w-4 h-4 mr-1" /> Add All Zones
+                    </Button>
+                    <Button variant="outline" size="sm" onClick={addRateRow} className="border-gray-600">
+                      <Plus className="w-4 h-4 mr-1" /> Add Rate
+                    </Button>
+                  </div>
                 </div>
                 
                 {serviceForm.rates.length === 0 ? (
                   <div className="bg-gray-900 rounded-lg p-6 text-center border border-dashed border-gray-700">
                     <p className="text-gray-500 mb-2">No rates configured</p>
-                    <Button variant="outline" size="sm" onClick={addRateRow} className="border-gray-600">
-                      Add First Rate
-                    </Button>
+                    <div className="flex justify-center gap-2">
+                      <Button variant="outline" size="sm" onClick={addAllZonesAsRates} className="border-gray-600">
+                        <Globe className="w-4 h-4 mr-1" /> Add All Zones
+                      </Button>
+                      <Button variant="outline" size="sm" onClick={addRateRow} className="border-gray-600">
+                        Add Single Rate
+                      </Button>
+                    </div>
                   </div>
                 ) : (
                   <div className="space-y-3 max-h-64 overflow-y-auto">
