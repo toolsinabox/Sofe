@@ -5750,6 +5750,206 @@ async def init_pos():
         "register": register
     }
 
+# ==================== POS RETURNS/REFUNDS ====================
+
+class POSReturnItem(BaseModel):
+    product_id: str
+    name: str
+    sku: str
+    price: float
+    quantity: int
+    reason: str = "customer_return"
+
+class POSReturnCreate(BaseModel):
+    original_transaction_id: str
+    items: List[POSReturnItem]
+    refund_method: str = "cash"  # cash, card, store_credit
+    refund_amount: float
+    reason: str
+    notes: Optional[str] = None
+    outlet_id: Optional[str] = None
+    register_id: Optional[str] = None
+    staff_id: Optional[str] = None
+    staff_name: Optional[str] = None
+
+@api_router.post("/pos/returns")
+async def create_pos_return(return_data: POSReturnCreate):
+    """Process a POS return/refund"""
+    # Verify original transaction exists
+    original = await db.pos_transactions.find_one({"id": return_data.original_transaction_id})
+    if not original:
+        raise HTTPException(status_code=404, detail="Original transaction not found")
+    
+    # Generate return number
+    count = await db.pos_returns.count_documents({})
+    return_number = f"RET-{datetime.now(timezone.utc).strftime('%Y%m%d')}-{count + 1:04d}"
+    
+    # Create return record
+    ret_data = {
+        "id": str(uuid.uuid4()),
+        "return_number": return_number,
+        "original_transaction_id": return_data.original_transaction_id,
+        "original_transaction_number": original.get("transaction_number"),
+        "items": [item.dict() for item in return_data.items],
+        "refund_method": return_data.refund_method,
+        "refund_amount": return_data.refund_amount,
+        "reason": return_data.reason,
+        "notes": return_data.notes,
+        "outlet_id": return_data.outlet_id,
+        "register_id": return_data.register_id,
+        "staff_id": return_data.staff_id,
+        "staff_name": return_data.staff_name,
+        "status": "completed",
+        "created_at": datetime.now(timezone.utc).isoformat()
+    }
+    
+    await db.pos_returns.insert_one(ret_data)
+    
+    # Restore inventory for returned items
+    for item in return_data.items:
+        await db.products.update_one(
+            {"id": item.product_id},
+            {"$inc": {"stock": item.quantity}}
+        )
+    
+    # Update shift expected cash if cash refund
+    if return_data.refund_method == "cash" and return_data.register_id:
+        await db.pos_shifts.update_one(
+            {"register_id": return_data.register_id, "status": "open"},
+            {"$inc": {"expected_cash": -return_data.refund_amount}}
+        )
+    
+    return {
+        "id": ret_data["id"],
+        "return_number": return_number,
+        "message": "Return processed successfully"
+    }
+
+@api_router.get("/pos/returns")
+async def get_pos_returns(limit: int = 50, offset: int = 0):
+    """Get POS return history"""
+    returns = await db.pos_returns.find({}, {"_id": 0}).sort("created_at", -1).skip(offset).limit(limit).to_list(limit)
+    total = await db.pos_returns.count_documents({})
+    return {"returns": returns, "total": total}
+
+@api_router.get("/pos/transactions/{transaction_id}/returnable")
+async def get_returnable_items(transaction_id: str):
+    """Get items that can still be returned from a transaction"""
+    transaction = await db.pos_transactions.find_one({"id": transaction_id}, {"_id": 0})
+    if not transaction:
+        raise HTTPException(status_code=404, detail="Transaction not found")
+    
+    # Get existing returns for this transaction
+    existing_returns = await db.pos_returns.find(
+        {"original_transaction_id": transaction_id}
+    ).to_list(100)
+    
+    # Calculate already returned quantities
+    returned_qty = {}
+    for ret in existing_returns:
+        for item in ret.get("items", []):
+            pid = item["product_id"]
+            returned_qty[pid] = returned_qty.get(pid, 0) + item["quantity"]
+    
+    # Build returnable items list
+    returnable = []
+    for item in transaction.get("items", []):
+        already_returned = returned_qty.get(item["product_id"], 0)
+        remaining = item["quantity"] - already_returned
+        if remaining > 0:
+            returnable.append({
+                **item,
+                "max_returnable": remaining,
+                "already_returned": already_returned
+            })
+    
+    return {
+        "transaction": transaction,
+        "returnable_items": returnable
+    }
+
+# ==================== POS DISCOUNT SETTINGS ====================
+
+@api_router.get("/pos/discount-settings")
+async def get_pos_discount_settings():
+    """Get POS discount permission settings"""
+    settings = await db.pos_settings.find_one({"type": "discount_permissions"}, {"_id": 0})
+    if not settings:
+        # Default settings
+        return {
+            "type": "discount_permissions",
+            "roles": {
+                "admin": {"max_percentage": 100, "max_fixed": 10000, "requires_approval": False},
+                "manager": {"max_percentage": 50, "max_fixed": 500, "requires_approval": False},
+                "staff": {"max_percentage": 10, "max_fixed": 50, "requires_approval": True}
+            }
+        }
+    return settings
+
+@api_router.put("/pos/discount-settings")
+async def update_pos_discount_settings(settings: dict):
+    """Update POS discount permission settings"""
+    settings["type"] = "discount_permissions"
+    settings["updated_at"] = datetime.now(timezone.utc).isoformat()
+    await db.pos_settings.update_one(
+        {"type": "discount_permissions"},
+        {"$set": settings},
+        upsert=True
+    )
+    return {"message": "Discount settings updated"}
+
+@api_router.post("/pos/discount-approval")
+async def request_discount_approval(
+    amount: float,
+    discount_type: str,
+    reason: str,
+    staff_id: str,
+    staff_name: str
+):
+    """Request approval for a discount exceeding staff limits"""
+    approval = {
+        "id": str(uuid.uuid4()),
+        "amount": amount,
+        "discount_type": discount_type,
+        "reason": reason,
+        "staff_id": staff_id,
+        "staff_name": staff_name,
+        "status": "pending",
+        "created_at": datetime.now(timezone.utc).isoformat()
+    }
+    await db.pos_discount_approvals.insert_one(approval)
+    return {"id": approval["id"], "message": "Approval request submitted"}
+
+# ==================== POS QUICK CUSTOMER ====================
+
+@api_router.post("/pos/customers/quick-add")
+async def quick_add_customer(name: str, email: str, phone: Optional[str] = None):
+    """Quickly add a customer from POS"""
+    # Check if customer already exists
+    existing = await db.customers.find_one({"email": email})
+    if existing:
+        return {**existing, "_id": None, "existing": True}
+    
+    customer = {
+        "id": str(uuid.uuid4()),
+        "name": name,
+        "email": email,
+        "phone": phone or "",
+        "company": "",
+        "address": "",
+        "city": "",
+        "state": "",
+        "postcode": "",
+        "country": "AU",
+        "notes": "Added via POS",
+        "total_orders": 0,
+        "total_spent": 0,
+        "tags": ["pos-customer"],
+        "created_at": datetime.now(timezone.utc).isoformat()
+    }
+    await db.customers.insert_one(customer)
+    return {**customer, "_id": None, "existing": False}
+
 # ==================== SEED DATA ====================
 
 @api_router.post("/seed")
