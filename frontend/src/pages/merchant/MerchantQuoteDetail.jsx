@@ -318,7 +318,7 @@ const MerchantQuoteDetail = () => {
       <div className="text-center py-12">
         <AlertCircle className="mx-auto text-red-400 mb-4" size={48} />
         <h2 className="text-xl font-semibold text-white mb-2">Quote Not Found</h2>
-        <p className="text-gray-400 mb-4">The quote you're looking for doesn't exist or has been deleted.</p>
+        <p className="text-gray-400 mb-4">The quote you are looking for does not exist or has been deleted.</p>
         <Button onClick={() => navigate('/merchant/quotes')} className="bg-amber-600 hover:bg-amber-700">
           Back to Quotes
         </Button>

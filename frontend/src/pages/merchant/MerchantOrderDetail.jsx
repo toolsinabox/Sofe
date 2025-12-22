@@ -307,7 +307,7 @@ const MerchantOrderDetail = () => {
       <div className="text-center py-12">
         <AlertCircle className="mx-auto text-red-400 mb-4\" size={48} />
         <h2 className="text-xl font-semibold text-white mb-2">Order Not Found</h2>
-        <p className="text-gray-400 mb-4">The order you're looking for doesn't exist or has been deleted.</p>
+        <p className="text-gray-400 mb-4">The order you are looking for does not exist or has been deleted.</p>
         <Button onClick={() => navigate('/merchant/orders')} className="bg-emerald-600 hover:bg-emerald-700">
           Back to Orders
         </Button>
