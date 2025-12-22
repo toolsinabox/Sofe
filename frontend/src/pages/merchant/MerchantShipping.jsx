@@ -1826,8 +1826,9 @@ const MerchantShipping = () => {
                       <Input
                         type="number"
                         step="0.001"
+                        name="cubic_weight_modifier"
                         value={serviceForm.cubic_weight_modifier || 250}
-                        onChange={(e) => handleServiceFormNumberChange('cubic_weight_modifier', e.target.value, 250)}
+                        onChange={handleServiceFormNumericChange}
                         placeholder="250"
                         className="bg-gray-700 border-gray-600 text-white"
                       />
@@ -1837,8 +1838,9 @@ const MerchantShipping = () => {
                   <div className="col-span-2">
                     <Label className="text-gray-300 text-sm">Internal Description</Label>
                     <Input
+                      name="internal_description"
                       value={serviceForm.internal_description || ''}
-                      onChange={(e) => handleServiceFormChange('internal_description', e.target.value)}
+                      onChange={handleServiceFormInputChange}
                       placeholder="e.g., New rates from July 2024"
                       className="bg-gray-700 border-gray-600 text-white mt-1"
                     />
@@ -1849,8 +1851,9 @@ const MerchantShipping = () => {
                   <label className="flex items-center gap-2 cursor-pointer">
                     <input
                       type="checkbox"
+                      name="tax_inclusive"
                       checked={serviceForm.tax_inclusive || false}
-                      onChange={(e) => handleServiceFormChange('tax_inclusive', e.target.checked)}
+                      onChange={handleServiceFormInputChange}
                       className="rounded border-gray-600 text-emerald-500"
                     />
                     <div>
@@ -1861,8 +1864,9 @@ const MerchantShipping = () => {
                   <label className="flex items-center gap-2 cursor-pointer">
                     <input
                       type="checkbox"
+                      name="ship_to_po_box"
                       checked={serviceForm.ship_to_po_box || false}
-                      onChange={(e) => handleServiceFormChange('ship_to_po_box', e.target.checked)}
+                      onChange={handleServiceFormInputChange}
                       className="rounded border-gray-600 text-emerald-500"
                     />
                     <span className="text-gray-300 text-sm">Ship to PO Box</span>
