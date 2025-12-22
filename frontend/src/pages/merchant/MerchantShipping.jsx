@@ -2217,7 +2217,7 @@ const MerchantShipping = () => {
                 <Label className="text-gray-300">Service Active</Label>
                 <Switch
                   checked={serviceForm.is_active}
-                  onCheckedChange={(checked) => setServiceForm({...serviceForm, is_active: checked})}
+                  onCheckedChange={(checked) => handleServiceFormChange('is_active', checked)}
                 />
               </div>
             </div>
