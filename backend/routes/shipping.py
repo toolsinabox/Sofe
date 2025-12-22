@@ -1021,12 +1021,12 @@ async def calculate_shipping(request: ShippingCalculationRequest):
         if chargeable_weight > 0 and per_kg > 0:
             base_price += chargeable_weight * per_kg
         
-        # Add handling fee
-        base_price += service.get("handling_fee", 0)
-        
-        # Add fuel levy
+        # Apply fuel levy to BASE ONLY (Maropost method - fuel levy doesn't apply to handling fee)
         if service.get("fuel_levy_percent", 0) > 0:
             base_price += base_price * (service.get("fuel_levy_percent", 0) / 100)
+        
+        # Add handling fee AFTER fuel levy (handling is not subject to fuel levy)
+        base_price += service.get("handling_fee", 0)
         
         # Apply min/max charge
         if service.get("min_charge", 0) > 0:
