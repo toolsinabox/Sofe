@@ -481,6 +481,9 @@ class StoreSettings(BaseModel):
     meta_title: Optional[str] = None
     meta_description: Optional[str] = None
     google_analytics_id: Optional[str] = None
+    # Order number settings
+    order_prefix: str = "ORD"
+    order_number_start: int = 1001
     updated_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
 
 class StoreSettingsUpdate(BaseModel):
@@ -507,6 +510,9 @@ class StoreSettingsUpdate(BaseModel):
     meta_title: Optional[str] = None
     meta_description: Optional[str] = None
     google_analytics_id: Optional[str] = None
+    # Order number settings
+    order_prefix: Optional[str] = None
+    order_number_start: Optional[int] = None
 
 # ==================== AUTH MODELS ====================
 
