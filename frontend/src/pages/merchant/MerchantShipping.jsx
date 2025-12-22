@@ -626,7 +626,7 @@ const MerchantShipping = () => {
       <div className="space-y-4">
         {/* Hidden file input */}
         <input
-          ref={fileInputRef}
+          ref={zoneFileInputRef}
           type="file"
           accept=".csv"
           onChange={handleFileSelect}
