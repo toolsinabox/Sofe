@@ -194,8 +194,8 @@ const MerchantShipping = () => {
     }
   };
 
-  // ============== OVERVIEW TAB ==============
-  const OverviewTab = () => (
+  // ============== OVERVIEW TAB (Memoized to prevent re-renders) ==============
+  const overviewContent = useMemo(() => (
     <div className="space-y-6">
       {/* Stats Cards */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
@@ -431,7 +431,9 @@ const MerchantShipping = () => {
         </div>
       </div>
     </div>
-  );
+  ), [zones, services, categories, packages, setActiveTab, calcPostcode, calcSuburb, calcSuburbs, loadingSuburbs, calcWeight, calcTotal, calculating, calcResult, handleCalculateShipping]);
+
+  const OverviewTab = () => overviewContent;
 
   // ============== ZONES TAB ==============
   const ZonesTab = () => {
