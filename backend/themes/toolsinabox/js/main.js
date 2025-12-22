@@ -473,6 +473,7 @@ function closeCartModal() {
     const overlay = document.getElementById('cart-modal-overlay');
     if (overlay) {
         overlay.classList.remove('show');
+        document.body.style.overflow = '';
     }
 }
 
