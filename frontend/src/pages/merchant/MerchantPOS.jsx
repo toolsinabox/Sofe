@@ -2622,7 +2622,7 @@ const MerchantPOS = () => {
                       <p className="text-gray-600">✍️ Signature required</p>
                     )}
                     {lastTransaction.shipping.delivery_instructions && (
-                      <p className="text-gray-500 italic">"{lastTransaction.shipping.delivery_instructions}"</p>
+                      <p className="text-gray-500 italic">&ldquo;{lastTransaction.shipping.delivery_instructions}&rdquo;</p>
                     )}
                   </div>
                 )}
