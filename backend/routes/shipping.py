@@ -631,6 +631,7 @@ async def import_service_rates_csv(
                 "per_kg_rate": float(row.get("Per Kg", 0) or 0),
                 "min_weight": float(row.get("Minimum", 0) or 0),
                 "max_weight": float(row.get("Maximum", 999) or 999) if row.get("Maximum") else 999,
+                "max_length_mm": float(row.get("Maximum Length", 0) or 0),  # Maximum length in MM
                 "add_weight": float(row.get("Add weight", 0) or 0) if row.get("Add weight") else 0,
                 "delivery_days": int(row.get("Delivery Time", 0) or 0) if row.get("Delivery Time") else 0,
                 "internal_note": row.get("Internal Note", "").strip(),
