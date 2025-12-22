@@ -796,6 +796,225 @@
             cursor: not-allowed;
         }
         
+        /* Pre-Order Styles */
+        .preorder-section { width: 100%; }
+        .preorder-info {
+            background: linear-gradient(135deg, #1e40af 0%, #3b82f6 100%);
+            color: white;
+            padding: 1rem;
+            border-radius: 8px 8px 0 0;
+            margin-bottom: 0;
+        }
+        .preorder-badge {
+            display: inline-block;
+            background: rgba(255,255,255,0.2);
+            padding: 0.25rem 0.75rem;
+            border-radius: 4px;
+            font-size: 0.75rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 0.5rem;
+        }
+        .preorder-date {
+            font-size: 0.95rem;
+            font-weight: 600;
+            margin: 0.25rem 0;
+        }
+        .preorder-message {
+            font-size: 0.85rem;
+            opacity: 0.9;
+            margin: 0.25rem 0;
+        }
+        .preorder-qty-info {
+            font-size: 0.8rem;
+            opacity: 0.75;
+            margin: 0.5rem 0 0 0;
+        }
+        .preorder-section .qty-cart-row {
+            background: #f0f9ff;
+            padding: 1rem;
+            border-radius: 0 0 8px 8px;
+            border: 2px solid #3b82f6;
+            border-top: none;
+        }
+        .preorder-btn {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.75rem;
+            background: #2563eb;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 1.1rem;
+            font-weight: 700;
+            cursor: pointer;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            transition: background 0.2s;
+            padding: 0.75rem 1.5rem;
+        }
+        .preorder-btn:hover { background: #1d4ed8; }
+        .preorder-btn svg { width: 22px; height: 22px; }
+        
+        /* Notify Me Styles */
+        .notify-me-section {
+            width: 100%;
+            text-align: center;
+        }
+        .out-of-stock-message {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            background: #fef2f2;
+            color: #dc2626;
+            padding: 1rem;
+            border-radius: 8px;
+            margin-bottom: 1rem;
+            font-weight: 600;
+        }
+        .out-of-stock-message .oos-icon { width: 24px; height: 24px; }
+        .notify-me-btn {
+            width: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.75rem;
+            background: #f59e0b;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: 700;
+            cursor: pointer;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            transition: background 0.2s;
+            padding: 1rem 1.5rem;
+        }
+        .notify-me-btn:hover { background: #d97706; }
+        .notify-me-btn svg { width: 22px; height: 22px; }
+        
+        /* Notify Me Modal */
+        .notify-modal-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0,0,0,0.6);
+            z-index: 10000;
+            align-items: center;
+            justify-content: center;
+        }
+        .notify-modal-overlay.active { display: flex; }
+        .notify-modal {
+            background: white;
+            border-radius: 16px;
+            max-width: 450px;
+            width: 90%;
+            padding: 2rem;
+            box-shadow: 0 25px 50px rgba(0,0,0,0.25);
+            animation: modalSlideIn 0.3s ease;
+        }
+        @keyframes modalSlideIn {
+            from { transform: translateY(-20px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+        .notify-modal-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 1.5rem;
+        }
+        .notify-modal-header h3 {
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: #111;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        .notify-modal-header .bell-icon { color: #f59e0b; }
+        .notify-modal-close {
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: #666;
+            padding: 0.25rem;
+        }
+        .notify-modal-close:hover { color: #111; }
+        .notify-modal-product {
+            display: flex;
+            gap: 1rem;
+            padding: 1rem;
+            background: #f9fafb;
+            border-radius: 8px;
+            margin-bottom: 1.5rem;
+        }
+        .notify-modal-product img {
+            width: 60px;
+            height: 60px;
+            object-fit: cover;
+            border-radius: 6px;
+        }
+        .notify-modal-product-info h4 {
+            font-size: 0.95rem;
+            font-weight: 600;
+            color: #111;
+            margin: 0 0 0.25rem 0;
+        }
+        .notify-modal-product-info p {
+            font-size: 0.85rem;
+            color: #666;
+            margin: 0;
+        }
+        .notify-form-group {
+            margin-bottom: 1rem;
+        }
+        .notify-form-group label {
+            display: block;
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 0.5rem;
+        }
+        .notify-form-group input {
+            width: 100%;
+            padding: 0.75rem 1rem;
+            border: 2px solid #e5e7eb;
+            border-radius: 8px;
+            font-size: 1rem;
+            transition: border-color 0.2s;
+        }
+        .notify-form-group input:focus {
+            outline: none;
+            border-color: #f59e0b;
+        }
+        .notify-submit-btn {
+            width: 100%;
+            padding: 1rem;
+            background: #f59e0b;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: background 0.2s;
+            margin-top: 0.5rem;
+        }
+        .notify-submit-btn:hover { background: #d97706; }
+        .notify-submit-btn:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+        }
+        
         /* Action Buttons */
         .action-btns-row { display: flex; gap: 0.75rem; margin-bottom: 1rem; }
         .action-btn {
