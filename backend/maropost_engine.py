@@ -317,6 +317,10 @@ class MaropostTemplateEngine:
         if url.startswith('checkout'):
             return PageType.CHECKOUT, model_data
         
+        # Quote
+        if url.startswith('quote'):
+            return PageType.QUOTE, model_data
+        
         # Account pages
         if url.startswith('account') or url.startswith('login') or url.startswith('register'):
             return PageType.ACCOUNT, model_data
