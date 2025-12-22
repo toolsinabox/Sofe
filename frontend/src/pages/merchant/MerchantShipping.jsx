@@ -1096,26 +1096,44 @@ const MerchantShipping = () => {
     const openRateImportModal = (service) => {
       setSelectedServiceForImport(service);
       setRateImportResult(null);
+      setSelectedRateFile(null);
+      setRateUploadProgress(0);
       setShowRateImportModal(true);
     };
 
-    // Import rates from CSV
-    const handleImportRates = async (event) => {
+    // Handle rate file selection - immediately start upload
+    const handleRateFileSelect = async (event) => {
       const file = event.target.files?.[0];
       if (!file || !selectedServiceForImport) return;
       
+      setSelectedRateFile(file);
       setImportingRates(true);
       setRateImportResult(null);
+      setRateUploadProgress(0);
       
       try {
         const formData = new FormData();
         formData.append('file', file);
         
+        // Simulate progress
+        const progressInterval = setInterval(() => {
+          setRateUploadProgress(prev => Math.min(prev + 10, 90));
+        }, 100);
+        
         const response = await axios.post(
           `${API}/shipping/services/${selectedServiceForImport.id}/rates/import/csv?mode=${rateImportMode}`,
           formData,
-          { headers: { 'Content-Type': 'multipart/form-data' } }
+          { 
+            headers: { 'Content-Type': 'multipart/form-data' },
+            onUploadProgress: (progressEvent) => {
+              const progress = Math.round((progressEvent.loaded * 100) / progressEvent.total);
+              setRateUploadProgress(progress);
+            }
+          }
         );
+        
+        clearInterval(progressInterval);
+        setRateUploadProgress(100);
         
         setRateImportResult({ success: true, ...response.data });
         await fetchAllData();
@@ -1127,14 +1145,29 @@ const MerchantShipping = () => {
         });
       } finally {
         setImportingRates(false);
+        setSelectedRateFile(null);
         if (rateFileInputRef.current) {
           rateFileInputRef.current.value = '';
         }
       }
     };
 
+    // Trigger rate file upload
+    const triggerRateFileUpload = () => {
+      rateFileInputRef.current?.click();
+    };
+
     return (
       <div className="space-y-4">
+        {/* Hidden file input for rate import */}
+        <input
+          ref={rateFileInputRef}
+          type="file"
+          accept=".csv"
+          onChange={handleRateFileSelect}
+          className="hidden"
+        />
+
         <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
           <div>
             <h2 className="text-xl font-bold text-white">Shipping Services & Rates</h2>
