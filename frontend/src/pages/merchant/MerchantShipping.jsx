@@ -812,7 +812,7 @@ const MerchantShipping = () => {
         </Dialog>
 
         {/* Import Modal */}
-        <Dialog open={showImportModal} onOpenChange={setShowImportModal}>
+        <Dialog open={showZoneImportModal} onOpenChange={setShowZoneImportModal}>
           <DialogContent className="bg-gray-800 border-gray-700 text-white max-w-lg">
             <DialogHeader>
               <DialogTitle className="flex items-center gap-2">
@@ -826,45 +826,44 @@ const MerchantShipping = () => {
             
             <div className="space-y-4 py-4">
               {/* Upload Progress - shown when importing */}
-              {importing && (
+              {zoneImporting && (
                 <div className="bg-gray-900 rounded-lg p-6 border border-gray-700">
                   <div className="flex items-center gap-3 mb-4">
                     <Loader2 className="w-6 h-6 text-blue-400 animate-spin" />
                     <div>
                       <p className="text-white font-medium">Uploading & Processing...</p>
-                      <p className="text-gray-400 text-sm">{selectedFile?.name}</p>
                     </div>
                   </div>
                   <div className="w-full bg-gray-700 rounded-full h-2">
                     <div 
                       className="bg-blue-500 h-2 rounded-full transition-all duration-300"
-                      style={{ width: `${uploadProgress}%` }}
+                      style={{ width: `${zoneUploadProgress}%` }}
                     />
                   </div>
-                  <p className="text-gray-400 text-xs mt-2 text-center">{uploadProgress}% complete</p>
+                  <p className="text-gray-400 text-xs mt-2 text-center">{zoneUploadProgress}% complete</p>
                 </div>
               )}
 
               {/* Import Result - shown after import */}
-              {importResult && !importing && (
+              {zoneImportResult && !zoneImporting && (
                 <div className={`p-4 rounded-lg border ${
-                  importResult.success 
+                  zoneImportResult.success 
                     ? 'bg-emerald-500/10 border-emerald-500/30' 
                     : 'bg-red-500/10 border-red-500/30'
                 }`}>
-                  {importResult.success ? (
+                  {zoneImportResult.success ? (
                     <div className="space-y-2">
                       <div className="flex items-center gap-2">
                         <CheckCircle className="w-5 h-5 text-emerald-400" />
                         <span className="text-emerald-400 font-medium">Import Successful!</span>
                       </div>
                       <div className="text-sm text-gray-300 space-y-1">
-                        <p>Mode: <span className="text-white">{importResult.mode}</span></p>
-                        {importResult.rows_processed !== undefined && (
-                          <p>Rows processed: <span className="text-white">{importResult.rows_processed}</span></p>
+                        <p>Mode: <span className="text-white">{zoneImportResult.mode}</span></p>
+                        {zoneImportResult.rows_processed !== undefined && (
+                          <p>Rows processed: <span className="text-white">{zoneImportResult.rows_processed}</span></p>
                         )}
-                        <p>Zones created: <span className="text-emerald-400">{importResult.zones_created}</span></p>
-                        <p>Zones updated: <span className="text-blue-400">{importResult.zones_updated}</span></p>
+                        <p>Zones created: <span className="text-emerald-400">{zoneImportResult.zones_created}</span></p>
+                        <p>Zones updated: <span className="text-blue-400">{zoneImportResult.zones_updated}</span></p>
                       </div>
                     </div>
                   ) : (
@@ -872,7 +871,7 @@ const MerchantShipping = () => {
                       <AlertCircle className="w-5 h-5 text-red-400 flex-shrink-0 mt-0.5" />
                       <div>
                         <span className="text-red-400 font-medium">Import Failed</span>
-                        <p className="text-red-300 text-sm mt-1">{importResult.error}</p>
+                        <p className="text-red-300 text-sm mt-1">{zoneImportResult.error}</p>
                       </div>
                     </div>
                   )}
@@ -880,7 +879,7 @@ const MerchantShipping = () => {
               )}
 
               {/* Show settings and upload button only when not importing */}
-              {!importing && !importResult && (
+              {!zoneImporting && !zoneImportResult && (
                 <>
                   {/* Format Info */}
                   <div className="bg-gray-900 rounded-lg p-4 border border-gray-700">
@@ -910,9 +909,9 @@ const MerchantShipping = () => {
                     <Label className="text-gray-300 mb-2 block">Import Mode</Label>
                     <div className="grid grid-cols-2 gap-2">
                       <button
-                        onClick={() => setImportMode('merge')}
+                        onClick={() => setZoneImportMode('merge')}
                         className={`p-3 rounded-lg border text-left transition-all ${
-                          importMode === 'merge' 
+                          zoneImportMode === 'merge' 
                             ? 'border-blue-500 bg-blue-500/10 text-white' 
                             : 'border-gray-700 text-gray-400 hover:border-gray-600'
                         }`}
@@ -921,9 +920,9 @@ const MerchantShipping = () => {
                         <div className="text-xs mt-1 opacity-70">Add new & update existing zones</div>
                       </button>
                       <button
-                        onClick={() => setImportMode('replace')}
+                        onClick={() => setZoneImportMode('replace')}
                         className={`p-3 rounded-lg border text-left transition-all ${
-                          importMode === 'replace' 
+                          zoneImportMode === 'replace' 
                             ? 'border-orange-500 bg-orange-500/10 text-white' 
                             : 'border-gray-700 text-gray-400 hover:border-gray-600'
                         }`}
@@ -935,7 +934,7 @@ const MerchantShipping = () => {
                   </div>
 
                   {/* Warning for Replace Mode */}
-                  {importMode === 'replace' && (
+                  {zoneImportMode === 'replace' && (
                     <div className="flex items-start gap-2 p-3 bg-orange-500/10 border border-orange-500/30 rounded-lg">
                       <AlertTriangle className="w-5 h-5 text-orange-400 flex-shrink-0 mt-0.5" />
                       <p className="text-orange-300 text-sm">
@@ -956,11 +955,11 @@ const MerchantShipping = () => {
               )}
 
               {/* Import another or close after result */}
-              {importResult && !importing && (
+              {zoneImportResult && !zoneImporting && (
                 <div className="flex gap-2">
                   <Button 
                     variant="outline"
-                    onClick={() => setImportResult(null)}
+                    onClick={() => setZoneImportResult(null)}
                     className="flex-1 border-gray-600"
                   >
                     Import Another
@@ -970,7 +969,7 @@ const MerchantShipping = () => {
             </div>
 
             <DialogFooter className="flex-col sm:flex-row gap-2">
-              {zones.length > 0 && !importing && (
+              {zones.length > 0 && !zoneImporting && (
                 <Button 
                   variant="outline" 
                   onClick={handleDeleteAllZones}
@@ -980,7 +979,7 @@ const MerchantShipping = () => {
                   Delete All Zones
                 </Button>
               )}
-              <Button variant="outline" onClick={() => { setShowImportModal(false); setImportResult(null); }} className="border-gray-600">
+              <Button variant="outline" onClick={() => { setShowZoneImportModal(false); setZoneImportResult(null); }} className="border-gray-600">
                 Close
               </Button>
             </DialogFooter>
