@@ -712,6 +712,8 @@ async function initStripe() {
 }
 
 // Load cart data
+let selectedShippingMethod = null;
+
 async function loadCheckoutCart() {
     const cartId = localStorage.getItem('tiab_cart_id');
     if (!cartId) {
@@ -733,17 +735,149 @@ async function loadCheckoutCart() {
         renderCheckoutItems();
         updateCheckoutTotals();
         
-        // Get shipping cost from localStorage
+        // Check for saved shipping
         const savedShipping = localStorage.getItem('tiab_selected_shipping');
         if (savedShipping) {
             const shipping = JSON.parse(savedShipping);
             shippingCost = shipping.rate?.price || 0;
+            selectedShippingMethod = shipping.rate?.method || 'delivery';
         }
         updateCheckoutTotals();
         
     } catch (error) {
         console.error('Error loading cart:', error);
     }
+}
+
+// Shipping calculation functions
+let postcodeDebounceTimer = null;
+
+function initShippingCalculator() {
+    const postcodeInput = document.getElementById('shipping_postcode');
+    if (postcodeInput) {
+        postcodeInput.addEventListener('input', function() {
+            if (postcodeDebounceTimer) clearTimeout(postcodeDebounceTimer);
+            postcodeDebounceTimer = setTimeout(() => {
+                if (this.value.length === 4) {
+                    calculateCheckoutShipping();
+                } else {
+                    resetShippingOptions();
+                }
+            }, 500);
+        });
+    }
+}
+
+function resetShippingOptions() {
+    document.getElementById('shipping-instruction').style.display = 'block';
+    document.getElementById('shipping-options-loading').style.display = 'none';
+    document.getElementById('shipping-options-container').style.display = 'none';
+    document.getElementById('no-shipping-available').style.display = 'none';
+    document.getElementById('shipping-required-error').style.display = 'none';
+    selectedShippingMethod = null;
+    shippingCost = 0;
+    updateCheckoutTotals();
+}
+
+async function calculateCheckoutShipping() {
+    const postcode = document.getElementById('shipping_postcode').value.trim();
+    if (postcode.length !== 4 || !cartData || !cartData.items || cartData.items.length === 0) {
+        return;
+    }
+    
+    const instruction = document.getElementById('shipping-instruction');
+    const loading = document.getElementById('shipping-options-loading');
+    const container = document.getElementById('shipping-options-container');
+    const calculatedOptions = document.getElementById('calculated-shipping-options');
+    const noShipping = document.getElementById('no-shipping-available');
+    
+    instruction.style.display = 'none';
+    loading.style.display = 'block';
+    container.style.display = 'none';
+    noShipping.style.display = 'none';
+    
+    try {
+        // Build items array for API
+        const items = cartData.items.map(item => ({
+            weight: item.weight || 0.5,
+            quantity: item.quantity,
+            shipping_length: item.shipping_length || 0,
+            shipping_width: item.shipping_width || 0,
+            shipping_height: item.shipping_height || 0
+        }));
+        
+        const cartTotal = cartData.items.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+        
+        const response = await fetch(`${API_BASE}/shipping/calculate`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                postcode: postcode,
+                suburb: document.getElementById('shipping_city')?.value || null,
+                country: 'AU',
+                items: items,
+                cart_total: cartTotal
+            })
+        });
+        
+        if (!response.ok) throw new Error('Failed to calculate shipping');
+        
+        const data = await response.json();
+        const options = data.options || [];
+        
+        loading.style.display = 'none';
+        container.style.display = 'block';
+        
+        if (options.length === 0) {
+            calculatedOptions.innerHTML = '';
+            noShipping.style.display = 'block';
+        } else {
+            noShipping.style.display = 'none';
+            calculatedOptions.innerHTML = options.map(opt => `
+                <label class="shipping-option" data-shipping-method="${opt.method || 'delivery'}" data-shipping-price="${opt.price}">
+                    <input type="radio" name="shipping_method" value="${opt.name}" onchange="selectShippingMethod(this)">
+                    <div class="shipping-option-info">
+                        <h4>${opt.name}</h4>
+                        <p>${opt.description || ''}</p>
+                    </div>
+                    <div class="shipping-option-price ${opt.price === 0 ? 'free' : ''}">
+                        ${opt.price === 0 ? 'FREE' : '$' + opt.price.toFixed(2)}
+                        ${opt.gst_amount > 0 ? '<span style="font-size:0.75rem;color:#888;display:block;">' + (opt.tax_inclusive ? 'incl. GST' : '+ GST') + '</span>' : ''}
+                    </div>
+                </label>
+            `).join('');
+        }
+        
+    } catch (error) {
+        console.error('Error calculating shipping:', error);
+        loading.style.display = 'none';
+        container.style.display = 'block';
+        noShipping.style.display = 'block';
+    }
+}
+
+function selectShippingMethod(radio) {
+    const option = radio.closest('.shipping-option');
+    const price = parseFloat(option.dataset.shippingPrice) || 0;
+    const method = option.dataset.shippingMethod || 'delivery';
+    
+    // Update UI
+    document.querySelectorAll('.shipping-option').forEach(opt => opt.classList.remove('selected'));
+    option.classList.add('selected');
+    
+    // Update state
+    selectedShippingMethod = method;
+    shippingCost = price;
+    
+    // Hide error
+    document.getElementById('shipping-required-error').style.display = 'none';
+    
+    // Save to localStorage
+    localStorage.setItem('tiab_selected_shipping', JSON.stringify({
+        rate: { price: price, method: method, name: radio.value }
+    }));
+    
+    updateCheckoutTotals();
 }
 
 function renderCheckoutItems() {
