@@ -1370,3 +1370,55 @@ ul {
   -webkit-box-orient: vertical;
   overflow: hidden;
 }
+
+/* Homepage CMS Content */
+.homepage-content {
+  background: var(--secondary-bg);
+}
+
+#homepage-cms-content {
+  color: var(--text);
+}
+
+#homepage-cms-content h1,
+#homepage-cms-content h2,
+#homepage-cms-content h3 {
+  color: var(--text);
+  margin-bottom: 1rem;
+}
+
+#homepage-cms-content h1 { font-size: 2.5rem; font-weight: 700; }
+#homepage-cms-content h2 { font-size: 2rem; font-weight: 600; }
+#homepage-cms-content h3 { font-size: 1.5rem; font-weight: 600; }
+
+#homepage-cms-content p {
+  color: var(--text-muted);
+  margin-bottom: 1rem;
+  line-height: 1.7;
+}
+
+#homepage-cms-content a {
+  color: var(--primary);
+}
+
+#homepage-cms-content a:hover {
+  text-decoration: underline;
+}
+
+#homepage-cms-content img {
+  max-width: 100%;
+  height: auto;
+  border-radius: 8px;
+}
+
+#homepage-cms-content ul,
+#homepage-cms-content ol {
+  margin-left: 1.5rem;
+  margin-bottom: 1rem;
+  color: var(--text-muted);
+}
+
+#homepage-cms-content li {
+  margin-bottom: 0.5rem;
+}
+
