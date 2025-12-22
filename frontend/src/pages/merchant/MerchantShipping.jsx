@@ -1689,26 +1689,6 @@ const MerchantShipping = () => {
             </DialogFooter>
           </DialogContent>
         </Dialog>
-                  ) : (
-                    <div className="flex items-start gap-2">
-                      <AlertCircle className="w-5 h-5 text-red-400 flex-shrink-0 mt-0.5" />
-                      <div>
-                        <span className="text-red-400 font-medium">Import Failed</span>
-                        <p className="text-red-300 text-sm mt-1">{rateImportResult.error}</p>
-                      </div>
-                    </div>
-                  )}
-                </div>
-              )}
-            </div>
-
-            <DialogFooter>
-              <Button variant="outline" onClick={() => { setShowRateImportModal(false); setRateImportResult(null); }} className="border-gray-600">
-                Close
-              </Button>
-            </DialogFooter>
-          </DialogContent>
-        </Dialog>
       </div>
     );
   };
