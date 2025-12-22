@@ -18,7 +18,8 @@ import {
   FolderOpen,
   Image,
   Code,
-  Store
+  Store,
+  LayoutGrid
 } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
 
