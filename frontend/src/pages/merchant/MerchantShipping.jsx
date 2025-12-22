@@ -1891,8 +1891,9 @@ const MerchantShipping = () => {
                       </SelectContent>
                     </Select>
                     <Input
+                      name="tracking_url"
                       value={serviceForm.tracking_url || ''}
-                      onChange={(e) => handleServiceFormChange('tracking_url', e.target.value)}
+                      onChange={handleServiceFormInputChange}
                       placeholder="https://carrier.com/track/#tracking_num#"
                       className="bg-gray-700 border-gray-600 text-white flex-1"
                     />
@@ -1916,8 +1917,9 @@ const MerchantShipping = () => {
                       <Input
                         type="number"
                         step="0.01"
+                        name="min_charge"
                         value={serviceForm.min_charge || ''}
-                        onChange={(e) => handleServiceFormNumberChange('min_charge', e.target.value, 0)}
+                        onChange={handleServiceFormNumericChange}
                         placeholder="0.00"
                         className="bg-gray-700 border-gray-600 text-white"
                       />
@@ -1930,8 +1932,9 @@ const MerchantShipping = () => {
                       <Input
                         type="number"
                         step="0.01"
+                        name="max_charge"
                         value={serviceForm.max_charge || ''}
-                        onChange={(e) => handleServiceFormChange('max_charge', e.target.value ? parseFloat(e.target.value) : null)}
+                        onChange={handleServiceFormNumericChange}
                         placeholder="No max"
                         className="bg-gray-700 border-gray-600 text-white"
                       />
@@ -1944,8 +1947,9 @@ const MerchantShipping = () => {
                       <Input
                         type="number"
                         step="0.01"
+                        name="handling_fee"
                         value={serviceForm.handling_fee || ''}
-                        onChange={(e) => handleServiceFormNumberChange('handling_fee', e.target.value, 0)}
+                        onChange={handleServiceFormNumericChange}
                         placeholder="0.00"
                         className="bg-gray-700 border-gray-600 text-white"
                       />
@@ -1962,8 +1966,9 @@ const MerchantShipping = () => {
                       <Input
                         type="number"
                         step="0.01"
+                        name="fuel_levy_amount"
                         value={serviceForm.fuel_levy_amount || ''}
-                        onChange={(e) => handleServiceFormNumberChange('fuel_levy_amount', e.target.value, 0)}
+                        onChange={handleServiceFormNumericChange}
                         placeholder="0.00"
                         className="bg-gray-700 border-gray-600 text-white w-20"
                       />
