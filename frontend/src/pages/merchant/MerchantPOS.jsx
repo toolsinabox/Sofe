@@ -44,7 +44,10 @@ import {
   CheckCircle2,
   StickyNote,
   ChevronLeft,
-  Calendar
+  Calendar,
+  Truck,
+  MapPin,
+  PenLine
 } from 'lucide-react';
 import { Button } from '../../components/ui/button';
 import { Input } from '../../components/ui/input';
