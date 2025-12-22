@@ -370,6 +370,8 @@ const ProductEditor = ({ product, categories, onSave, onClose, templateTags }) =
         length: formData.length ? parseFloat(formData.length) : null,
         width: formData.width ? parseFloat(formData.width) : null,
         height: formData.height ? parseFloat(formData.height) : null,
+        // Keep all 12 image slots (preserves positions, nulls become empty strings for API)
+        images: formData.images.map(img => img || ''),
       };
       await onSave(dataToSave);
     } catch (error) {
