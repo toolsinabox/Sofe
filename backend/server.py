@@ -1841,9 +1841,28 @@ async def delete_product(product_id: str):
 
 # ==================== ORDER ENDPOINTS ====================
 
+async def generate_order_number():
+    """Generate a sequential order number based on store settings"""
+    # Get store settings
+    settings = await db.store_settings.find_one({"id": "store_settings"})
+    prefix = settings.get("order_prefix", "ORD") if settings else "ORD"
+    start_number = settings.get("order_number_start", 1001) if settings else 1001
+    
+    # Get current order count to generate sequential number
+    order_count = await db.orders.count_documents({})
+    
+    # Generate the order number
+    order_number = start_number + order_count
+    
+    return f"{prefix}-{order_number}"
+
 @api_router.post("/orders", response_model=Order)
 async def create_order(order: OrderCreate):
     new_order = Order(**order.dict())
+    
+    # Generate custom order number
+    new_order.order_number = await generate_order_number()
+    
     new_order.payment_status = "paid"  # For demo purposes
     await db.orders.insert_one(new_order.dict())
     
