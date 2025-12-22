@@ -1,0 +1,680 @@
+<!-- Quote Request Page Template -->
+<style>
+    .quote-page {
+        background: #f8f9fa;
+        min-height: 100vh;
+        padding: 2rem 0;
+    }
+    .quote-container {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 0 1rem;
+        display: grid;
+        grid-template-columns: 1fr 400px;
+        gap: 2rem;
+    }
+    @media (max-width: 968px) {
+        .quote-container {
+            grid-template-columns: 1fr;
+        }
+    }
+    .quote-section {
+        background: white;
+        border-radius: 12px;
+        padding: 1.5rem;
+        margin-bottom: 1.5rem;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+    }
+    .quote-section h2 {
+        font-size: 1.25rem;
+        font-weight: 700;
+        color: #111;
+        margin: 0 0 1.25rem 0;
+        padding-bottom: 0.75rem;
+        border-bottom: 2px solid #f0f0f0;
+    }
+    .quote-header {
+        background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+        color: white;
+        padding: 1.5rem;
+        border-radius: 12px;
+        margin-bottom: 1.5rem;
+    }
+    .quote-header h1 {
+        font-size: 1.75rem;
+        font-weight: 700;
+        margin: 0 0 0.5rem 0;
+    }
+    .quote-header p {
+        margin: 0;
+        opacity: 0.9;
+    }
+    .form-row {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 1rem;
+        margin-bottom: 1rem;
+    }
+    .form-row.single {
+        grid-template-columns: 1fr;
+    }
+    @media (max-width: 600px) {
+        .form-row {
+            grid-template-columns: 1fr;
+        }
+    }
+    .form-group {
+        display: flex;
+        flex-direction: column;
+    }
+    .form-group label {
+        font-size: 0.875rem;
+        font-weight: 600;
+        color: #333;
+        margin-bottom: 0.5rem;
+    }
+    .form-group label .required {
+        color: #dc2626;
+    }
+    .form-group input, .form-group select, .form-group textarea {
+        padding: 0.75rem 1rem;
+        border: 2px solid #e5e7eb;
+        border-radius: 8px;
+        font-size: 1rem;
+        transition: border-color 0.2s, box-shadow 0.2s;
+    }
+    .form-group input:focus, .form-group select:focus, .form-group textarea:focus {
+        outline: none;
+        border-color: #f59e0b;
+        box-shadow: 0 0 0 3px rgba(245, 158, 11, 0.1);
+    }
+    .checkbox-group {
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+        margin-bottom: 1rem;
+    }
+    .checkbox-group input[type="checkbox"] {
+        width: 20px;
+        height: 20px;
+        accent-color: #f59e0b;
+    }
+    .checkbox-group label {
+        font-size: 0.9rem;
+        color: #555;
+        cursor: pointer;
+    }
+    
+    /* Order Summary */
+    .order-summary {
+        position: sticky;
+        top: 2rem;
+    }
+    .order-items {
+        max-height: 300px;
+        overflow-y: auto;
+        margin-bottom: 1rem;
+    }
+    .order-item {
+        display: flex;
+        gap: 1rem;
+        padding: 0.75rem 0;
+        border-bottom: 1px solid #f0f0f0;
+    }
+    .order-item:last-child {
+        border-bottom: none;
+    }
+    .order-item-image {
+        width: 60px;
+        height: 60px;
+        border-radius: 8px;
+        object-fit: cover;
+        background: #f5f5f5;
+    }
+    .order-item-details {
+        flex: 1;
+    }
+    .order-item-name {
+        font-weight: 600;
+        color: #111;
+        font-size: 0.95rem;
+        margin-bottom: 0.25rem;
+    }
+    .order-item-qty {
+        font-size: 0.85rem;
+        color: #666;
+    }
+    .order-item-price {
+        font-weight: 600;
+        color: #111;
+    }
+    
+    .summary-line {
+        display: flex;
+        justify-content: space-between;
+        padding: 0.5rem 0;
+        font-size: 0.95rem;
+    }
+    .summary-line.total {
+        font-size: 1.25rem;
+        font-weight: 700;
+        border-top: 2px solid #111;
+        padding-top: 1rem;
+        margin-top: 0.5rem;
+    }
+    .summary-line .label {
+        color: #666;
+    }
+    .summary-line.total .label {
+        color: #111;
+    }
+    
+    /* Quote Info Box */
+    .quote-info-box {
+        background: #fffbeb;
+        border: 2px solid #f59e0b;
+        border-radius: 8px;
+        padding: 1rem;
+        margin-bottom: 1rem;
+    }
+    .quote-info-box h4 {
+        font-size: 0.95rem;
+        font-weight: 700;
+        color: #92400e;
+        margin: 0 0 0.5rem 0;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+    .quote-info-box p {
+        font-size: 0.85rem;
+        color: #92400e;
+        margin: 0;
+    }
+    
+    /* Submit Button */
+    .submit-quote-btn {
+        width: 100%;
+        padding: 1rem 2rem;
+        background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+        color: white;
+        border: none;
+        border-radius: 8px;
+        font-size: 1.1rem;
+        font-weight: 700;
+        cursor: pointer;
+        transition: transform 0.2s, box-shadow 0.2s;
+        margin-top: 1rem;
+    }
+    .submit-quote-btn:hover {
+        transform: translateY(-1px);
+        box-shadow: 0 4px 12px rgba(245, 158, 11, 0.3);
+    }
+    .submit-quote-btn:disabled {
+        background: #ccc;
+        cursor: not-allowed;
+        transform: none;
+        box-shadow: none;
+    }
+    .submit-quote-btn.loading {
+        position: relative;
+        color: transparent;
+    }
+    .submit-quote-btn.loading::after {
+        content: "";
+        position: absolute;
+        width: 24px;
+        height: 24px;
+        top: 50%;
+        left: 50%;
+        margin: -12px 0 0 -12px;
+        border: 3px solid rgba(255,255,255,0.3);
+        border-top-color: white;
+        border-radius: 50%;
+        animation: spin 0.8s linear infinite;
+    }
+    @keyframes spin {
+        to { transform: rotate(360deg); }
+    }
+    
+    /* Success Modal */
+    .success-modal {
+        display: none;
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: rgba(0,0,0,0.6);
+        z-index: 10000;
+        align-items: center;
+        justify-content: center;
+    }
+    .success-modal.active {
+        display: flex;
+    }
+    .success-modal-content {
+        background: white;
+        border-radius: 16px;
+        padding: 3rem;
+        max-width: 450px;
+        text-align: center;
+        animation: modalSlide 0.3s ease;
+    }
+    @keyframes modalSlide {
+        from { transform: translateY(-20px); opacity: 0; }
+        to { transform: translateY(0); opacity: 1; }
+    }
+    .success-icon {
+        width: 80px;
+        height: 80px;
+        background: #f59e0b;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: 0 auto 1.5rem;
+    }
+    .success-icon svg {
+        width: 40px;
+        height: 40px;
+        color: white;
+    }
+    .success-modal h2 {
+        font-size: 1.5rem;
+        font-weight: 700;
+        color: #111;
+        margin: 0 0 0.5rem 0;
+    }
+    .success-modal p {
+        color: #666;
+        margin-bottom: 1.5rem;
+    }
+    .quote-number-display {
+        background: #fffbeb;
+        padding: 1rem;
+        border-radius: 8px;
+        font-family: monospace;
+        font-size: 1.1rem;
+        font-weight: 600;
+        color: #92400e;
+        margin-bottom: 1.5rem;
+    }
+    .continue-btn {
+        padding: 0.75rem 2rem;
+        background: #111;
+        color: white;
+        border: none;
+        border-radius: 8px;
+        font-weight: 600;
+        cursor: pointer;
+    }
+</style>
+
+<div class="quote-page">
+    <div class="quote-container">
+        <!-- Left Column - Forms -->
+        <div class="quote-forms">
+            <div class="quote-header">
+                <h1>Request a Quote</h1>
+                <p>Get a customized quote for your order. Our team will review and respond within 24-48 hours.</p>
+            </div>
+            
+            <form id="quote-form" onsubmit="submitQuote(event)">
+                <!-- Contact Information -->
+                <div class="quote-section">
+                    <h2>Contact Information</h2>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Full Name <span class="required">*</span></label>
+                            <input type="text" id="customer_name" name="customer_name" required placeholder="John Smith">
+                        </div>
+                        <div class="form-group">
+                            <label>Email <span class="required">*</span></label>
+                            <input type="email" id="customer_email" name="customer_email" required placeholder="john@example.com">
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Phone <span class="required">*</span></label>
+                            <input type="tel" id="customer_phone" name="customer_phone" required placeholder="0400 000 000">
+                        </div>
+                        <div class="form-group">
+                            <label>Company Name</label>
+                            <input type="text" id="company_name" name="company_name" placeholder="Company Pty Ltd">
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Shipping Address -->
+                <div class="quote-section">
+                    <h2>Delivery Address</h2>
+                    <div class="form-row single">
+                        <div class="form-group">
+                            <label>Street Address <span class="required">*</span></label>
+                            <input type="text" id="shipping_address" name="shipping_address" required placeholder="123 Main Street">
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>City <span class="required">*</span></label>
+                            <input type="text" id="shipping_city" name="shipping_city" required placeholder="Melbourne">
+                        </div>
+                        <div class="form-group">
+                            <label>State <span class="required">*</span></label>
+                            <select id="shipping_state" name="shipping_state" required>
+                                <option value="">Select State</option>
+                                <option value="VIC">Victoria</option>
+                                <option value="NSW">New South Wales</option>
+                                <option value="QLD">Queensland</option>
+                                <option value="WA">Western Australia</option>
+                                <option value="SA">South Australia</option>
+                                <option value="TAS">Tasmania</option>
+                                <option value="NT">Northern Territory</option>
+                                <option value="ACT">Australian Capital Territory</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Postcode <span class="required">*</span></label>
+                            <input type="text" id="shipping_postcode" name="shipping_postcode" required placeholder="3000">
+                        </div>
+                        <div class="form-group">
+                            <label>Country</label>
+                            <select id="shipping_country" name="shipping_country">
+                                <option value="AU" selected>Australia</option>
+                                <option value="NZ">New Zealand</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Billing Address -->
+                <div class="quote-section">
+                    <h2>Billing Address</h2>
+                    <div class="checkbox-group">
+                        <input type="checkbox" id="billing_same" name="billing_same" checked onchange="toggleBillingAddress()">
+                        <label for="billing_same">Same as delivery address</label>
+                    </div>
+                    <div id="billing-fields" style="display: none;">
+                        <div class="form-row single">
+                            <div class="form-group">
+                                <label>Street Address</label>
+                                <input type="text" id="billing_address" name="billing_address" placeholder="123 Main Street">
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>City</label>
+                                <input type="text" id="billing_city" name="billing_city" placeholder="Melbourne">
+                            </div>
+                            <div class="form-group">
+                                <label>State</label>
+                                <select id="billing_state" name="billing_state">
+                                    <option value="">Select State</option>
+                                    <option value="VIC">Victoria</option>
+                                    <option value="NSW">New South Wales</option>
+                                    <option value="QLD">Queensland</option>
+                                    <option value="WA">Western Australia</option>
+                                    <option value="SA">South Australia</option>
+                                    <option value="TAS">Tasmania</option>
+                                    <option value="NT">Northern Territory</option>
+                                    <option value="ACT">Australian Capital Territory</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>Postcode</label>
+                                <input type="text" id="billing_postcode" name="billing_postcode" placeholder="3000">
+                            </div>
+                            <div class="form-group">
+                                <label>Country</label>
+                                <select id="billing_country" name="billing_country">
+                                    <option value="AU" selected>Australia</option>
+                                    <option value="NZ">New Zealand</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Additional Information -->
+                <div class="quote-section">
+                    <h2>Additional Information</h2>
+                    <div class="form-group">
+                        <label>Your Purchase Order Number (optional)</label>
+                        <input type="text" id="purchase_order" name="purchase_order" placeholder="PO-12345">
+                    </div>
+                    <div class="form-group">
+                        <label>Notes / Special Requirements</label>
+                        <textarea id="quote_notes" name="quote_notes" rows="4" placeholder="Any specific requirements, bulk pricing inquiries, or questions about the products..."></textarea>
+                    </div>
+                </div>
+                
+                <button type="submit" class="submit-quote-btn" id="submit-quote-btn">
+                    Submit Quote Request
+                </button>
+            </form>
+        </div>
+        
+        <!-- Right Column - Quote Summary -->
+        <div class="order-summary-wrapper">
+            <div class="quote-section order-summary">
+                <h2>Quote Summary</h2>
+                
+                <div class="quote-info-box">
+                    <h4>
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <circle cx="12" cy="12" r="10"></circle>
+                            <line x1="12" y1="16" x2="12" y2="12"></line>
+                            <line x1="12" y1="8" x2="12.01" y2="8"></line>
+                        </svg>
+                        How Quotes Work
+                    </h4>
+                    <p>This is a quote request, not a purchase. Stock will not be reserved until the quote is accepted and converted to an order.</p>
+                </div>
+                
+                <div class="order-items" id="quote-items">
+                    <!-- Items loaded via JS -->
+                    <p style="color: #666; text-align: center; padding: 2rem;">Loading cart...</p>
+                </div>
+                
+                <div class="summary-totals">
+                    <div class="summary-line">
+                        <span class="label">Subtotal</span>
+                        <span id="quote-subtotal">$0.00</span>
+                    </div>
+                    <div class="summary-line">
+                        <span class="label">Shipping</span>
+                        <span id="quote-shipping">TBD</span>
+                    </div>
+                    <div class="summary-line">
+                        <span class="label">GST (10%)</span>
+                        <span id="quote-tax">$0.00</span>
+                    </div>
+                    <div class="summary-line total">
+                        <span class="label">Estimated Total</span>
+                        <span id="quote-total">$0.00</span>
+                    </div>
+                </div>
+                
+                <p style="font-size: 0.8rem; color: #666; margin-top: 1rem; text-align: center;">
+                    Final pricing may vary. Quote valid for 30 days.
+                </p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Success Modal -->
+<div class="success-modal" id="success-modal">
+    <div class="success-modal-content">
+        <div class="success-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3">
+                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                <polyline points="14 2 14 8 20 8"></polyline>
+                <line x1="16" y1="13" x2="8" y2="13"></line>
+                <line x1="16" y1="17" x2="8" y2="17"></line>
+                <polyline points="10 9 9 9 8 9"></polyline>
+            </svg>
+        </div>
+        <h2>Quote Request Submitted!</h2>
+        <p>Thank you for your quote request. Our team will review it and get back to you within 24-48 hours.</p>
+        <div class="quote-number-display" id="quote-number-display">
+            QTE-XXXXXXXX
+        </div>
+        <button class="continue-btn" onclick="window.location.href='/live'">Continue Browsing</button>
+    </div>
+</div>
+
+<script>
+const API_BASE = window.location.origin + '/api';
+let cartData = null;
+let shippingCost = 0;
+
+// Load cart data
+async function loadQuoteCart() {
+    const cartId = localStorage.getItem('tiab_cart_id');
+    if (!cartId) {
+        document.getElementById('quote-items').innerHTML = '<p style="text-align: center; color: #666;">Your cart is empty</p>';
+        return;
+    }
+    
+    try {
+        const response = await fetch(`${API_BASE}/cart/${cartId}`);
+        if (!response.ok) throw new Error('Failed to load cart');
+        
+        cartData = await response.json();
+        
+        if (!cartData.items || cartData.items.length === 0) {
+            document.getElementById('quote-items').innerHTML = '<p style="text-align: center; color: #666;">Your cart is empty</p>';
+            return;
+        }
+        
+        renderQuoteItems();
+        updateQuoteTotals();
+        
+    } catch (error) {
+        console.error('Error loading cart:', error);
+    }
+}
+
+function renderQuoteItems() {
+    const container = document.getElementById('quote-items');
+    
+    if (!cartData || !cartData.items || cartData.items.length === 0) {
+        container.innerHTML = '<p style="text-align: center; color: #666;">Your cart is empty</p>';
+        return;
+    }
+    
+    container.innerHTML = cartData.items.map(item => `
+        <div class="order-item">
+            <img src="${item.image || '/api/placeholder/60/60'}" alt="${item.name}" class="order-item-image">
+            <div class="order-item-details">
+                <div class="order-item-name">${item.name}</div>
+                <div class="order-item-qty">Qty: ${item.quantity}</div>
+            </div>
+            <div class="order-item-price">$${(item.price * item.quantity).toFixed(2)}</div>
+        </div>
+    `).join('');
+}
+
+function updateQuoteTotals() {
+    if (!cartData) return;
+    
+    const subtotal = cartData.items.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+    const tax = subtotal * 0.1; // 10% GST
+    const total = subtotal + tax;
+    
+    document.getElementById('quote-subtotal').textContent = '$' + subtotal.toFixed(2);
+    document.getElementById('quote-tax').textContent = '$' + tax.toFixed(2);
+    document.getElementById('quote-total').textContent = '$' + total.toFixed(2);
+}
+
+function toggleBillingAddress() {
+    const billingFields = document.getElementById('billing-fields');
+    const checkbox = document.getElementById('billing_same');
+    billingFields.style.display = checkbox.checked ? 'none' : 'block';
+}
+
+async function submitQuote(event) {
+    event.preventDefault();
+    
+    const btn = document.getElementById('submit-quote-btn');
+    btn.disabled = true;
+    btn.classList.add('loading');
+    
+    try {
+        if (!cartData || !cartData.items || cartData.items.length === 0) {
+            throw new Error('Your cart is empty');
+        }
+        
+        const subtotal = cartData.items.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+        const tax = subtotal * 0.1;
+        const total = subtotal + tax;
+        
+        // Build shipping address
+        const shippingAddress = `${document.getElementById('shipping_address').value}, ${document.getElementById('shipping_city').value}, ${document.getElementById('shipping_state').value} ${document.getElementById('shipping_postcode').value}, ${document.getElementById('shipping_country').value}`;
+        
+        // Build billing address
+        let billingAddress = shippingAddress;
+        if (!document.getElementById('billing_same').checked) {
+            billingAddress = `${document.getElementById('billing_address').value}, ${document.getElementById('billing_city').value}, ${document.getElementById('billing_state').value} ${document.getElementById('billing_postcode').value}, ${document.getElementById('billing_country').value}`;
+        }
+        
+        const quoteData = {
+            customer_name: document.getElementById('customer_name').value,
+            customer_email: document.getElementById('customer_email').value,
+            customer_phone: document.getElementById('customer_phone').value,
+            company_name: document.getElementById('company_name').value,
+            shipping_address: shippingAddress,
+            billing_address: billingAddress,
+            items: cartData.items.map(item => ({
+                product_id: item.product_id,
+                product_name: item.name,
+                price: item.price,
+                quantity: item.quantity,
+                image: item.image
+            })),
+            subtotal: subtotal,
+            shipping: 0, // TBD
+            tax: tax,
+            total: total,
+            notes: document.getElementById('quote_notes').value,
+            purchase_order: document.getElementById('purchase_order').value
+        };
+        
+        const response = await fetch(`${API_BASE}/quotes`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(quoteData)
+        });
+        
+        const result = await response.json();
+        
+        if (!response.ok) {
+            throw new Error(result.detail || 'Failed to submit quote');
+        }
+        
+        // Show success modal
+        document.getElementById('quote-number-display').textContent = result.quote_number;
+        document.getElementById('success-modal').classList.add('active');
+        
+        // Note: We don't clear the cart for quotes - customer might want to proceed to checkout instead
+        
+    } catch (error) {
+        console.error('Quote error:', error);
+        alert(error.message || 'Failed to submit quote. Please try again.');
+    } finally {
+        btn.disabled = false;
+        btn.classList.remove('loading');
+    }
+}
+
+// Initialize
+document.addEventListener('DOMContentLoaded', function() {
+    loadQuoteCart();
+});
+</script>
