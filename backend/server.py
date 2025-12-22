@@ -5565,6 +5565,18 @@ async def get_current_shift(register_id: str):
     shift = await db.pos_shifts.find_one({"register_id": register_id, "status": "open"}, {"_id": 0})
     return shift
 
+@api_router.get("/pos/shifts")
+async def get_pos_shifts(register_id: Optional[str] = None, outlet_id: Optional[str] = None, limit: int = 20):
+    """Get shift history"""
+    query = {}
+    if register_id:
+        query["register_id"] = register_id
+    if outlet_id:
+        query["outlet_id"] = outlet_id
+    
+    shifts = await db.pos_shifts.find(query, {"_id": 0}).sort("opened_at", -1).limit(limit).to_list(limit)
+    return shifts
+
 @api_router.post("/pos/shifts/{shift_id}/close")
 async def close_pos_shift(shift_id: str, actual_cash: float, closing_float: float, notes: Optional[str] = None):
     """Close a shift and perform cash-up"""
