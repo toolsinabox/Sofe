@@ -576,18 +576,45 @@ const MerchantPOS = () => {
     
     setAddingCustomer(true);
     try {
-      const response = await axios.post(`${API}/pos/customers/quick-add`, null, {
-        params: {
-          name: newCustomer.name,
-          email: newCustomer.email,
-          phone: newCustomer.phone || null
-        }
-      });
+      const params = {
+        name: newCustomer.name,
+        email: newCustomer.email,
+        phone: newCustomer.phone || null,
+        company: newCustomer.company || null,
+        billing_address: newCustomer.billingAddress || null,
+        billing_city: newCustomer.billingCity || null,
+        billing_state: newCustomer.billingState || null,
+        billing_postcode: newCustomer.billingPostcode || null,
+      };
+      
+      // Add delivery address if different from billing
+      if (!newCustomer.sameAsDelivery) {
+        params.delivery_address = newCustomer.deliveryAddress || null;
+        params.delivery_city = newCustomer.deliveryCity || null;
+        params.delivery_state = newCustomer.deliveryState || null;
+        params.delivery_postcode = newCustomer.deliveryPostcode || null;
+      }
+      
+      const response = await axios.post(`${API}/pos/customers/quick-add`, null, { params });
       
       setCustomer(response.data);
       setShowAddCustomer(false);
       setShowCustomerSearch(false);
-      setNewCustomer({ name: '', email: '', phone: '' });
+      setNewCustomer({ 
+        name: '', 
+        company: '',
+        email: '', 
+        phone: '',
+        billingAddress: '',
+        billingCity: '',
+        billingState: '',
+        billingPostcode: '',
+        sameAsDelivery: true,
+        deliveryAddress: '',
+        deliveryCity: '',
+        deliveryState: '',
+        deliveryPostcode: ''
+      });
       
       if (response.data.existing) {
         alert('Existing customer found and selected');
