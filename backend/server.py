@@ -21,9 +21,13 @@ import shutil
 from jose import JWTError, jwt
 from passlib.context import CryptContext
 from maropost_engine import MaropostTemplateEngine as NewMaropostEngine, PageType, WrapperContext, create_engine
+import stripe
 
 ROOT_DIR = Path(__file__).parent
 load_dotenv(ROOT_DIR / '.env')
+
+# Stripe configuration
+stripe.api_key = os.environ.get('STRIPE_API_KEY', '')
 
 # Create uploads directory
 UPLOADS_DIR = ROOT_DIR / "uploads"
