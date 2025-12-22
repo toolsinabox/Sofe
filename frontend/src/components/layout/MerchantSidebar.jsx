@@ -39,6 +39,7 @@ const MerchantSidebar = ({ collapsed, setCollapsed }) => {
     { path: '/merchant/inventory', icon: Boxes, label: 'Inventory' },
     { path: '/merchant/customers', icon: Users, label: 'Customers' },
     { path: '/merchant/banners', icon: Image, label: 'Banners' },
+    { path: '/merchant/content-zones', icon: LayoutGrid, label: 'Content Zones' },
     { path: '/merchant/theme-editor', icon: Code, label: 'Theme Editor' },
     { path: '/merchant/store-settings', icon: Store, label: 'Store Settings' },
     { path: '/merchant/discounts', icon: Tag, label: 'Discounts' },
