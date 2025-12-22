@@ -16,6 +16,7 @@ import {
   Percent,
   Clock,
   ChevronRight,
+  ChevronDown,
   Printer,
   LogIn,
   LogOut,
@@ -47,7 +48,14 @@ import {
   Calendar,
   Truck,
   MapPin,
-  PenLine
+  PenLine,
+  Menu,
+  Grid3X3,
+  Tag,
+  PauseCircle,
+  XCircle,
+  Users,
+  Image
 } from 'lucide-react';
 import { Button } from '../../components/ui/button';
 import { Input } from '../../components/ui/input';
