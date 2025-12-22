@@ -446,8 +446,8 @@ class MaropostTemplateEngine:
         if request_params.get('embed') or request_params.get('_embed'):
             return WrapperContext.EMPTY
         
-        # Checkout pages use checkout wrapper
-        if page_type == PageType.CHECKOUT:
+        # Checkout and Quote pages use checkout wrapper (clean, minimal header)
+        if page_type == PageType.CHECKOUT or page_type == PageType.QUOTE:
             return WrapperContext.CHECKOUT
         
         return WrapperContext.DEFAULT
