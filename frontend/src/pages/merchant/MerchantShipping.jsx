@@ -221,6 +221,7 @@ const MerchantShipping = () => {
   const [expandedService, setExpandedService] = useState(null);
   const [showRateImportModal, setShowRateImportModal] = useState(false);
   const [selectedServiceForImport, setSelectedServiceForImport] = useState(null);
+  const [selectedRateFile, setSelectedRateFile] = useState(null);
   const [importingRates, setImportingRates] = useState(false);
   const [rateImportMode, setRateImportMode] = useState('merge');
   const [rateImportResult, setRateImportResult] = useState(null);
