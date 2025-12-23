@@ -174,12 +174,12 @@ const OptionRow = ({ option, services, zones, onUpdate, onDelete }) => {
       {/* Option Header - Always visible */}
       <div className="p-4">
         <div className="flex items-center gap-3 mb-3">
-          <div 
-            className="flex items-center gap-2 cursor-pointer flex-1"
-            onClick={() => setExpanded(!expanded)}
-          >
-            <Settings className="w-5 h-5 text-teal-400 flex-shrink-0" />
-            <div className="flex-1 min-w-0">
+          <div className="flex items-center gap-2 flex-1">
+            <Settings 
+              className="w-5 h-5 text-teal-400 flex-shrink-0 cursor-pointer" 
+              onClick={() => setExpanded(!expanded)}
+            />
+            <div className="flex-1 min-w-0" onClick={(e) => e.stopPropagation()}>
               <InlineInput
                 value={localOption.name}
                 onChange={(v) => updateField('name', v)}
