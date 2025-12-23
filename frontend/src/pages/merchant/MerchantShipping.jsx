@@ -1701,9 +1701,6 @@ const MerchantShipping = () => {
                       </div>
                       <div className="flex flex-wrap gap-3 text-sm text-gray-400">
                         <span>Carrier: {service.carrier}</span>
-                        {service.routing_group && (
-                          <span className="text-blue-400">Group: {service.routing_group}</span>
-                        )}
                         <span>Type: {service.charge_type}</span>
                         <span>Min: ${service.min_charge?.toFixed(2)}</span>
                         <span>{service.rates?.length || 0} rate(s)</span>
