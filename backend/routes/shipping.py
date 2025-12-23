@@ -1168,26 +1168,28 @@ async def calculate_shipping(request: ShippingCalculationRequest):
         base_price = base_freight
         
         # Apply service-level min/max charge (overrides rate-level)
-        if (service.get("min_charge") or 0) > 0:
-            base_price = max(base_price, service.get("min_charge") or 0)
-        if service.get("max_charge") and (service.get("max_charge") or 0) > 0:
-            base_price = min(base_price, service.get("max_charge") or 0)
+        service_min_charge = safe_float(service.get("min_charge"))
+        if service_min_charge > 0:
+            base_price = max(base_price, service_min_charge)
+        service_max_charge = safe_float(service.get("max_charge"))
+        if service_max_charge > 0:
+            base_price = min(base_price, service_max_charge)
         
         # Check for free shipping
         is_free = False
         for option in options:
             if service["id"] in option.get("service_ids", []):
-                threshold = option.get("free_shipping_threshold") or 0
+                threshold = safe_float(option.get("free_shipping_threshold"))
                 free_zones = option.get("free_shipping_zones") or []
                 
-                if threshold and request.cart_total >= threshold:
+                if threshold > 0 and request.cart_total >= threshold:
                     if not free_zones or zone.get("code") in free_zones:
                         is_free = True
                         break
         
         # Calculate GST - ensure defaults
-        tax_inclusive = service.get("tax_inclusive") or False
-        tax_rate = service.get("tax_rate") or 10.0  # Default 10% GST for Australia
+        tax_inclusive = bool(service.get("tax_inclusive"))
+        tax_rate = safe_float(service.get("tax_rate")) or 10.0  # Default 10% GST for Australia
         
         if is_free:
             final_price = 0
