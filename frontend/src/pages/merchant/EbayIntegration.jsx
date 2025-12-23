@@ -1512,14 +1512,15 @@ const EbayIntegration = () => {
     
     // Store info - use actual store settings if available
     const storeName = 'Your Store';
-    const storeLogo = 'https://via.placeholder.com/200x60/0066cc/ffffff?text=Your+Store';
+    // Use a reliable logo placeholder that actually renders
+    const storeLogo = 'https://placehold.co/200x60/0066cc/ffffff?text=YOUR+STORE&font=montserrat';
     const storeEmail = 'contact@yourstore.com';
     
     // Product info from selected preview product
     const product = previewProduct;
     
-    // Get product images
-    const images = product.images || [];
+    // Get product images - filter out empty strings
+    const images = (product.images || []).filter(img => img && img.trim() !== '');
     
     let processedHtml = html;
     
@@ -1527,29 +1528,24 @@ const EbayIntegration = () => {
     // If image exists, show content; if not, remove the entire block
     for (let i = 1; i <= 6; i++) {
       const hasImage = images[i - 1] && images[i - 1].trim() !== '';
+      // Match {{#if_image_X}} ... {{/if_image_X}} - note the forward slash, not escaped
       const ifRegex = new RegExp(`\\{\\{#if_image_${i}\\}\\}([\\s\\S]*?)\\{\\{/if_image_${i}\\}\\}`, 'g');
       processedHtml = processedHtml.replace(ifRegex, hasImage ? '$1' : '');
     }
     
     // Process main image conditional: {{#if_has_images}}...{{/if_has_images}}
-    const hasAnyImages = images.length > 0 && images.some(img => img && img.trim() !== '');
-    processedHtml = processedHtml.replace(
-      /\{\{#if_has_images\}\}([\s\S]*?)\{\{\/if_has_images\}\}/g,
-      hasAnyImages ? '$1' : ''
-    );
+    const hasAnyImages = images.length > 0;
+    const ifHasImagesRegex = /\{\{#if_has_images\}\}([\s\S]*?)\{\{\/if_has_images\}\}/g;
+    processedHtml = processedHtml.replace(ifHasImagesRegex, hasAnyImages ? '$1' : '');
     
     // Process no images conditional: {{#if_no_images}}...{{/if_no_images}}
-    processedHtml = processedHtml.replace(
-      /\{\{#if_no_images\}\}([\s\S]*?)\{\{\/if_no_images\}\}/g,
-      !hasAnyImages ? '$1' : ''
-    );
+    const ifNoImagesRegex = /\{\{#if_no_images\}\}([\s\S]*?)\{\{\/if_no_images\}\}/g;
+    processedHtml = processedHtml.replace(ifNoImagesRegex, !hasAnyImages ? '$1' : '');
     
     // Process store logo conditional: {{#if_store_logo}}...{{/if_store_logo}}
     const hasStoreLogo = storeLogo && storeLogo.trim() !== '';
-    processedHtml = processedHtml.replace(
-      /\{\{#if_store_logo\}\}([\s\S]*?)\{\{\/if_store_logo\}\}/g,
-      hasStoreLogo ? '$1' : ''
-    );
+    const ifStoreLogoRegex = /\{\{#if_store_logo\}\}([\s\S]*?)\{\{\/if_store_logo\}\}/g;
+    processedHtml = processedHtml.replace(ifStoreLogoRegex, hasStoreLogo ? '$1' : '');
     
     // Replace variables
     processedHtml = processedHtml
