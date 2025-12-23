@@ -125,6 +125,19 @@ const MerchantShipping = () => {
   const [editingItem, setEditingItem] = useState(null);
   const [saving, setSaving] = useState(false);
   
+  // Option form state (moved to parent level for persistence)
+  const [optionForm, setOptionForm] = useState({
+    name: '',
+    description: '',
+    routing_group: '',
+    service_ids: [],
+    countries: ['AU'],
+    free_shipping_threshold: null,
+    free_shipping_zones: [],
+    is_active: true,
+    sort_order: 0
+  });
+  
   // Calculator state
   const [calcPostcode, setCalcPostcode] = useState('');
   const [calcSuburb, setCalcSuburb] = useState('');
