@@ -1012,17 +1012,15 @@ async def calculate_shipping(request: ShippingCalculationRequest):
         # Use the GREATER of actual weight vs cubic weight (industry standard)
         chargeable_weight = max(total_actual_weight, service_cubic_weight)
         
-        # Calculate max item length in mm (from shipping dimensions in cm)
+        # Calculate max item length in mm (shipping dimensions are already in mm)
         max_item_length_mm = 0
         for item in request.items:
             # Get the longest dimension (could be length, width, or height)
-            item_length = max(
+            item_length_mm = max(
                 item.get("shipping_length", 0) or 0,
                 item.get("shipping_width", 0) or 0,
                 item.get("shipping_height", 0) or 0
             )
-            # Convert cm to mm
-            item_length_mm = item_length * 10
             max_item_length_mm = max(max_item_length_mm, item_length_mm)
         
         # Check if service applies to item categories
