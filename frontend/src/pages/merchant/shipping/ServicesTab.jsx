@@ -164,7 +164,7 @@ const ServiceRow = ({ service, zones, categories, onUpdate, onDelete, onExportRa
                   placeholder="Service Name"
                   className="font-semibold text-gray-900 text-lg"
                 />
-                <span className="px-2 py-0.5 bg-gray-700 text-gray-500 text-xs rounded font-mono flex-shrink-0">
+                <span className="px-2 py-0.5 bg-gray-100 text-gray-600 text-xs rounded font-mono flex-shrink-0">
                   {localService.code}
                 </span>
               </div>
