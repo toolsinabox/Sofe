@@ -43,6 +43,14 @@ import MerchantPOSReports from "./pages/merchant/MerchantPOSReports";
 import MerchantAddons from "./pages/merchant/MerchantAddons";
 import EbayIntegration from "./pages/merchant/EbayIntegration";
 
+// New Feature Pages
+import MerchantCoupons from "./pages/merchant/MerchantCoupons";
+import MerchantLoyalty from "./pages/merchant/MerchantLoyalty";
+import MerchantGiftCards from "./pages/merchant/MerchantGiftCards";
+import MerchantFlashSales from "./pages/merchant/MerchantFlashSales";
+import MerchantAdvancedAnalytics from "./pages/merchant/MerchantAdvancedAnalytics";
+import MerchantSuppliers from "./pages/merchant/MerchantSuppliers";
+
 // Live Storefront (Theme-rendered)
 import LiveThemeStorefront from "./pages/store/LiveThemeStorefront";
 
