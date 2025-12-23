@@ -2708,7 +2708,7 @@ const MerchantShipping = () => {
 
         {/* Category Modal */}
         <Dialog open={showCategoryModal} onOpenChange={setShowCategoryModal}>
-          <DialogContent className="bg-gray-800 border-gray-700 text-white max-w-md">
+          <DialogContent key={editingItem?.id || 'new-category'} className="bg-gray-800 border-gray-700 text-white max-w-md">
             <DialogHeader>
               <DialogTitle>{editingItem ? 'Edit Category' : 'Create Category'}</DialogTitle>
               <DialogDescription className="text-gray-400">
@@ -2718,18 +2718,23 @@ const MerchantShipping = () => {
             <div className="space-y-4 py-4">
               <div>
                 <Label className="text-gray-300">Category Code</Label>
-                <Input
-                  value={categoryForm.code}
-                  onChange={(e) => setCategoryForm({...categoryForm, code: e.target.value.toLowerCase()})}
+                <StableInput
+                  key={`cat-code-${editingItem?.id || 'new'}`}
+                  name="code"
+                  defaultValue={categoryForm.code}
+                  onBlur={(e) => setCategoryForm(prev => ({...prev, code: e.target.value.toLowerCase()}))}
                   placeholder="e.g., bulky"
                   className="bg-gray-700 border-gray-600 text-white mt-1"
+                  style={{textTransform: 'lowercase'}}
                 />
               </div>
               <div>
                 <Label className="text-gray-300">Category Name</Label>
-                <Input
-                  value={categoryForm.name}
-                  onChange={(e) => setCategoryForm({...categoryForm, name: e.target.value})}
+                <StableInput
+                  key={`cat-name-${editingItem?.id || 'new'}`}
+                  name="name"
+                  defaultValue={categoryForm.name}
+                  onBlur={(e) => setCategoryForm(prev => ({...prev, name: e.target.value}))}
                   placeholder="e.g., Bulky Items"
                   className="bg-gray-700 border-gray-600 text-white mt-1"
                 />
@@ -2737,8 +2742,9 @@ const MerchantShipping = () => {
               <div>
                 <Label className="text-gray-300">Description</Label>
                 <textarea
-                  value={categoryForm.description}
-                  onChange={(e) => setCategoryForm({...categoryForm, description: e.target.value})}
+                  key={`cat-desc-${editingItem?.id || 'new'}`}
+                  defaultValue={categoryForm.description}
+                  onBlur={(e) => setCategoryForm(prev => ({...prev, description: e.target.value}))}
                   placeholder="Optional description..."
                   rows={2}
                   className="w-full mt-1 px-3 py-2 bg-gray-700 border border-gray-600 rounded-md text-white text-sm placeholder:text-gray-500 focus:outline-none focus:ring-2 focus:ring-purple-500"
@@ -2748,14 +2754,14 @@ const MerchantShipping = () => {
                 <Label className="text-gray-300">Default Category</Label>
                 <Switch
                   checked={categoryForm.is_default}
-                  onCheckedChange={(checked) => setCategoryForm({...categoryForm, is_default: checked})}
+                  onCheckedChange={(checked) => setCategoryForm(prev => ({...prev, is_default: checked}))}
                 />
               </div>
               <div className="flex items-center justify-between">
                 <Label className="text-gray-300">Category Active</Label>
                 <Switch
                   checked={categoryForm.is_active}
-                  onCheckedChange={(checked) => setCategoryForm({...categoryForm, is_active: checked})}
+                  onCheckedChange={(checked) => setCategoryForm(prev => ({...prev, is_active: checked}))}
                 />
               </div>
             </div>
