@@ -787,6 +787,110 @@ const EbayIntegration = () => {
                       </p>
                     </div>
                   )}
+
+                  {/* Test Connection Button */}
+                  <div className="pt-2">
+                    <Button
+                      type="button"
+                      variant="outline"
+                      onClick={testConnection}
+                      disabled={testingConnection || !wizardData.client_id || !wizardData.client_secret}
+                      className="w-full border-blue-300 text-blue-600 hover:bg-blue-50"
+                    >
+                      {testingConnection ? (
+                        <>
+                          <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                          Testing Connection...
+                        </>
+                      ) : (
+                        <>
+                          <Shield className="w-4 h-4 mr-2" />
+                          Test Connection
+                        </>
+                      )}
+                    </Button>
+                    <p className="text-xs text-gray-500 mt-1 text-center">
+                      Validate your credentials before connecting
+                    </p>
+                  </div>
+
+                  {/* Test Result Display */}
+                  {testResult && (
+                    <div className={`p-4 rounded-xl border ${
+                      testResult.success 
+                        ? 'bg-emerald-50 border-emerald-200' 
+                        : 'bg-red-50 border-red-200'
+                    }`}>
+                      <div className="flex items-start gap-3">
+                        {testResult.success ? (
+                          <CheckCircle className="w-5 h-5 text-emerald-600 flex-shrink-0 mt-0.5" />
+                        ) : (
+                          <AlertCircle className="w-5 h-5 text-red-600 flex-shrink-0 mt-0.5" />
+                        )}
+                        <div className="flex-1">
+                          <p className={`font-medium ${testResult.success ? 'text-emerald-800' : 'text-red-800'}`}>
+                            {testResult.success ? 'Connection Successful!' : (testResult.error || 'Connection Failed')}
+                          </p>
+                          <p className={`text-sm ${testResult.success ? 'text-emerald-700' : 'text-red-700'}`}>
+                            {testResult.message}
+                          </p>
+                          {testResult.troubleshooting && testResult.troubleshooting.length > 0 && (
+                            <div className="mt-3">
+                              <p className="text-sm font-medium text-red-800 mb-1">Troubleshooting:</p>
+                              <ul className="text-sm text-red-700 space-y-1">
+                                {testResult.troubleshooting.map((tip, idx) => (
+                                  <li key={idx} className="flex items-start gap-2">
+                                    <span className="text-red-400">•</span>
+                                    {tip}
+                                  </li>
+                                ))}
+                              </ul>
+                            </div>
+                          )}
+                        </div>
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Connection Error Display */}
+                  {connectionError && (
+                    <div className="p-4 rounded-xl border bg-red-50 border-red-200">
+                      <div className="flex items-start gap-3">
+                        <AlertCircle className="w-5 h-5 text-red-600 flex-shrink-0 mt-0.5" />
+                        <div className="flex-1">
+                          <p className="font-medium text-red-800">
+                            {connectionError.error || 'Connection Failed'}
+                          </p>
+                          <p className="text-sm text-red-700">{connectionError.message}</p>
+                          {connectionError.troubleshooting && connectionError.troubleshooting.length > 0 && (
+                            <div className="mt-3">
+                              <p className="text-sm font-medium text-red-800 mb-1">Troubleshooting:</p>
+                              <ul className="text-sm text-red-700 space-y-1">
+                                {connectionError.troubleshooting.map((tip, idx) => (
+                                  <li key={idx} className="flex items-start gap-2">
+                                    <span className="text-red-400">•</span>
+                                    {tip}
+                                  </li>
+                                ))}
+                              </ul>
+                            </div>
+                          )}
+                          {connectionError.help_url && (
+                            <a 
+                              href={connectionError.help_url}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="mt-3 inline-flex items-center gap-1 text-sm text-blue-600 hover:underline"
+                            >
+                              <HelpCircle className="w-3 h-3" />
+                              Get help on eBay Developer Portal
+                              <ExternalLink className="w-3 h-3" />
+                            </a>
+                          )}
+                        </div>
+                      </div>
+                    </div>
+                  )}
                 </div>
               </div>
             )}
