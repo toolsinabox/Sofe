@@ -2973,14 +2973,15 @@ const EbayIntegration = () => {
                           { tag: '{{product_brand}}', label: 'Brand' },
                           { tag: '{{product_stock}}', label: 'Stock' },
                           { tag: '{{product_condition}}', label: 'Condition' },
-                          { tag: '{{product_image}}', label: 'Image' },
-                          { tag: '{{product_image_1}}', label: 'Img 1' },
-                          { tag: '{{product_image_2}}', label: 'Img 2' },
-                          { tag: '{{product_image_3}}', label: 'Img 3' },
-                          { tag: '{{product_image_4}}', label: 'Img 4' },
+                          { tag: '{{product_image_1}}', label: 'Img1' },
+                          { tag: '{{product_image_2}}', label: 'Img2' },
+                          { tag: '{{product_image_3}}', label: 'Img3' },
+                          { tag: '{{product_image_4}}', label: 'Img4' },
+                          { tag: '{{#if_image_1}}...{{/if_image_1}}', label: 'If Img1' },
+                          { tag: '{{#if_has_images}}...{{/if_has_images}}', label: 'If Images' },
                           { tag: '{{store_name}}', label: 'Store' },
                           { tag: '{{store_logo}}', label: 'Logo' },
-                          { tag: '{{store_email}}', label: 'Email' },
+                          { tag: '{{#if_store_logo}}...{{/if_store_logo}}', label: 'If Logo' },
                         ].map(item => (
                           <button
                             key={item.tag}
