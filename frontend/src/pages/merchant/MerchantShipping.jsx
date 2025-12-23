@@ -3250,11 +3250,13 @@ const MerchantShipping = () => {
               {/* Free Shipping Threshold */}
               <div>
                 <Label className="text-gray-300">Free Shipping Threshold ($)</Label>
-                <Input
+                <StableInput
+                  key={`option-threshold-${editingItem?.id || 'new'}`}
                   type="number"
                   step="0.01"
-                  value={optionForm.free_shipping_threshold || ''}
-                  onChange={(e) => setOptionForm({...optionForm, free_shipping_threshold: e.target.value ? parseFloat(e.target.value) : null})}
+                  name="free_shipping_threshold"
+                  defaultValue={optionForm.free_shipping_threshold || ''}
+                  onBlur={(e) => setOptionForm(prev => ({...prev, free_shipping_threshold: e.target.value ? parseFloat(e.target.value) : null}))}
                   placeholder="e.g., 150.00 (leave empty for none)"
                   className="bg-gray-700 border-gray-600 text-white mt-1"
                 />
