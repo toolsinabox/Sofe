@@ -2756,9 +2756,17 @@ const EbayIntegration = () => {
                     <Upload className="w-4 h-4" />
                     Import
                   </Button>
-                  <Button className="bg-yellow-500 hover:bg-yellow-600 gap-1">
-                    <Save className="w-4 h-4" />
-                    Save Theme
+                  <Button 
+                    onClick={handleSaveTheme}
+                    disabled={savingTheme}
+                    className="bg-yellow-500 hover:bg-yellow-600 gap-1"
+                  >
+                    {savingTheme ? (
+                      <Loader2 className="w-4 h-4 animate-spin" />
+                    ) : (
+                      <Save className="w-4 h-4" />
+                    )}
+                    {savingTheme ? 'Saving...' : 'Save Theme'}
                   </Button>
                 </div>
               </div>
