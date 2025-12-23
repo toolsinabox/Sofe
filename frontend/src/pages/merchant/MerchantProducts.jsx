@@ -101,11 +101,11 @@ const ImageSlot = ({ index, image, onImageChange, onImageRemove, onDragStart, on
       onDrop={(e) => onDrop(e, index)}
       className={`relative aspect-square rounded-lg border-2 transition-all ${
         isDragging ? 'border-blue-500 bg-blue-500/10' : 
-        image ? 'border-gray-600 bg-gray-800' : 'border-dashed border-gray-700 bg-gray-800/30'
+        image ? 'border-gray-300 bg-gray-100' : 'border-dashed border-gray-200 bg-gray-50'
       } ${image ? 'cursor-grab active:cursor-grabbing' : ''}`}
     >
       {/* Slot Number Badge */}
-      <div className="absolute top-1 left-1 z-10 px-1.5 py-0.5 bg-black/70 rounded text-[10px] font-mono text-gray-400">
+      <div className="absolute top-1 left-1 z-10 px-1.5 py-0.5 bg-gray-100 rounded text-[10px] font-mono text-gray-500">
         {slotNumber}
       </div>
       
@@ -128,7 +128,7 @@ const ImageSlot = ({ index, image, onImageChange, onImageRemove, onDragStart, on
           <div className="absolute inset-0 bg-black/60 opacity-0 hover:opacity-100 transition-opacity rounded-lg flex items-center justify-center gap-2">
             <button
               onClick={(e) => { e.stopPropagation(); onImageRemove(index); }}
-              className="p-2 bg-red-500 rounded-full text-white hover:bg-red-600 transition-colors"
+              className="p-2 bg-red-500 rounded-full text-gray-900 hover:bg-red-600 transition-colors"
               title="Remove image"
             >
               <Trash2 size={16} />
@@ -136,12 +136,12 @@ const ImageSlot = ({ index, image, onImageChange, onImageRemove, onDragStart, on
           </div>
           {/* Primary badge */}
           {index === 0 && (
-            <span className="absolute bottom-1 left-1 px-2 py-0.5 bg-emerald-500 text-white text-[10px] font-medium rounded">
+            <span className="absolute bottom-1 left-1 px-2 py-0.5 bg-emerald-500 text-gray-900 text-[10px] font-medium rounded">
               Primary
             </span>
           )}
           {/* Drag handle indicator */}
-          <div className="absolute bottom-1 right-1 p-1 bg-black/50 rounded text-gray-400">
+          <div className="absolute bottom-1 right-1 p-1 bg-gray-100 rounded text-gray-500">
             <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor">
               <circle cx="5" cy="5" r="2"/><circle cx="12" cy="5" r="2"/><circle cx="19" cy="5" r="2"/>
               <circle cx="5" cy="12" r="2"/><circle cx="12" cy="12" r="2"/><circle cx="19" cy="12" r="2"/>
@@ -182,7 +182,7 @@ const TemplateTag = ({ tag, description }) => {
     <div className="flex items-center gap-2 py-1 group">
       <button
         onClick={copyTag}
-        className="flex items-center gap-1 px-2 py-1 bg-gray-800 hover:bg-gray-700 rounded text-xs font-mono text-emerald-400 transition-colors"
+        className="flex items-center gap-1 px-2 py-1 bg-gray-100 hover:bg-gray-100 rounded text-xs font-mono text-emerald-400 transition-colors"
         title="Click to copy"
       >
         {copied ? <Check size={12} /> : <Copy size={12} />}
@@ -407,15 +407,15 @@ const ProductEditor = ({ product, categories, onSave, onClose, templateTags }) =
 
   return (
     <div className="fixed inset-0 bg-black/80 flex items-center justify-center z-50 p-4">
-      <div className="bg-[#151b28] border border-gray-800 rounded-xl w-full max-w-6xl max-h-[95vh] flex flex-col">
+      <div className="bg-white border border-gray-200 rounded-xl w-full max-w-6xl max-h-[95vh] flex flex-col">
         {/* Header */}
-        <div className="flex items-center justify-between p-4 border-b border-gray-800">
+        <div className="flex items-center justify-between p-4 border-b border-gray-200">
           <div className="flex items-center gap-3">
-            <h2 className="text-xl font-semibold text-white">
+            <h2 className="text-xl font-semibold text-gray-900">
               {product?.id ? 'Edit Product' : 'Add New Product'}
             </h2>
             {product?.sku && (
-              <span className="px-2 py-1 bg-gray-800 rounded text-gray-400 text-sm">
+              <span className="px-2 py-1 bg-gray-100 rounded text-gray-500 text-sm">
                 SKU: {product.sku}
               </span>
             )}
@@ -425,12 +425,12 @@ const ProductEditor = ({ product, categories, onSave, onClose, templateTags }) =
               variant="ghost"
               size="sm"
               onClick={() => setShowTagsPanel(!showTagsPanel)}
-              className={`text-gray-400 hover:text-white ${showTagsPanel ? 'bg-gray-800' : ''}`}
+              className={`text-gray-500 hover:text-gray-900 ${showTagsPanel ? 'bg-gray-100' : ''}`}
             >
               <Code size={16} className="mr-2" />
               Template Tags
             </Button>
-            <Button variant="ghost" size="icon" onClick={onClose} className="text-gray-400 hover:text-white">
+            <Button variant="ghost" size="icon" onClick={onClose} className="text-gray-500 hover:text-gray-900">
               <X size={20} />
             </Button>
           </div>
@@ -441,7 +441,7 @@ const ProductEditor = ({ product, categories, onSave, onClose, templateTags }) =
           {/* Main Editor */}
           <div className="flex-1 flex flex-col overflow-hidden">
             {/* Tabs */}
-            <div className="flex border-b border-gray-800 px-4 overflow-x-auto">
+            <div className="flex border-b border-gray-200 px-4 overflow-x-auto">
               {tabs.map(tab => (
                 <button
                   key={tab.id}
@@ -449,7 +449,7 @@ const ProductEditor = ({ product, categories, onSave, onClose, templateTags }) =
                   className={`flex items-center gap-2 px-4 py-3 text-sm font-medium border-b-2 transition-colors whitespace-nowrap ${
                     activeTab === tab.id
                       ? 'text-emerald-400 border-emerald-400'
-                      : 'text-gray-400 border-transparent hover:text-white'
+                      : 'text-gray-500 border-transparent hover:text-gray-900'
                   }`}
                 >
                   <tab.icon size={16} />
@@ -464,12 +464,12 @@ const ProductEditor = ({ product, categories, onSave, onClose, templateTags }) =
               {activeTab === 'basic' && (
                 <div className="space-y-6 max-w-3xl">
                   <div className="space-y-2">
-                    <Label className="text-gray-300 flex items-center gap-2">
+                    <Label className="text-gray-700 flex items-center gap-2">
                       Product Name *
                       <span className="text-xs text-gray-500 font-mono">[@product_name@]</span>
                     </Label>
                     <Input
-                      className="bg-gray-800/50 border-gray-700 text-white"
+                      className="bg-gray-50 border-gray-200 text-gray-900"
                       placeholder="Enter product name"
                       value={formData.name}
                       onChange={(e) => handleChange('name', e.target.value)}
@@ -477,12 +477,12 @@ const ProductEditor = ({ product, categories, onSave, onClose, templateTags }) =
                   </div>
                   
                   <div className="space-y-2">
-                    <Label className="text-gray-300 flex items-center gap-2">
+                    <Label className="text-gray-700 flex items-center gap-2">
                       Subtitle
                       <span className="text-xs text-gray-500 font-mono">[@product_subtitle@]</span>
                     </Label>
                     <Input
-                      className="bg-gray-800/50 border-gray-700 text-white"
+                      className="bg-gray-50 border-gray-200 text-gray-900"
                       placeholder="Product tagline or subtitle"
                       value={formData.subtitle || ''}
                       onChange={(e) => handleChange('subtitle', e.target.value)}
@@ -490,12 +490,12 @@ const ProductEditor = ({ product, categories, onSave, onClose, templateTags }) =
                   </div>
                   
                   <div className="space-y-2">
-                    <Label className="text-gray-300 flex items-center gap-2">
+                    <Label className="text-gray-700 flex items-center gap-2">
                       Short Description
                       <span className="text-xs text-gray-500 font-mono">[@product_short_description@]</span>
                     </Label>
                     <Textarea
-                      className="bg-gray-800/50 border-gray-700 text-white min-h-20"
+                      className="bg-gray-50 border-gray-200 text-gray-900 min-h-20"
                       placeholder="Brief product summary (displayed in listings)"
                       value={formData.short_description || ''}
                       onChange={(e) => handleChange('short_description', e.target.value)}
@@ -503,12 +503,12 @@ const ProductEditor = ({ product, categories, onSave, onClose, templateTags }) =
                   </div>
                   
                   <div className="space-y-2">
-                    <Label className="text-gray-300 flex items-center gap-2">
+                    <Label className="text-gray-700 flex items-center gap-2">
                       Full Description
                       <span className="text-xs text-gray-500 font-mono">[@product_description@]</span>
                     </Label>
                     <Textarea
-                      className="bg-gray-800/50 border-gray-700 text-white min-h-40"
+                      className="bg-gray-50 border-gray-200 text-gray-900 min-h-40"
                       placeholder="Detailed product description (HTML supported)"
                       value={formData.description || ''}
                       onChange={(e) => handleChange('description', e.target.value)}
@@ -523,7 +523,7 @@ const ProductEditor = ({ product, categories, onSave, onClose, templateTags }) =
                 <div className="space-y-6 max-w-3xl">
                   <div className="grid grid-cols-2 gap-4">
                     <div className="space-y-2">
-                      <Label className="text-gray-300 flex items-center gap-2">
+                      <Label className="text-gray-700 flex items-center gap-2">
                         Selling Price *
                         <span className="text-xs text-gray-500 font-mono">[@product_price@]</span>
                       </Label>
@@ -532,7 +532,7 @@ const ProductEditor = ({ product, categories, onSave, onClose, templateTags }) =
                         <Input
                           type="number"
                           step="0.01"
-                          className="bg-gray-800/50 border-gray-700 text-white pl-7"
+                          className="bg-gray-50 border-gray-200 text-gray-900 pl-7"
                           placeholder="0.00"
                           value={formData.price}
                           onChange={(e) => handleChange('price', e.target.value)}
@@ -541,7 +541,7 @@ const ProductEditor = ({ product, categories, onSave, onClose, templateTags }) =
                     </div>
                     
                     <div className="space-y-2">
-                      <Label className="text-gray-300 flex items-center gap-2">
+                      <Label className="text-gray-700 flex items-center gap-2">
                         Compare Price (RRP)
                         <span className="text-xs text-gray-500 font-mono">[@product_rrp@]</span>
                       </Label>
@@ -550,7 +550,7 @@ const ProductEditor = ({ product, categories, onSave, onClose, templateTags }) =
                         <Input
                           type="number"
                           step="0.01"
-                          className="bg-gray-800/50 border-gray-700 text-white pl-7"
+                          className="bg-gray-50 border-gray-200 text-gray-900 pl-7"
                           placeholder="0.00"
                           value={formData.compare_price || ''}
                           onChange={(e) => handleChange('compare_price', e.target.value)}
@@ -562,7 +562,7 @@ const ProductEditor = ({ product, categories, onSave, onClose, templateTags }) =
                   
                   <div className="grid grid-cols-2 gap-4">
                     <div className="space-y-2">
-                      <Label className="text-gray-300 flex items-center gap-2">
+                      <Label className="text-gray-700 flex items-center gap-2">
                         Cost Price
                         <span className="text-xs text-gray-500 font-mono">[@product_cost@]</span>
                       </Label>
@@ -571,7 +571,7 @@ const ProductEditor = ({ product, categories, onSave, onClose, templateTags }) =
                         <Input
                           type="number"
                           step="0.01"
-                          className="bg-gray-800/50 border-gray-700 text-white pl-7"
+                          className="bg-gray-50 border-gray-200 text-gray-900 pl-7"
                           placeholder="0.00"
                           value={formData.cost_price || ''}
                           onChange={(e) => handleChange('cost_price', e.target.value)}
@@ -581,19 +581,19 @@ const ProductEditor = ({ product, categories, onSave, onClose, templateTags }) =
                     </div>
                     
                     <div className="space-y-2">
-                      <Label className="text-gray-300 flex items-center gap-2">
+                      <Label className="text-gray-700 flex items-center gap-2">
                         Tax Class
                         <span className="text-xs text-gray-500 font-mono">[@product_tax_class@]</span>
                       </Label>
                       <Select value={formData.tax_class} onValueChange={(v) => handleChange('tax_class', v)}>
-                        <SelectTrigger className="bg-gray-800/50 border-gray-700 text-gray-300">
+                        <SelectTrigger className="bg-gray-50 border-gray-200 text-gray-700">
                           <SelectValue />
                         </SelectTrigger>
-                        <SelectContent className="bg-[#1a1f2e] border-gray-700">
-                          <SelectItem value="standard" className="text-gray-300">Standard Rate</SelectItem>
-                          <SelectItem value="reduced" className="text-gray-300">Reduced Rate</SelectItem>
-                          <SelectItem value="zero" className="text-gray-300">Zero Rate</SelectItem>
-                          <SelectItem value="exempt" className="text-gray-300">Tax Exempt</SelectItem>
+                        <SelectContent className="bg-white border-gray-200">
+                          <SelectItem value="standard" className="text-gray-700">Standard Rate</SelectItem>
+                          <SelectItem value="reduced" className="text-gray-700">Reduced Rate</SelectItem>
+                          <SelectItem value="zero" className="text-gray-700">Zero Rate</SelectItem>
+                          <SelectItem value="exempt" className="text-gray-700">Tax Exempt</SelectItem>
                         </SelectContent>
                       </Select>
                     </div>
@@ -614,12 +614,12 @@ const ProductEditor = ({ product, categories, onSave, onClose, templateTags }) =
               {activeTab === 'identification' && (
                 <div className="space-y-6 max-w-3xl">
                   <div className="space-y-2">
-                    <Label className="text-gray-300 flex items-center gap-2">
+                    <Label className="text-gray-700 flex items-center gap-2">
                       SKU (Stock Keeping Unit) *
                       <span className="text-xs text-gray-500 font-mono">[@product_sku@]</span>
                     </Label>
                     <Input
-                      className="bg-gray-800/50 border-gray-700 text-white"
+                      className="bg-gray-50 border-gray-200 text-gray-900"
                       placeholder="e.g., PROD-001"
                       value={formData.sku}
                       onChange={(e) => handleChange('sku', e.target.value)}
@@ -628,12 +628,12 @@ const ProductEditor = ({ product, categories, onSave, onClose, templateTags }) =
                   </div>
                   
                   <div className="space-y-2">
-                    <Label className="text-gray-300 flex items-center gap-2">
+                    <Label className="text-gray-700 flex items-center gap-2">
                       Barcode / UPC / EAN
                       <span className="text-xs text-gray-500 font-mono">[@product_barcode@]</span>
                     </Label>
                     <Input
-                      className="bg-gray-800/50 border-gray-700 text-white"
+                      className="bg-gray-50 border-gray-200 text-gray-900"
                       placeholder="e.g., 012345678901"
                       value={formData.barcode || ''}
                       onChange={(e) => handleChange('barcode', e.target.value)}
@@ -641,12 +641,12 @@ const ProductEditor = ({ product, categories, onSave, onClose, templateTags }) =
                   </div>
                   
                   <div className="space-y-2">
-                    <Label className="text-gray-300 flex items-center gap-2">
+                    <Label className="text-gray-700 flex items-center gap-2">
                       MPN (Manufacturer Part Number)
                       <span className="text-xs text-gray-500 font-mono">[@product_mpn@]</span>
                     </Label>
                     <Input
-                      className="bg-gray-800/50 border-gray-700 text-white"
+                      className="bg-gray-50 border-gray-200 text-gray-900"
                       placeholder="Manufacturer's product code"
                       value={formData.mpn || ''}
                       onChange={(e) => handleChange('mpn', e.target.value)}
@@ -659,30 +659,30 @@ const ProductEditor = ({ product, categories, onSave, onClose, templateTags }) =
               {activeTab === 'categorization' && (
                 <div className="space-y-6 max-w-3xl">
                   <div className="space-y-2">
-                    <Label className="text-gray-300 flex items-center gap-2">
+                    <Label className="text-gray-700 flex items-center gap-2">
                       Category
                       <span className="text-xs text-gray-500 font-mono">[@product_category@]</span>
                     </Label>
                     <Select value={formData.category_id || '_none'} onValueChange={(v) => handleChange('category_id', v === '_none' ? '' : v)}>
-                      <SelectTrigger className="bg-gray-800/50 border-gray-700 text-gray-300">
+                      <SelectTrigger className="bg-gray-50 border-gray-200 text-gray-700">
                         <SelectValue placeholder="Select category" />
                       </SelectTrigger>
-                      <SelectContent className="bg-[#1a1f2e] border-gray-700">
-                        <SelectItem value="_none" className="text-gray-300">No Category</SelectItem>
+                      <SelectContent className="bg-white border-gray-200">
+                        <SelectItem value="_none" className="text-gray-700">No Category</SelectItem>
                         {categories.map(cat => (
-                          <SelectItem key={cat.id} value={cat.id} className="text-gray-300">{cat.name}</SelectItem>
+                          <SelectItem key={cat.id} value={cat.id} className="text-gray-700">{cat.name}</SelectItem>
                         ))}
                       </SelectContent>
                     </Select>
                   </div>
                   
                   <div className="space-y-2">
-                    <Label className="text-gray-300 flex items-center gap-2">
+                    <Label className="text-gray-700 flex items-center gap-2">
                       Brand
                       <span className="text-xs text-gray-500 font-mono">[@product_brand@]</span>
                     </Label>
                     <Input
-                      className="bg-gray-800/50 border-gray-700 text-white"
+                      className="bg-gray-50 border-gray-200 text-gray-900"
                       placeholder="Brand name"
                       value={formData.brand || ''}
                       onChange={(e) => handleChange('brand', e.target.value)}
@@ -690,12 +690,12 @@ const ProductEditor = ({ product, categories, onSave, onClose, templateTags }) =
                   </div>
                   
                   <div className="space-y-2">
-                    <Label className="text-gray-300 flex items-center gap-2">
+                    <Label className="text-gray-700 flex items-center gap-2">
                       Manufacturer
                       <span className="text-xs text-gray-500 font-mono">[@product_manufacturer@]</span>
                     </Label>
                     <Input
-                      className="bg-gray-800/50 border-gray-700 text-white"
+                      className="bg-gray-50 border-gray-200 text-gray-900"
                       placeholder="Manufacturer name"
                       value={formData.manufacturer || ''}
                       onChange={(e) => handleChange('manufacturer', e.target.value)}
@@ -703,26 +703,26 @@ const ProductEditor = ({ product, categories, onSave, onClose, templateTags }) =
                   </div>
                   
                   <div className="space-y-2">
-                    <Label className="text-gray-300 flex items-center gap-2">
+                    <Label className="text-gray-700 flex items-center gap-2">
                       Tags
                       <span className="text-xs text-gray-500 font-mono">[@product_tags@]</span>
                     </Label>
                     <div className="flex gap-2">
                       <Input
-                        className="bg-gray-800/50 border-gray-700 text-white flex-1"
+                        className="bg-gray-50 border-gray-200 text-gray-900 flex-1"
                         placeholder="Add a tag"
                         value={newTag}
                         onChange={(e) => setNewTag(e.target.value)}
                         onKeyPress={(e) => e.key === 'Enter' && (e.preventDefault(), addTag())}
                       />
-                      <Button onClick={addTag} variant="outline" className="border-gray-700 text-gray-300">
+                      <Button onClick={addTag} variant="outline" className="border-gray-200 text-gray-700">
                         Add
                       </Button>
                     </div>
                     {formData.tags.length > 0 && (
                       <div className="flex flex-wrap gap-2 mt-2">
                         {formData.tags.map(tag => (
-                          <span key={tag} className="flex items-center gap-1 px-2 py-1 bg-gray-800 rounded text-sm text-gray-300">
+                          <span key={tag} className="flex items-center gap-1 px-2 py-1 bg-gray-100 rounded text-sm text-gray-700">
                             {tag}
                             <button onClick={() => removeTag(tag)} className="hover:text-red-400">
                               <X size={14} />
@@ -741,7 +741,7 @@ const ProductEditor = ({ product, categories, onSave, onClose, templateTags }) =
                   {/* Header with info */}
                   <div className="flex items-center justify-between">
                     <div>
-                      <Label className="text-gray-300 text-lg">Product Images</Label>
+                      <Label className="text-gray-700 text-lg">Product Images</Label>
                       <p className="text-xs text-gray-500 mt-1">
                         Drag images to reorder. Each slot has its own template tag ([@image1@] to [@image12@])
                       </p>
@@ -754,13 +754,13 @@ const ProductEditor = ({ product, categories, onSave, onClose, templateTags }) =
                   {/* URL Input for quick add */}
                   <div className="flex gap-2">
                     <Input
-                      className="bg-gray-800/50 border-gray-700 text-white flex-1"
+                      className="bg-gray-50 border-gray-200 text-gray-900 flex-1"
                       placeholder="Enter image URL and press Enter or click Add"
                       value={newImageUrl}
                       onChange={(e) => setNewImageUrl(e.target.value)}
                       onKeyPress={(e) => e.key === 'Enter' && (e.preventDefault(), addImage())}
                     />
-                    <Button onClick={addImage} variant="outline" className="border-gray-700 text-gray-300">
+                    <Button onClick={addImage} variant="outline" className="border-gray-200 text-gray-700">
                       <Plus size={16} className="mr-2" /> Add to Next Slot
                     </Button>
                   </div>
@@ -783,10 +783,10 @@ const ProductEditor = ({ product, categories, onSave, onClose, templateTags }) =
                   </div>
                   
                   {/* Template Tags Reference */}
-                  <div className="p-4 bg-gray-800/30 rounded-lg">
+                  <div className="p-4 bg-gray-50 rounded-lg">
                     <div className="flex items-center gap-2 mb-3">
                       <Code size={16} className="text-emerald-400" />
-                      <span className="text-sm font-medium text-gray-300">Image Template Tags</span>
+                      <span className="text-sm font-medium text-gray-700">Image Template Tags</span>
                     </div>
                     <div className="grid grid-cols-4 md:grid-cols-6 gap-2 text-xs">
                       {Array(12).fill(null).map((_, i) => (
@@ -806,12 +806,12 @@ const ProductEditor = ({ product, categories, onSave, onClose, templateTags }) =
                   
                   {/* Thumbnail Override */}
                   <div className="space-y-2">
-                    <Label className="text-gray-300 flex items-center gap-2">
+                    <Label className="text-gray-700 flex items-center gap-2">
                       Custom Thumbnail URL
                       <span className="text-xs text-gray-500 font-mono">[@product_thumbnail@]</span>
                     </Label>
                     <Input
-                      className="bg-gray-800/50 border-gray-700 text-white"
+                      className="bg-gray-50 border-gray-200 text-gray-900"
                       placeholder="Custom thumbnail URL (optional - defaults to image 1)"
                       value={formData.thumbnail || ''}
                       onChange={(e) => handleChange('thumbnail', e.target.value)}
@@ -823,9 +823,9 @@ const ProductEditor = ({ product, categories, onSave, onClose, templateTags }) =
               {/* Inventory Tab */}
               {activeTab === 'inventory' && (
                 <div className="space-y-6 max-w-3xl">
-                  <div className="flex items-center justify-between p-4 bg-gray-800/30 rounded-lg">
+                  <div className="flex items-center justify-between p-4 bg-gray-50 rounded-lg">
                     <div>
-                      <Label className="text-gray-300">Track Inventory</Label>
+                      <Label className="text-gray-700">Track Inventory</Label>
                       <p className="text-xs text-gray-500">Enable stock tracking for this product</p>
                     </div>
                     <Switch
@@ -838,13 +838,13 @@ const ProductEditor = ({ product, categories, onSave, onClose, templateTags }) =
                     <>
                       <div className="grid grid-cols-2 gap-4">
                         <div className="space-y-2">
-                          <Label className="text-gray-300 flex items-center gap-2">
+                          <Label className="text-gray-700 flex items-center gap-2">
                             Stock Quantity
                             <span className="text-xs text-gray-500 font-mono">[@product_stock@]</span>
                           </Label>
                           <Input
                             type="number"
-                            className="bg-gray-800/50 border-gray-700 text-white"
+                            className="bg-gray-50 border-gray-200 text-gray-900"
                             placeholder="0"
                             value={formData.stock}
                             onChange={(e) => handleChange('stock', e.target.value)}
@@ -852,13 +852,13 @@ const ProductEditor = ({ product, categories, onSave, onClose, templateTags }) =
                         </div>
                         
                         <div className="space-y-2">
-                          <Label className="text-gray-300 flex items-center gap-2">
+                          <Label className="text-gray-700 flex items-center gap-2">
                             Low Stock Alert
                             <span className="text-xs text-gray-500 font-mono">[@product_low_stock@]</span>
                           </Label>
                           <Input
                             type="number"
-                            className="bg-gray-800/50 border-gray-700 text-white"
+                            className="bg-gray-50 border-gray-200 text-gray-900"
                             placeholder="10"
                             value={formData.low_stock_threshold}
                             onChange={(e) => handleChange('low_stock_threshold', e.target.value)}
@@ -866,9 +866,9 @@ const ProductEditor = ({ product, categories, onSave, onClose, templateTags }) =
                         </div>
                       </div>
                       
-                      <div className="flex items-center justify-between p-4 bg-gray-800/30 rounded-lg">
+                      <div className="flex items-center justify-between p-4 bg-gray-50 rounded-lg">
                         <div>
-                          <Label className="text-gray-300">Allow Backorders</Label>
+                          <Label className="text-gray-700">Allow Backorders</Label>
                           <p className="text-xs text-gray-500">Allow orders when out of stock</p>
                         </div>
                         <Switch
@@ -880,9 +880,9 @@ const ProductEditor = ({ product, categories, onSave, onClose, templateTags }) =
                   )}
                   
                   {/* Pre-Order Section */}
-                  <div className="border-t border-gray-700 pt-6 mt-6">
+                  <div className="border-t border-gray-200 pt-6 mt-6">
                     <div className="flex items-center gap-3 mb-4">
-                      <h3 className="text-lg font-medium text-white flex items-center gap-2">
+                      <h3 className="text-lg font-medium text-gray-900 flex items-center gap-2">
                         <Package size={20} className="text-blue-400" />
                         Pre-Order Settings
                       </h3>
@@ -893,15 +893,15 @@ const ProductEditor = ({ product, categories, onSave, onClose, templateTags }) =
                               <HelpCircle size={18} />
                             </button>
                           </TooltipTrigger>
-                          <TooltipContent side="right" className="max-w-sm bg-gray-800 border border-gray-700 p-4 text-left">
+                          <TooltipContent side="right" className="max-w-sm bg-gray-100 border border-gray-200 p-4 text-left">
                             <div className="space-y-3 text-sm">
                               <p className="font-semibold text-blue-400">How Pre-Order Works</p>
-                              <div className="space-y-2 text-gray-300">
+                              <div className="space-y-2 text-gray-700">
                                 <p><strong>1. When to use:</strong> Enable pre-order when your stock is 0 or low, but you have new inventory arriving soon.</p>
                                 <p><strong>2. Customer experience:</strong> Customers see a &quot;Pre-Order&quot; button instead of &quot;Add to Cart&quot; when stock is 0.</p>
                                 <p><strong>3. Pre-Order Qty:</strong> This is the quantity you&apos;re expecting to receive. It does NOT add to current stock until arrival date.</p>
                                 <p><strong>4. Auto-conversion:</strong> When the arrival date passes, the system automatically:</p>
-                                <ul className="list-disc list-inside pl-2 text-gray-400">
+                                <ul className="list-disc list-inside pl-2 text-gray-500">
                                   <li>Disables pre-order mode</li>
                                   <li>Adds pre-order qty to stock</li>
                                 </ul>
@@ -914,10 +914,10 @@ const ProductEditor = ({ product, categories, onSave, onClose, templateTags }) =
                     </div>
                     
                     {/* Pre-Order Info Card - Always Visible */}
-                    <div className="p-4 bg-gray-800/50 border border-gray-700 rounded-lg mb-4">
+                    <div className="p-4 bg-gray-50 border border-gray-200 rounded-lg mb-4">
                       <div className="flex items-start gap-3">
                         <Info size={20} className="text-blue-400 mt-0.5 flex-shrink-0" />
-                        <div className="text-sm text-gray-400">
+                        <div className="text-sm text-gray-500">
                           <p className="mb-2">Pre-order allows customers to purchase products before they&apos;re in stock. Use this when:</p>
                           <ul className="list-disc list-inside space-y-1 text-gray-500">
                             <li>You have a new shipment arriving on a specific date</li>
@@ -930,7 +930,7 @@ const ProductEditor = ({ product, categories, onSave, onClose, templateTags }) =
                     
                     <div className="flex items-center justify-between p-4 bg-blue-900/20 border border-blue-800/50 rounded-lg mb-4">
                       <div>
-                        <Label className="text-gray-300">Enable Pre-Order</Label>
+                        <Label className="text-gray-700">Enable Pre-Order</Label>
                         <p className="text-xs text-gray-500">Allow customers to pre-order when out of stock</p>
                       </div>
                       <Switch
@@ -942,21 +942,21 @@ const ProductEditor = ({ product, categories, onSave, onClose, templateTags }) =
                     {formData.preorder_enabled && (
                       <div className="space-y-4 pl-4 border-l-2 border-blue-600">
                         {/* Current Stock vs Pre-Order Display */}
-                        <div className="p-3 bg-gray-800/50 rounded-lg flex items-center justify-between">
+                        <div className="p-3 bg-gray-50 rounded-lg flex items-center justify-between">
                           <div className="text-sm">
-                            <span className="text-gray-400">Current Stock:</span>
+                            <span className="text-gray-500">Current Stock:</span>
                             <span className={`ml-2 font-medium ${parseInt(formData.stock) <= 0 ? 'text-red-400' : 'text-green-400'}`}>
                               {formData.stock || 0} units
                             </span>
                           </div>
                           <div className="text-sm">
-                            <span className="text-gray-400">Expected Arrival:</span>
+                            <span className="text-gray-500">Expected Arrival:</span>
                             <span className="ml-2 font-medium text-blue-400">
                               +{formData.preorder_qty || 0} units
                             </span>
                           </div>
                           <div className="text-sm">
-                            <span className="text-gray-400">After Arrival:</span>
+                            <span className="text-gray-500">After Arrival:</span>
                             <span className="ml-2 font-medium text-green-400">
                               {(parseInt(formData.stock) || 0) + (parseInt(formData.preorder_qty) || 0)} units
                             </span>
@@ -965,15 +965,15 @@ const ProductEditor = ({ product, categories, onSave, onClose, templateTags }) =
                         
                         <div className="grid grid-cols-2 gap-4">
                           <div className="space-y-2">
-                            <Label className="text-gray-300 flex items-center gap-2">
+                            <Label className="text-gray-700 flex items-center gap-2">
                               Pre-Order Quantity
                               <span className="text-xs text-gray-500 font-mono">[@preorder_qty@]</span>
                               <TooltipProvider>
                                 <Tooltip delayDuration={0}>
                                   <TooltipTrigger asChild>
-                                    <HelpCircle size={14} className="text-gray-500 hover:text-gray-400 cursor-help" />
+                                    <HelpCircle size={14} className="text-gray-500 hover:text-gray-500 cursor-help" />
                                   </TooltipTrigger>
-                                  <TooltipContent className="bg-gray-800 border border-gray-700 max-w-xs">
+                                  <TooltipContent className="bg-gray-100 border border-gray-200 max-w-xs">
                                     <p className="text-sm">Number of units arriving. This will be added to your current stock when the arrival date passes.</p>
                                   </TooltipContent>
                                 </Tooltip>
@@ -982,7 +982,7 @@ const ProductEditor = ({ product, categories, onSave, onClose, templateTags }) =
                             <Input
                               type="number"
                               min="0"
-                              className="bg-gray-800/50 border-gray-700 text-white"
+                              className="bg-gray-50 border-gray-200 text-gray-900"
                               placeholder="Qty arriving"
                               value={formData.preorder_qty}
                               onChange={(e) => handleChange('preorder_qty', e.target.value)}
@@ -990,15 +990,15 @@ const ProductEditor = ({ product, categories, onSave, onClose, templateTags }) =
                           </div>
                           
                           <div className="space-y-2">
-                            <Label className="text-gray-300 flex items-center gap-2">
+                            <Label className="text-gray-700 flex items-center gap-2">
                               Arrival Date
                               <span className="text-xs text-gray-500 font-mono">[@preorder_date@]</span>
                               <TooltipProvider>
                                 <Tooltip delayDuration={0}>
                                   <TooltipTrigger asChild>
-                                    <HelpCircle size={14} className="text-gray-500 hover:text-gray-400 cursor-help" />
+                                    <HelpCircle size={14} className="text-gray-500 hover:text-gray-500 cursor-help" />
                                   </TooltipTrigger>
-                                  <TooltipContent className="bg-gray-800 border border-gray-700 max-w-xs">
+                                  <TooltipContent className="bg-gray-100 border border-gray-200 max-w-xs">
                                     <p className="text-sm">When this date passes, pre-order automatically disables and the pre-order quantity is added to stock.</p>
                                   </TooltipContent>
                                 </Tooltip>
@@ -1006,7 +1006,7 @@ const ProductEditor = ({ product, categories, onSave, onClose, templateTags }) =
                             </Label>
                             <Input
                               type="date"
-                              className="bg-gray-800/50 border-gray-700 text-white"
+                              className="bg-gray-50 border-gray-200 text-gray-900"
                               value={formData.preorder_arrival_date || ''}
                               onChange={(e) => handleChange('preorder_arrival_date', e.target.value)}
                             />
@@ -1014,12 +1014,12 @@ const ProductEditor = ({ product, categories, onSave, onClose, templateTags }) =
                         </div>
                         
                         <div className="space-y-2">
-                          <Label className="text-gray-300 flex items-center gap-2">
+                          <Label className="text-gray-700 flex items-center gap-2">
                             Pre-Order Message
                             <span className="text-xs text-gray-500 font-mono">[@preorder_message@]</span>
                           </Label>
                           <Input
-                            className="bg-gray-800/50 border-gray-700 text-white"
+                            className="bg-gray-50 border-gray-200 text-gray-900"
                             placeholder="e.g., Expected to ship by December 2025"
                             value={formData.preorder_message || ''}
                             onChange={(e) => handleChange('preorder_message', e.target.value)}
@@ -1045,9 +1045,9 @@ const ProductEditor = ({ product, categories, onSave, onClose, templateTags }) =
               {/* Shipping Tab */}
               {activeTab === 'shipping' && (
                 <div className="space-y-6 max-w-3xl">
-                  <div className="flex items-center justify-between p-4 bg-gray-800/30 rounded-lg">
+                  <div className="flex items-center justify-between p-4 bg-gray-50 rounded-lg">
                     <div>
-                      <Label className="text-gray-300">Requires Shipping</Label>
+                      <Label className="text-gray-700">Requires Shipping</Label>
                       <p className="text-xs text-gray-500">This is a physical product that needs to be shipped</p>
                     </div>
                     <Switch
@@ -1059,14 +1059,14 @@ const ProductEditor = ({ product, categories, onSave, onClose, templateTags }) =
                   {formData.requires_shipping && (
                     <>
                       <div className="space-y-2">
-                        <Label className="text-gray-300 flex items-center gap-2">
+                        <Label className="text-gray-700 flex items-center gap-2">
                           Weight (kg)
                           <span className="text-xs text-gray-500 font-mono">[@product_weight@]</span>
                         </Label>
                         <Input
                           type="number"
                           step="0.01"
-                          className="bg-gray-800/50 border-gray-700 text-white"
+                          className="bg-gray-50 border-gray-200 text-gray-900"
                           placeholder="0.00"
                           value={formData.weight || ''}
                           onChange={(e) => handleChange('weight', e.target.value)}
@@ -1075,7 +1075,7 @@ const ProductEditor = ({ product, categories, onSave, onClose, templateTags }) =
                       
                       <div className="space-y-3">
                         <div className="flex items-center justify-between">
-                          <Label className="text-gray-300">Product Dimensions</Label>
+                          <Label className="text-gray-700">Product Dimensions</Label>
                           {formData.length && formData.width && formData.height && (
                             <div className="flex items-center gap-2 text-sm">
                               <span className="text-gray-500">Cubic:</span>
@@ -1091,42 +1091,42 @@ const ProductEditor = ({ product, categories, onSave, onClose, templateTags }) =
                         </div>
                         <div className="grid grid-cols-3 gap-4">
                           <div className="space-y-2">
-                            <Label className="text-gray-300 flex items-center gap-2">
+                            <Label className="text-gray-700 flex items-center gap-2">
                               Length (mm)
                               <span className="text-xs text-gray-500 font-mono">[@product_length@]</span>
                             </Label>
                             <Input
                               type="number"
                               step="1"
-                              className="bg-gray-800/50 border-gray-700 text-white"
+                              className="bg-gray-50 border-gray-200 text-gray-900"
                               placeholder="0"
                               value={formData.length || ''}
                               onChange={(e) => handleChange('length', e.target.value)}
                             />
                           </div>
                           <div className="space-y-2">
-                            <Label className="text-gray-300 flex items-center gap-2">
+                            <Label className="text-gray-700 flex items-center gap-2">
                               Width (mm)
                               <span className="text-xs text-gray-500 font-mono">[@product_width@]</span>
                             </Label>
                             <Input
                               type="number"
                               step="1"
-                              className="bg-gray-800/50 border-gray-700 text-white"
+                              className="bg-gray-50 border-gray-200 text-gray-900"
                               placeholder="0"
                               value={formData.width || ''}
                               onChange={(e) => handleChange('width', e.target.value)}
                             />
                           </div>
                           <div className="space-y-2">
-                            <Label className="text-gray-300 flex items-center gap-2">
+                            <Label className="text-gray-700 flex items-center gap-2">
                               Height (mm)
                               <span className="text-xs text-gray-500 font-mono">[@product_height@]</span>
                             </Label>
                             <Input
                               type="number"
                               step="1"
-                              className="bg-gray-800/50 border-gray-700 text-white"
+                              className="bg-gray-50 border-gray-200 text-gray-900"
                               placeholder="0"
                               value={formData.height || ''}
                               onChange={(e) => handleChange('height', e.target.value)}
@@ -1136,9 +1136,9 @@ const ProductEditor = ({ product, categories, onSave, onClose, templateTags }) =
                       </div>
                       
                       {/* Shipping Box Dimensions - for cubic weight calculation */}
-                      <div className="pt-4 border-t border-gray-700">
+                      <div className="pt-4 border-t border-gray-200">
                         <div className="flex items-center justify-between mb-3">
-                          <Label className="text-gray-300 text-sm flex items-center gap-2">
+                          <Label className="text-gray-700 text-sm flex items-center gap-2">
                             <Box className="w-4 h-4 text-blue-400" />
                             Shipping Box Dimensions (for cubic weight calculation)
                           </Label>
@@ -1157,39 +1157,39 @@ const ProductEditor = ({ product, categories, onSave, onClose, templateTags }) =
                         </div>
                         <div className="grid grid-cols-3 gap-4">
                           <div className="space-y-2">
-                            <Label className="text-gray-400 text-xs">
+                            <Label className="text-gray-500 text-xs">
                               Shipping Length (mm)
                             </Label>
                             <Input
                               type="number"
                               step="1"
-                              className="bg-gray-800/50 border-gray-700 text-white"
+                              className="bg-gray-50 border-gray-200 text-gray-900"
                               placeholder="0"
                               value={formData.shipping_length || ''}
                               onChange={(e) => handleChange('shipping_length', e.target.value)}
                             />
                           </div>
                           <div className="space-y-2">
-                            <Label className="text-gray-400 text-xs">
+                            <Label className="text-gray-500 text-xs">
                               Shipping Width (mm)
                             </Label>
                             <Input
                               type="number"
                               step="1"
-                              className="bg-gray-800/50 border-gray-700 text-white"
+                              className="bg-gray-50 border-gray-200 text-gray-900"
                               placeholder="0"
                               value={formData.shipping_width || ''}
                               onChange={(e) => handleChange('shipping_width', e.target.value)}
                             />
                           </div>
                           <div className="space-y-2">
-                            <Label className="text-gray-400 text-xs">
+                            <Label className="text-gray-500 text-xs">
                               Shipping Height (mm)
                             </Label>
                             <Input
                               type="number"
                               step="1"
-                              className="bg-gray-800/50 border-gray-700 text-white"
+                              className="bg-gray-50 border-gray-200 text-gray-900"
                               placeholder="0"
                               value={formData.shipping_height || ''}
                               onChange={(e) => handleChange('shipping_height', e.target.value)}
@@ -1202,20 +1202,20 @@ const ProductEditor = ({ product, categories, onSave, onClose, templateTags }) =
                       </div>
                       
                       <div className="space-y-2">
-                        <Label className="text-gray-300 flex items-center gap-2">
+                        <Label className="text-gray-700 flex items-center gap-2">
                           Shipping Class
                           <span className="text-xs text-gray-500 font-mono">[@product_shipping_class@]</span>
                         </Label>
                         <Select value={formData.shipping_class || '_default'} onValueChange={(v) => handleChange('shipping_class', v === '_default' ? '' : v)}>
-                          <SelectTrigger className="bg-gray-800/50 border-gray-700 text-gray-300">
+                          <SelectTrigger className="bg-gray-50 border-gray-200 text-gray-700">
                             <SelectValue placeholder="Select shipping class" />
                           </SelectTrigger>
-                          <SelectContent className="bg-[#1a1f2e] border-gray-700">
-                            <SelectItem value="_default" className="text-gray-300">Default</SelectItem>
-                            <SelectItem value="standard" className="text-gray-300">Standard Shipping</SelectItem>
-                            <SelectItem value="express" className="text-gray-300">Express Shipping</SelectItem>
-                            <SelectItem value="freight" className="text-gray-300">Freight / Heavy Items</SelectItem>
-                            <SelectItem value="free" className="text-gray-300">Free Shipping</SelectItem>
+                          <SelectContent className="bg-white border-gray-200">
+                            <SelectItem value="_default" className="text-gray-700">Default</SelectItem>
+                            <SelectItem value="standard" className="text-gray-700">Standard Shipping</SelectItem>
+                            <SelectItem value="express" className="text-gray-700">Express Shipping</SelectItem>
+                            <SelectItem value="freight" className="text-gray-700">Freight / Heavy Items</SelectItem>
+                            <SelectItem value="free" className="text-gray-700">Free Shipping</SelectItem>
                           </SelectContent>
                         </Select>
                       </div>
@@ -1228,14 +1228,14 @@ const ProductEditor = ({ product, categories, onSave, onClose, templateTags }) =
               {activeTab === 'seo' && (
                 <div className="space-y-6 max-w-3xl">
                   <div className="space-y-2">
-                    <Label className="text-gray-300 flex items-center gap-2">
+                    <Label className="text-gray-700 flex items-center gap-2">
                       URL Slug
                       <span className="text-xs text-gray-500 font-mono">[@product_url@]</span>
                     </Label>
                     <div className="flex items-center gap-2">
                       <span className="text-gray-500">/live/product/</span>
                       <Input
-                        className="bg-gray-800/50 border-gray-700 text-white flex-1"
+                        className="bg-gray-50 border-gray-200 text-gray-900 flex-1"
                         placeholder="product-url-slug"
                         value={formData.url_slug || ''}
                         onChange={(e) => handleChange('url_slug', e.target.value)}
@@ -1245,12 +1245,12 @@ const ProductEditor = ({ product, categories, onSave, onClose, templateTags }) =
                   </div>
                   
                   <div className="space-y-2">
-                    <Label className="text-gray-300 flex items-center gap-2">
+                    <Label className="text-gray-700 flex items-center gap-2">
                       Meta Title
                       <span className="text-xs text-gray-500 font-mono">[@product_meta_title@]</span>
                     </Label>
                     <Input
-                      className="bg-gray-800/50 border-gray-700 text-white"
+                      className="bg-gray-50 border-gray-200 text-gray-900"
                       placeholder="SEO page title (defaults to product name)"
                       value={formData.meta_title || ''}
                       onChange={(e) => handleChange('meta_title', e.target.value)}
@@ -1259,12 +1259,12 @@ const ProductEditor = ({ product, categories, onSave, onClose, templateTags }) =
                   </div>
                   
                   <div className="space-y-2">
-                    <Label className="text-gray-300 flex items-center gap-2">
+                    <Label className="text-gray-700 flex items-center gap-2">
                       Meta Description
                       <span className="text-xs text-gray-500 font-mono">[@product_meta_description@]</span>
                     </Label>
                     <Textarea
-                      className="bg-gray-800/50 border-gray-700 text-white min-h-24"
+                      className="bg-gray-50 border-gray-200 text-gray-900 min-h-24"
                       placeholder="SEO description for search engines"
                       value={formData.meta_description || ''}
                       onChange={(e) => handleChange('meta_description', e.target.value)}
@@ -1273,7 +1273,7 @@ const ProductEditor = ({ product, categories, onSave, onClose, templateTags }) =
                   </div>
                   
                   {/* SEO Preview */}
-                  <div className="p-4 bg-gray-800/30 rounded-lg">
+                  <div className="p-4 bg-gray-50 rounded-lg">
                     <p className="text-xs text-gray-500 mb-2">Search Engine Preview</p>
                     <p className="text-blue-400 text-lg hover:underline cursor-pointer">
                       {formData.meta_title || formData.name || 'Product Title'}
@@ -1281,7 +1281,7 @@ const ProductEditor = ({ product, categories, onSave, onClose, templateTags }) =
                     <p className="text-emerald-500 text-sm">
                       yourstore.com/live/product/{formData.url_slug || formData.name?.toLowerCase().replace(/\s+/g, '-') || 'product-slug'}
                     </p>
-                    <p className="text-gray-400 text-sm mt-1">
+                    <p className="text-gray-500 text-sm mt-1">
                       {formData.meta_description || formData.short_description || 'Product description will appear here...'}
                     </p>
                   </div>
@@ -1291,9 +1291,9 @@ const ProductEditor = ({ product, categories, onSave, onClose, templateTags }) =
               {/* Visibility Tab */}
               {activeTab === 'visibility' && (
                 <div className="space-y-6 max-w-3xl">
-                  <div className="flex items-center justify-between p-4 bg-gray-800/30 rounded-lg">
+                  <div className="flex items-center justify-between p-4 bg-gray-50 rounded-lg">
                     <div>
-                      <Label className="text-gray-300 flex items-center gap-2">
+                      <Label className="text-gray-700 flex items-center gap-2">
                         Active
                         <span className="text-xs text-gray-500 font-mono">[@product_active@]</span>
                       </Label>
@@ -1305,9 +1305,9 @@ const ProductEditor = ({ product, categories, onSave, onClose, templateTags }) =
                     />
                   </div>
                   
-                  <div className="flex items-center justify-between p-4 bg-gray-800/30 rounded-lg">
+                  <div className="flex items-center justify-between p-4 bg-gray-50 rounded-lg">
                     <div>
-                      <Label className="text-gray-300 flex items-center gap-2">
+                      <Label className="text-gray-700 flex items-center gap-2">
                         Featured
                         <span className="text-xs text-gray-500 font-mono">[@product_featured@]</span>
                       </Label>
@@ -1320,18 +1320,18 @@ const ProductEditor = ({ product, categories, onSave, onClose, templateTags }) =
                   </div>
                   
                   <div className="space-y-2">
-                    <Label className="text-gray-300 flex items-center gap-2">
+                    <Label className="text-gray-700 flex items-center gap-2">
                       Visibility
                       <span className="text-xs text-gray-500 font-mono">[@product_visibility@]</span>
                     </Label>
                     <Select value={formData.visibility} onValueChange={(v) => handleChange('visibility', v)}>
-                      <SelectTrigger className="bg-gray-800/50 border-gray-700 text-gray-300">
+                      <SelectTrigger className="bg-gray-50 border-gray-200 text-gray-700">
                         <SelectValue />
                       </SelectTrigger>
-                      <SelectContent className="bg-[#1a1f2e] border-gray-700">
-                        <SelectItem value="visible" className="text-gray-300">Visible - Show everywhere</SelectItem>
-                        <SelectItem value="hidden" className="text-gray-300">Hidden - Only accessible via direct link</SelectItem>
-                        <SelectItem value="search_only" className="text-gray-300">Search Only - Show in search results only</SelectItem>
+                      <SelectContent className="bg-white border-gray-200">
+                        <SelectItem value="visible" className="text-gray-700">Visible - Show everywhere</SelectItem>
+                        <SelectItem value="hidden" className="text-gray-700">Hidden - Only accessible via direct link</SelectItem>
+                        <SelectItem value="search_only" className="text-gray-700">Search Only - Show in search results only</SelectItem>
                       </SelectContent>
                     </Select>
                   </div>
@@ -1342,9 +1342,9 @@ const ProductEditor = ({ product, categories, onSave, onClose, templateTags }) =
           
           {/* Template Tags Panel */}
           {showTagsPanel && (
-            <div className="w-80 border-l border-gray-800 overflow-y-auto bg-gray-900/50">
-              <div className="p-4 border-b border-gray-800">
-                <h3 className="text-white font-medium flex items-center gap-2">
+            <div className="w-80 border-l border-gray-200 overflow-y-auto bg-gray-50/50">
+              <div className="p-4 border-b border-gray-200">
+                <h3 className="text-gray-900 font-medium flex items-center gap-2">
                   <Code size={16} />
                   Template Tags Reference
                 </h3>
@@ -1353,7 +1353,7 @@ const ProductEditor = ({ product, categories, onSave, onClose, templateTags }) =
               <div className="p-4 space-y-4">
                 {templateTags && Object.entries(templateTags).map(([key, section]) => (
                   <div key={key} className="space-y-2">
-                    <h4 className="text-sm font-medium text-gray-300">{section.title}</h4>
+                    <h4 className="text-sm font-medium text-gray-700">{section.title}</h4>
                     <div className="space-y-1">
                       {section.tags.map((tag, idx) => (
                         <TemplateTag key={idx} tag={tag.tag} description={tag.description} />
@@ -1367,20 +1367,20 @@ const ProductEditor = ({ product, categories, onSave, onClose, templateTags }) =
         </div>
         
         {/* Footer */}
-        <div className="flex items-center justify-between p-4 border-t border-gray-800">
+        <div className="flex items-center justify-between p-4 border-t border-gray-200">
           <div className="text-sm text-gray-500">
             {product?.id && (
               <>Last updated: {new Date(product.updated_at).toLocaleString()}</>
             )}
           </div>
           <div className="flex items-center gap-3">
-            <Button variant="ghost" onClick={onClose} className="text-gray-400 hover:text-white">
+            <Button variant="ghost" onClick={onClose} className="text-gray-500 hover:text-gray-900">
               Cancel
             </Button>
             <Button
               onClick={handleSave}
               disabled={!formData.name || !formData.price || !formData.sku || saving}
-              className="bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-600 hover:to-teal-700 text-white"
+              className="bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-600 hover:to-teal-700 text-gray-900"
             >
               {saving ? (
                 <>Saving...</>
@@ -1514,39 +1514,39 @@ const MerchantProducts = () => {
               placeholder="Search products..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full bg-gray-800/50 border border-gray-700 rounded-lg pl-10 pr-4 py-2.5 text-sm text-white placeholder-gray-500 focus:outline-none focus:border-emerald-500/50"
+              className="w-full bg-gray-50 border border-gray-200 rounded-lg pl-10 pr-4 py-2.5 text-sm text-gray-900 placeholder-gray-500 focus:outline-none focus:border-emerald-500/50"
             />
           </div>
           <Select value={categoryFilter} onValueChange={setCategoryFilter}>
-            <SelectTrigger className="w-44 bg-gray-800/50 border-gray-700 text-gray-300">
+            <SelectTrigger className="w-44 bg-gray-50 border-gray-200 text-gray-700">
               <SelectValue placeholder="Category" />
             </SelectTrigger>
-            <SelectContent className="bg-[#1a1f2e] border-gray-700">
-              <SelectItem value="all" className="text-gray-300">All Categories</SelectItem>
+            <SelectContent className="bg-white border-gray-200">
+              <SelectItem value="all" className="text-gray-700">All Categories</SelectItem>
               {categories.map(cat => (
-                <SelectItem key={cat.id} value={cat.id} className="text-gray-300">{cat.name}</SelectItem>
+                <SelectItem key={cat.id} value={cat.id} className="text-gray-700">{cat.name}</SelectItem>
               ))}
             </SelectContent>
           </Select>
         </div>
         <div className="flex items-center gap-3">
-          <div className="flex items-center bg-gray-800/50 rounded-lg p-1">
+          <div className="flex items-center bg-gray-50 rounded-lg p-1">
             <button
               onClick={() => setViewMode('grid')}
-              className={`p-2 rounded ${viewMode === 'grid' ? 'bg-gray-700 text-white' : 'text-gray-400 hover:text-white'}`}
+              className={`p-2 rounded ${viewMode === 'grid' ? 'bg-gray-700 text-gray-900' : 'text-gray-500 hover:text-gray-900'}`}
             >
               <Grid size={18} />
             </button>
             <button
               onClick={() => setViewMode('list')}
-              className={`p-2 rounded ${viewMode === 'list' ? 'bg-gray-700 text-white' : 'text-gray-400 hover:text-white'}`}
+              className={`p-2 rounded ${viewMode === 'list' ? 'bg-gray-700 text-gray-900' : 'text-gray-500 hover:text-gray-900'}`}
             >
               <List size={18} />
             </button>
           </div>
           <Button 
             onClick={handleAddProduct}
-            className="bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-600 hover:to-teal-700 text-white"
+            className="bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-600 hover:to-teal-700 text-gray-900"
           >
             <Plus size={18} className="mr-2" />
             Add Product
@@ -1558,11 +1558,11 @@ const MerchantProducts = () => {
       {loading ? (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
           {[...Array(8)].map((_, i) => (
-            <div key={i} className="bg-[#151b28] border-gray-800 rounded-lg animate-pulse">
-              <div className="aspect-square bg-gray-800" />
+            <div key={i} className="bg-white border-gray-200 rounded-lg animate-pulse">
+              <div className="aspect-square bg-gray-100" />
               <div className="p-4">
-                <div className="h-4 bg-gray-800 rounded mb-2" />
-                <div className="h-6 bg-gray-800 rounded w-1/2" />
+                <div className="h-4 bg-gray-100 rounded mb-2" />
+                <div className="h-6 bg-gray-100 rounded w-1/2" />
               </div>
             </div>
           ))}
@@ -1570,8 +1570,8 @@ const MerchantProducts = () => {
       ) : viewMode === 'grid' ? (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
           {filteredProducts.map((product) => (
-            <Card key={product.id} className="bg-[#151b28] border-gray-800 hover:border-gray-700 transition-all duration-300 group overflow-hidden">
-              <div className="relative aspect-square bg-gray-800/50">
+            <Card key={product.id} className="bg-white border-gray-200 hover:border-gray-200 transition-all duration-300 group overflow-hidden">
+              <div className="relative aspect-square bg-gray-50">
                 <img
                   src={product.images?.[0] || 'https://via.placeholder.com/400'}
                   alt={product.name}
@@ -1580,13 +1580,13 @@ const MerchantProducts = () => {
                 <div className="absolute top-3 right-3">
                   <DropdownMenu>
                     <DropdownMenuTrigger asChild>
-                      <button className="p-2 rounded-lg bg-black/50 text-white opacity-0 group-hover:opacity-100 transition-opacity hover:bg-black/70">
+                      <button className="p-2 rounded-lg bg-gray-100 text-gray-900 opacity-0 group-hover:opacity-100 transition-opacity hover:bg-gray-100">
                         <MoreVertical size={16} />
                       </button>
                     </DropdownMenuTrigger>
-                    <DropdownMenuContent align="end" className="bg-[#1a1f2e] border-gray-700">
+                    <DropdownMenuContent align="end" className="bg-white border-gray-200">
                       <DropdownMenuItem 
-                        className="text-gray-300 hover:text-white hover:bg-gray-700/50 cursor-pointer"
+                        className="text-gray-700 hover:text-gray-900 hover:bg-gray-100/50 cursor-pointer"
                         onClick={() => handleEditProduct(product)}
                       >
                         <Edit size={16} className="mr-2" /> Edit
@@ -1601,7 +1601,7 @@ const MerchantProducts = () => {
                   </DropdownMenu>
                 </div>
                 {product.compare_price && product.compare_price > product.price && (
-                  <span className="absolute top-3 left-3 px-2 py-1 bg-red-500 text-white text-xs font-medium rounded">
+                  <span className="absolute top-3 left-3 px-2 py-1 bg-red-500 text-gray-900 text-xs font-medium rounded">
                     Sale
                   </span>
                 )}
@@ -1613,7 +1613,7 @@ const MerchantProducts = () => {
               </div>
               <CardContent className="p-4">
                 <p className="text-gray-500 text-xs mb-1">{product.sku}</p>
-                <h3 className="text-white font-medium text-sm line-clamp-2 mb-2">{product.name}</h3>
+                <h3 className="text-gray-900 font-medium text-sm line-clamp-2 mb-2">{product.name}</h3>
                 {product.brand && <p className="text-gray-500 text-xs mb-2">{product.brand}</p>}
                 <div className="flex items-center gap-2 mb-3">
                   <span className="text-emerald-400 font-bold">{formatCurrency(product.price)}</span>
@@ -1632,23 +1632,23 @@ const MerchantProducts = () => {
           ))}
         </div>
       ) : (
-        <Card className="bg-[#151b28] border-gray-800">
+        <Card className="bg-white border-gray-200">
           <CardContent className="p-0">
             <div className="overflow-x-auto">
               <table className="w-full">
                 <thead>
-                  <tr className="border-b border-gray-800">
-                    <th className="text-left py-4 px-6 text-gray-400 font-medium text-sm">Product</th>
-                    <th className="text-left py-4 px-6 text-gray-400 font-medium text-sm">Category</th>
-                    <th className="text-left py-4 px-6 text-gray-400 font-medium text-sm">Price</th>
-                    <th className="text-left py-4 px-6 text-gray-400 font-medium text-sm">Stock</th>
-                    <th className="text-left py-4 px-6 text-gray-400 font-medium text-sm">Sales</th>
-                    <th className="text-right py-4 px-6 text-gray-400 font-medium text-sm">Actions</th>
+                  <tr className="border-b border-gray-200">
+                    <th className="text-left py-4 px-6 text-gray-500 font-medium text-sm">Product</th>
+                    <th className="text-left py-4 px-6 text-gray-500 font-medium text-sm">Category</th>
+                    <th className="text-left py-4 px-6 text-gray-500 font-medium text-sm">Price</th>
+                    <th className="text-left py-4 px-6 text-gray-500 font-medium text-sm">Stock</th>
+                    <th className="text-left py-4 px-6 text-gray-500 font-medium text-sm">Sales</th>
+                    <th className="text-right py-4 px-6 text-gray-500 font-medium text-sm">Actions</th>
                   </tr>
                 </thead>
                 <tbody>
                   {filteredProducts.map((product) => (
-                    <tr key={product.id} className="border-b border-gray-800/50 hover:bg-gray-800/30 transition-colors">
+                    <tr key={product.id} className="border-b border-gray-200/50 hover:bg-gray-50 transition-colors">
                       <td className="py-4 px-6">
                         <div className="flex items-center gap-3">
                           <img
@@ -1657,33 +1657,33 @@ const MerchantProducts = () => {
                             className="w-12 h-12 rounded-lg object-cover"
                           />
                           <div>
-                            <p className="text-white font-medium">{product.name}</p>
+                            <p className="text-gray-900 font-medium">{product.name}</p>
                             <p className="text-gray-500 text-sm">{product.sku}</p>
                           </div>
                         </div>
                       </td>
-                      <td className="py-4 px-6 text-gray-300">
+                      <td className="py-4 px-6 text-gray-700">
                         {categories.find(c => c.id === product.category_id)?.name || '-'}
                       </td>
                       <td className="py-4 px-6">
-                        <span className="text-white font-medium">{formatCurrency(product.price)}</span>
+                        <span className="text-gray-900 font-medium">{formatCurrency(product.price)}</span>
                       </td>
                       <td className="py-4 px-6">
                         <span className={`px-2 py-0.5 rounded text-xs font-medium ${getStatusColor(product)}`}>
                           {product.stock > 0 ? `${product.stock} units` : 'Out of stock'}
                         </span>
                       </td>
-                      <td className="py-4 px-6 text-gray-300">{product.sales_count || 0}</td>
+                      <td className="py-4 px-6 text-gray-700">{product.sales_count || 0}</td>
                       <td className="py-4 px-6 text-right">
                         <DropdownMenu>
                           <DropdownMenuTrigger asChild>
-                            <button className="p-2 rounded hover:bg-gray-800 text-gray-400 hover:text-white transition-colors">
+                            <button className="p-2 rounded hover:bg-gray-100 text-gray-500 hover:text-gray-900 transition-colors">
                               <MoreVertical size={18} />
                             </button>
                           </DropdownMenuTrigger>
-                          <DropdownMenuContent align="end" className="bg-[#1a1f2e] border-gray-700">
+                          <DropdownMenuContent align="end" className="bg-white border-gray-200">
                             <DropdownMenuItem 
-                              className="text-gray-300 hover:text-white hover:bg-gray-700/50 cursor-pointer"
+                              className="text-gray-700 hover:text-gray-900 hover:bg-gray-100/50 cursor-pointer"
                               onClick={() => handleEditProduct(product)}
                             >
                               <Edit size={16} className="mr-2" /> Edit
@@ -1707,12 +1707,12 @@ const MerchantProducts = () => {
       )}
 
       {!loading && filteredProducts.length === 0 && (
-        <div className="text-center py-16 bg-[#151b28] rounded-lg border border-gray-800">
+        <div className="text-center py-16 bg-white rounded-lg border border-gray-200">
           <Package className="w-12 h-12 mx-auto text-gray-600 mb-4" />
           <p className="text-gray-500 text-lg">No products found</p>
           <Button 
             onClick={handleAddProduct}
-            className="mt-4 bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-600 hover:to-teal-700 text-white"
+            className="mt-4 bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-600 hover:to-teal-700 text-gray-900"
           >
             <Plus size={18} className="mr-2" />
             Add Your First Product
