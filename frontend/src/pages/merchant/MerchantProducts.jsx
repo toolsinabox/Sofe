@@ -2179,6 +2179,11 @@ const MerchantProducts = () => {
               <List size={18} />
             </button>
           </div>
+          <ImportExportButtons 
+            entityType="products" 
+            onImportSuccess={fetchProducts}
+            categories={categories}
+          />
           <Button 
             onClick={handleAddProduct}
             className="bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-600 hover:to-teal-700 text-gray-900"
