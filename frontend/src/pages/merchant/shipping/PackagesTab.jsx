@@ -112,8 +112,8 @@ const PackagesTab = ({
     <div className="space-y-4">
       <div className="flex justify-between items-center">
         <div>
-          <h2 className="text-xl font-bold text-white">Predefined Packages</h2>
-          <p className="text-gray-400 text-sm">Define standard package sizes for shipping calculations</p>
+          <h2 className="text-xl font-bold text-gray-900">Predefined Packages</h2>
+          <p className="text-gray-500 text-sm">Define standard package sizes for shipping calculations</p>
         </div>
         <Button onClick={() => openPackageModal()} className="bg-orange-600 hover:bg-orange-700">
           <Plus className="w-4 h-4 mr-2" /> Add Package
@@ -123,32 +123,32 @@ const PackagesTab = ({
       {/* Packages Grid */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
         {packages.length === 0 ? (
-          <div className="col-span-full bg-gray-800 rounded-xl p-8 text-center border border-gray-700">
+          <div className="col-span-full bg-white rounded-xl p-8 text-center border border-gray-200">
             <Box className="w-12 h-12 text-gray-600 mx-auto mb-3" />
-            <p className="text-gray-400 mb-4">No package types configured</p>
+            <p className="text-gray-500 mb-4">No package types configured</p>
             <Button onClick={() => openPackageModal()}>Create Your First Package</Button>
           </div>
         ) : (
           packages.map(pkg => (
             <div 
               key={pkg.id} 
-              className={`bg-gray-800 rounded-xl p-5 border ${pkg.is_active ? 'border-gray-700' : 'border-gray-700/50 opacity-60'}`}
+              className={`bg-white rounded-xl p-5 border ${pkg.is_active ? 'border-gray-200' : 'border-gray-200/50 opacity-60'}`}
             >
               <div className="flex items-start justify-between mb-3">
                 <div className="flex items-center gap-2">
                   <Box className="w-5 h-5 text-orange-400" />
-                  <h3 className="text-white font-semibold">{pkg.name}</h3>
+                  <h3 className="text-gray-900 font-semibold">{pkg.name}</h3>
                 </div>
                 <div className="flex items-center gap-1">
                   <button
                     onClick={() => openPackageModal(pkg)}
-                    className="p-1.5 rounded hover:bg-gray-700 text-gray-400 hover:text-white"
+                    className="p-1.5 rounded hover:bg-gray-100 text-gray-500 hover:text-gray-900"
                   >
                     <Edit className="w-4 h-4" />
                   </button>
                   <button
                     onClick={() => handleDeletePackage(pkg.id)}
-                    className="p-1.5 rounded hover:bg-gray-700 text-gray-400 hover:text-red-400"
+                    className="p-1.5 rounded hover:bg-gray-100 text-gray-500 hover:text-red-400"
                   >
                     <Trash2 className="w-4 h-4" />
                   </button>
@@ -157,19 +157,19 @@ const PackagesTab = ({
               <div className="space-y-2 text-sm">
                 <div className="flex justify-between">
                   <span className="text-gray-500">Dimensions:</span>
-                  <span className="text-white">{pkg.length} x {pkg.width} x {pkg.height} cm</span>
+                  <span className="text-gray-900">{pkg.length} x {pkg.width} x {pkg.height} cm</span>
                 </div>
                 <div className="flex justify-between">
                   <span className="text-gray-500">Max Weight:</span>
-                  <span className="text-white">{pkg.max_weight} kg</span>
+                  <span className="text-gray-900">{pkg.max_weight} kg</span>
                 </div>
                 <div className="flex justify-between">
                   <span className="text-gray-500">Tare Weight:</span>
-                  <span className="text-white">{pkg.tare_weight} kg</span>
+                  <span className="text-gray-900">{pkg.tare_weight} kg</span>
                 </div>
               </div>
               <div className="flex items-center gap-2 mt-3">
-                <span className="px-2 py-0.5 bg-gray-700 text-gray-300 text-xs rounded font-mono">{pkg.code}</span>
+                <span className="px-2 py-0.5 bg-gray-700 text-gray-700 text-xs rounded font-mono">{pkg.code}</span>
                 <span className="px-2 py-0.5 bg-orange-500/20 text-orange-400 text-xs rounded capitalize">{pkg.package_type}</span>
               </div>
             </div>
@@ -179,46 +179,46 @@ const PackagesTab = ({
 
       {/* Package Modal */}
       <Dialog open={showPackageModal} onOpenChange={setShowPackageModal}>
-        <DialogContent key={editingItem?.id || 'new-package'} className="bg-gray-800 border-gray-700 text-white max-w-md">
+        <DialogContent key={editingItem?.id || 'new-package'} className="bg-white border-gray-200 text-gray-900 max-w-md">
           <DialogHeader>
             <DialogTitle>{editingItem ? 'Edit Package' : 'Create Package'}</DialogTitle>
-            <DialogDescription className="text-gray-400">
+            <DialogDescription className="text-gray-500">
               Define a standard package size
             </DialogDescription>
           </DialogHeader>
           <div className="space-y-4 py-4">
             <div className="grid grid-cols-2 gap-4">
               <div>
-                <Label className="text-gray-300">Package Code</Label>
+                <Label className="text-gray-700">Package Code</Label>
                 <StableInput
                   key={`pkg-code-${editingItem?.id || 'new'}`}
                   name="code"
                   defaultValue={packageForm.code}
                   onBlur={(e) => setPackageForm(prev => ({...prev, code: e.target.value.toLowerCase()}))}
                   placeholder="e.g., small_box"
-                  className="bg-gray-700 border-gray-600 text-white mt-1"
+                  className="bg-gray-700 border-gray-200 text-gray-900 mt-1"
                   style={{textTransform: 'lowercase'}}
                 />
               </div>
               <div>
-                <Label className="text-gray-300">Package Name</Label>
+                <Label className="text-gray-700">Package Name</Label>
                 <StableInput
                   key={`pkg-name-${editingItem?.id || 'new'}`}
                   name="name"
                   defaultValue={packageForm.name}
                   onBlur={(e) => setPackageForm(prev => ({...prev, name: e.target.value}))}
                   placeholder="e.g., Small Box"
-                  className="bg-gray-700 border-gray-600 text-white mt-1"
+                  className="bg-gray-700 border-gray-200 text-gray-900 mt-1"
                 />
               </div>
             </div>
             <div>
-              <Label className="text-gray-300">Package Type</Label>
+              <Label className="text-gray-700">Package Type</Label>
               <Select value={packageForm.package_type} onValueChange={(v) => setPackageForm(prev => ({...prev, package_type: v}))}>
-                <SelectTrigger className="bg-gray-700 border-gray-600 text-white mt-1">
+                <SelectTrigger className="bg-gray-700 border-gray-200 text-gray-900 mt-1">
                   <SelectValue />
                 </SelectTrigger>
-                <SelectContent className="bg-gray-800 border-gray-700">
+                <SelectContent className="bg-white border-gray-200">
                   <SelectItem value="satchel">Satchel</SelectItem>
                   <SelectItem value="box">Box</SelectItem>
                   <SelectItem value="pallet">Pallet</SelectItem>
@@ -228,7 +228,7 @@ const PackagesTab = ({
               </Select>
             </div>
             <div>
-              <Label className="text-gray-300">Dimensions (cm)</Label>
+              <Label className="text-gray-700">Dimensions (cm)</Label>
               <div className="grid grid-cols-3 gap-2 mt-1">
                 <StableInput
                   key={`pkg-length-${editingItem?.id || 'new'}`}
@@ -237,7 +237,7 @@ const PackagesTab = ({
                   placeholder="Length"
                   defaultValue={packageForm.length}
                   onBlur={(e) => setPackageForm(prev => ({...prev, length: parseFloat(e.target.value) || 0}))}
-                  className="bg-gray-700 border-gray-600 text-white"
+                  className="bg-gray-700 border-gray-200 text-gray-900"
                 />
                 <StableInput
                   key={`pkg-width-${editingItem?.id || 'new'}`}
@@ -246,7 +246,7 @@ const PackagesTab = ({
                   placeholder="Width"
                   defaultValue={packageForm.width}
                   onBlur={(e) => setPackageForm(prev => ({...prev, width: parseFloat(e.target.value) || 0}))}
-                  className="bg-gray-700 border-gray-600 text-white"
+                  className="bg-gray-700 border-gray-200 text-gray-900"
                 />
                 <StableInput
                   key={`pkg-height-${editingItem?.id || 'new'}`}
@@ -255,13 +255,13 @@ const PackagesTab = ({
                   placeholder="Height"
                   defaultValue={packageForm.height}
                   onBlur={(e) => setPackageForm(prev => ({...prev, height: parseFloat(e.target.value) || 0}))}
-                  className="bg-gray-700 border-gray-600 text-white"
+                  className="bg-gray-700 border-gray-200 text-gray-900"
                 />
               </div>
             </div>
             <div className="grid grid-cols-2 gap-4">
               <div>
-                <Label className="text-gray-300">Max Weight (kg)</Label>
+                <Label className="text-gray-700">Max Weight (kg)</Label>
                 <StableInput
                   key={`pkg-maxwt-${editingItem?.id || 'new'}`}
                   type="number"
@@ -269,11 +269,11 @@ const PackagesTab = ({
                   name="max_weight"
                   defaultValue={packageForm.max_weight}
                   onBlur={(e) => setPackageForm(prev => ({...prev, max_weight: parseFloat(e.target.value) || 0}))}
-                  className="bg-gray-700 border-gray-600 text-white mt-1"
+                  className="bg-gray-700 border-gray-200 text-gray-900 mt-1"
                 />
               </div>
               <div>
-                <Label className="text-gray-300">Tare Weight (kg)</Label>
+                <Label className="text-gray-700">Tare Weight (kg)</Label>
                 <StableInput
                   key={`pkg-tarewt-${editingItem?.id || 'new'}`}
                   type="number"
@@ -281,12 +281,12 @@ const PackagesTab = ({
                   name="tare_weight"
                   defaultValue={packageForm.tare_weight}
                   onBlur={(e) => setPackageForm(prev => ({...prev, tare_weight: parseFloat(e.target.value) || 0}))}
-                  className="bg-gray-700 border-gray-600 text-white mt-1"
+                  className="bg-gray-700 border-gray-200 text-gray-900 mt-1"
                 />
               </div>
             </div>
             <div className="flex items-center justify-between">
-              <Label className="text-gray-300">Package Active</Label>
+              <Label className="text-gray-700">Package Active</Label>
               <Switch
                 checked={packageForm.is_active}
                 onCheckedChange={(checked) => setPackageForm(prev => ({...prev, is_active: checked}))}
@@ -294,7 +294,7 @@ const PackagesTab = ({
             </div>
           </div>
           <DialogFooter>
-            <Button variant="outline" onClick={() => setShowPackageModal(false)} className="border-gray-600">
+            <Button variant="outline" onClick={() => setShowPackageModal(false)} className="border-gray-200">
               Cancel
             </Button>
             <Button onClick={handleSavePackage} disabled={saving} className="bg-orange-600 hover:bg-orange-700">

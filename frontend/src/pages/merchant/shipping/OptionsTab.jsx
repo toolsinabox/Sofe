@@ -57,7 +57,7 @@ const InlineInput = ({ value, onChange, type = 'text', prefix = '', suffix = '',
         placeholder={placeholder}
         min={min}
         step={step}
-        className="bg-transparent border-b border-gray-600 hover:border-gray-500 focus:border-teal-500 focus:outline-none px-1 py-0.5 text-sm transition-colors w-full"
+        className="bg-transparent border-b border-gray-200 hover:border-gray-500 focus:border-teal-500 focus:outline-none px-1 py-0.5 text-sm transition-colors w-full"
       />
       {suffix && <span className="text-gray-500 text-sm">{suffix}</span>}
     </div>
@@ -97,7 +97,7 @@ const InlineTextarea = ({ value, onChange, className = '', placeholder, rows = 2
       onClick={handleClick}
       placeholder={placeholder}
       rows={rows}
-      className={`bg-transparent border border-gray-600 hover:border-gray-500 focus:border-teal-500 focus:outline-none px-2 py-1 text-sm transition-colors w-full rounded resize-none ${className}`}
+      className={`bg-transparent border border-gray-200 hover:border-gray-500 focus:border-teal-500 focus:outline-none px-2 py-1 text-sm transition-colors w-full rounded resize-none ${className}`}
     />
   );
 };
@@ -162,7 +162,7 @@ const OptionRow = ({ option, services, zones, onUpdate, onDelete }) => {
   const linkedServices = services.filter(s => (localOption.service_ids || []).includes(s.id));
 
   return (
-    <div className={`bg-gray-800 rounded-xl border ${localOption.is_active ? 'border-gray-700' : 'border-gray-700/50 opacity-70'} overflow-hidden`}>
+    <div className={`bg-white rounded-xl border ${localOption.is_active ? 'border-gray-200' : 'border-gray-200/50 opacity-70'} overflow-hidden`}>
       {/* Option Header - Always visible */}
       <div className="p-4">
         <div className="flex items-center gap-3 mb-3">
@@ -176,7 +176,7 @@ const OptionRow = ({ option, services, zones, onUpdate, onDelete }) => {
                 value={localOption.name}
                 onChange={(v) => handleFieldChange('name', v)}
                 placeholder="Option Name"
-                className="font-semibold text-white text-lg"
+                className="font-semibold text-gray-900 text-lg"
               />
             </div>
           </div>
@@ -207,14 +207,14 @@ const OptionRow = ({ option, services, zones, onUpdate, onDelete }) => {
             
             <button
               onClick={() => onDelete(option.id)}
-              className="p-2 rounded-lg hover:bg-gray-700 text-gray-400 hover:text-red-400 transition-colors"
+              className="p-2 rounded-lg hover:bg-gray-100 text-gray-500 hover:text-red-400 transition-colors"
             >
               <Trash2 className="w-4 h-4" />
             </button>
             
             <button
               onClick={() => setExpanded(!expanded)}
-              className="p-2 rounded-lg hover:bg-gray-700 text-gray-400 transition-colors"
+              className="p-2 rounded-lg hover:bg-gray-100 text-gray-500 transition-colors"
             >
               {expanded ? <ChevronUp className="w-5 h-5" /> : <ChevronDown className="w-5 h-5" />}
             </button>
@@ -230,7 +230,7 @@ const OptionRow = ({ option, services, zones, onUpdate, onDelete }) => {
               onChange={(v) => handleFieldChange('description', v)}
               placeholder="Shown at checkout..."
               rows={1}
-              className="text-gray-300"
+              className="text-gray-700"
             />
           </div>
           <div>
@@ -255,7 +255,7 @@ const OptionRow = ({ option, services, zones, onUpdate, onDelete }) => {
               min="0"
               prefix="$"
               placeholder="No threshold"
-              className="text-emerald-400"
+              className="text-emerald-600"
             />
           </div>
           <div>
@@ -265,7 +265,7 @@ const OptionRow = ({ option, services, zones, onUpdate, onDelete }) => {
               onChange={(v) => handleFieldChange('sort_order', v)}
               type="number"
               min="0"
-              className="text-gray-300 w-16"
+              className="text-gray-700 w-16"
             />
           </div>
         </div>
@@ -279,13 +279,13 @@ const OptionRow = ({ option, services, zones, onUpdate, onDelete }) => {
             </span>
           )}
           {localOption.free_shipping_threshold && (
-            <span className="px-2 py-1 bg-emerald-500/20 text-emerald-400 text-xs rounded flex items-center gap-1">
+            <span className="px-2 py-1 bg-emerald-50 text-emerald-600 text-xs rounded flex items-center gap-1">
               <DollarSign className="w-3 h-3" />
               Free over ${localOption.free_shipping_threshold}
             </span>
           )}
           {linkedServices.length > 0 && (
-            <span className="px-2 py-1 bg-blue-500/20 text-blue-400 text-xs rounded flex items-center gap-1">
+            <span className="px-2 py-1 bg-blue-50 text-blue-600 text-xs rounded flex items-center gap-1">
               <Truck className="w-3 h-3" />
               {linkedServices.length} service(s): {linkedServices.map(s => s.name).join(', ')}
             </span>
@@ -300,10 +300,10 @@ const OptionRow = ({ option, services, zones, onUpdate, onDelete }) => {
 
       {/* Expanded section - Services & Zones selection */}
       {expanded && (
-        <div className="border-t border-gray-700 p-4 bg-gray-800/50 space-y-4">
+        <div className="border-t border-gray-200 p-4 bg-white/50 space-y-4">
           {/* Linked Services */}
           <div>
-            <h4 className="text-sm font-medium text-gray-300 mb-2">
+            <h4 className="text-sm font-medium text-gray-700 mb-2">
               Linked Services
               <span className="text-gray-500 text-xs ml-2">(click to toggle)</span>
             </h4>
@@ -319,8 +319,8 @@ const OptionRow = ({ option, services, zones, onUpdate, onDelete }) => {
                       onClick={() => toggleService(service.id)}
                       className={`px-3 py-1.5 rounded-lg text-sm transition-all ${
                         isLinked
-                          ? 'bg-teal-600 text-white'
-                          : 'bg-gray-700 text-gray-400 hover:bg-gray-600 hover:text-white'
+                          ? 'bg-teal-600 text-gray-900'
+                          : 'bg-gray-700 text-gray-500 hover:bg-gray-100 hover:text-gray-900'
                       }`}
                     >
                       {service.name}
@@ -333,7 +333,7 @@ const OptionRow = ({ option, services, zones, onUpdate, onDelete }) => {
 
           {/* Free Shipping Zones */}
           <div>
-            <h4 className="text-sm font-medium text-gray-300 mb-2">
+            <h4 className="text-sm font-medium text-gray-700 mb-2">
               Free Shipping Zones
               <span className="text-gray-500 text-xs ml-2">(always free for these zones)</span>
             </h4>
@@ -349,8 +349,8 @@ const OptionRow = ({ option, services, zones, onUpdate, onDelete }) => {
                       onClick={() => toggleFreeZone(zone.code)}
                       className={`px-2 py-1 rounded text-xs transition-all ${
                         isFree
-                          ? 'bg-emerald-600 text-white'
-                          : 'bg-gray-700 text-gray-400 hover:bg-gray-600 hover:text-white'
+                          ? 'bg-emerald-600 text-gray-900'
+                          : 'bg-gray-700 text-gray-500 hover:bg-gray-100 hover:text-gray-900'
                       }`}
                     >
                       {zone.code}
@@ -414,8 +414,8 @@ export default function OptionsTab({ options, services, zones, fetchAllData }) {
       {/* Header */}
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
         <div>
-          <h2 className="text-xl font-bold text-white">Shipping Options</h2>
-          <p className="text-gray-400 text-sm">Click any field to edit • Click Save to apply changes</p>
+          <h2 className="text-xl font-bold text-gray-900">Shipping Options</h2>
+          <p className="text-gray-500 text-sm">Click any field to edit • Click Save to apply changes</p>
         </div>
         <Button 
           onClick={createNewOption} 
@@ -429,9 +429,9 @@ export default function OptionsTab({ options, services, zones, fetchAllData }) {
 
       {/* Options List */}
       {options.length === 0 ? (
-        <div className="bg-gray-800 rounded-xl p-8 text-center border border-gray-700">
+        <div className="bg-white rounded-xl p-8 text-center border border-gray-200">
           <Settings className="w-12 h-12 text-gray-600 mx-auto mb-3" />
-          <p className="text-gray-400 mb-4">No shipping options configured</p>
+          <p className="text-gray-500 mb-4">No shipping options configured</p>
           <Button onClick={createNewOption} disabled={creating}>
             {creating ? <Loader2 className="w-4 h-4 mr-2 animate-spin" /> : <Plus className="w-4 h-4 mr-2" />}
             Create Your First Option

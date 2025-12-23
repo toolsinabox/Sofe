@@ -55,7 +55,7 @@ const InlineInput = ({ value, onChange, onSave, type = 'text', prefix = '', suff
         min={min}
         step={step}
         placeholder={placeholder}
-        className="bg-transparent border-b border-transparent hover:border-gray-600 focus:border-emerald-500 focus:outline-none px-1 py-0.5 text-sm transition-colors w-full"
+        className="bg-transparent border-b border-transparent hover:border-gray-200 focus:border-emerald-500 focus:outline-none px-1 py-0.5 text-sm transition-colors w-full"
       />
       {suffix && <span className="text-gray-500 text-sm">{suffix}</span>}
     </div>
@@ -146,7 +146,7 @@ const ServiceRow = ({ service, zones, categories, onUpdate, onDelete, onExportRa
   };
 
   return (
-    <div className={`bg-gray-800 rounded-xl border ${localService.is_active ? 'border-gray-700' : 'border-gray-700/50 opacity-70'} overflow-hidden`}>
+    <div className={`bg-white rounded-xl border ${localService.is_active ? 'border-gray-200' : 'border-gray-200/50 opacity-70'} overflow-hidden`}>
       {/* Service Header - Always visible */}
       <div className="p-4">
         <div className="flex items-center gap-3 mb-3">
@@ -154,7 +154,7 @@ const ServiceRow = ({ service, zones, categories, onUpdate, onDelete, onExportRa
             className="flex items-center gap-2 cursor-pointer flex-1"
             onClick={() => setExpanded(!expanded)}
           >
-            <Truck className="w-5 h-5 text-emerald-400 flex-shrink-0" />
+            <Truck className="w-5 h-5 text-emerald-600 flex-shrink-0" />
             <div className="flex-1 min-w-0">
               <div className="flex items-center gap-2">
                 <InlineInput
@@ -162,9 +162,9 @@ const ServiceRow = ({ service, zones, categories, onUpdate, onDelete, onExportRa
                   onChange={(v) => updateField('name', v)}
                   onSave={() => saveService(localService)}
                   placeholder="Service Name"
-                  className="font-semibold text-white text-lg"
+                  className="font-semibold text-gray-900 text-lg"
                 />
-                <span className="px-2 py-0.5 bg-gray-700 text-gray-400 text-xs rounded font-mono flex-shrink-0">
+                <span className="px-2 py-0.5 bg-gray-700 text-gray-500 text-xs rounded font-mono flex-shrink-0">
                   {localService.code}
                 </span>
               </div>
@@ -173,8 +173,8 @@ const ServiceRow = ({ service, zones, categories, onUpdate, onDelete, onExportRa
           
           {/* Status indicators */}
           <div className="flex items-center gap-2">
-            {saving && <Loader2 className="w-4 h-4 text-emerald-400 animate-spin" />}
-            {saveStatus === 'success' && <Check className="w-4 h-4 text-emerald-400" />}
+            {saving && <Loader2 className="w-4 h-4 text-emerald-600 animate-spin" />}
+            {saveStatus === 'success' && <Check className="w-4 h-4 text-emerald-600" />}
             {saveStatus === 'error' && <AlertCircle className="w-4 h-4 text-red-400" />}
             
             <Switch
@@ -185,14 +185,14 @@ const ServiceRow = ({ service, zones, categories, onUpdate, onDelete, onExportRa
             
             <button
               onClick={() => onDelete(service.id)}
-              className="p-2 rounded-lg hover:bg-gray-700 text-gray-400 hover:text-red-400 transition-colors"
+              className="p-2 rounded-lg hover:bg-gray-100 text-gray-500 hover:text-red-400 transition-colors"
             >
               <Trash2 className="w-4 h-4" />
             </button>
             
             <button
               onClick={() => setExpanded(!expanded)}
-              className="p-2 rounded-lg hover:bg-gray-700 text-gray-400 transition-colors"
+              className="p-2 rounded-lg hover:bg-gray-100 text-gray-500 transition-colors"
             >
               {expanded ? <ChevronUp className="w-5 h-5" /> : <ChevronDown className="w-5 h-5" />}
             </button>
@@ -207,7 +207,7 @@ const ServiceRow = ({ service, zones, categories, onUpdate, onDelete, onExportRa
               value={localService.carrier}
               onChange={(v) => updateField('carrier', v)}
               onSave={() => saveService(localService)}
-              className="text-gray-300"
+              className="text-gray-700"
             />
           </div>
           <div>
@@ -219,7 +219,7 @@ const ServiceRow = ({ service, zones, categories, onUpdate, onDelete, onExportRa
               type="number"
               step="0.1"
               suffix="%"
-              className="text-emerald-400"
+              className="text-emerald-600"
             />
           </div>
           <div>
@@ -231,7 +231,7 @@ const ServiceRow = ({ service, zones, categories, onUpdate, onDelete, onExportRa
               type="number"
               step="0.01"
               prefix="$"
-              className="text-emerald-400"
+              className="text-emerald-600"
             />
           </div>
           <div>
@@ -241,7 +241,7 @@ const ServiceRow = ({ service, zones, categories, onUpdate, onDelete, onExportRa
               onChange={(v) => updateField('cubic_weight_modifier', v)}
               onSave={() => saveService(localService)}
               type="number"
-              className="text-gray-300"
+              className="text-gray-700"
             />
           </div>
           <div>
@@ -252,7 +252,7 @@ const ServiceRow = ({ service, zones, categories, onUpdate, onDelete, onExportRa
               onSave={() => saveService(localService)}
               type="number"
               placeholder="No limit"
-              className="text-gray-300"
+              className="text-gray-700"
             />
           </div>
           <div>
@@ -268,10 +268,10 @@ const ServiceRow = ({ service, zones, categories, onUpdate, onDelete, onExportRa
 
       {/* Expanded section - Rates */}
       {expanded && (
-        <div className="border-t border-gray-700 p-4 bg-gray-800/50">
+        <div className="border-t border-gray-200 p-4 bg-white/50">
           {/* Rates header */}
           <div className="flex flex-wrap items-center justify-between gap-2 mb-4">
-            <h4 className="text-sm font-medium text-gray-300">
+            <h4 className="text-sm font-medium text-gray-700">
               Rates ({localService.rates?.length || 0})
             </h4>
             <div className="flex flex-wrap gap-2">
@@ -279,7 +279,7 @@ const ServiceRow = ({ service, zones, categories, onUpdate, onDelete, onExportRa
                 variant="outline" 
                 size="sm" 
                 onClick={() => onExportRates(service)}
-                className="border-gray-600 h-8 text-xs"
+                className="border-gray-200 h-8 text-xs"
                 disabled={!localService.rates?.length}
               >
                 <Download className="w-3 h-3 mr-1" /> Export
@@ -288,7 +288,7 @@ const ServiceRow = ({ service, zones, categories, onUpdate, onDelete, onExportRa
                 variant="outline" 
                 size="sm" 
                 onClick={() => onImportRates(service)}
-                className="border-gray-600 h-8 text-xs"
+                className="border-gray-200 h-8 text-xs"
               >
                 <Upload className="w-3 h-3 mr-1" /> Import
               </Button>
@@ -321,9 +321,9 @@ const ServiceRow = ({ service, zones, categories, onUpdate, onDelete, onExportRa
                 </thead>
                 <tbody>
                   {localService.rates.map((rate, index) => (
-                    <tr key={index} className="border-t border-gray-700/50 hover:bg-gray-700/30">
+                    <tr key={index} className="border-t border-gray-200/50 hover:bg-gray-100/30">
                       <td className="py-2 pr-2">
-                        <div className="text-white text-sm">{rate.zone_name || rate.zone_code}</div>
+                        <div className="text-gray-900 text-sm">{rate.zone_name || rate.zone_code}</div>
                         <div className="text-gray-600 text-xs">{rate.zone_code}</div>
                       </td>
                       <td className="py-2 px-2">
@@ -339,7 +339,7 @@ const ServiceRow = ({ service, zones, categories, onUpdate, onDelete, onExportRa
                           type="number"
                           step="0.01"
                           prefix="$"
-                          className="text-emerald-400 w-20"
+                          className="text-emerald-600 w-20"
                         />
                       </td>
                       <td className="py-2 px-2">
@@ -350,7 +350,7 @@ const ServiceRow = ({ service, zones, categories, onUpdate, onDelete, onExportRa
                           type="number"
                           step="0.01"
                           prefix="$"
-                          className="text-gray-300 w-20"
+                          className="text-gray-700 w-20"
                         />
                       </td>
                       <td className="py-2 px-2">
@@ -361,7 +361,7 @@ const ServiceRow = ({ service, zones, categories, onUpdate, onDelete, onExportRa
                           type="number"
                           step="0.01"
                           prefix="$"
-                          className="text-gray-300 w-20"
+                          className="text-gray-700 w-20"
                         />
                       </td>
                       <td className="py-2 px-2">
@@ -372,7 +372,7 @@ const ServiceRow = ({ service, zones, categories, onUpdate, onDelete, onExportRa
                           type="number"
                           step="0.01"
                           prefix="$"
-                          className="text-gray-300 w-20"
+                          className="text-gray-700 w-20"
                         />
                       </td>
                       <td className="py-2 px-2">
@@ -381,7 +381,7 @@ const ServiceRow = ({ service, zones, categories, onUpdate, onDelete, onExportRa
                           onChange={(v) => updateRate(index, 'delivery_days', v)}
                           onSave={() => saveService(localService)}
                           type="number"
-                          className="text-gray-300 w-12"
+                          className="text-gray-700 w-12"
                         />
                       </td>
                       <td className="py-2 px-2">
@@ -390,7 +390,7 @@ const ServiceRow = ({ service, zones, categories, onUpdate, onDelete, onExportRa
                           onChange={(v) => updateRate(index, 'internal_note', v)}
                           onSave={() => saveService(localService)}
                           placeholder="Note..."
-                          className="text-gray-400 w-32"
+                          className="text-gray-500 w-32"
                         />
                       </td>
                       <td className="py-2 px-2 text-center">
@@ -403,7 +403,7 @@ const ServiceRow = ({ service, zones, categories, onUpdate, onDelete, onExportRa
                       <td className="py-2 pl-2 text-center">
                         <button
                           onClick={() => deleteRate(index)}
-                          className="p-1 rounded hover:bg-gray-600 text-gray-500 hover:text-red-400 transition-colors"
+                          className="p-1 rounded hover:bg-gray-100 text-gray-500 hover:text-red-400 transition-colors"
                         >
                           <Trash2 className="w-3 h-3" />
                         </button>
@@ -549,15 +549,15 @@ export default function ServicesTab({ services, zones, categories, onRefresh }) 
       {/* Header */}
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
         <div>
-          <h2 className="text-xl font-bold text-white">Shipping Services & Rates</h2>
-          <p className="text-gray-400 text-sm">Click any field to edit • Changes save automatically</p>
+          <h2 className="text-xl font-bold text-gray-900">Shipping Services & Rates</h2>
+          <p className="text-gray-500 text-sm">Click any field to edit • Changes save automatically</p>
         </div>
         <div className="flex flex-wrap gap-2">
           <Button 
             variant="outline" 
             size="sm" 
             onClick={handleDownloadTemplate}
-            className="border-gray-600"
+            className="border-gray-200"
           >
             <FileDown className="w-4 h-4 mr-2" /> Rate Template
           </Button>
@@ -574,9 +574,9 @@ export default function ServicesTab({ services, zones, categories, onRefresh }) 
 
       {/* Services List */}
       {services.length === 0 ? (
-        <div className="bg-gray-800 rounded-xl p-8 text-center border border-gray-700">
+        <div className="bg-white rounded-xl p-8 text-center border border-gray-200">
           <Truck className="w-12 h-12 text-gray-600 mx-auto mb-3" />
-          <p className="text-gray-400 mb-4">No shipping services configured</p>
+          <p className="text-gray-500 mb-4">No shipping services configured</p>
           <Button onClick={createNewService} disabled={creating}>
             {creating ? <Loader2 className="w-4 h-4 mr-2 animate-spin" /> : <Plus className="w-4 h-4 mr-2" />}
             Create Your First Service
@@ -602,27 +602,27 @@ export default function ServicesTab({ services, zones, categories, onRefresh }) 
       {/* Import Modal */}
       {showImportModal && (
         <div className="fixed inset-0 bg-black/70 flex items-center justify-center z-50 p-4">
-          <div className="bg-gray-800 rounded-xl border border-gray-700 w-full max-w-md p-6">
-            <h3 className="text-lg font-semibold text-white mb-4">
+          <div className="bg-white rounded-xl border border-gray-200 w-full max-w-md p-6">
+            <h3 className="text-lg font-semibold text-gray-900 mb-4">
               Import Rates for {selectedService?.name}
             </h3>
             
             <div className="space-y-4">
               <div>
-                <label className="text-sm text-gray-400 block mb-2">CSV File</label>
+                <label className="text-sm text-gray-500 block mb-2">CSV File</label>
                 <input
                   ref={fileInputRef}
                   type="file"
                   accept=".csv"
                   onChange={(e) => setImportFile(e.target.files?.[0])}
-                  className="w-full text-sm text-gray-400 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:bg-emerald-600 file:text-white file:cursor-pointer hover:file:bg-emerald-700"
+                  className="w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:bg-emerald-600 file:text-gray-900 file:cursor-pointer hover:file:bg-emerald-700"
                 />
               </div>
               
               <div>
-                <label className="text-sm text-gray-400 block mb-2">Import Mode</label>
+                <label className="text-sm text-gray-500 block mb-2">Import Mode</label>
                 <div className="flex gap-4">
-                  <label className="flex items-center gap-2 text-sm text-gray-300 cursor-pointer">
+                  <label className="flex items-center gap-2 text-sm text-gray-700 cursor-pointer">
                     <input
                       type="radio"
                       name="importMode"
@@ -632,7 +632,7 @@ export default function ServicesTab({ services, zones, categories, onRefresh }) 
                     />
                     Merge (update existing, add new)
                   </label>
-                  <label className="flex items-center gap-2 text-sm text-gray-300 cursor-pointer">
+                  <label className="flex items-center gap-2 text-sm text-gray-700 cursor-pointer">
                     <input
                       type="radio"
                       name="importMode"
@@ -650,7 +650,7 @@ export default function ServicesTab({ services, zones, categories, onRefresh }) 
               <Button
                 variant="outline"
                 onClick={() => setShowImportModal(false)}
-                className="border-gray-600"
+                className="border-gray-200"
               >
                 Cancel
               </Button>
