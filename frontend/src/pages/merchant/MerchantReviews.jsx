@@ -77,53 +77,53 @@ const MerchantReviews = () => {
   };
 
   return (
-    <div className="p-6">
-      <div className="flex justify-between items-center mb-6">
+    <div className="p-4">
+      <div className="flex justify-between items-center mb-4">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900">Product Reviews</h1>
-          <p className="text-gray-500 text-sm mt-1">Manage and moderate customer reviews</p>
+          <h1 className="text-xl font-bold text-gray-900">Product Reviews</h1>
+          <p className="text-gray-500 text-xs">Manage and moderate customer reviews</p>
         </div>
       </div>
 
       {/* Stats */}
-      <div className="grid grid-cols-5 gap-4 mb-6">
-        <div className="bg-white rounded-lg border border-gray-200 p-4">
-          <p className="text-gray-500 text-sm">Total Reviews</p>
-          <p className="text-2xl font-bold text-gray-900">{stats.total}</p>
+      <div className="grid grid-cols-5 gap-3 mb-4">
+        <div className="bg-white rounded-lg border border-gray-200 p-3">
+          <p className="text-gray-500 text-xs">Total Reviews</p>
+          <p className="text-xl font-bold text-gray-900">{stats.total}</p>
         </div>
-        <div className="bg-white rounded-lg border border-gray-200 p-4">
-          <p className="text-gray-500 text-sm">Pending</p>
-          <p className="text-2xl font-bold text-yellow-600">{stats.pending}</p>
+        <div className="bg-white rounded-lg border border-gray-200 p-3">
+          <p className="text-gray-500 text-xs">Pending</p>
+          <p className="text-xl font-bold text-yellow-600">{stats.pending}</p>
         </div>
-        <div className="bg-white rounded-lg border border-gray-200 p-4">
-          <p className="text-gray-500 text-sm">Approved</p>
-          <p className="text-2xl font-bold text-green-600">{stats.approved}</p>
+        <div className="bg-white rounded-lg border border-gray-200 p-3">
+          <p className="text-gray-500 text-xs">Approved</p>
+          <p className="text-xl font-bold text-green-600">{stats.approved}</p>
         </div>
-        <div className="bg-white rounded-lg border border-gray-200 p-4">
-          <p className="text-gray-500 text-sm">Rejected</p>
-          <p className="text-2xl font-bold text-red-600">{stats.rejected}</p>
+        <div className="bg-white rounded-lg border border-gray-200 p-3">
+          <p className="text-gray-500 text-xs">Rejected</p>
+          <p className="text-xl font-bold text-red-600">{stats.rejected}</p>
         </div>
-        <div className="bg-white rounded-lg border border-gray-200 p-4">
-          <p className="text-gray-500 text-sm">Avg Rating</p>
-          <div className="flex items-center gap-2">
-            <p className="text-2xl font-bold text-gray-900">{stats.avgRating}</p>
-            <Star size={20} className="fill-yellow-400 text-yellow-400" />
+        <div className="bg-white rounded-lg border border-gray-200 p-3">
+          <p className="text-gray-500 text-xs">Avg Rating</p>
+          <div className="flex items-center gap-1">
+            <p className="text-xl font-bold text-gray-900">{stats.avgRating}</p>
+            <Star size={14} className="fill-yellow-400 text-yellow-400" />
           </div>
         </div>
       </div>
 
       {/* Filters */}
-      <div className="flex items-center gap-4 mb-6">
-        <div className="relative flex-1 max-w-md">
-          <Search size={18} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
+      <div className="flex items-center gap-3 mb-4">
+        <div className="relative flex-1 max-w-sm">
+          <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
           <Input
             placeholder="Search reviews..."
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
-            className="pl-10 bg-white border-gray-200 text-gray-900"
+            className="pl-9 bg-white border-gray-200 text-gray-900 h-8 text-sm"
           />
         </div>
-        <div className="flex gap-2">
+        <div className="flex gap-1.5">
           {['all', 'pending', 'approved', 'rejected'].map((f) => (
             <button
               key={f}
