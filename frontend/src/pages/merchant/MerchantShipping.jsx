@@ -27,6 +27,11 @@ import {
   DialogTitle,
 } from '../../components/ui/dialog';
 
+// Import extracted tab components
+import OptionsTab from './shipping/OptionsTab';
+import CategoriesTab from './shipping/CategoriesTab';
+import PackagesTab from './shipping/PackagesTab';
+
 const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
 const API = `${BACKEND_URL}/api`;
 
