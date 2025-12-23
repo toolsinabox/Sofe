@@ -66,10 +66,10 @@ const MerchantCustomers = () => {
 
   const getStatusColor = (status) => {
     switch (status) {
-      case 'active': return 'bg-emerald-500/20 text-emerald-400';
-      case 'vip': return 'bg-purple-500/20 text-purple-400';
-      case 'inactive': return 'bg-gray-500/20 text-gray-400';
-      default: return 'bg-gray-500/20 text-gray-400';
+      case 'active': return 'bg-emerald-100 text-emerald-700';
+      case 'vip': return 'bg-purple-100 text-purple-700';
+      case 'inactive': return 'bg-gray-100 text-gray-500';
+      default: return 'bg-gray-100 text-gray-500';
     }
   };
 
@@ -89,50 +89,50 @@ const MerchantCustomers = () => {
     <div className="space-y-6">
       {/* Stats */}
       <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
-        <Card className="bg-[#151b28] border-gray-800">
+        <Card className="bg-white border-gray-200">
           <CardContent className="p-6">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-gray-400 text-sm">Total Customers</p>
-                <p className="text-2xl font-bold text-white">{totalCustomers}</p>
+                <p className="text-gray-500 text-sm">Total Customers</p>
+                <p className="text-2xl font-bold text-gray-900">{totalCustomers}</p>
               </div>
-              <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-blue-500 to-cyan-600 flex items-center justify-center">
-                <UserPlus size={24} className="text-white" />
+              <div className="w-12 h-12 rounded-xl bg-blue-50 flex items-center justify-center">
+                <UserPlus size={24} className="text-blue-600" />
               </div>
             </div>
           </CardContent>
         </Card>
-        <Card className="bg-[#151b28] border-gray-800">
+        <Card className="bg-white border-gray-200">
           <CardContent className="p-6">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-gray-400 text-sm">VIP Customers</p>
-                <p className="text-2xl font-bold text-purple-400">{vipCustomers}</p>
+                <p className="text-gray-500 text-sm">VIP Customers</p>
+                <p className="text-2xl font-bold text-purple-600">{vipCustomers}</p>
               </div>
-              <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-purple-500 to-pink-600 flex items-center justify-center">
-                <Star size={24} className="text-white" />
+              <div className="w-12 h-12 rounded-xl bg-purple-50 flex items-center justify-center">
+                <Star size={24} className="text-purple-600" />
               </div>
             </div>
           </CardContent>
         </Card>
-        <Card className="bg-[#151b28] border-gray-800">
+        <Card className="bg-white border-gray-200">
           <CardContent className="p-6">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-gray-400 text-sm">Total Revenue</p>
-                <p className="text-2xl font-bold text-emerald-400">{formatCurrency(totalRevenue)}</p>
+                <p className="text-gray-500 text-sm">Total Revenue</p>
+                <p className="text-2xl font-bold text-emerald-600">{formatCurrency(totalRevenue)}</p>
               </div>
-              <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-emerald-500 to-teal-600 flex items-center justify-center">
-                <DollarSign size={24} className="text-white" />
+              <div className="w-12 h-12 rounded-xl bg-emerald-50 flex items-center justify-center">
+                <DollarSign size={24} className="text-emerald-600" />
               </div>
             </div>
           </CardContent>
         </Card>
-        <Card className="bg-[#151b28] border-gray-800">
+        <Card className="bg-white border-gray-200">
           <CardContent className="p-6">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-gray-400 text-sm">Avg Order Value</p>
+                <p className="text-gray-500 text-sm">Avg Order Value</p>
                 <p className="text-2xl font-bold text-white">{formatCurrency(avgOrderValue)}</p>
               </div>
               <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-orange-500 to-amber-600 flex items-center justify-center">
