@@ -1,41 +1,88 @@
-# Test Results - Maropost E-commerce Clone
+# Test Results - Maropost E-commerce Clone - New Features
 
 ## Testing Requirements
 
-### 1. eBay Theme Editor - Logo and Conditional Images Fix
-**Test Objectives:**
-1. Verify the store logo displays correctly in the eBay theme preview
-2. Verify conditional image tags ({{#if_image_X}}...{{/if_image_X}}) work correctly - blocks should be completely removed when images don't exist
-3. Verify the preview uses the actual store settings (name, email, logo)
+### Phase 1: New Marketing Features
 
+#### 1.1 Coupons System
 **Test Steps:**
-1. Login to merchant dashboard
-2. Navigate to eBay Integration > Theme Editor
-3. Select "Modern Clean" template
-4. Verify the live preview shows the actual store logo (not a placeholder)
-5. Select a product with fewer than 4 images to test conditional logic
+1. Navigate to /merchant/coupons
+2. Click "Create Coupon" button
+3. Fill in coupon details (name, discount type, value, etc.)
+4. Verify coupon appears in the list
+5. Test edit and delete functionality
 
-**Expected Results:**
-- Store logo should display correctly in the preview
-- Missing image blocks should be completely removed from the HTML
+**API Endpoints:**
+- GET /api/marketing/coupons - List all coupons
+- POST /api/marketing/coupons - Create coupon
+- PUT /api/marketing/coupons/{id} - Update coupon
+- DELETE /api/marketing/coupons/{id} - Delete coupon
+- POST /api/marketing/coupons/validate - Validate coupon code
 
-### 2. Storefront Product Reviews
-**Test Objectives:**
-1. Verify reviews display correctly on product pages
-2. Verify the "Write a Review" form works
-3. Verify image upload functionality in review form
-
+#### 1.2 Loyalty Program
 **Test Steps:**
-1. Navigate to a product page on the storefront (e.g., /live/product/{product_id})
-2. Click on "Reviews" tab
-3. Verify existing reviews are displayed
-4. Click "Write a Review" and verify the form appears
-5. Verify the image upload section is present
+1. Navigate to /merchant/loyalty
+2. Verify program settings display
+3. Create loyalty tier
+4. View member list
 
-**Expected Results:**
-- Reviews should display with author name, rating, date, and content
-- Review form should include image upload option
-- Rating distribution should show
+**API Endpoints:**
+- GET /api/marketing/loyalty/settings
+- PUT /api/marketing/loyalty/settings
+- GET /api/marketing/loyalty/customers
+
+#### 1.3 Gift Cards
+**Test Steps:**
+1. Navigate to /merchant/gift-cards
+2. Create a new gift card
+3. Verify card appears with correct balance
+
+**API Endpoints:**
+- GET /api/marketing/gift-cards
+- POST /api/marketing/gift-cards
+- GET /api/marketing/gift-cards/{id}
+- POST /api/marketing/gift-cards/check-balance
+
+#### 1.4 Flash Sales
+**Test Steps:**
+1. Navigate to /merchant/flash-sales
+2. Create a flash sale with products
+3. Verify countdown and status
+
+**API Endpoints:**
+- GET /api/marketing/flash-sales
+- POST /api/marketing/flash-sales
+- PUT /api/marketing/flash-sales/{id}
+
+### Phase 2: Analytics Features
+
+#### 2.1 Advanced Analytics Dashboard
+**Test Steps:**
+1. Navigate to /merchant/advanced-analytics
+2. Verify KPIs display correctly
+3. Test period selector
+4. Verify export functionality
+
+**API Endpoints:**
+- GET /api/analytics/dashboard
+- GET /api/analytics/sales/summary
+- GET /api/analytics/sales/by-category
+- GET /api/analytics/customers/overview
+
+### Phase 3: Operations Features
+
+#### 3.1 Supplier Management
+**Test Steps:**
+1. Navigate to /merchant/suppliers
+2. Create a new supplier
+3. Create a purchase order
+4. Verify PO appears in list
+
+**API Endpoints:**
+- GET /api/operations/suppliers
+- POST /api/operations/suppliers
+- GET /api/operations/purchase-orders
+- POST /api/operations/purchase-orders
 
 ## Test Credentials
 - Email: edwardenayah@live.com.au
@@ -43,13 +90,13 @@
 
 ## Key Endpoints
 - Backend URL: Use REACT_APP_BACKEND_URL from /app/frontend/.env
-- eBay Integration: /merchant/integrations/ebay
-- Product Page: /live/product/{product_id}
 
-## Test Data
-- Product with reviews: 0567ac44-191b-4638-8dff-52e8a371cd76
+## Already Verified via curl:
+- Created coupon: ADB7DSYSP4 (20% off, min $50)
+- Created gift card: XDBYID76YVKGLX09 ($100 balance)
+- Analytics dashboard returns real data
 
 ## Incorporate User Feedback
-- User requested the eBay theme conditional logic to completely remove HTML blocks for missing images
-- User requested the actual store logo to be used in the theme preview
-- User reported reviews weren't showing on the storefront (FIXED - they are now showing)
+- User wants comprehensive features
+- All features should be fully functional
+- UI should be intuitive and responsive
