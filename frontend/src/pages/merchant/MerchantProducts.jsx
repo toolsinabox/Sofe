@@ -43,7 +43,8 @@ import {
   Quote,
   Minus,
   Undo,
-  Redo
+  Redo,
+  Download
 } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '../../components/ui/card';
 import { Button } from '../../components/ui/button';
@@ -78,6 +79,7 @@ import {
 } from '../../components/ui/tooltip';
 import { useDropzone } from 'react-dropzone';
 import { HelpCircle } from 'lucide-react';
+import { ImportExportButtons } from '../../components/ImportExport';
 
 const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
 const API = `${BACKEND_URL}/api`;
