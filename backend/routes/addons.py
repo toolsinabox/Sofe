@@ -376,10 +376,13 @@ async def install_addon(addon_id: str, config: Optional[AddonConfig] = None):
     
     await db.addons.insert_one(addon_record)
     
+    # Return clean response without MongoDB _id
+    response_addon = {k: v for k, v in addon_record.items() if k != "_id"}
+    
     return {
         "success": True,
         "message": f"Addon '{addon_def['name']}' installed successfully",
-        "addon": {**addon_def, **addon_record}
+        "addon": {**addon_def, **response_addon}
     }
 
 
