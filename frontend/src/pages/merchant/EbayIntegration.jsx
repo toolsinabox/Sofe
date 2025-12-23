@@ -2413,16 +2413,11 @@ const EbayIntegration = () => {
                                 <span className="text-gray-500">{previewProduct.stock} available</span>
                               </div>
                             )}
-                                <span className="text-green-600">In Stock</span>
-                                <span className="text-gray-400">•</span>
-                                <span className="text-gray-500">{'{{product_stock}}'} available</span>
-                              </div>
-                            )}
 
                             {/* Description */}
                             <div className="prose prose-sm text-gray-600 mb-4 border-t border-gray-100 pt-4">
                               <h4 className="font-semibold text-gray-900">Description</h4>
-                              <p>{'{{product_description}}'}</p>
+                              <p>{previewProduct.description}</p>
                             </div>
 
                             {/* Specifications */}
@@ -2432,20 +2427,32 @@ const EbayIntegration = () => {
                                 <div className="grid grid-cols-2 gap-2 text-sm">
                                   <div className="flex justify-between py-1 border-b border-gray-50">
                                     <span className="text-gray-500">Brand</span>
-                                    <span>{'{{product_brand}}'}</span>
+                                    <span>{previewProduct.brand}</span>
                                   </div>
                                   <div className="flex justify-between py-1 border-b border-gray-50">
                                     <span className="text-gray-500">SKU</span>
-                                    <span className="font-mono">{'{{product_sku}}'}</span>
+                                    <span className="font-mono">{previewProduct.sku}</span>
                                   </div>
                                   <div className="flex justify-between py-1 border-b border-gray-50">
                                     <span className="text-gray-500">Weight</span>
-                                    <span>{'{{product_weight}}'}</span>
+                                    <span>{previewProduct.weight}</span>
                                   </div>
                                   <div className="flex justify-between py-1 border-b border-gray-50">
                                     <span className="text-gray-500">Dimensions</span>
-                                    <span>{'{{product_dimensions}}'}</span>
+                                    <span>{previewProduct.dimensions}</span>
                                   </div>
+                                  {previewProduct.upc && previewProduct.upc !== 'N/A' && (
+                                    <div className="flex justify-between py-1 border-b border-gray-50">
+                                      <span className="text-gray-500">UPC</span>
+                                      <span className="font-mono">{previewProduct.upc}</span>
+                                    </div>
+                                  )}
+                                  {previewProduct.mpn && previewProduct.mpn !== 'N/A' && (
+                                    <div className="flex justify-between py-1 border-b border-gray-50">
+                                      <span className="text-gray-500">MPN</span>
+                                      <span className="font-mono">{previewProduct.mpn}</span>
+                                    </div>
+                                  )}
                                 </div>
                               </div>
                             )}
