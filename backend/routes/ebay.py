@@ -91,6 +91,26 @@ class EbayOrder(BaseModel):
     order_date: str
     status: str
 
+class EbayThemeSettings(BaseModel):
+    primaryColor: str = "#0066cc"
+    accentColor: str = "#ff6600"
+    secondaryColor: str = "#f5f5f5"
+    fontFamily: str = "Arial, sans-serif"
+    customCSS: Optional[str] = ""
+    showBrandLogo: bool = True
+    showTrustBadges: bool = True
+    showShippingInfo: bool = True
+    showReturnPolicy: bool = True
+    showStockLevel: bool = True
+    showProductSpecs: bool = True
+    showPaymentIcons: bool = True
+    showSocialLinks: bool = False
+
+class EbayTheme(BaseModel):
+    template_id: str = "modern"
+    template_html: str
+    settings: EbayThemeSettings
+
 # Helper class for eBay API calls
 class EbayClient:
     def __init__(self, credentials: Dict, sandbox: bool = True):
