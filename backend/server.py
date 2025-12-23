@@ -673,31 +673,45 @@ class ThemeTemplateUpdate(BaseModel):
 class ProductReview(BaseModel):
     id: str = Field(default_factory=lambda: str(uuid.uuid4()))
     product_id: str
+    product_sku: Optional[str] = None  # Link by SKU for easier admin management
+    product_name: Optional[str] = None  # Cached product name
     customer_id: Optional[str] = None
     customer_name: str
     customer_email: str
     rating: int = Field(ge=1, le=5)  # 1-5 stars
     title: str
     content: str
+    images: List[str] = []  # Array of image URLs
     status: str = "pending"  # pending, approved, rejected
     verified_purchase: bool = False
     helpful_votes: int = 0
+    admin_reply: Optional[str] = None  # Admin response to review
+    admin_reply_at: Optional[datetime] = None
+    is_featured: bool = False  # Featured reviews shown prominently
     created_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
     updated_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
 
 class ProductReviewCreate(BaseModel):
-    product_id: str
+    product_id: Optional[str] = None  # Can use either product_id or sku
+    product_sku: Optional[str] = None  # For admin creating via SKU
     customer_name: str
     customer_email: str
     rating: int = Field(ge=1, le=5)
     title: str
     content: str
+    images: List[str] = []
+    verified_purchase: bool = False
+    status: str = "pending"  # Admin can create as approved
 
 class ProductReviewUpdate(BaseModel):
     status: Optional[str] = None
     title: Optional[str] = None
     content: Optional[str] = None
     rating: Optional[int] = None
+    images: Optional[List[str]] = None
+    admin_reply: Optional[str] = None
+    is_featured: Optional[bool] = None
+    verified_purchase: Optional[bool] = None
 
 # ==================== STOCK NOTIFICATIONS ====================
 
