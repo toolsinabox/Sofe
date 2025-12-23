@@ -215,8 +215,7 @@ const OptionRow = ({ option, services, zones, onUpdate, onDelete }) => {
             <label className="text-gray-500 text-xs block mb-1">Description</label>
             <InlineTextarea
               value={localOption.description}
-              onChange={(v) => updateField('description', v)}
-              onSave={() => saveOption(localOption)}
+              onChange={(v) => handleFieldChange('description', v)}
               placeholder="Shown at checkout..."
               rows={1}
               className="text-gray-300"
@@ -229,8 +228,7 @@ const OptionRow = ({ option, services, zones, onUpdate, onDelete }) => {
             </label>
             <InlineInput
               value={localOption.routing_group}
-              onChange={(v) => updateField('routing_group', v)}
-              onSave={() => saveOption(localOption)}
+              onChange={(v) => handleFieldChange('routing_group', v)}
               placeholder="e.g., 1, 2, express"
               className="text-purple-400"
             />
@@ -239,8 +237,7 @@ const OptionRow = ({ option, services, zones, onUpdate, onDelete }) => {
             <label className="text-gray-500 text-xs block mb-1">Free Shipping Over</label>
             <InlineInput
               value={localOption.free_shipping_threshold}
-              onChange={(v) => updateField('free_shipping_threshold', v)}
-              onSave={() => saveOption(localOption)}
+              onChange={(v) => handleFieldChange('free_shipping_threshold', v)}
               type="number"
               step="0.01"
               min="0"
@@ -253,8 +250,7 @@ const OptionRow = ({ option, services, zones, onUpdate, onDelete }) => {
             <label className="text-gray-500 text-xs block mb-1">Sort Order</label>
             <InlineInput
               value={localOption.sort_order}
-              onChange={(v) => updateField('sort_order', v)}
-              onSave={() => saveOption(localOption)}
+              onChange={(v) => handleFieldChange('sort_order', v)}
               type="number"
               min="0"
               className="text-gray-300 w-16"
