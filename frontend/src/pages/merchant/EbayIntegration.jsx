@@ -1784,7 +1784,6 @@ const EbayIntegration = () => {
             </div>
           )}
         </div>
-      </div>
 
       {/* Create Listing Modal */}
       <Dialog open={showCreateListing} onOpenChange={setShowCreateListing}>
