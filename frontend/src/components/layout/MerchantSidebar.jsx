@@ -307,7 +307,7 @@ const MerchantSidebar = ({ collapsed, setCollapsed, mobileOpen, setMobileOpen })
     <>
       {/* Desktop Sidebar */}
       <aside
-        className={`hidden lg:flex fixed left-0 top-0 h-screen bg-white border-r border-gray-200 transition-all duration-300 z-50 flex-col ${
+        className={`hidden lg:flex fixed left-0 top-0 h-screen bg-slate-800 transition-all duration-300 z-50 flex-col ${
           collapsed ? 'w-[60px]' : 'w-[240px]'
         }`}
       >
