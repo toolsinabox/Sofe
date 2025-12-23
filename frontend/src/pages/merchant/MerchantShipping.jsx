@@ -3191,9 +3191,11 @@ const MerchantShipping = () => {
             <div className="space-y-4 py-4">
               <div>
                 <Label className="text-gray-300">Option Name</Label>
-                <Input
-                  value={optionForm.name}
-                  onChange={(e) => setOptionForm({...optionForm, name: e.target.value})}
+                <StableInput
+                  key={`option-name-${editingItem?.id || 'new'}`}
+                  name="name"
+                  defaultValue={optionForm.name}
+                  onBlur={(e) => setOptionForm(prev => ({...prev, name: e.target.value}))}
                   placeholder="e.g., Standard Shipping"
                   className="bg-gray-700 border-gray-600 text-white mt-1"
                 />
@@ -3201,8 +3203,9 @@ const MerchantShipping = () => {
               <div>
                 <Label className="text-gray-300">Description</Label>
                 <textarea
-                  value={optionForm.description}
-                  onChange={(e) => setOptionForm({...optionForm, description: e.target.value})}
+                  key={`option-desc-${editingItem?.id || 'new'}`}
+                  defaultValue={optionForm.description}
+                  onBlur={(e) => setOptionForm(prev => ({...prev, description: e.target.value}))}
                   placeholder="Shown at checkout..."
                   rows={2}
                   className="w-full mt-1 px-3 py-2 bg-gray-700 border border-gray-600 rounded-md text-white text-sm placeholder:text-gray-500 focus:outline-none focus:ring-2 focus:ring-teal-500"
@@ -3215,9 +3218,11 @@ const MerchantShipping = () => {
                   Routing Group
                   <span className="text-gray-500 text-xs ml-2">(Options in same group show only cheapest to customer)</span>
                 </Label>
-                <Input
-                  value={optionForm.routing_group}
-                  onChange={(e) => setOptionForm({...optionForm, routing_group: e.target.value})}
+                <StableInput
+                  key={`option-routing-${editingItem?.id || 'new'}`}
+                  name="routing_group"
+                  defaultValue={optionForm.routing_group}
+                  onBlur={(e) => setOptionForm(prev => ({...prev, routing_group: e.target.value}))}
                   placeholder="e.g., standard, express (leave empty to always show)"
                   className="bg-gray-700 border-gray-600 text-white mt-1"
                 />
