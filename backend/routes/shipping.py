@@ -80,6 +80,13 @@ class ShippingService(BaseModel):
     is_active: bool = True
     sort_order: int = 0
     tracking_url_template: Optional[str] = None
+    # Additional fields
+    internal_description: Optional[str] = None
+    packaging_allowance_kg: float = 0
+    packaging_allowance_percent: float = 0
+    round_up_weight: bool = False
+    ignore_physical_weight: bool = False
+    ship_to_po_box: bool = False
     created_at: str = Field(default_factory=lambda: datetime.now(timezone.utc).isoformat())
 
 class ShippingOption(BaseModel):
