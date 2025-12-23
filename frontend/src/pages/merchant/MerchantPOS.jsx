@@ -1662,19 +1662,35 @@ const MerchantPOS = () => {
                 variant="outline"
                 className="border-gray-200 text-slate-600 hover:bg-gray-100 rounded-xl"
                 disabled={cart.length === 0}
+                onClick={() => setShowParkModal(true)}
               >
                 <PauseCircle className="w-4 h-4 mr-1" />
                 Park
+                {parkedSales.length > 0 && (
+                  <span className="ml-1 bg-blue-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">
+                    {parkedSales.length}
+                  </span>
+                )}
               </Button>
               <Button
                 variant="outline"
-                onClick={clearCart}
+                onClick={() => cart.length > 0 && setShowVoidConfirm(true)}
                 disabled={cart.length === 0}
                 className="border-rose-200 text-rose-500 hover:bg-rose-50 rounded-xl"
               >
                 <XCircle className="w-4 h-4 mr-1" />
                 Void
               </Button>
+              {parkedSales.length > 0 && (
+                <Button
+                  variant="outline"
+                  onClick={() => setShowParkedSales(true)}
+                  className="border-blue-200 text-blue-600 hover:bg-blue-50 rounded-xl"
+                >
+                  <Clock className="w-4 h-4 mr-1" />
+                  {parkedSales.length} Parked
+                </Button>
+              )}
             </div>
             
             {!currentShift && (
