@@ -251,6 +251,9 @@ const EbayIntegration = () => {
   const [bulkAction, setBulkAction] = useState('');
   const [showBulkModal, setShowBulkModal] = useState(false);
 
+  // Store Settings State (for theme preview)
+  const [storeSettings, setStoreSettings] = useState(null);
+
   // Analytics State
   const [analyticsData, setAnalyticsData] = useState({
     totalSales: 0,
