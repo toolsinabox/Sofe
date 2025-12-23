@@ -1,69 +1,77 @@
 <analysis>**original_problem_statement:**
-The user is building a Maropost e-commerce clone and needs to perfect the shipping calculation system. Initial requests included fixing price discrepancies, UI bugs, and implementing new rules like maximum length filtering.
+The user is building a Maropost e-commerce clone and needed to perfect the shipping calculation system. Initially, this involved fixing price discrepancies and UI bugs. The scope expanded to reverse-engineering complex, multi-step shipping formulas for different carriers (XFM-RES, Startrack) to match the user's logic precisely.
 
-During this session, the scope expanded significantly to reverse-engineer and implement highly complex, multi-step shipping calculation formulas provided by the user to match Maropost's logic precisely. This included handling combined cubic weights, per-parcel fees, multi-parcel minimum charges, and conditional fuel levies for two different carriers (XFM-RES and Startrack). The agent debugged multiple pricing discrepancies for different cart combinations, refining the logic step-by-step based on user feedback. The final request is to resolve a minor but critical discrepancy in the Startrack calculation.
-
-PRODUCT REQUIREMENTS:
-1.  Shipping calculations must be 100% accurate, matching the user's provided Maropost logic for all carriers and scenarios.
-2.  The merchant shipping editor UI must correctly load, display, and save all service fields.
-3.  Product dimension units must be consistently handled in  across the UI and backend.
-4.  The system must support filtering shipping options based on a product's maximum length.
+During this session, the user requested several new features and fixes:
+1.  **Startrack Calculation Fix:** Resolved a final discrepancy in the Startrack formula, which was ultimately a product data issue (incorrect dimensions).
+2.  **Suburb Database Update:** Replaced a small, hardcoded list of Australian suburbs with a comprehensive database of ~18,000 suburbs loaded from a CSV, with a new API endpoint to serve them.
+3.  **Routing Groups:** Implemented a feature to group shipping options (e.g., group Startrack and XFM together) and only show the cheapest option from that group at checkout.
+4.  **UI Focus Loss Audit:** Audited the entire shipping editor, which suffered from severe input focus loss and state management bugs. The agent refactored a large portion of the UI to fix this.
+5.  **Data Sanitization:** Ensured all numeric fields in shipping calculations default to  to prevent errors from  or missing values.
+6.  **Rate Rounding:** The final request was to round all  values to 2 decimal places, both for existing data and during future CSV imports.
 
 **User's preferred language**: English
 
 **what currently exists?**
-- A full-stack application (React/FastAPI/MongoDB) with a server-side rendered storefront theme.
-- The shipping calculation logic in  has been heavily modified to support two distinct, complex calculation formulas for XFM-RES and Startrack.
-- The XFM-RES logic is considered complete and correctly handles all user-provided test cases.
-- The Startrack logic has been updated to apply  to the per-kg portion of the calculation and add a  after the fuel levy is applied. This logic is very close but has a minor discrepancy.
-- The agent fixed a critical bug where updating a shipping service via the API wiped all its associated rates.
-- The merchant shipping editor UI () has been fixed to correctly load all service fields and handle the  unit in .
+- A React/FastAPI/MongoDB application with heavily customized shipping logic in .
+- The Startrack shipping calculation is now correct and verified by the user to produce a price of **2.40** for the test case.
+- The backend now uses a dedicated  collection in MongoDB for a comprehensive Australian postcode lookup.
+- The Routing Group feature is fully implemented. It is configured in the Shipping Options tab and correctly filters rates in the  endpoint.
+- A major UI refactor of  has been partially completed. , , and  were extracted into separate components in , fixing the critical input focus loss and state-saving bugs in those sections.
+- A bug preventing newly created shipping options from being calculated (due to a database query limit) has been fixed.
 
 **Last working item**:
--   **Last item agent was working:** The agent was debugging the Startrack shipping calculation for product  to postcode . The user expects a price of **1.30**, but the current logic calculates **0.31**. The agent was actively investigating this ~ discrepancy, having ruled out several possibilities and confirming the issue lies within the formula's order of operations or a misinterpretation of the user's rate card.
+-   **Last item agent was working:** The agent was tasked with rounding all  values to 2 decimal places. This involves two parts: updating all existing rates in the database and modifying the CSV rate import logic to apply rounding. The agent acknowledged the request and was about to implement the database update script.
 -   **Status:** IN PROGRESS
--   **Agent Testing Done:** Y
--   **Which testing method agent to use?** backend testing agent. The next agent should use  or a python script to test the  endpoint. The primary focus is re-examining the  function in , specifically the Startrack-related logic block, and comparing it against the user-provided CSV ().
+-   **Agent Testing Done:** N
+-   **Which testing method agent to use?** backend testing agent. The next agent should first write a script to update the MongoDB  collection, iterating through each service's  sub-array to round the . Then, modify the rate import function in  and test by uploading a CSV with un-rounded rates.
 -   **User Testing Done:** N
 
 **All Pending/In progress Issue list**:
--   **Issue 1: Startrack Calculation Discrepancy (P0)**
--   **Issue 2: Comprehensive Shipping Editor Test (P1)**
--   **Issue 3: Product Data Mismatch (P2)**
--   **Issue 4: No Backend Negative Stock Validation (P2)**
+-   **Issue 1: Round  to 2 decimal places (P0)**
+-   **Issue 2: Extract remaining Tab components in  (P1)**
+-   **Issue 3: Comprehensive Shipping Editor Regression Test (P1)**
+-   **Issue 4: Fix rate import  mapping (P2)**
+-   **Issue 5: Product Data Mismatch Validation (P2)**
+-   **Issue 6: No Backend Negative Stock Validation (P2)**
 
 Issues Detail:
--   **Issue 1: Startrack Calculation Discrepancy**
-    -   **Attempted fixes:** The agent implemented a specific formula for Startrack (identified by ) where  applies only to the  calculation, and the  is added *after* the fuel levy. This resulted in . The agent correctly identified that changing the rates is not an option and the fix must be in the calculation logic itself.
+-   **Issue 1: Round  to 2 decimal places**
+    -   **Attempted fixes:** The agent started by rounding currency values during calculation. The user clarified that the source data itself needs to be rounded.
     -   **Next debug checklist:**
-        1.  Carefully examine the user-provided CSV (). Check for any unused columns that might be relevant (e.g., , , , ).
-        2.  Re-examine the calculation logic in  inside the  block.
-        3.  Consider the role of rounding. Maropost might round at intermediate steps. Test rounding the , , or  to 2 decimal places at each stage of the calculation.
-        4.  Work backward from the expected final price () to determine what the freight value should be at each step (before GST, before handling fee, etc.) to pinpoint the exact source of the  difference.
-    -   **Why fix this issue and what will be achieved with this?** This is the final known calculation error and is blocking the completion of the user's primary requirement for 100% accurate shipping prices.
+        1.  Write and execute a Python script to iterate through the  collection in MongoDB.
+        2.  For each service's  sub-array, update the  field by rounding it to 2 decimal places.
+        3.  Modify the  endpoint logic in  to round the  value when parsing the CSV.
+        4.  Verify the fix by inspecting database records and performing a test import.
+    -   **Why fix this issue and what will be achieved with this?** Ensures pricing consistency and prevents calculation errors from floating-point inaccuracies in the source data.
     -   **Status:** IN PROGRESS
     -   **Is recurring issue?** N
     -   **Should Test frontend/backend/both after fix?** Backend.
     -   **Blocked on other issue:** None.
--   **Issue 2: Comprehensive Shipping Editor Test**
-    -   **Attempted fixes:** N/A. The underlying bugs (field loading, rate deletion) were fixed, but a full regression test has not been performed.
+-   **Issue 2: Extract remaining Tab components in **
+    -   **Attempted fixes:** The agent successfully extracted , , and .
     -   **Next debug checklist:**
-        1.  In the UI, create a completely new shipping service, populating all available fields. Save and verify.
-        2.  Edit the newly created service, modify all fields, and save again. Verify all changes persist in the database and UI.
-        3.  Crucially, ensure the associated rates are not deleted or altered during the edit/save process.
-        4.  Delete the test service and confirm it is removed.
-    -   **Why fix this issue and what will be achieved with this?** To confirm the stability of the shipping editor and prevent a recurrence of the critical rate-deletion bug.
+        1.  Extract the inline  and  components from  into their own files within .
+        2.  Update  to import and render these new components, passing the required props.
+        3.  Remove the large, now-redundant inline component code from .
+        4.  Run the linter to confirm the  errors are resolved.
+    -   **Why fix this issue and what will be achieved with this?** This will fix the root cause of UI instability, focus loss, and state management issues for the entire shipping editor page, making it reliable.
     -   **Status:** NOT STARTED
     -   **Is recurring issue?** Y
     -   **Should Test frontend/backend/both after fix?** Frontend.
     -   **Blocked on other issue:** None.
--   **Issue 3: Product Data Mismatch**
+-   **Issue 3: Comprehensive Shipping Editor Regression Test**
+    -   **Why fix this issue and what will be achieved with this?** After the major refactoring, a full test is needed to ensure no regressions were introduced in creating, updating, or deleting services, zones, options, etc.
     -   **Status:** NOT STARTED
--   **Issue 4: No Backend Negative Stock Validation**
+-   **Issue 4: Fix rate import  mapping**
+    -   **Why fix this issue and what will be achieved with this?** A recurring issue from a previous fork where the Minimum Charge column from an imported CSV might not be correctly mapped to the  database field.
+    -   **Status:** NOT STARTED
+-   **Issue 5: Product Data Mismatch Validation**
+    -   **Status:** NOT STARTED
+-   **Issue 6: No Backend Negative Stock Validation**
     -   **Status:** NOT STARTED
 
 **In progress Task List**:
--   None. Current work is focused on resolving the P0 bug.
+-   None.
 
 **Upcoming and Future Tasks**
 -   **Upcoming Tasks:**
@@ -75,67 +83,63 @@ Issues Detail:
     -   **P2:** Implement POS offline sync capability.
 
 **Completed work in this session**
--   **Feature: Dual Shipping Calculation Logic:** Implemented two distinct, complex shipping calculation formulas in  to handle XFM-RES and Startrack carriers differently.
--   **Bug Fix: Corrected XFM-RES Calculation:** Fixed the logic to use  as a floor for the total freight, count parcels correctly based on quantity, and apply the flat fuel levy to all orders. This carrier's calculation is now considered complete and correct.
--   **Bug Fix: Corrected Startrack Calculation Order:** Updated the logic to apply  to the  portion and move the  addition to occur *after* the fuel levy.
--   **Critical Bug Fix: Prevented Rate Deletion:** Fixed a major bug where updating a shipping service via the merchant UI would wipe out all its associated rates. The agent identified they had introduced this bug and corrected the frontend payload.
--   **Bug Fix: Restored Deleted Rates:** After accidentally wiping the XFM-RES rates, the agent guided the user to re-upload them and reapplied the necessary  database fix.
--   **Feature/Bug Fix:  Field:** Fixed the merchant editor to correctly load the  field and converted the entire implementation from meters to millimeters (UI, backend, DB).
+-   **Critical Bug Fix: Startrack Shipping Calculation:** Corrected the Startrack formula in  and updated incorrect product dimensions in the database, successfully matching the user's target price of 2.40.
+-   **Feature: Comprehensive Suburb Database:** Replaced a hardcoded suburb list with a database-driven lookup from a new  MongoDB collection, populated with ~18,000 Australian suburbs.
+-   **Feature: Shipping Option Routing Groups:** Implemented a  field on Shipping Options to allow grouping of carriers and displaying only the cheapest option from each group at checkout.
+-   **Critical UI Refactor: Shipping Editor Stability:** Fixed severe UI input focus loss and state persistence bugs by extracting , , and  from  into separate, stable components.
+-   **Bug Fix: Shipping Option Not Appearing:** Fixed a bug where new shipping options were not being calculated because a database query for shipping zones was limited to 1000 results. The limit was increased.
+-   **Improvement: Data Sanitization:** Made the shipping calculation logic more robust by ensuring all numeric fields default to 0 if they are  or missing from the database.
 
 **Earlier issues found/mentioned but not fixed**
--   **Issue 1: Linting Errors in **: While bugs have been fixed, the file remains over 3000 lines long and has significant technical debt. A full refactor is recommended for long-term maintainability but is not a current priority.
+-   The remaining linting errors in  are related to the still-nested  and  components, which will be resolved by the pending refactoring task.
 
 **Known issue recurrence from previous fork**
 -   **Product Data Mismatch** (Status: NOT STARTED)
 -   **No Backend Negative Stock Validation** (Status: NOT STARTED)
--   **Incorrect  on Rate Import:** The  for XFM-RES rates was incorrect after the user re-uploaded them, forcing the agent to re-run a corrective script. This suggests the rate import process itself may not be correctly mapping the Minimum Charge from the CSV to the  field in the database.
+-   **Incorrect  on Rate Import:** (Status: NOT STARTED) Captured as Issue #4.
 
 **Code Architecture**
 
 
 **Key Technical Concepts**
--   **Carrier-Specific Logic:** The calculation logic in  now uses a conditional branch () to differentiate between the Startrack formula and the XFM-RES formula. This is a fragile approach but is the current implementation.
--   **XFM-RES Formula:** . A flat fuel levy is then applied.
--   **Startrack Formula (In-Progress):** . A percentage fuel levy is applied to the freight, and then a  is added. The exact order and application are the subject of the current debugging effort.
--   **Defensive API Design:** A critical bug was caused by the  endpoint accepting an empty  array, which wiped existing data. The frontend call was fixed, but the backend API remains vulnerable to destructive updates.
+-   **Component Extraction:** The primary strategy used to fix React UI instability. Moving inline components () into separate files () prevents them from being re-created on every parent render, thus preserving state and focus.
+-   **Lifting State Up:** To enable the extracted components to work, form states (e.g., ) were moved from the inline components to the main  parent and passed down as props.
+-   **Database Query Limits:** A bug was caused by a hardcoded  on a MongoDB query, which silently excluded necessary data. This highlights the importance of being aware of and handling potential pagination or query limits.
 
 **key DB schema**
--   **shipping_services (collection):**
-    -    is now stored in .
-    -    (float) is used to differentiate Startrack's calculation logic.
-    -   Added several new optional fields: , , , , , , .
--   **shipping_rates (sub-document):**
-    -    is now populated from  for both XFM-RES and Startrack rates. This fix may need to be re-applied if rates are ever re-imported.
+-   **shipping_options (collection):** Contains a new  (string) field used to group options for cheapest only display.
+-   **suburbs (collection):** A new collection storing  for the entire country.
+-   **shipping_services (collection):** Its  sub-documents contain the  field that is the target of the current .
 
 **changes in tech stack**
 -   None.
 
 **All files of reference**
--   : The location of the core shipping calculation logic that needs to be fixed.
--   : The UI for managing shipping services.
--   The user-uploaded artifact  contains the ground-truth rate data for Startrack and is essential for solving the current issue.
+-   : Core file for all backend shipping logic.
+-   : The main, parent component for the shipping editor.
+-   : The new directory containing the refactored, stable tab components.
 
-**Areas that need refactoring**
--   **/app/frontend/src/pages/merchant/MerchantShipping.jsx**: This monolithic React component is a source of technical debt and is difficult to maintain.
--   **/app/backend/routes/shipping.py ( function)**: The function is becoming overly complex with hardcoded checks for different carriers. It should be refactored into a more extensible pattern (e.g., a strategy pattern) to handle different calculation methods.
+**Areas that need refactoring**:
+-   : **High Priority.** The  and  are still defined inline and cause UI instability. They must be extracted just like the others.
+-   : This file is over 1,200 lines long. The carrier-specific calculation logic (e.g., ) is brittle and should be refactored into a more extensible pattern (e.g., Strategy Pattern) in the future.
 
 **key api endpoints**
--   : Logic is heavily modified with carrier-specific rules and is the focus of the current debugging.
--   : This endpoint was the source of the rate-deletion bug. While the frontend call that triggered it is fixed, the endpoint itself is not robust against similar destructive updates.
+-   : Logic was updated to incorporate  and their .
+-   : A new endpoint that serves suburb data from the  MongoDB collection.
+-   : The endpoint for managing shipping options, including the new .
 
 **Critical Info for New Agent**
--   **Main Priority:** Your immediate and primary task is to fix the Startrack calculation to produce **exactly 1.30** for product  to postcode . The user is very firm on this exact amount. Your current logic produces . **Do not change the rates from the user's CSV**; the error is guaranteed to be in the calculation formula or the order of operations.
--   **Use the CSV:** The key to solving the final discrepancy lies in the  file provided by the user. There might be a column or rule you are not yet accounting for.
--   **Two Distinct Formulas:** Remember that the shipping logic in  has two distinct paths. The Startrack formula is triggered by . Any changes to the Startrack logic must not break the XFM-RES calculations, which are considered complete. Test both carriers after any change.
--   **Rate Deletion Bug:** Be aware that a critical bug existed where editing a service could wipe its rates. While the immediate cause was fixed on the frontend, be cautious when interacting with the shipping editor. The P1 task to perform a full regression test should be completed after the calculation is fixed.
+-   **Immediate Task:** Your first priority is to finish the user's request to round  to 2 decimal places. This requires a script to update existing database records and a modification to the CSV import logic in .
+-   **Next Major Task (UI Stability):** After the rounding task, you must extract the remaining  and  from . This is the root cause of the UI instability the user has repeatedly complained about. Follow the pattern used for .
+-   **User's Calculation Logic:** The user has provided very specific, multi-step calculation formulas. Do not deviate from them. The logic for Startrack is particularly complex and involves applying fuel levies and handling fees in a precise order.
+-   **Database Limits:** Be aware that a previous bug was caused by a  limit on a database query. When querying collections that might grow (like shipping zones), ensure limits are high enough or that pagination is implemented.
 
 **documents and test_reports created in this job**
--    was updated.
--   User uploaded  as an artifact, which is crucial for the next step.
+-   None. The agent used a temporary script to process , but the file itself is not a permanent artifact.
 
 **Last 10 User Messages and any pending HUMAN messages**
 -   
--   (User provided a CSV of Startrack rates)
+-   
 -   
 -   
 -   
@@ -146,7 +150,7 @@ Issues Detail:
 -   
 
 **Project Health Check:**
--   **Broken:** The Startrack shipping calculation is not 100% accurate as per the user's strict requirement. This is the main blocker.
+-   **Broken:** The UI for the Zones and Services tabs in the shipping editor is still unstable due to being nested components, leading to a poor user experience.
 -   **Mocked:** None.
 
 **3rd Party Integrations**
@@ -156,7 +160,7 @@ Issues Detail:
 -   **Testing agent used after significant changes:** NO
 -   **Troubleshoot agent used after agent stuck in loop:** NO
 -   **Test files created:** None.
--   **Known regressions:** A critical regression was introduced and fixed in this session (rate deletion on service update). The system is fragile.
+-   **Known regressions:** None from this session, but the potential for regressions is high due to the large refactoring, which is why a full regression test is a pending P1 issue.
 
 **Credentials to test flow:**
 -   **Merchant Role:**
@@ -164,4 +168,5 @@ Issues Detail:
     -   **Password:** 
 
 **What agent forgot to execute**
--   The agent has not yet performed a full regression test of the shipping service editor after fixing the field loading and rate deletion bugs. This is captured as a P1 pending issue.</analysis>
+-   The refactoring of  is incomplete.  and  still need to be extracted to fully resolve the UI instability issues. This is captured as a P1 pending issue.
+-   A full regression test of the shipping editor UI after the major refactoring was not performed. This is also captured as a P1 pending issue.</analysis>
