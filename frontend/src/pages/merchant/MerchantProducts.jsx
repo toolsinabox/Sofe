@@ -2290,7 +2290,30 @@ const MerchantProducts = () => {
                         </div>
                       </td>
                       <td className="py-4 px-6 text-gray-700">
-                        {categories.find(c => c.id === product.category_id)?.name || '-'}
+                        {/* Show multiple categories */}
+                        {product.category_ids && product.category_ids.length > 0 ? (
+                          <div className="flex flex-wrap gap-1">
+                            {product.category_ids.slice(0, 2).map(catId => {
+                              const cat = categories.find(c => c.id === catId);
+                              return cat ? (
+                                <span key={catId} className="px-2 py-0.5 bg-gray-100 text-gray-600 rounded text-xs">
+                                  {cat.name}
+                                </span>
+                              ) : null;
+                            })}
+                            {product.category_ids.length > 2 && (
+                              <span className="px-2 py-0.5 bg-gray-100 text-gray-500 rounded text-xs">
+                                +{product.category_ids.length - 2} more
+                              </span>
+                            )}
+                          </div>
+                        ) : product.category_id ? (
+                          <span className="px-2 py-0.5 bg-gray-100 text-gray-600 rounded text-xs">
+                            {categories.find(c => c.id === product.category_id)?.name || '-'}
+                          </span>
+                        ) : (
+                          <span className="text-gray-400">-</span>
+                        )}
                       </td>
                       <td className="py-4 px-6">
                         <span className="text-gray-900 font-medium">{formatCurrency(product.price)}</span>
