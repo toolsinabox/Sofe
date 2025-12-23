@@ -1851,6 +1851,23 @@ const MerchantShipping = () => {
                   </div>
                 </div>
 
+                {/* Routing Group */}
+                <div className="mb-4">
+                  <Label className="text-gray-300 text-sm mb-2 block">
+                    Routing Group
+                    <span className="text-gray-500 text-xs ml-2">(Services in same group show only cheapest option to customer)</span>
+                  </Label>
+                  <StableInput
+                    key={`routing-group-${editingItem?.id || 'new'}`}
+                    name="routing_group"
+                    defaultValue={serviceForm.routing_group}
+                    onBlur={handleServiceFormBlur}
+                    placeholder="e.g., standard, express, economy (leave empty to always show)"
+                    className="bg-gray-700 border-gray-600 text-white w-full md:w-1/2"
+                    autoComplete="off"
+                  />
+                </div>
+
                 <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
                   <div>
                     <Label className="text-gray-300 text-sm">Name</Label>
