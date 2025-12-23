@@ -132,6 +132,15 @@ const MerchantPOS = () => {
   const [categories, setCategories] = useState([]);
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
   
+  // Parked Sales State
+  const [parkedSales, setParkedSales] = useState([]);
+  const [showParkedSales, setShowParkedSales] = useState(false);
+  const [parkingNote, setParkingNote] = useState('');
+  const [showParkModal, setShowParkModal] = useState(false);
+  
+  // Void Confirmation State
+  const [showVoidConfirm, setShowVoidConfirm] = useState(false);
+  
   // Returns/Refunds State
   const [showReturns, setShowReturns] = useState(false);
   const [returnTransactionSearch, setReturnTransactionSearch] = useState('');
