@@ -1105,18 +1105,18 @@ async def calculate_shipping(request: ShippingCalculationRequest):
         min_total = rate_min_charge * num_parcels if rate_min_charge > 0 else 0
         base_freight = max(subtotal, min_total)
         
-        # Step 5: Apply fuel levy percentage
-        if fuel_levy_percent > 0:
-            base_freight = base_freight * (1 + fuel_levy_percent / 100)
-        
-        # Step 6: Add flat fuel levy ONCE (applies to all orders)
-        if fuel_levy_amount > 0:
-            base_freight += fuel_levy_amount
-        
-        # Add handling fee (per item)
+        # Step 5: Add handling fee BEFORE fuel levy (per parcel)
         handling_fee = service.get("handling_fee", 0)
         if handling_fee > 0:
             base_freight += handling_fee * num_parcels
+        
+        # Step 6: Apply fuel levy percentage (applies to base + handling fee)
+        if fuel_levy_percent > 0:
+            base_freight = base_freight * (1 + fuel_levy_percent / 100)
+        
+        # Step 7: Add flat fuel levy ONCE (applies to all orders)
+        if fuel_levy_amount > 0:
+            base_freight += fuel_levy_amount
         
         base_price = base_freight
         
