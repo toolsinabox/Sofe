@@ -1889,3 +1889,87 @@ if category_id:
 - ✅ Products page has Import/Export buttons
 
 ### Status: COMPLETE ✓
+
+---
+
+## Comprehensive Product Reviews System - 2025-12-23
+
+### Features Implemented
+
+#### 1. Enhanced Backend Review Model
+**File: `/app/backend/server.py`**
+
+**ProductReview Model Additions:**
+- `product_sku` - Link reviews by SKU for easier admin management
+- `product_name` - Cached product name
+- `images` - Array of image URLs
+- `admin_reply` - Admin response to review
+- `admin_reply_at` - Timestamp of admin reply
+- `is_featured` - Mark reviews as featured
+
+**New Endpoints:**
+- `GET /api/reviews/stats` - Dashboard statistics with rating distribution
+- `POST /api/reviews/upload-image` - Upload review images
+- Enhanced `GET /api/reviews/product/{id}` - Returns rating distribution
+
+**Enhanced Endpoints:**
+- `POST /api/reviews` - Now supports SKU-based product lookup
+- `PUT /api/reviews/{id}` - Now supports admin_reply, is_featured
+
+#### 2. Comprehensive Merchant Reviews Dashboard
+**File: `/app/frontend/src/pages/merchant/MerchantReviews.jsx`**
+
+**Features:**
+- **Stats Dashboard**: Total, Average Rating, Pending, Approved, Rejected, 5-Star counts
+- **Rating Distribution Chart**: Visual bar chart showing breakdown
+- **Filters**: Status (All/Pending/Approved/Rejected), Rating (1-5 stars), Search
+- **Review List**: Shows rating, status badges, verified purchase, featured badges, thumbnails
+- **Detail Modal**: Full review content, customer info, product info, images gallery
+- **Admin Reply**: Write and update responses to reviews
+- **Actions**: Approve, Reject, Feature/Unfeature, Delete
+- **Create Review Modal**: 
+  - Select product by SKU dropdown
+  - Customer name/email fields
+  - Interactive star rating selector
+  - Title and content fields
+  - Drag & drop image upload
+  - Verified Purchase toggle
+  - Status selection (Approved/Pending)
+
+#### 3. Storefront Product Reviews (ProductDetail.jsx)
+**File: `/app/frontend/src/pages/store/ProductDetail.jsx`**
+
+**Features:**
+- **Reviews Summary**: Average rating, total count
+- **Rating Breakdown**: Clickable filter by star rating
+- **Write Review Form**:
+  - Interactive star rating
+  - Customer name/email
+  - Review title/content
+  - Drag & drop image upload (up to 5 images)
+- **Reviews List**:
+  - Star ratings with verified purchase badge
+  - Review images gallery
+  - Admin reply display (highlighted)
+  - "Helpful" voting button
+  - Read more/less toggle for long reviews
+
+### Files Created/Modified
+- `/app/backend/server.py` - Enhanced review model and endpoints
+- `/app/frontend/src/pages/merchant/MerchantReviews.jsx` - Complete rewrite with full functionality
+- `/app/frontend/src/pages/store/ProductDetail.jsx` - Added comprehensive reviews section
+
+### Testing Results
+- ✅ Review stats endpoint returns correct data
+- ✅ Create review via SKU works
+- ✅ Image upload endpoint functional
+- ✅ Merchant Reviews page displays all stats
+- ✅ Create Review modal fully functional
+- ✅ Review Detail modal shows all information
+- ✅ Admin Reply section visible
+- ✅ Feature/Reject/Delete actions present
+
+### Note
+The storefront ProductDetail.jsx reviews section is ready but the live store uses backend-rendered templates (Maropost-style). The reviews will need to be integrated into the theme template system for customer-facing display.
+
+### Status: COMPLETE ✓
