@@ -341,12 +341,22 @@ const MerchantAddons = () => {
                     {addon.configurable && (
                       <Button
                         size="sm"
-                        variant="ghost"
-                        className="h-7 px-2 text-gray-500 hover:text-gray-900"
+                        variant={DEDICATED_INTEGRATIONS[addon.addon_id] ? "default" : "ghost"}
+                        className={DEDICATED_INTEGRATIONS[addon.addon_id] 
+                          ? "h-7 px-2 bg-blue-600 hover:bg-blue-700 text-white text-xs"
+                          : "h-7 px-2 text-gray-500 hover:text-gray-900"
+                        }
                         onClick={() => openConfigModal(addon)}
                         disabled={actionLoading === addon.addon_id}
                       >
-                        <Settings size={14} />
+                        {DEDICATED_INTEGRATIONS[addon.addon_id] ? (
+                          <>
+                            Configure
+                            <ExternalLink size={12} className="ml-1" />
+                          </>
+                        ) : (
+                          <Settings size={14} />
+                        )}
                       </Button>
                     )}
                     <Button
