@@ -263,6 +263,62 @@ const EbayIntegration = () => {
   });
   const [analyticsDateRange, setAnalyticsDateRange] = useState('30d');
 
+  // Get the selected preview product data
+  const getPreviewProduct = () => {
+    const selectedId = themeSettings.previewProduct;
+    if (!selectedId || selectedId === 'sample') {
+      return {
+        name: 'Sample Product - Premium Quality Item',
+        price: 129.99,
+        compare_price: 159.99,
+        sku: 'SAMPLE-001',
+        description: 'This is a sample product description. Select a real product from the dropdown above to see how your actual products will look in the eBay listing.',
+        stock: 25,
+        brand: 'Your Brand',
+        category: 'Category',
+        weight: '1.5 kg',
+        dimensions: '10 x 8 x 4 cm',
+        condition: 'New',
+        images: [],
+        upc: '123456789012',
+        mpn: 'MPN-12345'
+      };
+    }
+    
+    const product = products.find(p => p.id === selectedId);
+    if (!product) {
+      return {
+        name: 'Product Not Found',
+        price: 0,
+        sku: 'N/A',
+        description: 'The selected product could not be found.',
+        stock: 0,
+        brand: '-',
+        category: '-',
+        images: []
+      };
+    }
+    
+    return {
+      name: product.name || 'Untitled Product',
+      price: product.price || 0,
+      compare_price: product.compare_price || product.price * 1.2,
+      sku: product.sku || 'NO-SKU',
+      description: product.description || 'No description available.',
+      stock: product.stock ?? product.quantity ?? 0,
+      brand: product.brand || product.vendor || 'Unbranded',
+      category: product.category || 'General',
+      weight: product.weight ? `${product.weight} kg` : 'N/A',
+      dimensions: product.dimensions || 'N/A',
+      condition: product.condition || 'New',
+      images: product.images || [],
+      upc: product.upc || product.barcode || 'N/A',
+      mpn: product.mpn || 'N/A'
+    };
+  };
+
+  const previewProduct = getPreviewProduct();
+
   // Fetch status
   const fetchStatus = useCallback(async () => {
     try {
