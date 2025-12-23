@@ -2649,44 +2649,68 @@ const EbayIntegration = () => {
               <div className="grid grid-cols-1 xl:grid-cols-2 gap-4">
                 {/* Left Panel - Code Editor */}
                 <div className="space-y-4">
-                  {/* Editor Tabs */}
-                  <div className="bg-white rounded-xl border border-gray-200 overflow-hidden">
-                    <div className="flex border-b border-gray-200 bg-gray-50">
-                      {[
-                        { id: 'header', label: 'Header', icon: Layout },
-                        { id: 'description', label: 'Description', icon: FileText },
-                        { id: 'specs', label: 'Specifications', icon: List },
-                        { id: 'footer', label: 'Footer', icon: Type },
-                        { id: 'css', label: 'Custom CSS', icon: Code },
-                      ].map(tab => (
+                  {/* Template Selector */}
+                  <div className="bg-white rounded-xl border border-gray-200 p-4">
+                    <h4 className="font-medium text-gray-900 mb-3 flex items-center gap-2">
+                      <Sparkles className="w-4 h-4 text-yellow-500" />
+                      Choose Template
+                    </h4>
+                    <div className="grid grid-cols-5 gap-2">
+                      {listingTemplates.map(template => (
                         <button
-                          key={tab.id}
-                          onClick={() => setActiveThemeTemplate(tab.id)}
-                          className={`flex items-center gap-1.5 px-4 py-2.5 text-sm font-medium transition-colors border-b-2 -mb-[2px] ${
-                            activeThemeTemplate === tab.id
-                              ? 'border-yellow-500 text-yellow-600 bg-white'
-                              : 'border-transparent text-gray-500 hover:text-gray-700'
+                          key={template.id}
+                          onClick={() => applyTemplate(template.id)}
+                          className={`p-3 border rounded-lg transition-all text-center ${
+                            themeSettings.template === template.id
+                              ? 'border-yellow-500 bg-yellow-50 ring-2 ring-yellow-200'
+                              : 'border-gray-200 hover:border-gray-300 hover:bg-gray-50'
                           }`}
                         >
-                          <tab.icon className="w-3.5 h-3.5" />
-                          {tab.label}
+                          <span className="text-2xl block mb-1">{template.preview}</span>
+                          <span className="text-xs font-medium text-gray-700">{template.name}</span>
                         </button>
                       ))}
                     </div>
+                  </div>
 
-                    {/* Template Tags Toolbar */}
+                  {/* Full HTML Code Editor */}
+                  <div className="bg-white rounded-xl border border-gray-200 overflow-hidden">
+                    <div className="flex items-center justify-between px-4 py-3 border-b border-gray-200 bg-gray-50">
+                      <div className="flex items-center gap-2">
+                        <Code className="w-4 h-4 text-yellow-500" />
+                        <span className="font-medium text-gray-900">Full Template HTML</span>
+                        <span className="text-xs text-gray-500 bg-gray-200 px-2 py-0.5 rounded">
+                          {EBAY_TEMPLATES[themeSettings.template]?.name || 'Custom'}
+                        </span>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <button 
+                          onClick={() => {
+                            navigator.clipboard.writeText(themeSettings.descriptionTemplate || '');
+                          }}
+                          className="text-xs text-gray-500 hover:text-gray-700 flex items-center gap-1"
+                        >
+                          <Copy className="w-3 h-3" />
+                          Copy
+                        </button>
+                      </div>
+                    </div>
+
+                    {/* Template Tags Quick Insert */}
                     <div className="p-3 border-b border-gray-100 bg-gray-50/50">
                       <div className="flex items-center gap-2 flex-wrap">
-                        <span className="text-xs font-medium text-gray-500 mr-2">Insert Tag:</span>
+                        <span className="text-xs font-medium text-gray-500 mr-2">Insert:</span>
                         {[
-                          { tag: '{{product_name}}', label: 'Name', color: 'blue' },
-                          { tag: '{{product_price}}', label: 'Price', color: 'green' },
-                          { tag: '{{product_sku}}', label: 'SKU', color: 'purple' },
-                          { tag: '{{product_description}}', label: 'Desc', color: 'orange' },
-                          { tag: '{{product_images}}', label: 'Images', color: 'pink' },
-                          { tag: '{{product_stock}}', label: 'Stock', color: 'cyan' },
-                          { tag: '{{store_name}}', label: 'Store', color: 'yellow' },
-                          { tag: '{{store_logo}}', label: 'Logo', color: 'indigo' },
+                          { tag: '{{product_name}}', label: 'Name' },
+                          { tag: '{{product_price}}', label: 'Price' },
+                          { tag: '{{product_sku}}', label: 'SKU' },
+                          { tag: '{{product_description}}', label: 'Description' },
+                          { tag: '{{product_brand}}', label: 'Brand' },
+                          { tag: '{{product_stock}}', label: 'Stock' },
+                          { tag: '{{product_condition}}', label: 'Condition' },
+                          { tag: '{{store_name}}', label: 'Store' },
+                          { tag: '{{store_logo}}', label: 'Logo' },
+                          { tag: '{{store_email}}', label: 'Email' },
                         ].map(item => (
                           <button
                             key={item.tag}
@@ -2694,329 +2718,121 @@ const EbayIntegration = () => {
                               const textarea = document.getElementById('theme-code-editor');
                               if (textarea) {
                                 const start = textarea.selectionStart;
-                                const end = textarea.selectionEnd;
-                                const currentTemplate = activeThemeTemplate === 'header' ? themeSettings.headerHTML :
-                                  activeThemeTemplate === 'description' ? themeSettings.descriptionTemplate :
-                                  activeThemeTemplate === 'specs' ? (themeSettings.specsTemplate || '') :
-                                  activeThemeTemplate === 'footer' ? themeSettings.footerHTML :
-                                  themeSettings.customCSS;
-                                const newValue = currentTemplate.slice(0, start) + item.tag + currentTemplate.slice(end);
-                                
-                                if (activeThemeTemplate === 'header') {
-                                  setThemeSettings(s => ({...s, headerHTML: newValue}));
-                                } else if (activeThemeTemplate === 'description') {
-                                  setThemeSettings(s => ({...s, descriptionTemplate: newValue}));
-                                } else if (activeThemeTemplate === 'specs') {
-                                  setThemeSettings(s => ({...s, specsTemplate: newValue}));
-                                } else if (activeThemeTemplate === 'footer') {
-                                  setThemeSettings(s => ({...s, footerHTML: newValue}));
-                                } else {
-                                  setThemeSettings(s => ({...s, customCSS: newValue}));
-                                }
+                                const currentVal = themeSettings.descriptionTemplate || '';
+                                const newVal = currentVal.slice(0, start) + item.tag + currentVal.slice(start);
+                                setThemeSettings(s => ({...s, descriptionTemplate: newVal}));
                               }
                             }}
-                            className={`px-2 py-1 text-xs rounded-md border transition-colors bg-${item.color}-50 border-${item.color}-200 text-${item.color}-700 hover:bg-${item.color}-100`}
-                            style={{
-                              backgroundColor: item.color === 'blue' ? '#eff6ff' : item.color === 'green' ? '#f0fdf4' : item.color === 'purple' ? '#faf5ff' : item.color === 'orange' ? '#fff7ed' : item.color === 'pink' ? '#fdf2f8' : item.color === 'cyan' ? '#ecfeff' : item.color === 'yellow' ? '#fefce8' : '#eef2ff',
-                              borderColor: item.color === 'blue' ? '#bfdbfe' : item.color === 'green' ? '#bbf7d0' : item.color === 'purple' ? '#e9d5ff' : item.color === 'orange' ? '#fed7aa' : item.color === 'pink' ? '#fbcfe8' : item.color === 'cyan' ? '#a5f3fc' : item.color === 'yellow' ? '#fef08a' : '#c7d2fe',
-                              color: item.color === 'blue' ? '#1d4ed8' : item.color === 'green' ? '#15803d' : item.color === 'purple' ? '#7e22ce' : item.color === 'orange' ? '#c2410c' : item.color === 'pink' ? '#be185d' : item.color === 'cyan' ? '#0891b2' : item.color === 'yellow' ? '#a16207' : '#4338ca',
-                            }}
+                            className="px-2 py-1 text-xs bg-gray-100 hover:bg-gray-200 text-gray-600 rounded transition-colors font-mono"
                           >
                             {item.label}
                           </button>
                         ))}
                       </div>
-                      
-                      {/* More Tags - Expandable */}
-                      <details className="mt-2">
-                        <summary className="text-xs text-gray-500 cursor-pointer hover:text-gray-700">More tags...</summary>
-                        <div className="flex items-center gap-2 flex-wrap mt-2">
-                          {[
-                            { tag: '{{product_brand}}', label: 'Brand' },
-                            { tag: '{{product_category}}', label: 'Category' },
-                            { tag: '{{product_weight}}', label: 'Weight' },
-                            { tag: '{{product_dimensions}}', label: 'Dimensions' },
-                            { tag: '{{product_condition}}', label: 'Condition' },
-                            { tag: '{{product_upc}}', label: 'UPC' },
-                            { tag: '{{product_mpn}}', label: 'MPN' },
-                            { tag: '{{shipping_cost}}', label: 'Shipping' },
-                            { tag: '{{return_policy}}', label: 'Returns' },
-                            { tag: '{{store_email}}', label: 'Email' },
-                            { tag: '{{store_phone}}', label: 'Phone' },
-                            { tag: '{{current_date}}', label: 'Date' },
-                            { tag: '{{listing_id}}', label: 'Listing ID' },
-                          ].map(item => (
-                            <button
-                              key={item.tag}
-                              onClick={() => {
-                                const textarea = document.getElementById('theme-code-editor');
-                                if (textarea) {
-                                  const start = textarea.selectionStart;
-                                  const currentTemplate = activeThemeTemplate === 'header' ? themeSettings.headerHTML :
-                                    activeThemeTemplate === 'description' ? themeSettings.descriptionTemplate :
-                                    activeThemeTemplate === 'specs' ? (themeSettings.specsTemplate || '') :
-                                    activeThemeTemplate === 'footer' ? themeSettings.footerHTML :
-                                    themeSettings.customCSS;
-                                  const newValue = currentTemplate.slice(0, start) + item.tag + currentTemplate.slice(start);
-                                  
-                                  if (activeThemeTemplate === 'header') {
-                                    setThemeSettings(s => ({...s, headerHTML: newValue}));
-                                  } else if (activeThemeTemplate === 'description') {
-                                    setThemeSettings(s => ({...s, descriptionTemplate: newValue}));
-                                  } else if (activeThemeTemplate === 'specs') {
-                                    setThemeSettings(s => ({...s, specsTemplate: newValue}));
-                                  } else if (activeThemeTemplate === 'footer') {
-                                    setThemeSettings(s => ({...s, footerHTML: newValue}));
-                                  } else {
-                                    setThemeSettings(s => ({...s, customCSS: newValue}));
-                                  }
-                                }
-                              }}
-                              className="px-2 py-1 text-xs rounded-md border bg-gray-50 border-gray-200 text-gray-600 hover:bg-gray-100"
-                            >
-                              {item.label}
-                            </button>
-                          ))}
-                        </div>
-                      </details>
                     </div>
-
-                    {/* Formatting Toolbar */}
-                    {activeThemeTemplate !== 'css' && (
-                      <div className="p-2 border-b border-gray-100 flex items-center gap-1 bg-white">
-                        <button className="p-1.5 rounded hover:bg-gray-100" title="Bold">
-                          <Bold className="w-4 h-4 text-gray-600" />
-                        </button>
-                        <button className="p-1.5 rounded hover:bg-gray-100" title="Italic">
-                          <Italic className="w-4 h-4 text-gray-600" />
-                        </button>
-                        <button className="p-1.5 rounded hover:bg-gray-100" title="Underline">
-                          <Underline className="w-4 h-4 text-gray-600" />
-                        </button>
-                        <div className="w-px h-5 bg-gray-200 mx-1"></div>
-                        <button className="p-1.5 rounded hover:bg-gray-100" title="Align Left">
-                          <AlignLeft className="w-4 h-4 text-gray-600" />
-                        </button>
-                        <button className="p-1.5 rounded hover:bg-gray-100" title="Align Center">
-                          <AlignCenter className="w-4 h-4 text-gray-600" />
-                        </button>
-                        <button className="p-1.5 rounded hover:bg-gray-100" title="Align Right">
-                          <AlignRight className="w-4 h-4 text-gray-600" />
-                        </button>
-                        <div className="w-px h-5 bg-gray-200 mx-1"></div>
-                        <button className="p-1.5 rounded hover:bg-gray-100" title="Numbered List">
-                          <ListOrdered className="w-4 h-4 text-gray-600" />
-                        </button>
-                        <button className="p-1.5 rounded hover:bg-gray-100" title="Bullet List">
-                          <List className="w-4 h-4 text-gray-600" />
-                        </button>
-                        <button className="p-1.5 rounded hover:bg-gray-100" title="Insert Link">
-                          <Link2 className="w-4 h-4 text-gray-600" />
-                        </button>
-                        <button className="p-1.5 rounded hover:bg-gray-100" title="Insert Image">
-                          <ImageIcon className="w-4 h-4 text-gray-600" />
-                        </button>
-                        <div className="flex-1"></div>
-                        <span className="text-xs text-gray-400">HTML</span>
-                      </div>
-                    )}
 
                     {/* Code Editor */}
                     <div className="relative">
-                      <div className="absolute left-0 top-0 bottom-0 w-10 bg-gray-50 border-r border-gray-200 flex flex-col text-right pr-2 pt-3 text-xs text-gray-400 font-mono select-none overflow-hidden">
-                        {Array.from({ length: 30 }, (_, i) => (
+                      <div className="absolute left-0 top-0 bottom-0 w-12 bg-gray-800 flex flex-col text-right pr-3 pt-3 text-xs text-gray-500 font-mono select-none overflow-hidden border-r border-gray-700">
+                        {Array.from({ length: Math.max((themeSettings.descriptionTemplate || '').split('\n').length + 5, 50) }, (_, i) => (
                           <div key={i} className="h-5 leading-5">{i + 1}</div>
                         ))}
                       </div>
                       <textarea
                         id="theme-code-editor"
-                        value={
-                          activeThemeTemplate === 'header' ? themeSettings.headerHTML :
-                          activeThemeTemplate === 'description' ? themeSettings.descriptionTemplate :
-                          activeThemeTemplate === 'specs' ? (themeSettings.specsTemplate || `<div class="product-specs">
-  <h3>Product Specifications</h3>
-  <table class="specs-table">
-    <tr><td>Brand</td><td>{{product_brand}}</td></tr>
-    <tr><td>SKU</td><td>{{product_sku}}</td></tr>
-    <tr><td>Condition</td><td>{{product_condition}}</td></tr>
-    <tr><td>Weight</td><td>{{product_weight}}</td></tr>
-  </table>
-</div>`) :
-                          activeThemeTemplate === 'footer' ? themeSettings.footerHTML :
-                          themeSettings.customCSS
-                        }
-                        onChange={(e) => {
-                          if (activeThemeTemplate === 'header') {
-                            setThemeSettings(s => ({...s, headerHTML: e.target.value}));
-                          } else if (activeThemeTemplate === 'description') {
-                            setThemeSettings(s => ({...s, descriptionTemplate: e.target.value}));
-                          } else if (activeThemeTemplate === 'specs') {
-                            setThemeSettings(s => ({...s, specsTemplate: e.target.value}));
-                          } else if (activeThemeTemplate === 'footer') {
-                            setThemeSettings(s => ({...s, footerHTML: e.target.value}));
-                          } else {
-                            setThemeSettings(s => ({...s, customCSS: e.target.value}));
-                          }
-                        }}
-                        className="w-full h-72 pl-12 pr-4 py-3 font-mono text-sm bg-gray-900 text-green-400 resize-none focus:outline-none"
-                        style={{ lineHeight: '1.25rem', tabSize: 2 }}
+                        value={themeSettings.descriptionTemplate || getFullTemplateHTML(themeSettings.template || 'modern')}
+                        onChange={(e) => setThemeSettings(s => ({...s, descriptionTemplate: e.target.value}))}
+                        className="w-full pl-14 pr-4 py-3 font-mono text-sm bg-gray-900 text-green-400 resize-none focus:outline-none"
+                        style={{ lineHeight: '1.25rem', tabSize: 2, minHeight: '500px' }}
                         spellCheck={false}
-                        placeholder={activeThemeTemplate === 'css' ? '/* Enter your custom CSS here */' : '<!-- Enter your HTML template here -->'}
+                        placeholder="<!-- Your eBay listing HTML template -->"
                       />
                     </div>
 
                     {/* Editor Footer */}
-                    <div className="p-2 border-t border-gray-200 bg-gray-50 flex items-center justify-between text-xs text-gray-500">
+                    <div className="p-2 border-t border-gray-700 bg-gray-800 flex items-center justify-between text-xs text-gray-400">
                       <div className="flex items-center gap-4">
-                        <span>
-                          {activeThemeTemplate === 'css' ? 'CSS' : 'HTML'} • UTF-8
-                        </span>
-                        <span>
-                          {(activeThemeTemplate === 'header' ? themeSettings.headerHTML :
-                          activeThemeTemplate === 'description' ? themeSettings.descriptionTemplate :
-                          activeThemeTemplate === 'specs' ? (themeSettings.specsTemplate || '') :
-                          activeThemeTemplate === 'footer' ? themeSettings.footerHTML :
-                          themeSettings.customCSS).length} characters
-                        </span>
+                        <span>HTML • UTF-8</span>
+                        <span>{(themeSettings.descriptionTemplate || '').length.toLocaleString()} characters</span>
+                        <span>{(themeSettings.descriptionTemplate || '').split('\n').length} lines</span>
                       </div>
-                      <div className="flex items-center gap-2">
-                        <button className="hover:text-gray-700" title="Format Code">
-                          <Sparkles className="w-4 h-4" />
-                        </button>
-                        <button className="hover:text-gray-700" title="Copy Code">
-                          <Copy className="w-4 h-4" />
-                        </button>
-                        <button className="hover:text-gray-700" title="Fullscreen">
-                          <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                            <path d="M8 3H5a2 2 0 00-2 2v3m18 0V5a2 2 0 00-2-2h-3m0 18h3a2 2 0 002-2v-3M3 16v3a2 2 0 002 2h3" />
-                          </svg>
-                        </button>
+                      <div className="flex items-center gap-3">
+                        <span className="text-yellow-500">eBay Compatible</span>
                       </div>
                     </div>
                   </div>
 
-                  {/* Quick Settings Panel */}
-                  <div className="grid grid-cols-2 gap-4">
-                    {/* Colors */}
-                    <div className="bg-white rounded-xl border border-gray-200 p-4">
-                      <h4 className="font-medium text-gray-900 mb-3 text-sm flex items-center gap-2">
-                        <Palette className="w-4 h-4 text-yellow-500" />
-                        Theme Colors
-                      </h4>
-                      <div className="space-y-3">
-                        <div className="flex items-center gap-2">
+                  {/* Color Customization */}
+                  <div className="bg-white rounded-xl border border-gray-200 p-4">
+                    <h4 className="font-medium text-gray-900 mb-3 flex items-center gap-2">
+                      <Palette className="w-4 h-4 text-yellow-500" />
+                      Theme Colors
+                    </h4>
+                    <div className="grid grid-cols-3 gap-4">
+                      <div>
+                        <Label className="text-xs text-gray-500 mb-1 block">Primary</Label>
+                        <div className="flex gap-2">
                           <input
                             type="color"
                             value={themeSettings.primaryColor}
-                            onChange={(e) => setThemeSettings(s => ({...s, primaryColor: e.target.value}))}
-                            className="w-8 h-8 rounded border border-gray-200 cursor-pointer"
+                            onChange={(e) => {
+                              setThemeSettings(s => ({...s, primaryColor: e.target.value}));
+                              // Re-apply template with new color
+                              if (themeSettings.template) {
+                                setTimeout(() => applyTemplate(themeSettings.template), 100);
+                              }
+                            }}
+                            className="w-10 h-10 rounded border border-gray-200 cursor-pointer"
                           />
-                          <div className="flex-1">
-                            <p className="text-xs text-gray-500">Primary</p>
-                            <p className="text-xs font-mono">{themeSettings.primaryColor}</p>
-                          </div>
+                          <Input
+                            value={themeSettings.primaryColor}
+                            onChange={(e) => setThemeSettings(s => ({...s, primaryColor: e.target.value}))}
+                            className="flex-1 font-mono text-xs"
+                          />
                         </div>
-                        <div className="flex items-center gap-2">
+                      </div>
+                      <div>
+                        <Label className="text-xs text-gray-500 mb-1 block">Accent</Label>
+                        <div className="flex gap-2">
                           <input
                             type="color"
                             value={themeSettings.accentColor}
-                            onChange={(e) => setThemeSettings(s => ({...s, accentColor: e.target.value}))}
-                            className="w-8 h-8 rounded border border-gray-200 cursor-pointer"
+                            onChange={(e) => {
+                              setThemeSettings(s => ({...s, accentColor: e.target.value}));
+                              if (themeSettings.template) {
+                                setTimeout(() => applyTemplate(themeSettings.template), 100);
+                              }
+                            }}
+                            className="w-10 h-10 rounded border border-gray-200 cursor-pointer"
                           />
-                          <div className="flex-1">
-                            <p className="text-xs text-gray-500">Accent</p>
-                            <p className="text-xs font-mono">{themeSettings.accentColor}</p>
-                          </div>
+                          <Input
+                            value={themeSettings.accentColor}
+                            onChange={(e) => setThemeSettings(s => ({...s, accentColor: e.target.value}))}
+                            className="flex-1 font-mono text-xs"
+                          />
                         </div>
-                        <div className="flex items-center gap-2">
+                      </div>
+                      <div>
+                        <Label className="text-xs text-gray-500 mb-1 block">Background</Label>
+                        <div className="flex gap-2">
                           <input
                             type="color"
                             value={themeSettings.secondaryColor}
+                            onChange={(e) => {
+                              setThemeSettings(s => ({...s, secondaryColor: e.target.value}));
+                              if (themeSettings.template) {
+                                setTimeout(() => applyTemplate(themeSettings.template), 100);
+                              }
+                            }}
+                            className="w-10 h-10 rounded border border-gray-200 cursor-pointer"
+                          />
+                          <Input
+                            value={themeSettings.secondaryColor}
                             onChange={(e) => setThemeSettings(s => ({...s, secondaryColor: e.target.value}))}
-                            className="w-8 h-8 rounded border border-gray-200 cursor-pointer"
-                          />
-                          <div className="flex-1">
-                            <p className="text-xs text-gray-500">Background</p>
-                            <p className="text-xs font-mono">{themeSettings.secondaryColor}</p>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-
-                    {/* Typography */}
-                    <div className="bg-white rounded-xl border border-gray-200 p-4">
-                      <h4 className="font-medium text-gray-900 mb-3 text-sm flex items-center gap-2">
-                        <Type className="w-4 h-4 text-yellow-500" />
-                        Typography
-                      </h4>
-                      <div className="space-y-3">
-                        <div>
-                          <Label className="text-xs text-gray-500">Font Family</Label>
-                          <Select 
-                            value={themeSettings.fontFamily}
-                            onValueChange={(v) => setThemeSettings(s => ({...s, fontFamily: v}))}
-                          >
-                            <SelectTrigger className="mt-1 h-8 text-sm">
-                              <SelectValue />
-                            </SelectTrigger>
-                            <SelectContent className="bg-white">
-                              <SelectItem value="Arial, sans-serif">Arial</SelectItem>
-                              <SelectItem value="'Helvetica Neue', sans-serif">Helvetica</SelectItem>
-                              <SelectItem value="Georgia, serif">Georgia</SelectItem>
-                              <SelectItem value="'Times New Roman', serif">Times New Roman</SelectItem>
-                              <SelectItem value="Verdana, sans-serif">Verdana</SelectItem>
-                              <SelectItem value="'Trebuchet MS', sans-serif">Trebuchet</SelectItem>
-                              <SelectItem value="'Segoe UI', sans-serif">Segoe UI</SelectItem>
-                              <SelectItem value="Roboto, sans-serif">Roboto</SelectItem>
-                            </SelectContent>
-                          </Select>
-                        </div>
-                        <div>
-                          <Label className="text-xs text-gray-500">Base Font Size</Label>
-                          <Select 
-                            value={themeSettings.fontSize || '14px'}
-                            onValueChange={(v) => setThemeSettings(s => ({...s, fontSize: v}))}
-                          >
-                            <SelectTrigger className="mt-1 h-8 text-sm">
-                              <SelectValue />
-                            </SelectTrigger>
-                            <SelectContent className="bg-white">
-                              <SelectItem value="12px">12px - Small</SelectItem>
-                              <SelectItem value="14px">14px - Default</SelectItem>
-                              <SelectItem value="16px">16px - Large</SelectItem>
-                              <SelectItem value="18px">18px - Extra Large</SelectItem>
-                            </SelectContent>
-                          </Select>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-
-                  {/* Display Options */}
-                  <div className="bg-white rounded-xl border border-gray-200 p-4">
-                    <h4 className="font-medium text-gray-900 mb-3 text-sm flex items-center gap-2">
-                      <Layers className="w-4 h-4 text-yellow-500" />
-                      Display Elements
-                    </h4>
-                    <div className="grid grid-cols-2 gap-x-6 gap-y-2">
-                      {[
-                        { key: 'showBrandLogo', label: 'Brand Logo' },
-                        { key: 'showTrustBadges', label: 'Trust Badges' },
-                        { key: 'showShippingInfo', label: 'Shipping Info' },
-                        { key: 'showReturnPolicy', label: 'Return Policy' },
-                        { key: 'showPaymentIcons', label: 'Payment Icons' },
-                        { key: 'showSocialLinks', label: 'Social Links' },
-                        { key: 'showProductSpecs', label: 'Product Specs' },
-                        { key: 'showStockLevel', label: 'Stock Level' },
-                      ].map(item => (
-                        <div key={item.key} className="flex items-center justify-between py-1">
-                          <Label className="text-sm text-gray-700">{item.label}</Label>
-                          <Switch
-                            checked={themeSettings[item.key] ?? true}
-                            onCheckedChange={(c) => setThemeSettings(s => ({...s, [item.key]: c}))}
+                            className="flex-1 font-mono text-xs"
                           />
                         </div>
-                      ))}
+                      </div>
                     </div>
                   </div>
                 </div>
