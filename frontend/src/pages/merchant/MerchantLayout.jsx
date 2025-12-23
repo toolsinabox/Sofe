@@ -51,15 +51,15 @@ const MerchantLayout = () => {
 
   // Determine the margin class based on sidebar state
   const mainContentClass = sidebarCollapsed 
-    ? "transition-all duration-300 ml-0 lg:ml-[70px]" 
-    : "transition-all duration-300 ml-0 lg:ml-[260px]";
+    ? "transition-all duration-300 ml-0 lg:ml-[60px]" 
+    : "transition-all duration-300 ml-0 lg:ml-[240px]";
 
   return (
-    <div className="min-h-screen bg-[#0a0e14]">
+    <div className="min-h-screen bg-gray-50">
       {/* Mobile overlay */}
       {mobileMenuOpen && (
         <div 
-          className="fixed inset-0 bg-black/50 z-40 lg:hidden"
+          className="fixed inset-0 bg-black/30 z-40 lg:hidden"
           onClick={() => setMobileMenuOpen(false)}
         />
       )}
@@ -80,7 +80,7 @@ const MerchantLayout = () => {
             onMenuClick={() => setMobileMenuOpen(true)}
           />
         )}
-        <main className={isPOSPage ? "h-screen" : "p-3 sm:p-4 md:p-6"}>
+        <main className={isPOSPage ? "h-screen" : "p-4 sm:p-5 md:p-6"}>
           <Outlet />
         </main>
       </div>
