@@ -279,7 +279,12 @@ const EbayIntegration = () => {
         weight: '1.5 kg',
         dimensions: '10 x 8 x 4 cm',
         condition: 'New',
-        images: [],
+        images: [
+          'https://placehold.co/600x600/e8e8e8/666?text=Product+Image+1',
+          'https://placehold.co/600x600/f0f0f0/666?text=Product+Image+2',
+          'https://placehold.co/600x600/e0e0e0/666?text=Product+Image+3',
+          'https://placehold.co/600x600/d8d8d8/666?text=Product+Image+4'
+        ],
         upc: '123456789012',
         mpn: 'MPN-12345'
       };
