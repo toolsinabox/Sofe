@@ -302,8 +302,8 @@ const MerchantOrders = () => {
           <CardContent className="p-6">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-gray-400 text-sm">Total Orders</p>
-                <p className="text-3xl font-bold text-white mt-1">{stats.totalOrders || orders.length}</p>
+                <p className="text-gray-500 text-sm">Total Orders</p>
+                <p className="text-3xl font-bold text-gray-900 mt-1">{stats.totalOrders || orders.length}</p>
                 <p className="text-blue-400 text-sm mt-1 flex items-center gap-1">
                   <ArrowUpRight size={14} /> +{stats.todayOrders || 0} today
                 </p>
@@ -319,8 +319,8 @@ const MerchantOrders = () => {
           <CardContent className="p-6">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-gray-400 text-sm">Total Revenue</p>
-                <p className="text-3xl font-bold text-white mt-1">{formatCurrency(stats.totalRevenue)}</p>
+                <p className="text-gray-500 text-sm">Total Revenue</p>
+                <p className="text-3xl font-bold text-gray-900 mt-1">{formatCurrency(stats.totalRevenue)}</p>
                 <p className="text-emerald-400 text-sm mt-1 flex items-center gap-1">
                   <ArrowUpRight size={14} /> {formatCurrency(stats.todayRevenue)} today
                 </p>
@@ -336,8 +336,8 @@ const MerchantOrders = () => {
           <CardContent className="p-6">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-gray-400 text-sm">Pending Orders</p>
-                <p className="text-3xl font-bold text-white mt-1">{stats.pendingOrders || orderCounts.pending}</p>
+                <p className="text-gray-500 text-sm">Pending Orders</p>
+                <p className="text-3xl font-bold text-gray-900 mt-1">{stats.pendingOrders || orderCounts.pending}</p>
                 <p className="text-yellow-400 text-sm mt-1">Requires attention</p>
               </div>
               <div className="p-3 bg-yellow-500/20 rounded-xl">
@@ -351,8 +351,8 @@ const MerchantOrders = () => {
           <CardContent className="p-6">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-gray-400 text-sm">Avg Order Value</p>
-                <p className="text-3xl font-bold text-white mt-1">{formatCurrency(stats.avgOrderValue)}</p>
+                <p className="text-gray-500 text-sm">Avg Order Value</p>
+                <p className="text-3xl font-bold text-gray-900 mt-1">{formatCurrency(stats.avgOrderValue)}</p>
                 <p className="text-purple-400 text-sm mt-1 flex items-center gap-1">
                   <TrendingUp size={14} /> All time
                 </p>
@@ -376,12 +376,12 @@ const MerchantOrders = () => {
               className={`px-4 py-2.5 rounded-lg text-sm font-medium whitespace-nowrap transition-all flex items-center gap-2 ${
                 statusFilter === status
                   ? 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/30'
-                  : 'bg-gray-800/50 text-gray-400 border border-gray-800 hover:text-white hover:border-gray-700'
+                  : 'bg-gray-50 text-gray-500 border border-gray-200 hover:text-gray-900 hover:border-gray-200'
               }`}
             >
               {config && <config.icon size={14} />}
               {status.charAt(0).toUpperCase() + status.slice(1)}
-              <span className="px-1.5 py-0.5 rounded bg-gray-800/80 text-xs">
+              <span className="px-1.5 py-0.5 rounded bg-gray-100/80 text-xs">
                 {orderCounts[status]}
               </span>
             </button>
@@ -400,17 +400,17 @@ const MerchantOrders = () => {
               placeholder="Search by order #, customer name, email..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full bg-gray-800/50 border border-gray-700 rounded-lg pl-10 pr-4 py-2.5 text-sm text-white placeholder-gray-500 focus:outline-none focus:border-emerald-500/50 focus:ring-1 focus:ring-emerald-500/50 transition-all"
+              className="w-full bg-gray-50 border border-gray-200 rounded-lg pl-10 pr-4 py-2.5 text-sm text-gray-900 placeholder-gray-500 focus:outline-none focus:border-emerald-500/50 focus:ring-1 focus:ring-emerald-500/50 transition-all"
             />
           </div>
           
           {/* Payment Status Filter */}
           <Select value={paymentFilter} onValueChange={(v) => { setPaymentFilter(v); setCurrentPage(1); }}>
-            <SelectTrigger className="w-40 bg-gray-800/50 border-gray-700 text-gray-300">
+            <SelectTrigger className="w-40 bg-gray-50 border-gray-200 text-gray-700">
               <CreditCard size={14} className="mr-2" />
               <SelectValue placeholder="Payment" />
             </SelectTrigger>
-            <SelectContent className="bg-[#1a1f2e] border-gray-700">
+            <SelectContent className="bg-white border-gray-200">
               <SelectItem value="all">All Payments</SelectItem>
               <SelectItem value="pending">Pending</SelectItem>
               <SelectItem value="paid">Paid</SelectItem>
@@ -421,11 +421,11 @@ const MerchantOrders = () => {
           
           {/* Date Filter */}
           <Select value={dateFilter} onValueChange={(v) => { setDateFilter(v); setCurrentPage(1); }}>
-            <SelectTrigger className="w-40 bg-gray-800/50 border-gray-700 text-gray-300">
+            <SelectTrigger className="w-40 bg-gray-50 border-gray-200 text-gray-700">
               <Calendar size={14} className="mr-2" />
               <SelectValue placeholder="Date" />
             </SelectTrigger>
-            <SelectContent className="bg-[#1a1f2e] border-gray-700">
+            <SelectContent className="bg-white border-gray-200">
               <SelectItem value="all">All Time</SelectItem>
               <SelectItem value="today">Today</SelectItem>
               <SelectItem value="week">This Week</SelectItem>
@@ -440,52 +440,52 @@ const MerchantOrders = () => {
           {selectedOrders.length > 0 && (
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
-                <Button variant="outline" className="border-gray-700 text-gray-300 hover:bg-gray-800">
+                <Button variant="outline" className="border-gray-200 text-gray-700 hover:bg-gray-100">
                   Bulk Actions ({selectedOrders.length})
                   <ChevronDown size={14} className="ml-2" />
                 </Button>
               </DropdownMenuTrigger>
-              <DropdownMenuContent className="bg-[#1a1f2e] border-gray-700">
-                <DropdownMenuItem onClick={() => bulkUpdateStatus('processing')} className="text-gray-300 hover:text-white hover:bg-gray-700/50 cursor-pointer">
+              <DropdownMenuContent className="bg-white border-gray-200">
+                <DropdownMenuItem onClick={() => bulkUpdateStatus('processing')} className="text-gray-700 hover:text-gray-900 hover:bg-gray-100/50 cursor-pointer">
                   <Package size={14} className="mr-2" /> Mark as Processing
                 </DropdownMenuItem>
-                <DropdownMenuItem onClick={() => bulkUpdateStatus('shipped')} className="text-gray-300 hover:text-white hover:bg-gray-700/50 cursor-pointer">
+                <DropdownMenuItem onClick={() => bulkUpdateStatus('shipped')} className="text-gray-700 hover:text-gray-900 hover:bg-gray-100/50 cursor-pointer">
                   <Truck size={14} className="mr-2" /> Mark as Shipped
                 </DropdownMenuItem>
-                <DropdownMenuItem onClick={() => bulkUpdateStatus('delivered')} className="text-gray-300 hover:text-white hover:bg-gray-700/50 cursor-pointer">
+                <DropdownMenuItem onClick={() => bulkUpdateStatus('delivered')} className="text-gray-700 hover:text-gray-900 hover:bg-gray-100/50 cursor-pointer">
                   <CheckCircle size={14} className="mr-2" /> Mark as Delivered
                 </DropdownMenuItem>
                 <DropdownMenuSeparator className="bg-gray-700" />
-                <DropdownMenuItem className="text-gray-300 hover:text-white hover:bg-gray-700/50 cursor-pointer">
+                <DropdownMenuItem className="text-gray-700 hover:text-gray-900 hover:bg-gray-100/50 cursor-pointer">
                   <Printer size={14} className="mr-2" /> Print Packing Slips
                 </DropdownMenuItem>
-                <DropdownMenuItem className="text-gray-300 hover:text-white hover:bg-gray-700/50 cursor-pointer">
+                <DropdownMenuItem className="text-gray-700 hover:text-gray-900 hover:bg-gray-100/50 cursor-pointer">
                   <FileText size={14} className="mr-2" /> Print Invoices
                 </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
           )}
           
-          <Button onClick={() => fetchOrders()} variant="outline" className="border-gray-700 text-gray-300 hover:bg-gray-800">
+          <Button onClick={() => fetchOrders()} variant="outline" className="border-gray-200 text-gray-700 hover:bg-gray-100">
             <RefreshCw size={16} className="mr-2" />
             Refresh
           </Button>
           
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
-              <Button variant="outline" className="border-gray-700 text-gray-300 hover:bg-gray-800">
+              <Button variant="outline" className="border-gray-200 text-gray-700 hover:bg-gray-100">
                 <Download size={16} className="mr-2" />
                 Export
               </Button>
             </DropdownMenuTrigger>
-            <DropdownMenuContent className="bg-[#1a1f2e] border-gray-700">
-              <DropdownMenuItem onClick={() => exportOrders('csv')} className="text-gray-300 hover:text-white hover:bg-gray-700/50 cursor-pointer">
+            <DropdownMenuContent className="bg-white border-gray-200">
+              <DropdownMenuItem onClick={() => exportOrders('csv')} className="text-gray-700 hover:text-gray-900 hover:bg-gray-100/50 cursor-pointer">
                 Export as CSV
               </DropdownMenuItem>
-              <DropdownMenuItem onClick={() => exportOrders('xlsx')} className="text-gray-300 hover:text-white hover:bg-gray-700/50 cursor-pointer">
+              <DropdownMenuItem onClick={() => exportOrders('xlsx')} className="text-gray-700 hover:text-gray-900 hover:bg-gray-100/50 cursor-pointer">
                 Export as Excel
               </DropdownMenuItem>
-              <DropdownMenuItem onClick={() => exportOrders('pdf')} className="text-gray-300 hover:text-white hover:bg-gray-700/50 cursor-pointer">
+              <DropdownMenuItem onClick={() => exportOrders('pdf')} className="text-gray-700 hover:text-gray-900 hover:bg-gray-100/50 cursor-pointer">
                 Export as PDF
               </DropdownMenuItem>
             </DropdownMenuContent>
@@ -494,7 +494,7 @@ const MerchantOrders = () => {
       </div>
 
       {/* Orders Table */}
-      <Card className="bg-[#151b28] border-gray-800">
+      <Card className="bg-white border-gray-200">
         <CardContent className="p-0">
           {loading ? (
             <div className="p-8 text-center">
@@ -504,7 +504,7 @@ const MerchantOrders = () => {
           ) : filteredOrders.length === 0 ? (
             <div className="p-12 text-center">
               <ShoppingBag className="mx-auto text-gray-600 mb-3" size={48} />
-              <p className="text-gray-400 font-medium">No orders found</p>
+              <p className="text-gray-500 font-medium">No orders found</p>
               <p className="text-gray-500 text-sm mt-1">Orders will appear here when customers place them</p>
             </div>
           ) : (
@@ -512,23 +512,23 @@ const MerchantOrders = () => {
               <div className="overflow-x-auto">
                 <table className="w-full">
                   <thead>
-                    <tr className="border-b border-gray-800 bg-gray-800/30">
+                    <tr className="border-b border-gray-200 bg-gray-50">
                       <th className="py-4 px-4 text-left">
                         <input
                           type="checkbox"
                           checked={selectedOrders.length === filteredOrders.length && filteredOrders.length > 0}
                           onChange={toggleAllOrders}
-                          className="rounded bg-gray-700 border-gray-600 text-emerald-500 focus:ring-emerald-500 focus:ring-offset-0"
+                          className="rounded bg-gray-700 border-gray-300 text-emerald-500 focus:ring-emerald-500 focus:ring-offset-0"
                         />
                       </th>
-                      <th className="text-left py-4 px-4 text-gray-400 font-medium text-sm">Order</th>
-                      <th className="text-left py-4 px-4 text-gray-400 font-medium text-sm">Customer</th>
-                      <th className="text-left py-4 px-4 text-gray-400 font-medium text-sm">Items</th>
-                      <th className="text-left py-4 px-4 text-gray-400 font-medium text-sm">Total</th>
-                      <th className="text-left py-4 px-4 text-gray-400 font-medium text-sm">Status</th>
-                      <th className="text-left py-4 px-4 text-gray-400 font-medium text-sm">Payment</th>
-                      <th className="text-left py-4 px-4 text-gray-400 font-medium text-sm">Date</th>
-                      <th className="text-right py-4 px-4 text-gray-400 font-medium text-sm">Actions</th>
+                      <th className="text-left py-4 px-4 text-gray-500 font-medium text-sm">Order</th>
+                      <th className="text-left py-4 px-4 text-gray-500 font-medium text-sm">Customer</th>
+                      <th className="text-left py-4 px-4 text-gray-500 font-medium text-sm">Items</th>
+                      <th className="text-left py-4 px-4 text-gray-500 font-medium text-sm">Total</th>
+                      <th className="text-left py-4 px-4 text-gray-500 font-medium text-sm">Status</th>
+                      <th className="text-left py-4 px-4 text-gray-500 font-medium text-sm">Payment</th>
+                      <th className="text-left py-4 px-4 text-gray-500 font-medium text-sm">Date</th>
+                      <th className="text-right py-4 px-4 text-gray-500 font-medium text-sm">Actions</th>
                     </tr>
                   </thead>
                   <tbody>
@@ -540,7 +540,7 @@ const MerchantOrders = () => {
                       return (
                         <tr 
                           key={order.id} 
-                          className={`border-b border-gray-800/50 hover:bg-gray-800/30 transition-colors cursor-pointer ${
+                          className={`border-b border-gray-200/50 hover:bg-gray-50 transition-colors cursor-pointer ${
                             selectedOrders.includes(order.id) ? 'bg-emerald-500/5' : ''
                           }`}
                           onClick={() => navigate(`/merchant/orders/${order.id}`)}
@@ -550,12 +550,12 @@ const MerchantOrders = () => {
                               type="checkbox"
                               checked={selectedOrders.includes(order.id)}
                               onChange={() => toggleOrderSelection(order.id)}
-                              className="rounded bg-gray-700 border-gray-600 text-emerald-500 focus:ring-emerald-500 focus:ring-offset-0"
+                              className="rounded bg-gray-700 border-gray-300 text-emerald-500 focus:ring-emerald-500 focus:ring-offset-0"
                             />
                           </td>
                           <td className="py-4 px-4">
                             <div>
-                              <span className="text-white font-medium">{order.order_number}</span>
+                              <span className="text-gray-900 font-medium">{order.order_number}</span>
                               {order.purchase_order && (
                                 <p className="text-gray-500 text-xs mt-0.5">PO: {order.purchase_order}</p>
                               )}
@@ -563,7 +563,7 @@ const MerchantOrders = () => {
                           </td>
                           <td className="py-4 px-4">
                             <div>
-                              <p className="text-white font-medium">{order.customer_name}</p>
+                              <p className="text-gray-900 font-medium">{order.customer_name}</p>
                               <p className="text-gray-500 text-sm">{order.customer_email}</p>
                             </div>
                           </td>
@@ -574,19 +574,19 @@ const MerchantOrders = () => {
                                   key={idx}
                                   src={item.image || 'https://via.placeholder.com/32'} 
                                   alt="" 
-                                  className="w-8 h-8 rounded object-cover border border-gray-700"
+                                  className="w-8 h-8 rounded object-cover border border-gray-200"
                                 />
                               ))}
                               {(order.items?.length || 0) > 2 && (
-                                <span className="text-gray-400 text-xs">+{order.items.length - 2}</span>
+                                <span className="text-gray-500 text-xs">+{order.items.length - 2}</span>
                               )}
-                              <span className="text-gray-400 text-sm ml-1">
+                              <span className="text-gray-500 text-sm ml-1">
                                 {order.items?.reduce((sum, i) => sum + i.quantity, 0) || 0} items
                               </span>
                             </div>
                           </td>
                           <td className="py-4 px-4">
-                            <span className="text-white font-medium">{formatCurrency(order.total)}</span>
+                            <span className="text-gray-900 font-medium">{formatCurrency(order.total)}</span>
                           </td>
                           <td className="py-4 px-4">
                             <span className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium border ${statusConfig.color}`}>
@@ -599,50 +599,50 @@ const MerchantOrders = () => {
                               {paymentConfig.label}
                             </span>
                           </td>
-                          <td className="py-4 px-4 text-gray-400 text-sm">
+                          <td className="py-4 px-4 text-gray-500 text-sm">
                             {formatDate(order.created_at)}
                           </td>
                           <td className="py-4 px-4 text-right" onClick={(e) => e.stopPropagation()}>
                             <DropdownMenu>
                               <DropdownMenuTrigger asChild>
-                                <button className="p-2 rounded hover:bg-gray-800 text-gray-400 hover:text-white transition-colors">
+                                <button className="p-2 rounded hover:bg-gray-100 text-gray-500 hover:text-gray-900 transition-colors">
                                   <MoreVertical size={18} />
                                 </button>
                               </DropdownMenuTrigger>
-                              <DropdownMenuContent align="end" className="bg-[#1a1f2e] border-gray-700 w-56">
+                              <DropdownMenuContent align="end" className="bg-white border-gray-200 w-56">
                                 <DropdownMenuItem 
-                                  className="text-gray-300 hover:text-white hover:bg-gray-700/50 cursor-pointer"
+                                  className="text-gray-700 hover:text-gray-900 hover:bg-gray-100/50 cursor-pointer"
                                   onClick={() => navigate(`/merchant/orders/${order.id}`)}
                                 >
                                   <Eye size={14} className="mr-2" /> View Details
                                 </DropdownMenuItem>
                                 <DropdownMenuSeparator className="bg-gray-700" />
                                 <DropdownMenuItem 
-                                  className="text-gray-300 hover:text-white hover:bg-gray-700/50 cursor-pointer"
+                                  className="text-gray-700 hover:text-gray-900 hover:bg-gray-100/50 cursor-pointer"
                                   onClick={() => { setSelectedOrder(order); setNewStatus(order.status); setShowStatusModal(true); }}
                                 >
                                   <RefreshCw size={14} className="mr-2" /> Update Status
                                 </DropdownMenuItem>
                                 <DropdownMenuItem 
-                                  className="text-gray-300 hover:text-white hover:bg-gray-700/50 cursor-pointer"
+                                  className="text-gray-700 hover:text-gray-900 hover:bg-gray-100/50 cursor-pointer"
                                   onClick={() => { setSelectedOrder(order); setShowTrackingModal(true); }}
                                 >
                                   <Truck size={14} className="mr-2" /> Add Tracking
                                 </DropdownMenuItem>
                                 <DropdownMenuItem 
-                                  className="text-gray-300 hover:text-white hover:bg-gray-700/50 cursor-pointer"
+                                  className="text-gray-700 hover:text-gray-900 hover:bg-gray-100/50 cursor-pointer"
                                   onClick={() => { setSelectedOrder(order); setShowNoteModal(true); }}
                                 >
                                   <FileText size={14} className="mr-2" /> Add Note
                                 </DropdownMenuItem>
                                 <DropdownMenuSeparator className="bg-gray-700" />
-                                <DropdownMenuItem className="text-gray-300 hover:text-white hover:bg-gray-700/50 cursor-pointer">
+                                <DropdownMenuItem className="text-gray-700 hover:text-gray-900 hover:bg-gray-100/50 cursor-pointer">
                                   <Mail size={14} className="mr-2" /> Email Customer
                                 </DropdownMenuItem>
-                                <DropdownMenuItem className="text-gray-300 hover:text-white hover:bg-gray-700/50 cursor-pointer">
+                                <DropdownMenuItem className="text-gray-700 hover:text-gray-900 hover:bg-gray-100/50 cursor-pointer">
                                   <Printer size={14} className="mr-2" /> Print Invoice
                                 </DropdownMenuItem>
-                                <DropdownMenuItem className="text-gray-300 hover:text-white hover:bg-gray-700/50 cursor-pointer">
+                                <DropdownMenuItem className="text-gray-700 hover:text-gray-900 hover:bg-gray-100/50 cursor-pointer">
                                   <FileText size={14} className="mr-2" /> Packing Slip
                                 </DropdownMenuItem>
                                 {order.status === 'cancelled' && (
@@ -667,8 +667,8 @@ const MerchantOrders = () => {
               </div>
               
               {/* Pagination */}
-              <div className="flex items-center justify-between px-6 py-4 border-t border-gray-800">
-                <p className="text-gray-400 text-sm">
+              <div className="flex items-center justify-between px-6 py-4 border-t border-gray-200">
+                <p className="text-gray-500 text-sm">
                   Showing {((currentPage - 1) * ordersPerPage) + 1} - {Math.min(currentPage * ordersPerPage, totalOrders)} of {totalOrders} orders
                 </p>
                 <div className="flex items-center gap-2">
@@ -677,11 +677,11 @@ const MerchantOrders = () => {
                     size="sm"
                     onClick={() => setCurrentPage(p => Math.max(1, p - 1))}
                     disabled={currentPage === 1}
-                    className="border-gray-700 text-gray-300 hover:bg-gray-800 disabled:opacity-50"
+                    className="border-gray-200 text-gray-700 hover:bg-gray-100 disabled:opacity-50"
                   >
                     <ChevronLeft size={16} />
                   </Button>
-                  <span className="text-gray-400 text-sm px-2">
+                  <span className="text-gray-500 text-sm px-2">
                     Page {currentPage} of {Math.ceil(totalOrders / ordersPerPage) || 1}
                   </span>
                   <Button
@@ -689,7 +689,7 @@ const MerchantOrders = () => {
                     size="sm"
                     onClick={() => setCurrentPage(p => p + 1)}
                     disabled={currentPage >= Math.ceil(totalOrders / ordersPerPage)}
-                    className="border-gray-700 text-gray-300 hover:bg-gray-800 disabled:opacity-50"
+                    className="border-gray-200 text-gray-700 hover:bg-gray-100 disabled:opacity-50"
                   >
                     <ChevronRight size={16} />
                   </Button>
@@ -702,18 +702,18 @@ const MerchantOrders = () => {
 
       {/* Update Status Modal */}
       <Dialog open={showStatusModal} onOpenChange={setShowStatusModal}>
-        <DialogContent className="bg-[#151b28] border-gray-800 text-white">
+        <DialogContent className="bg-white border-gray-200 text-gray-900">
           <DialogHeader>
             <DialogTitle>Update Order Status</DialogTitle>
           </DialogHeader>
           <div className="space-y-4 mt-4">
             <div>
-              <label className="text-sm text-gray-400 block mb-2">Order: {selectedOrder?.order_number}</label>
+              <label className="text-sm text-gray-500 block mb-2">Order: {selectedOrder?.order_number}</label>
               <Select value={newStatus} onValueChange={setNewStatus}>
-                <SelectTrigger className="bg-gray-800/50 border-gray-700 text-white">
+                <SelectTrigger className="bg-gray-50 border-gray-200 text-gray-900">
                   <SelectValue placeholder="Select status" />
                 </SelectTrigger>
-                <SelectContent className="bg-[#1a1f2e] border-gray-700">
+                <SelectContent className="bg-white border-gray-200">
                   <SelectItem value="pending">Pending</SelectItem>
                   <SelectItem value="processing">Processing</SelectItem>
                   <SelectItem value="shipped">Shipped</SelectItem>
@@ -723,12 +723,12 @@ const MerchantOrders = () => {
               </Select>
             </div>
             <div className="flex items-center gap-2">
-              <input type="checkbox" id="notify" className="rounded bg-gray-700 border-gray-600" />
-              <label htmlFor="notify" className="text-sm text-gray-400">Notify customer via email</label>
+              <input type="checkbox" id="notify" className="rounded bg-gray-700 border-gray-300" />
+              <label htmlFor="notify" className="text-sm text-gray-500">Notify customer via email</label>
             </div>
           </div>
           <DialogFooter className="mt-6">
-            <Button variant="outline" onClick={() => setShowStatusModal(false)} className="border-gray-700 text-gray-300">
+            <Button variant="outline" onClick={() => setShowStatusModal(false)} className="border-gray-200 text-gray-700">
               Cancel
             </Button>
             <Button onClick={() => updateOrderStatus(selectedOrder?.id, newStatus)} className="bg-emerald-600 hover:bg-emerald-700">
@@ -740,24 +740,24 @@ const MerchantOrders = () => {
 
       {/* Add Note Modal */}
       <Dialog open={showNoteModal} onOpenChange={setShowNoteModal}>
-        <DialogContent className="bg-[#151b28] border-gray-800 text-white">
+        <DialogContent className="bg-white border-gray-200 text-gray-900">
           <DialogHeader>
             <DialogTitle>Add Order Note</DialogTitle>
           </DialogHeader>
           <div className="space-y-4 mt-4">
             <div>
-              <label className="text-sm text-gray-400 block mb-2">Order: {selectedOrder?.order_number}</label>
+              <label className="text-sm text-gray-500 block mb-2">Order: {selectedOrder?.order_number}</label>
               <textarea
                 value={newNote}
                 onChange={(e) => setNewNote(e.target.value)}
                 placeholder="Enter note..."
                 rows={4}
-                className="w-full bg-gray-800/50 border border-gray-700 rounded-lg px-4 py-3 text-white placeholder-gray-500 focus:outline-none focus:border-emerald-500/50 resize-none"
+                className="w-full bg-gray-50 border border-gray-200 rounded-lg px-4 py-3 text-gray-900 placeholder-gray-500 focus:outline-none focus:border-emerald-500/50 resize-none"
               />
             </div>
           </div>
           <DialogFooter className="mt-6">
-            <Button variant="outline" onClick={() => setShowNoteModal(false)} className="border-gray-700 text-gray-300">
+            <Button variant="outline" onClick={() => setShowNoteModal(false)} className="border-gray-200 text-gray-700">
               Cancel
             </Button>
             <Button onClick={addOrderNote} className="bg-emerald-600 hover:bg-emerald-700">
@@ -769,21 +769,21 @@ const MerchantOrders = () => {
 
       {/* Add Tracking Modal */}
       <Dialog open={showTrackingModal} onOpenChange={setShowTrackingModal}>
-        <DialogContent className="bg-[#151b28] border-gray-800 text-white">
+        <DialogContent className="bg-white border-gray-200 text-gray-900">
           <DialogHeader>
             <DialogTitle>Add Tracking Information</DialogTitle>
           </DialogHeader>
           <div className="space-y-4 mt-4">
             <div>
-              <label className="text-sm text-gray-400 block mb-2">Order: {selectedOrder?.order_number}</label>
+              <label className="text-sm text-gray-500 block mb-2">Order: {selectedOrder?.order_number}</label>
             </div>
             <div>
-              <label className="text-sm text-gray-400 block mb-2">Carrier</label>
+              <label className="text-sm text-gray-500 block mb-2">Carrier</label>
               <Select value={trackingCarrier} onValueChange={setTrackingCarrier}>
-                <SelectTrigger className="bg-gray-800/50 border-gray-700 text-white">
+                <SelectTrigger className="bg-gray-50 border-gray-200 text-gray-900">
                   <SelectValue placeholder="Select carrier" />
                 </SelectTrigger>
-                <SelectContent className="bg-[#1a1f2e] border-gray-700">
+                <SelectContent className="bg-white border-gray-200">
                   <SelectItem value="auspost">Australia Post</SelectItem>
                   <SelectItem value="startrack">StarTrack</SelectItem>
                   <SelectItem value="tnt">TNT</SelectItem>
@@ -795,22 +795,22 @@ const MerchantOrders = () => {
               </Select>
             </div>
             <div>
-              <label className="text-sm text-gray-400 block mb-2">Tracking Number</label>
+              <label className="text-sm text-gray-500 block mb-2">Tracking Number</label>
               <input
                 type="text"
                 value={trackingNumber}
                 onChange={(e) => setTrackingNumber(e.target.value)}
                 placeholder="Enter tracking number"
-                className="w-full bg-gray-800/50 border border-gray-700 rounded-lg px-4 py-2.5 text-white placeholder-gray-500 focus:outline-none focus:border-emerald-500/50"
+                className="w-full bg-gray-50 border border-gray-200 rounded-lg px-4 py-2.5 text-gray-900 placeholder-gray-500 focus:outline-none focus:border-emerald-500/50"
               />
             </div>
             <div className="flex items-center gap-2">
-              <input type="checkbox" id="notifyTracking" className="rounded bg-gray-700 border-gray-600" defaultChecked />
-              <label htmlFor="notifyTracking" className="text-sm text-gray-400">Send tracking email to customer</label>
+              <input type="checkbox" id="notifyTracking" className="rounded bg-gray-700 border-gray-300" defaultChecked />
+              <label htmlFor="notifyTracking" className="text-sm text-gray-500">Send tracking email to customer</label>
             </div>
           </div>
           <DialogFooter className="mt-6">
-            <Button variant="outline" onClick={() => setShowTrackingModal(false)} className="border-gray-700 text-gray-300">
+            <Button variant="outline" onClick={() => setShowTrackingModal(false)} className="border-gray-200 text-gray-700">
               Cancel
             </Button>
             <Button onClick={updateTracking} className="bg-emerald-600 hover:bg-emerald-700">
@@ -822,7 +822,7 @@ const MerchantOrders = () => {
 
       {/* Delete Order Confirmation Modal */}
       <Dialog open={showDeleteModal} onOpenChange={setShowDeleteModal}>
-        <DialogContent className="bg-[#1a1f2e] border-gray-700 text-white max-w-md">
+        <DialogContent className="bg-white border-gray-200 text-gray-900 max-w-md">
           <DialogHeader>
             <DialogTitle className="flex items-center gap-2 text-red-400">
               <Trash2 size={20} />
@@ -837,14 +837,14 @@ const MerchantOrders = () => {
             </div>
             {selectedOrder && (
               <div className="space-y-2 text-sm">
-                <p className="text-gray-400">
-                  Order: <span className="text-white font-medium">{selectedOrder.order_number}</span>
+                <p className="text-gray-500">
+                  Order: <span className="text-gray-900 font-medium">{selectedOrder.order_number}</span>
                 </p>
-                <p className="text-gray-400">
-                  Customer: <span className="text-white">{selectedOrder.customer_name}</span>
+                <p className="text-gray-500">
+                  Customer: <span className="text-gray-900">{selectedOrder.customer_name}</span>
                 </p>
-                <p className="text-gray-400">
-                  Total: <span className="text-white">${selectedOrder.total?.toFixed(2)}</span>
+                <p className="text-gray-500">
+                  Total: <span className="text-gray-900">${selectedOrder.total?.toFixed(2)}</span>
                 </p>
               </div>
             )}
@@ -853,14 +853,14 @@ const MerchantOrders = () => {
             <Button 
               variant="outline" 
               onClick={() => { setShowDeleteModal(false); setSelectedOrder(null); }} 
-              className="border-gray-700 text-gray-300"
+              className="border-gray-200 text-gray-700"
             >
               Cancel
             </Button>
             <Button 
               onClick={deleteOrder} 
               disabled={deleting}
-              className="bg-red-600 hover:bg-red-700 text-white"
+              className="bg-red-600 hover:bg-red-700 text-gray-900"
             >
               {deleting ? 'Deleting...' : 'Delete Order'}
             </Button>
