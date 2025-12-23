@@ -415,7 +415,7 @@ export default function OptionsTab({ options, services, zones, fetchAllData }) {
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
         <div>
           <h2 className="text-xl font-bold text-white">Shipping Options</h2>
-          <p className="text-gray-400 text-sm">Click any field to edit • Changes save automatically</p>
+          <p className="text-gray-400 text-sm">Click any field to edit • Click Save to apply changes</p>
         </div>
         <Button 
           onClick={createNewOption} 
