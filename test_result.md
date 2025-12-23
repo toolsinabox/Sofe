@@ -1219,3 +1219,29 @@ Converted inputs from controlled to uncontrolled pattern:
 
 ### Status: COMPLETE ✓
 
+
+---
+
+## Bug Fix - Shipping Calculation Min Charge - 2025-12-23
+
+### Issue
+XFM-RES shipping rates for Casula (2170) were calculating as $238.41 instead of the expected $345.80.
+
+### Root Cause
+The `min_charge` field in all XFM-RES shipping rates was set to 0, but the Maropost calculation formula requires `min_charge` to be used as a per-parcel minimum (Step 4 in the calculation). The `base_rate` field was correctly set to $78 for Sydney (and similar values for other zones), but the `min_charge` field was not populated.
+
+### Solution
+Updated all XFM-RES rates (175 total) to set `min_charge = base_rate`. This ensures the per-parcel minimum charge is correctly applied in the calculation formula.
+
+### Verified Calculations
+- **Casula (2170):** $345.81 (expected: $345.80) ✓
+- **Adelaide (5000):** $352.70 (expected: $352.71) ✓
+
+### Files Modified
+- Database: `shipping_services` collection - Updated `min_charge` field for all XFM-RES rates
+
+### Testing
+- API tested via curl for both postcodes
+- UI tested via screenshot showing correct $352.70 for Adelaide
+
+### Status: COMPLETE ✓
