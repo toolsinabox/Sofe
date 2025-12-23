@@ -1206,7 +1206,15 @@ const MerchantShipping = () => {
           categories: service.categories || [],
           is_active: service.is_active !== false,
           sort_order: service.sort_order || 0,
-          rates: service.rates || []
+          rates: service.rates || [],
+          // Additional fields
+          tracking_url: service.tracking_url_template || '',
+          internal_description: service.internal_description || '',
+          packaging_allowance_kg: service.packaging_allowance_kg || 0,
+          packaging_allowance_percent: service.packaging_allowance_percent || 0,
+          round_up_weight: service.round_up_weight || false,
+          ignore_physical_weight: service.ignore_physical_weight || false,
+          ship_to_po_box: service.ship_to_po_box || false
         });
       } else {
         setEditingItem(null);
