@@ -952,15 +952,15 @@ async def calculate_shipping(request: ShippingCalculationRequest):
         actual_weight = item.get("weight", 0.5) * qty
         total_actual_weight += actual_weight
         
-        # Calculate cubic weight from shipping dimensions
-        # Formula: (L × W × H in cm) / 1,000,000 × Cubic Modifier = Cubic Weight in kg
+        # Calculate cubic weight from shipping dimensions (dimensions are in mm)
+        # Formula: (L × W × H in mm) / 1,000,000,000 × Cubic Modifier = Cubic Weight in kg
         shipping_length = item.get("shipping_length") or item.get("length", 0)
         shipping_width = item.get("shipping_width") or item.get("width", 0)
         shipping_height = item.get("shipping_height") or item.get("height", 0)
         
         if shipping_length and shipping_width and shipping_height:
-            # Calculate cubic weight: (L × W × H) / 1,000,000 × modifier
-            volume_m3 = (shipping_length * shipping_width * shipping_height) / 1000000
+            # Calculate cubic weight: (L × W × H in mm) / 1,000,000,000 × modifier
+            volume_m3 = (shipping_length * shipping_width * shipping_height) / 1000000000
             item_cubic_weight = volume_m3 * cubic_modifier * qty
             total_cubic_weight += item_cubic_weight
         else:
