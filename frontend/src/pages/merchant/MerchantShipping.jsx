@@ -3013,18 +3013,6 @@ const MerchantShipping = () => {
 
   // ============== OPTIONS TAB ==============
   const OptionsTab = () => {
-    const [optionForm, setOptionForm] = useState({
-      name: '',
-      description: '',
-      routing_group: '',  // Group options - only cheapest in group shown to customer
-      service_ids: [],
-      countries: ['AU'],
-      free_shipping_threshold: null,
-      free_shipping_zones: [],
-      is_active: true,
-      sort_order: 0
-    });
-
     const openOptionModal = (option = null) => {
       if (option) {
         setEditingItem(option);
