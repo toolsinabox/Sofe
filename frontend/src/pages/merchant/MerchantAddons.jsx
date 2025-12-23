@@ -129,6 +129,12 @@ const MerchantAddons = () => {
   };
 
   const openConfigModal = (addon) => {
+    // Check if this addon has a dedicated integration page
+    if (DEDICATED_INTEGRATIONS[addon.addon_id]) {
+      navigate(DEDICATED_INTEGRATIONS[addon.addon_id]);
+      return;
+    }
+    
     setShowConfigModal(addon);
     // Pre-fill form with existing config
     setConfigForm({
