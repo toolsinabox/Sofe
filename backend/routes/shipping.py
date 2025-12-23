@@ -68,7 +68,7 @@ class ShippingService(BaseModel):
     charge_type: str = "weight"  # weight, cubic, fixed, flat, cart_total
     min_charge: float = 0
     max_charge: Optional[float] = None
-    max_length: Optional[float] = None  # Maximum item length in meters (e.g., 1.4 = 1400mm)
+    max_length: Optional[float] = None  # Maximum item length in mm (e.g., 1400)
     handling_fee: float = 0
     fuel_levy_percent: float = 0
     fuel_levy_amount: float = 0  # Flat dollar amount fuel levy
