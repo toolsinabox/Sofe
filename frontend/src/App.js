@@ -255,6 +255,7 @@ function App() {
               <Route path="pos" element={<MerchantPOS />} />
               <Route path="pos/reports" element={<MerchantPOSReports />} />
               <Route path="addons" element={<MerchantAddons />} />
+              <Route path="integrations/ebay" element={<EbayIntegration />} />
             </Route>
 
             {/* Live Theme Storefront - Main customer-facing store */}
