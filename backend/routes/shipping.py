@@ -918,7 +918,7 @@ async def calculate_shipping(request: ShippingCalculationRequest):
     zones = await db.shipping_zones.find(
         {"country": request.country, "is_active": True}, 
         {"_id": 0}
-    ).to_list(1000)
+    ).to_list(5000)  # Increased from 1000 to support more zones
     
     # Find ALL zones for the destination postcode (multiple carriers may have different zones)
     matching_zones = find_all_zones_for_postcode(request.postcode, zones)
