@@ -1091,31 +1091,57 @@ async def calculate_shipping(request: ShippingCalculationRequest):
         # 7. GST added at the end
         # ============================================================
         
-        # Step 1-2: Calculate per-kg charge on COMBINED chargeable weight
-        # Apply min_charge as minimum for the kg portion (per parcel)
-        kg_charge = chargeable_weight * per_kg_rate
-        if rate_min_charge > 0:
-            kg_charge = max(kg_charge, rate_min_charge * num_parcels)
-        
-        # Step 3: Add per-parcel fee for each parcel
-        parcel_charge = per_parcel_rate * num_parcels
-        
-        # Freight subtotal (kg + parcel charges)
-        freight_subtotal = kg_charge + parcel_charge
-        
-        # Step 4: Apply fuel levy percentage to FREIGHT only
-        if fuel_levy_percent > 0:
-            freight_subtotal = freight_subtotal * (1 + fuel_levy_percent / 100)
-        
-        # Step 5: Add flat fuel levy ONCE (applies to all orders)
-        if fuel_levy_amount > 0:
-            freight_subtotal += fuel_levy_amount
-        
-        # Step 6: Add handling fee AFTER fuel levy (handling doesn't get fuel levied)
+        # Get handling fee (determines which calculation method to use)
         handling_fee = service.get("handling_fee", 0)
-        base_freight = freight_subtotal
+        
         if handling_fee > 0:
-            base_freight += handling_fee * num_parcels
+            # STARTRACK-STYLE CALCULATION:
+            # 1. kg_charge with min_charge as floor for kg portion
+            # 2. Add parcel charge
+            # 3. Apply fuel levy % to freight
+            # 4. Add handling fee AFTER fuel (handling not fuel-levied)
+            # 5. GST at the end
+            
+            kg_charge = chargeable_weight * per_kg_rate
+            if rate_min_charge > 0:
+                kg_charge = max(kg_charge, rate_min_charge * num_parcels)
+            
+            parcel_charge = per_parcel_rate * num_parcels
+            freight_subtotal = kg_charge + parcel_charge
+            
+            # Apply fuel levy % to freight only
+            if fuel_levy_percent > 0:
+                freight_subtotal = freight_subtotal * (1 + fuel_levy_percent / 100)
+            
+            # Add flat fuel levy
+            if fuel_levy_amount > 0:
+                freight_subtotal += fuel_levy_amount
+            
+            # Add handling fee AFTER fuel levy
+            base_freight = freight_subtotal + (handling_fee * num_parcels)
+        else:
+            # XFM-STYLE CALCULATION (Maropost default):
+            # 1. Combine kg_charge + parcel_charge
+            # 2. Apply min_charge as floor for total (per parcel)
+            # 3. Apply fuel levy %
+            # 4. Add flat fuel levy
+            # 5. GST at the end
+            
+            kg_charge = chargeable_weight * per_kg_rate
+            parcel_charge = per_parcel_rate * num_parcels
+            subtotal = kg_charge + parcel_charge
+            
+            # Apply min_charge as floor for total
+            min_total = rate_min_charge * num_parcels if rate_min_charge > 0 else 0
+            base_freight = max(subtotal, min_total)
+            
+            # Apply fuel levy %
+            if fuel_levy_percent > 0:
+                base_freight = base_freight * (1 + fuel_levy_percent / 100)
+            
+            # Add flat fuel levy
+            if fuel_levy_amount > 0:
+                base_freight += fuel_levy_amount
         
         base_price = base_freight
         
