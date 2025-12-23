@@ -169,7 +169,7 @@ const PackagesTab = ({
                 </div>
               </div>
               <div className="flex items-center gap-2 mt-3">
-                <span className="px-2 py-0.5 bg-gray-700 text-gray-700 text-xs rounded font-mono">{pkg.code}</span>
+                <span className="px-2 py-0.5 bg-gray-100 text-gray-600 text-xs rounded font-mono">{pkg.code}</span>
                 <span className="px-2 py-0.5 bg-orange-500/20 text-orange-400 text-xs rounded capitalize">{pkg.package_type}</span>
               </div>
             </div>
@@ -196,7 +196,7 @@ const PackagesTab = ({
                   defaultValue={packageForm.code}
                   onBlur={(e) => setPackageForm(prev => ({...prev, code: e.target.value.toLowerCase()}))}
                   placeholder="e.g., small_box"
-                  className="bg-gray-700 border-gray-200 text-gray-900 mt-1"
+                  className="bg-gray-50 border-gray-200 text-gray-900 mt-1"
                   style={{textTransform: 'lowercase'}}
                 />
               </div>
@@ -208,14 +208,14 @@ const PackagesTab = ({
                   defaultValue={packageForm.name}
                   onBlur={(e) => setPackageForm(prev => ({...prev, name: e.target.value}))}
                   placeholder="e.g., Small Box"
-                  className="bg-gray-700 border-gray-200 text-gray-900 mt-1"
+                  className="bg-gray-50 border-gray-200 text-gray-900 mt-1"
                 />
               </div>
             </div>
             <div>
               <Label className="text-gray-700">Package Type</Label>
               <Select value={packageForm.package_type} onValueChange={(v) => setPackageForm(prev => ({...prev, package_type: v}))}>
-                <SelectTrigger className="bg-gray-700 border-gray-200 text-gray-900 mt-1">
+                <SelectTrigger className="bg-gray-50 border-gray-200 text-gray-900 mt-1">
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent className="bg-white border-gray-200">
@@ -237,7 +237,7 @@ const PackagesTab = ({
                   placeholder="Length"
                   defaultValue={packageForm.length}
                   onBlur={(e) => setPackageForm(prev => ({...prev, length: parseFloat(e.target.value) || 0}))}
-                  className="bg-gray-700 border-gray-200 text-gray-900"
+                  className="bg-gray-50 border-gray-200 text-gray-900"
                 />
                 <StableInput
                   key={`pkg-width-${editingItem?.id || 'new'}`}
@@ -246,7 +246,7 @@ const PackagesTab = ({
                   placeholder="Width"
                   defaultValue={packageForm.width}
                   onBlur={(e) => setPackageForm(prev => ({...prev, width: parseFloat(e.target.value) || 0}))}
-                  className="bg-gray-700 border-gray-200 text-gray-900"
+                  className="bg-gray-50 border-gray-200 text-gray-900"
                 />
                 <StableInput
                   key={`pkg-height-${editingItem?.id || 'new'}`}
@@ -255,7 +255,7 @@ const PackagesTab = ({
                   placeholder="Height"
                   defaultValue={packageForm.height}
                   onBlur={(e) => setPackageForm(prev => ({...prev, height: parseFloat(e.target.value) || 0}))}
-                  className="bg-gray-700 border-gray-200 text-gray-900"
+                  className="bg-gray-50 border-gray-200 text-gray-900"
                 />
               </div>
             </div>
@@ -269,7 +269,7 @@ const PackagesTab = ({
                   name="max_weight"
                   defaultValue={packageForm.max_weight}
                   onBlur={(e) => setPackageForm(prev => ({...prev, max_weight: parseFloat(e.target.value) || 0}))}
-                  className="bg-gray-700 border-gray-200 text-gray-900 mt-1"
+                  className="bg-gray-50 border-gray-200 text-gray-900 mt-1"
                 />
               </div>
               <div>
@@ -281,7 +281,7 @@ const PackagesTab = ({
                   name="tare_weight"
                   defaultValue={packageForm.tare_weight}
                   onBlur={(e) => setPackageForm(prev => ({...prev, tare_weight: parseFloat(e.target.value) || 0}))}
-                  className="bg-gray-700 border-gray-200 text-gray-900 mt-1"
+                  className="bg-gray-50 border-gray-200 text-gray-900 mt-1"
                 />
               </div>
             </div>

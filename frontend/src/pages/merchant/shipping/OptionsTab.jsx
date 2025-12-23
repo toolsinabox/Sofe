@@ -320,7 +320,7 @@ const OptionRow = ({ option, services, zones, onUpdate, onDelete }) => {
                       className={`px-3 py-1.5 rounded-lg text-sm transition-all ${
                         isLinked
                           ? 'bg-teal-600 text-gray-900'
-                          : 'bg-gray-700 text-gray-500 hover:bg-gray-100 hover:text-gray-900'
+                          : 'bg-gray-100 text-gray-500 hover:bg-gray-100 hover:text-gray-900'
                       }`}
                     >
                       {service.name}
@@ -350,7 +350,7 @@ const OptionRow = ({ option, services, zones, onUpdate, onDelete }) => {
                       className={`px-2 py-1 rounded text-xs transition-all ${
                         isFree
                           ? 'bg-emerald-600 text-gray-900'
-                          : 'bg-gray-700 text-gray-500 hover:bg-gray-100 hover:text-gray-900'
+                          : 'bg-gray-100 text-gray-500 hover:bg-gray-100 hover:text-gray-900'
                       }`}
                     >
                       {zone.code}

@@ -141,12 +141,12 @@ const CategoriesTab = ({
               </div>
               <p className="text-gray-500 text-sm mb-3">{category.description || 'No description'}</p>
               <div className="flex items-center gap-2">
-                <span className="px-2 py-0.5 bg-gray-700 text-gray-700 text-xs rounded font-mono">{category.code}</span>
+                <span className="px-2 py-0.5 bg-gray-100 text-gray-600 text-xs rounded font-mono">{category.code}</span>
                 {category.is_default && (
                   <span className="px-2 py-0.5 bg-purple-500/20 text-purple-400 text-xs rounded">Default</span>
                 )}
                 {!category.is_active && (
-                  <span className="px-2 py-0.5 bg-gray-700 text-gray-500 text-xs rounded">Inactive</span>
+                  <span className="px-2 py-0.5 bg-gray-100 text-gray-500 text-xs rounded">Inactive</span>
                 )}
               </div>
             </div>
@@ -172,7 +172,7 @@ const CategoriesTab = ({
                 defaultValue={categoryForm.code}
                 onBlur={(e) => setCategoryForm(prev => ({...prev, code: e.target.value.toLowerCase()}))}
                 placeholder="e.g., bulky"
-                className="bg-gray-700 border-gray-200 text-gray-900 mt-1"
+                className="bg-gray-50 border-gray-200 text-gray-900 mt-1"
                 style={{textTransform: 'lowercase'}}
               />
             </div>
@@ -184,7 +184,7 @@ const CategoriesTab = ({
                 defaultValue={categoryForm.name}
                 onBlur={(e) => setCategoryForm(prev => ({...prev, name: e.target.value}))}
                 placeholder="e.g., Bulky Items"
-                className="bg-gray-700 border-gray-200 text-gray-900 mt-1"
+                className="bg-gray-50 border-gray-200 text-gray-900 mt-1"
               />
             </div>
             <div>
