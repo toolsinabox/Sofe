@@ -86,57 +86,57 @@ const MerchantCustomers = () => {
   const avgOrderValue = totalOrders > 0 ? totalRevenue / totalOrders : 0;
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-4">
       {/* Stats */}
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
         <Card className="bg-white border-gray-200">
-          <CardContent className="p-6">
+          <CardContent className="p-3">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-gray-500 text-sm">Total Customers</p>
-                <p className="text-2xl font-bold text-gray-900">{totalCustomers}</p>
+                <p className="text-gray-500 text-xs">Total Customers</p>
+                <p className="text-xl font-bold text-gray-900">{totalCustomers}</p>
               </div>
-              <div className="w-12 h-12 rounded-xl bg-blue-50 flex items-center justify-center">
-                <UserPlus size={24} className="text-blue-600" />
+              <div className="w-8 h-8 rounded-lg bg-blue-50 flex items-center justify-center">
+                <UserPlus size={16} className="text-blue-600" />
               </div>
             </div>
           </CardContent>
         </Card>
         <Card className="bg-white border-gray-200">
-          <CardContent className="p-6">
+          <CardContent className="p-3">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-gray-500 text-sm">VIP Customers</p>
-                <p className="text-2xl font-bold text-purple-600">{vipCustomers}</p>
+                <p className="text-gray-500 text-xs">VIP Customers</p>
+                <p className="text-xl font-bold text-purple-600">{vipCustomers}</p>
               </div>
-              <div className="w-12 h-12 rounded-xl bg-purple-50 flex items-center justify-center">
-                <Star size={24} className="text-purple-600" />
+              <div className="w-8 h-8 rounded-lg bg-purple-50 flex items-center justify-center">
+                <Star size={16} className="text-purple-600" />
               </div>
             </div>
           </CardContent>
         </Card>
         <Card className="bg-white border-gray-200">
-          <CardContent className="p-6">
+          <CardContent className="p-3">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-gray-500 text-sm">Total Revenue</p>
-                <p className="text-2xl font-bold text-emerald-600">{formatCurrency(totalRevenue)}</p>
+                <p className="text-gray-500 text-xs">Total Revenue</p>
+                <p className="text-xl font-bold text-emerald-600">{formatCurrency(totalRevenue)}</p>
               </div>
-              <div className="w-12 h-12 rounded-xl bg-emerald-50 flex items-center justify-center">
-                <DollarSign size={24} className="text-emerald-600" />
+              <div className="w-8 h-8 rounded-lg bg-emerald-50 flex items-center justify-center">
+                <DollarSign size={16} className="text-emerald-600" />
               </div>
             </div>
           </CardContent>
         </Card>
         <Card className="bg-white border-gray-200">
-          <CardContent className="p-6">
+          <CardContent className="p-3">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-gray-500 text-sm">Avg Order Value</p>
-                <p className="text-2xl font-bold text-cyan-600">{formatCurrency(avgOrderValue)}</p>
+                <p className="text-gray-500 text-xs">Avg Order Value</p>
+                <p className="text-xl font-bold text-cyan-600">{formatCurrency(avgOrderValue)}</p>
               </div>
-              <div className="w-12 h-12 rounded-xl bg-cyan-50 flex items-center justify-center">
-                <ShoppingBag size={24} className="text-cyan-600" />
+              <div className="w-8 h-8 rounded-lg bg-cyan-50 flex items-center justify-center">
+                <ShoppingBag size={16} className="text-cyan-600" />
               </div>
             </div>
           </CardContent>
