@@ -170,12 +170,11 @@ const EbayIntegration = () => {
     try {
       const response = await axios.get(`${BACKEND_URL}/api/ebay/status`);
       setStatus(response.data);
-      // Auto-open wizard if not connected
-      if (!response.data.connected) {
-        setShowSetupWizard(true);
-      }
+      // Don't auto-open wizard - let user explore the dashboard first
     } catch (error) {
       console.error('Failed to fetch eBay status:', error);
+      // Set a default status so the page still renders
+      setStatus({ connected: false, sandbox_mode: true });
     } finally {
       setLoading(false);
     }
