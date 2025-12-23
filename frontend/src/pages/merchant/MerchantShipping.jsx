@@ -180,23 +180,6 @@ const MerchantShipping = () => {
   const [calcResult, setCalcResult] = useState(null);
   const [calculating, setCalculating] = useState(false);
 
-  // Zone form state (moved to parent level to persist across re-renders)
-  const [zoneForm, setZoneForm] = useState({
-    code: '',
-    name: '',
-    country: 'AU',
-    postcodes: [],
-    is_active: true,
-    sort_order: 0
-  });
-  const [postcodesInput, setPostcodesInput] = useState('');
-  const [showZoneImportModal, setShowZoneImportModal] = useState(false);
-  const [zoneImporting, setZoneImporting] = useState(false);
-  const [zoneImportMode, setZoneImportMode] = useState('merge');
-  const [zoneImportResult, setZoneImportResult] = useState(null);
-  const [zoneUploadProgress, setZoneUploadProgress] = useState(0);
-  const zoneFileInputRef = useRef(null);
-
   // Service form state (moved to parent level)
   const [serviceForm, setServiceForm] = useState({
     name: '',
