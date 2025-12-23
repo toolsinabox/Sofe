@@ -529,6 +529,9 @@ async def create_shipping_service(service: ShippingService):
         raise HTTPException(status_code=400, detail="Service code already exists")
     
     service_data = service.dict()
+    # Sanitize rates to ensure min_charge = base_rate when not set
+    if service_data.get("rates"):
+        service_data["rates"] = sanitize_shipping_rates(service_data["rates"])
     await db.shipping_services.insert_one(service_data)
     service_data.pop("_id", None)
     return service_data
