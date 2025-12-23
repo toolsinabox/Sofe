@@ -1655,7 +1655,11 @@ async def get_products(
 ):
     query = {}
     if category_id:
-        query["category_id"] = category_id
+        # Support both single category_id and multiple category_ids array
+        query["$or"] = [
+            {"category_id": category_id},
+            {"category_ids": category_id}
+        ]
     if is_active is not None:
         query["is_active"] = is_active
     if in_stock:
