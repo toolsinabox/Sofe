@@ -570,8 +570,36 @@ const EbayIntegration = () => {
     { id: 'overview', label: 'Overview', icon: Settings },
     { id: 'listings', label: 'Listings', icon: Package },
     { id: 'orders', label: 'Orders', icon: ShoppingCart },
+    { id: 'theme', label: 'Theme Editor', icon: Palette },
+    { id: 'categories', label: 'Categories', icon: FolderTree },
+    { id: 'pricing', label: 'Pricing Rules', icon: DollarSign },
+    { id: 'inventory', label: 'Inventory', icon: Box },
+    { id: 'analytics', label: 'Analytics', icon: BarChart3 },
     { id: 'settings', label: 'Settings', icon: Settings },
-    { id: 'help', label: 'Help & Resources', icon: HelpCircle },
+    { id: 'help', label: 'Help', icon: HelpCircle },
+  ];
+
+  // eBay Listing Templates
+  const listingTemplates = [
+    { id: 'modern', name: 'Modern Clean', description: 'Minimalist design with focus on product images' },
+    { id: 'professional', name: 'Professional', description: 'Corporate style with detailed specifications' },
+    { id: 'boutique', name: 'Boutique', description: 'Elegant design for premium products' },
+    { id: 'tech', name: 'Tech Store', description: 'Technical specs focused layout' },
+    { id: 'custom', name: 'Custom HTML', description: 'Full control with custom HTML/CSS' },
+  ];
+
+  // Sample eBay categories for demo
+  const sampleEbayCategories = [
+    { id: '11450', name: 'Clothing, Shoes & Accessories' },
+    { id: '293', name: 'Consumer Electronics' },
+    { id: '11700', name: 'Home & Garden' },
+    { id: '888', name: 'Sporting Goods' },
+    { id: '220', name: 'Toys & Hobbies' },
+    { id: '26395', name: 'Health & Beauty' },
+    { id: '12576', name: 'Business & Industrial' },
+    { id: '625', name: 'Cameras & Photo' },
+    { id: '58058', name: 'Cell Phones & Accessories' },
+    { id: '281', name: 'Jewelry & Watches' },
   ];
 
   if (loading) {
