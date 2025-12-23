@@ -366,22 +366,22 @@ const MerchantOrders = () => {
       </div>
 
       {/* Status Tabs */}
-      <div className="flex items-center gap-2 overflow-x-auto pb-2">
+      <div className="flex items-center gap-1.5 overflow-x-auto pb-2">
         {['all', 'pending', 'processing', 'shipped', 'delivered', 'cancelled'].map((status) => {
           const config = status !== 'all' ? getStatusConfig(status) : null;
           return (
             <button
               key={status}
               onClick={() => { setStatusFilter(status); setCurrentPage(1); }}
-              className={`px-4 py-2.5 rounded-lg text-sm font-medium whitespace-nowrap transition-all flex items-center gap-2 ${
+              className={`px-3 py-1.5 rounded-lg text-xs font-medium whitespace-nowrap transition-all flex items-center gap-1.5 ${
                 statusFilter === status
-                  ? 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/30'
-                  : 'bg-gray-50 text-gray-500 border border-gray-200 hover:text-gray-900 hover:border-gray-200'
+                  ? 'bg-blue-100 text-blue-700 border border-blue-200'
+                  : 'bg-gray-50 text-gray-500 border border-gray-200 hover:text-gray-900 hover:border-gray-300'
               }`}
             >
-              {config && <config.icon size={14} />}
+              {config && <config.icon size={12} />}
               {status.charAt(0).toUpperCase() + status.slice(1)}
-              <span className="px-1.5 py-0.5 rounded bg-gray-100/80 text-xs">
+              <span className="px-1 py-0.5 rounded bg-white text-xs">
                 {orderCounts[status]}
               </span>
             </button>
