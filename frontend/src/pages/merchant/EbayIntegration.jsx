@@ -1506,19 +1506,49 @@ const EbayIntegration = () => {
   const processTemplateForPreview = (html) => {
     if (!html) return '';
     
-    // Store info
+    // Store info - use actual store settings if available
     const storeName = 'Your Store';
-    const storeLogo = '/placeholder-logo.png';
+    const storeLogo = 'https://via.placeholder.com/200x60/0066cc/ffffff?text=Your+Store';
     const storeEmail = 'contact@yourstore.com';
     
     // Product info from selected preview product
     const product = previewProduct;
     
-    // Get product images with fallbacks
+    // Get product images
     const images = product.images || [];
-    const placeholderImg = 'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="400" height="400" viewBox="0 0 400 400"%3E%3Crect fill="%23f0f0f0" width="400" height="400"/%3E%3Ctext fill="%23999" font-family="Arial" font-size="24" x="50%25" y="50%25" text-anchor="middle" dy=".3em"%3ENo Image%3C/text%3E%3C/svg%3E';
     
-    let processedHtml = html
+    let processedHtml = html;
+    
+    // Process conditional blocks: {{#if_image_X}}...{{/if_image_X}}
+    // If image exists, show content; if not, remove the entire block
+    for (let i = 1; i <= 6; i++) {
+      const hasImage = images[i - 1] && images[i - 1].trim() !== '';
+      const ifRegex = new RegExp(`\\{\\{#if_image_${i}\\}\\}([\\s\\S]*?)\\{\\{/if_image_${i}\\}\\}`, 'g');
+      processedHtml = processedHtml.replace(ifRegex, hasImage ? '$1' : '');
+    }
+    
+    // Process main image conditional: {{#if_has_images}}...{{/if_has_images}}
+    const hasAnyImages = images.length > 0 && images.some(img => img && img.trim() !== '');
+    processedHtml = processedHtml.replace(
+      /\{\{#if_has_images\}\}([\s\S]*?)\{\{\/if_has_images\}\}/g,
+      hasAnyImages ? '$1' : ''
+    );
+    
+    // Process no images conditional: {{#if_no_images}}...{{/if_no_images}}
+    processedHtml = processedHtml.replace(
+      /\{\{#if_no_images\}\}([\s\S]*?)\{\{\/if_no_images\}\}/g,
+      !hasAnyImages ? '$1' : ''
+    );
+    
+    // Process store logo conditional: {{#if_store_logo}}...{{/if_store_logo}}
+    const hasStoreLogo = storeLogo && storeLogo.trim() !== '';
+    processedHtml = processedHtml.replace(
+      /\{\{#if_store_logo\}\}([\s\S]*?)\{\{\/if_store_logo\}\}/g,
+      hasStoreLogo ? '$1' : ''
+    );
+    
+    // Replace variables
+    processedHtml = processedHtml
       // Store variables
       .replace(/\{\{store_name\}\}/g, storeName)
       .replace(/\{\{store_logo\}\}/g, storeLogo)
@@ -1535,15 +1565,23 @@ const EbayIntegration = () => {
       .replace(/\{\{product_dimensions\}\}/g, product.dimensions || 'N/A')
       .replace(/\{\{product_upc\}\}/g, product.upc || 'N/A')
       .replace(/\{\{product_mpn\}\}/g, product.mpn || 'N/A')
-      // Product images - main and numbered images
-      .replace(/\{\{product_image\}\}/g, images[0] || placeholderImg)
-      .replace(/\{\{product_image_1\}\}/g, images[0] || placeholderImg)
-      .replace(/\{\{product_image_2\}\}/g, images[1] || placeholderImg)
-      .replace(/\{\{product_image_3\}\}/g, images[2] || placeholderImg)
-      .replace(/\{\{product_image_4\}\}/g, images[3] || placeholderImg)
-      .replace(/\{\{product_image_5\}\}/g, images[4] || placeholderImg)
-      .replace(/\{\{product_image_6\}\}/g, images[5] || placeholderImg)
+      .replace(/\{\{product_category\}\}/g, product.category || 'General')
+      // Product images - only show if image exists, otherwise empty string
+      .replace(/\{\{product_image\}\}/g, images[0] || '')
+      .replace(/\{\{product_image_1\}\}/g, images[0] || '')
+      .replace(/\{\{product_image_2\}\}/g, images[1] || '')
+      .replace(/\{\{product_image_3\}\}/g, images[2] || '')
+      .replace(/\{\{product_image_4\}\}/g, images[3] || '')
+      .replace(/\{\{product_image_5\}\}/g, images[4] || '')
+      .replace(/\{\{product_image_6\}\}/g, images[5] || '')
       .replace(/\{\{product_image_count\}\}/g, String(images.length || 0))
+      // Boolean checks for images (returns 'true' or 'false')
+      .replace(/\{\{has_image_1\}\}/g, images[0] ? 'true' : 'false')
+      .replace(/\{\{has_image_2\}\}/g, images[1] ? 'true' : 'false')
+      .replace(/\{\{has_image_3\}\}/g, images[2] ? 'true' : 'false')
+      .replace(/\{\{has_image_4\}\}/g, images[3] ? 'true' : 'false')
+      .replace(/\{\{has_image_5\}\}/g, images[4] ? 'true' : 'false')
+      .replace(/\{\{has_image_6\}\}/g, images[5] ? 'true' : 'false')
       // Color variables
       .replace(/\{\{primary_color\}\}/g, themeSettings.primaryColor)
       .replace(/\{\{accent_color\}\}/g, themeSettings.accentColor)
