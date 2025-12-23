@@ -2365,10 +2365,81 @@
             });
         }
         
+        // Review image handling
+        let reviewImages = [];
+        
+        async function handleReviewImageSelect(event) {
+            const files = Array.from(event.target.files).slice(0, 5 - reviewImages.length);
+            const previewContainer = document.getElementById('review-preview-images');
+            const submitBtn = document.getElementById('submit-review-btn');
+            
+            for (const file of files) {
+                if (!file.type.startsWith('image/')) continue;
+                if (reviewImages.length >= 5) break;
+                
+                // Show loading state
+                const loadingDiv = document.createElement('div');
+                loadingDiv.className = 'preview-image loading';
+                loadingDiv.innerHTML = '<span class="spinner"></span>';
+                previewContainer.appendChild(loadingDiv);
+                
+                try {
+                    // Upload the image
+                    const formData = new FormData();
+                    formData.append('file', file);
+                    
+                    const response = await fetch(`${window.location.origin}/api/reviews/upload-image`, {
+                        method: 'POST',
+                        body: formData
+                    });
+                    
+                    if (response.ok) {
+                        const data = await response.json();
+                        reviewImages.push(data.url);
+                        
+                        // Replace loading with preview
+                        loadingDiv.className = 'preview-image';
+                        loadingDiv.innerHTML = `
+                            <img src="${data.url}" alt="Preview">
+                            <button type="button" class="remove-image" onclick="removeReviewImage(${reviewImages.length - 1}, this)">&times;</button>
+                        `;
+                        
+                        // Update hidden input
+                        document.getElementById('review-images-data').value = JSON.stringify(reviewImages);
+                    } else {
+                        loadingDiv.remove();
+                        alert('Failed to upload image. Please try again.');
+                    }
+                } catch (error) {
+                    console.error('Error uploading image:', error);
+                    loadingDiv.remove();
+                    alert('Error uploading image. Please try again.');
+                }
+            }
+            
+            // Clear the input so the same file can be selected again
+            event.target.value = '';
+        }
+        
+        function removeReviewImage(index, btn) {
+            reviewImages.splice(index, 1);
+            btn.closest('.preview-image').remove();
+            document.getElementById('review-images-data').value = JSON.stringify(reviewImages);
+            
+            // Re-index remaining remove buttons
+            document.querySelectorAll('#review-preview-images .remove-image').forEach((btn, i) => {
+                btn.setAttribute('onclick', `removeReviewImage(${i}, this)`);
+            });
+        }
+        
         async function submitReview(event) {
             event.preventDefault();
             const form = event.target;
             const formData = new FormData(form);
+            const submitBtn = document.getElementById('submit-review-btn');
+            
+            submitBtn.disabled = true;
+            submitBtn.textContent = 'Submitting...';
             
             const reviewData = {
                 product_id: PRODUCT_ID,
@@ -2376,7 +2447,9 @@
                 customer_email: formData.get('customer_email'),
                 rating: parseInt(formData.get('rating')),
                 title: formData.get('title'),
-                content: formData.get('content')
+                content: formData.get('content'),
+                images: reviewImages,
+                status: 'pending'
             };
             
             try {
@@ -2390,13 +2463,21 @@
                     alert('Thank you! Your review has been submitted and is pending approval.');
                     closeReviewForm();
                     form.reset();
+                    reviewImages = [];
+                    document.getElementById('review-preview-images').innerHTML = '';
+                    document.getElementById('review-images-data').value = '[]';
                     updateStarDisplay(5);
+                    loadReviews();
                 } else {
-                    throw new Error('Failed to submit review');
+                    const errorData = await response.json();
+                    throw new Error(errorData.detail || 'Failed to submit review');
                 }
             } catch (error) {
                 console.error('Error submitting review:', error);
                 alert('Sorry, there was an error submitting your review. Please try again.');
+            } finally {
+                submitBtn.disabled = false;
+                submitBtn.textContent = 'Submit Review';
             }
         }
         
