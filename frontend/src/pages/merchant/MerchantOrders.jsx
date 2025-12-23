@@ -295,70 +295,70 @@ const MerchantOrders = () => {
   };
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-4">
       {/* Stats Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-        <Card className="bg-gradient-to-br from-blue-500/10 to-blue-600/5 border-blue-500/20">
-          <CardContent className="p-6">
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
+        <Card className="bg-white border-gray-200">
+          <CardContent className="p-3">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-gray-500 text-sm">Total Orders</p>
-                <p className="text-3xl font-bold text-gray-900 mt-1">{stats.totalOrders || orders.length}</p>
-                <p className="text-blue-400 text-sm mt-1 flex items-center gap-1">
-                  <ArrowUpRight size={14} /> +{stats.todayOrders || 0} today
+                <p className="text-gray-500 text-xs">Total Orders</p>
+                <p className="text-xl font-bold text-gray-900 mt-0.5">{stats.totalOrders || orders.length}</p>
+                <p className="text-blue-600 text-xs mt-0.5 flex items-center gap-1">
+                  <ArrowUpRight size={10} /> +{stats.todayOrders || 0} today
                 </p>
               </div>
-              <div className="p-3 bg-blue-500/20 rounded-xl">
-                <ShoppingBag className="text-blue-400" size={24} />
+              <div className="p-2 bg-blue-50 rounded-lg">
+                <ShoppingBag className="text-blue-600" size={18} />
               </div>
             </div>
           </CardContent>
         </Card>
         
-        <Card className="bg-gradient-to-br from-emerald-500/10 to-emerald-600/5 border-emerald-500/20">
-          <CardContent className="p-6">
+        <Card className="bg-white border-gray-200">
+          <CardContent className="p-3">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-gray-500 text-sm">Total Revenue</p>
-                <p className="text-3xl font-bold text-gray-900 mt-1">{formatCurrency(stats.totalRevenue)}</p>
-                <p className="text-emerald-400 text-sm mt-1 flex items-center gap-1">
-                  <ArrowUpRight size={14} /> {formatCurrency(stats.todayRevenue)} today
+                <p className="text-gray-500 text-xs">Total Revenue</p>
+                <p className="text-xl font-bold text-gray-900 mt-0.5">{formatCurrency(stats.totalRevenue)}</p>
+                <p className="text-emerald-600 text-xs mt-0.5 flex items-center gap-1">
+                  <ArrowUpRight size={10} /> {formatCurrency(stats.todayRevenue)} today
                 </p>
               </div>
-              <div className="p-3 bg-emerald-500/20 rounded-xl">
-                <DollarSign className="text-emerald-400" size={24} />
+              <div className="p-2 bg-emerald-50 rounded-lg">
+                <DollarSign className="text-emerald-600" size={18} />
               </div>
             </div>
           </CardContent>
         </Card>
         
-        <Card className="bg-gradient-to-br from-yellow-500/10 to-yellow-600/5 border-yellow-500/20">
-          <CardContent className="p-6">
+        <Card className="bg-white border-gray-200">
+          <CardContent className="p-3">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-gray-500 text-sm">Pending Orders</p>
-                <p className="text-3xl font-bold text-gray-900 mt-1">{stats.pendingOrders || orderCounts.pending}</p>
-                <p className="text-yellow-400 text-sm mt-1">Requires attention</p>
+                <p className="text-gray-500 text-xs">Pending Orders</p>
+                <p className="text-xl font-bold text-gray-900 mt-0.5">{stats.pendingOrders || orderCounts.pending}</p>
+                <p className="text-yellow-600 text-xs mt-0.5">Requires attention</p>
               </div>
-              <div className="p-3 bg-yellow-500/20 rounded-xl">
-                <Clock className="text-yellow-400" size={24} />
+              <div className="p-2 bg-yellow-50 rounded-lg">
+                <Clock className="text-yellow-600" size={18} />
               </div>
             </div>
           </CardContent>
         </Card>
         
-        <Card className="bg-gradient-to-br from-purple-500/10 to-purple-600/5 border-purple-500/20">
-          <CardContent className="p-6">
+        <Card className="bg-white border-gray-200">
+          <CardContent className="p-3">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-gray-500 text-sm">Avg Order Value</p>
-                <p className="text-3xl font-bold text-gray-900 mt-1">{formatCurrency(stats.avgOrderValue)}</p>
-                <p className="text-purple-400 text-sm mt-1 flex items-center gap-1">
-                  <TrendingUp size={14} /> All time
+                <p className="text-gray-500 text-xs">Avg Order Value</p>
+                <p className="text-xl font-bold text-gray-900 mt-0.5">{formatCurrency(stats.avgOrderValue)}</p>
+                <p className="text-purple-600 text-xs mt-0.5 flex items-center gap-1">
+                  <TrendingUp size={10} /> All time
                 </p>
               </div>
-              <div className="p-3 bg-purple-500/20 rounded-xl">
-                <TrendingUp className="text-purple-400" size={24} />
+              <div className="p-2 bg-purple-50 rounded-lg">
+                <TrendingUp className="text-purple-600" size={18} />
               </div>
             </div>
           </CardContent>
