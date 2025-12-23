@@ -6769,6 +6769,18 @@ app.include_router(ebay_module.router, prefix="/api")
 import_export_module.set_db(db)
 app.include_router(import_export_module.router)
 
+# Include Marketing router (coupons, loyalty, gift cards, flash sales, bundles, email campaigns)
+app.include_router(marketing_module.router)
+
+# Include Analytics router (dashboard, sales, customer analytics, inventory reports, exports)
+app.include_router(analytics_module.router)
+
+# Include Operations router (suppliers, purchase orders, warehouses, stock alerts)
+app.include_router(operations_module.router)
+
+# Include Customer Management router (groups, wishlists, notes, tags)
+app.include_router(customer_management_module.router)
+
 app.add_middleware(
     CORSMiddleware,
     allow_credentials=True,
