@@ -145,7 +145,7 @@ const OptionRow = ({ option, services, zones, onUpdate, onDelete }) => {
       : [...currentIds, serviceId];
     const updated = { ...localOption, service_ids: newIds };
     setLocalOption(updated);
-    saveOption(updated);
+    setIsDirty(true);
   };
 
   const toggleFreeZone = (zoneCode) => {
@@ -155,7 +155,7 @@ const OptionRow = ({ option, services, zones, onUpdate, onDelete }) => {
       : [...currentZones, zoneCode];
     const updated = { ...localOption, free_shipping_zones: newZones };
     setLocalOption(updated);
-    saveOption(updated);
+    setIsDirty(true);
   };
 
   // Get linked service names
