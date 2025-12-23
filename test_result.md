@@ -1647,3 +1647,62 @@ Completely redesigned the eBay integration with a comprehensive 7-step setup wiz
 - Step 4: Connect account form ✓
 
 ### Status: COMPLETE ✓
+
+---
+
+## eBay Connection Flow Fix - 2025-12-23
+
+### Issue Fixed
+User reported `400: Failed to get eBay token: {"error":"invalid_client","error_description":"client authentication failed"}` error with no helpful guidance.
+
+### Changes Made
+
+#### 1. Backend Error Handling (Already Implemented)
+File: `/app/backend/routes/ebay.py`
+- `POST /api/ebay/connect` - Returns structured error with troubleshooting tips
+- `POST /api/ebay/test-connection` - Validates credentials without saving
+
+Both endpoints now return:
+```json
+{
+  "success": false,
+  "error": "Invalid Credentials",
+  "message": "The Client ID or Client Secret is incorrect.",
+  "troubleshooting": [
+    "Verify you copied the credentials correctly",
+    "Make sure you're using Sandbox credentials",
+    "Check that your eBay app is active"
+  ],
+  "help_url": "https://developer.ebay.com/my/keys"
+}
+```
+
+#### 2. Frontend UI Enhancement
+File: `/app/frontend/src/pages/merchant/EbayIntegration.jsx`
+
+Added to Step 4 (Connect Account) of the wizard:
+- **Test Connection Button** - Blue outline button with shield icon
+- **Success/Error Display** - Shows result of test in green/red box
+- **Troubleshooting Tips** - Bullet list of steps to fix common issues
+- **Help Link** - Direct link to eBay Developer Portal
+- **Auto-clear** - Errors clear when navigating between steps
+
+### Screenshot Verification ✓
+- Test Connection button visible on Connect step
+- Error display shows "Invalid Credentials" with red box
+- Troubleshooting tips displayed in bullet list
+- UX is much improved for users setting up eBay integration
+
+### Testing Results
+- Backend `/api/ebay/test-connection`: Returns structured error ✓
+- Backend `/api/ebay/connect`: Returns structured error ✓
+- Frontend displays error messages properly ✓
+- Frontend clears errors when navigating ✓
+
+### Status: COMPLETE ✓
+
+### Credentials
+- **Merchant Role:**
+  - Username: `edwardenayah@live.com.au`
+  - Password: `qazxsw12`
+
