@@ -1530,17 +1530,22 @@ const EbayIntegration = () => {
     if (!html) return '';
     
     // Store info - use actual store settings if available
-    const storeName = 'Your Store';
-    // Use a proper logo placeholder - SVG data URI for better rendering
-    const storeLogo = 'data:image/svg+xml,' + encodeURIComponent(`
-      <svg xmlns="http://www.w3.org/2000/svg" width="180" height="50" viewBox="0 0 180 50">
-        <rect width="180" height="50" fill="#ffffff" rx="6"/>
-        <rect x="8" y="8" width="34" height="34" fill="#0066cc" rx="6"/>
-        <text x="25" y="32" fill="#ffffff" font-family="Arial, sans-serif" font-size="20" font-weight="bold" text-anchor="middle">S</text>
-        <text x="105" y="32" fill="#0066cc" font-family="Arial, sans-serif" font-size="16" font-weight="bold" text-anchor="middle">Your Store</text>
-      </svg>
-    `.trim());
-    const storeEmail = 'contact@yourstore.com';
+    const storeName = storeSettings?.store_name || 'Your Store';
+    const storeEmail = storeSettings?.store_email || 'contact@yourstore.com';
+    
+    // Use actual store logo if available, otherwise use a placeholder SVG
+    let storeLogo = storeSettings?.store_logo || '';
+    if (!storeLogo || storeLogo.trim() === '') {
+      // Fallback to SVG placeholder only if no logo is uploaded
+      storeLogo = 'data:image/svg+xml,' + encodeURIComponent(`
+        <svg xmlns="http://www.w3.org/2000/svg" width="180" height="50" viewBox="0 0 180 50">
+          <rect width="180" height="50" fill="#ffffff" rx="6"/>
+          <rect x="8" y="8" width="34" height="34" fill="#0066cc" rx="6"/>
+          <text x="25" y="32" fill="#ffffff" font-family="Arial, sans-serif" font-size="20" font-weight="bold" text-anchor="middle">S</text>
+          <text x="105" y="32" fill="#0066cc" font-family="Arial, sans-serif" font-size="16" font-weight="bold" text-anchor="middle">${storeName}</text>
+        </svg>
+      `.trim());
+    }
     
     // Product info from selected preview product
     const product = previewProduct;
