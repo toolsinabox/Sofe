@@ -41,6 +41,7 @@ import MerchantEmails from "./pages/merchant/MerchantEmails";
 import MerchantPOS from "./pages/merchant/MerchantPOS";
 import MerchantPOSReports from "./pages/merchant/MerchantPOSReports";
 import MerchantAddons from "./pages/merchant/MerchantAddons";
+import EbayIntegration from "./pages/merchant/EbayIntegration";
 
 // Live Storefront (Theme-rendered)
 import LiveThemeStorefront from "./pages/store/LiveThemeStorefront";
