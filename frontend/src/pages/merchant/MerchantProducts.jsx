@@ -458,9 +458,14 @@ const ProductEditor = ({ product, categories, onSave, onClose, templateTags }) =
         length: formData.length ? parseFloat(formData.length) : null,
         width: formData.width ? parseFloat(formData.width) : null,
         height: formData.height ? parseFloat(formData.height) : null,
+        // Ensure category_ids is included (multiple categories support)
+        category_ids: formData.category_ids || [],
+        // Keep backward compatibility with category_id (primary category)
+        category_id: formData.category_id || (formData.category_ids && formData.category_ids[0]) || '',
         // Keep all 12 image slots (preserves positions, nulls become empty strings for API)
         images: formData.images.map(img => img || ''),
       };
+      console.log('Saving product with data:', dataToSave);
       await onSave(dataToSave);
     } catch (error) {
       console.error('Error saving product:', error);
