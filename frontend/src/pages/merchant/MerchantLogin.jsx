@@ -27,11 +27,7 @@ const MerchantLogin = () => {
 
     try {
       const response = await axios.post(`${API}/auth/login`, formData);
-      
-      // Use context login function to update state
       login(response.data.access_token, response.data.user);
-      
-      // Redirect to dashboard
       navigate('/merchant');
     } catch (err) {
       console.error('Login error:', err);
@@ -42,30 +38,30 @@ const MerchantLogin = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gray-900 flex items-center justify-center p-4">
+    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 flex items-center justify-center p-4">
       <div className="w-full max-w-md">
         {/* Logo */}
         <div className="text-center mb-8">
-          <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-cyan-600/20 mb-4">
-            <Store className="w-8 h-8 text-cyan-500" />
+          <div className="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-blue-600 mb-4 shadow-lg">
+            <Store className="w-8 h-8 text-white" />
           </div>
-          <h1 className="text-2xl font-bold text-white">Merchant Portal</h1>
-          <p className="text-gray-400 mt-2">Sign in to manage your store</p>
+          <h1 className="text-2xl font-bold text-gray-900">Merchant Portal</h1>
+          <p className="text-gray-500 mt-2">Sign in to manage your store</p>
         </div>
 
         {/* Login Form */}
-        <div className="bg-gray-800 rounded-lg border border-gray-700 p-6">
+        <div className="bg-white rounded-2xl shadow-xl border border-gray-100 p-8">
           {error && (
-            <div className="mb-4 p-3 bg-red-500/10 border border-red-500/50 rounded-lg flex items-center gap-2 text-red-400">
-              <AlertCircle className="w-5 h-5" />
-              <span>{error}</span>
+            <div className="mb-6 p-4 bg-red-50 border border-red-200 rounded-xl flex items-center gap-3 text-red-700">
+              <AlertCircle className="w-5 h-5 flex-shrink-0" />
+              <span className="text-sm">{error}</span>
             </div>
           )}
 
-          <form onSubmit={handleSubmit} className="space-y-4">
+          <form onSubmit={handleSubmit} className="space-y-5">
             <div>
-              <Label className="text-gray-300">Email Address</Label>
-              <div className="relative mt-1">
+              <Label className="text-gray-700 font-medium">Email Address</Label>
+              <div className="relative mt-2">
                 <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
                 <Input
                   type="email"
@@ -73,14 +69,14 @@ const MerchantLogin = () => {
                   onChange={(e) => setFormData(prev => ({ ...prev, email: e.target.value }))}
                   placeholder="you@example.com"
                   required
-                  className="pl-10 bg-gray-700 border-gray-600 text-white"
+                  className="pl-10 h-11 bg-gray-50 border-gray-200 text-gray-900 focus:bg-white focus:border-blue-500 focus:ring-blue-500"
                 />
               </div>
             </div>
 
             <div>
-              <Label className="text-gray-300">Password</Label>
-              <div className="relative mt-1">
+              <Label className="text-gray-700 font-medium">Password</Label>
+              <div className="relative mt-2">
                 <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
                 <Input
                   type={showPassword ? 'text' : 'password'}
@@ -88,12 +84,12 @@ const MerchantLogin = () => {
                   onChange={(e) => setFormData(prev => ({ ...prev, password: e.target.value }))}
                   placeholder="••••••••"
                   required
-                  className="pl-10 pr-10 bg-gray-700 border-gray-600 text-white"
+                  className="pl-10 pr-10 h-11 bg-gray-50 border-gray-200 text-gray-900 focus:bg-white focus:border-blue-500 focus:ring-blue-500"
                 />
                 <button
                   type="button"
                   onClick={() => setShowPassword(!showPassword)}
-                  className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-white"
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600"
                 >
                   {showPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
                 </button>
@@ -101,11 +97,11 @@ const MerchantLogin = () => {
             </div>
 
             <div className="flex items-center justify-between">
-              <label className="flex items-center gap-2 text-sm text-gray-400">
-                <input type="checkbox" className="rounded bg-gray-700 border-gray-600" />
+              <label className="flex items-center gap-2 text-sm text-gray-600 cursor-pointer">
+                <input type="checkbox" className="rounded border-gray-300 text-blue-600 focus:ring-blue-500" />
                 Remember me
               </label>
-              <a href="#" className="text-sm text-cyan-500 hover:text-cyan-400">
+              <a href="#" className="text-sm text-blue-600 hover:text-blue-700 font-medium">
                 Forgot password?
               </a>
             </div>
@@ -113,16 +109,16 @@ const MerchantLogin = () => {
             <Button
               type="submit"
               disabled={loading}
-              className="w-full bg-cyan-600 hover:bg-cyan-700 text-white"
+              className="w-full h-11 bg-blue-600 hover:bg-blue-700 text-white font-medium shadow-lg shadow-blue-500/25"
             >
               {loading ? 'Signing in...' : 'Sign In'}
             </Button>
           </form>
 
           <div className="mt-6 text-center">
-            <p className="text-gray-400 text-sm">
+            <p className="text-gray-500 text-sm">
               Don't have an account?{' '}
-              <Link to="/merchant/register" className="text-cyan-500 hover:text-cyan-400">
+              <Link to="/merchant/register" className="text-blue-600 hover:text-blue-700 font-medium">
                 Create one
               </Link>
             </p>
@@ -131,9 +127,9 @@ const MerchantLogin = () => {
 
         {/* Footer Links */}
         <div className="mt-6 text-center text-sm text-gray-500">
-          <Link to="/store" className="hover:text-gray-400">Visit Store</Link>
+          <Link to="/store" className="hover:text-gray-700">Visit Store</Link>
           <span className="mx-2">•</span>
-          <Link to="/admin/login" className="hover:text-gray-400">Admin Login</Link>
+          <Link to="/admin/login" className="hover:text-gray-700">Admin Login</Link>
         </div>
       </div>
     </div>
