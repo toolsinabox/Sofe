@@ -93,6 +93,7 @@ class ShippingOption(BaseModel):
     id: str = Field(default_factory=lambda: str(uuid.uuid4()))
     name: str  # Display name at checkout
     description: Optional[str] = None
+    routing_group: Optional[str] = None  # Group options together - only cheapest in group shown to customer
     service_ids: List[str] = []  # Linked services
     countries: List[str] = ["AU"]  # Countries this applies to
     free_shipping_threshold: Optional[float] = None  # Cart total for free shipping
