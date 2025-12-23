@@ -149,8 +149,9 @@ const MerchantShipping = () => {
 
   // Package form state (moved to parent level for persistence)
   const [packageForm, setPackageForm] = useState({
-    name: '',
     code: '',
+    name: '',
+    package_type: 'box',
     length: 0,
     width: 0,
     height: 0,
