@@ -160,6 +160,7 @@ const MerchantShipping = () => {
     name: '',
     code: '',
     carrier: 'custom',
+    routing_group: '',  // Group services - only cheapest in group shown to customer
     charge_type: 'weight',
     min_charge: 0,
     max_charge: null,
