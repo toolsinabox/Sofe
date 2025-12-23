@@ -241,15 +241,51 @@ const EbayIntegration = () => {
     }
   }, [status?.connected, activeTab, fetchSettings, fetchListings, fetchOrders]);
 
-  // Connect eBay account (from wizard)
-  const connectEbay = async () => {
+  // Connection error state
+  const [connectionError, setConnectionError] = useState(null);
+  const [testingConnection, setTestingConnection] = useState(false);
+  const [testResult, setTestResult] = useState(null);
+
+  // Test connection without saving
+  const testConnection = async () => {
     if (!wizardData.client_id || !wizardData.client_secret) {
-      alert('Please enter Client ID and Client Secret');
+      setTestResult({ success: false, message: 'Please enter Client ID and Client Secret' });
       return;
     }
     
     try {
+      setTestingConnection(true);
+      setTestResult(null);
+      const response = await axios.post(`${BACKEND_URL}/api/ebay/test-connection`, {
+        client_id: wizardData.client_id,
+        client_secret: wizardData.client_secret,
+        ru_name: wizardData.ru_name,
+        sandbox_mode: wizardData.sandbox_mode
+      });
+      setTestResult(response.data);
+    } catch (error) {
+      const errorData = error.response?.data?.detail || error.response?.data;
+      setTestResult({
+        success: false,
+        error: errorData?.error || 'Connection Failed',
+        message: errorData?.message || 'Failed to test connection',
+        troubleshooting: errorData?.troubleshooting || []
+      });
+    } finally {
+      setTestingConnection(false);
+    }
+  };
+
+  // Connect eBay account (from wizard)
+  const connectEbay = async () => {
+    if (!wizardData.client_id || !wizardData.client_secret) {
+      setConnectionError({ message: 'Please enter Client ID and Client Secret' });
+      return false;
+    }
+    
+    try {
       setConnecting(true);
+      setConnectionError(null);
       await axios.post(`${BACKEND_URL}/api/ebay/connect`, {
         client_id: wizardData.client_id,
         client_secret: wizardData.client_secret,
@@ -269,7 +305,27 @@ const EbayIntegration = () => {
       await fetchStatus();
       return true;
     } catch (error) {
-      alert(error.response?.data?.detail || 'Failed to connect eBay account');
+      const errorData = error.response?.data?.detail || error.response?.data;
+      
+      if (typeof errorData === 'object') {
+        setConnectionError({
+          error: errorData.error || 'Connection Failed',
+          message: errorData.message || 'Failed to connect',
+          troubleshooting: errorData.troubleshooting || [],
+          help_url: errorData.help_url
+        });
+      } else {
+        setConnectionError({
+          error: 'Connection Failed',
+          message: typeof errorData === 'string' ? errorData : 'Failed to connect to eBay',
+          troubleshooting: [
+            'Double-check your Client ID and Client Secret',
+            'Verify Sandbox/Production mode matches your credentials',
+            'Try creating a new app on eBay Developer Portal'
+          ],
+          help_url: 'https://developer.ebay.com/my/keys'
+        });
+      }
       return false;
     } finally {
       setConnecting(false);
