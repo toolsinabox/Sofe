@@ -1,9 +1,10 @@
-import React from 'react';
+import React, { useRef } from 'react';
 import axios from 'axios';
 import { Plus, Edit, Trash2, Settings, DollarSign, Layers, Loader2, Save } from 'lucide-react';
 import { Button } from '../../../components/ui/button';
 import { Label } from '../../../components/ui/label';
 import { Switch } from '../../../components/ui/switch';
+import { Input } from '../../../components/ui/input';
 import {
   Dialog,
   DialogContent,
@@ -15,20 +16,6 @@ import {
 
 const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
 const API = `${BACKEND_URL}/api`;
-
-// Stable input component to prevent focus loss
-const StableInput = React.memo(({ name, defaultValue, onBlur, className, ...props }) => {
-  return (
-    <input
-      name={name}
-      defaultValue={defaultValue || ''}
-      onBlur={onBlur}
-      className={`flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 ${className || ''}`}
-      {...props}
-    />
-  );
-});
-StableInput.displayName = 'StableInput';
 
 const OptionsTab = ({
   options,
@@ -44,6 +31,9 @@ const OptionsTab = ({
   setSaving,
   fetchAllData
 }) => {
+  // Refs for form inputs to read values directly on save
+  const formRef = useRef(null);
+
   const openOptionModal = (option = null) => {
     if (option) {
       setEditingItem(option);
@@ -76,12 +66,29 @@ const OptionsTab = ({
   };
 
   const handleSaveOption = async () => {
+    // Read values directly from form inputs to ensure we have latest values
+    const form = formRef.current;
+    if (!form) return;
+
+    const nameInput = form.querySelector('input[name="name"]');
+    const descInput = form.querySelector('textarea[name="description"]');
+    const routingInput = form.querySelector('input[name="routing_group"]');
+    const thresholdInput = form.querySelector('input[name="free_shipping_threshold"]');
+
+    const formData = {
+      ...optionForm,
+      name: nameInput?.value || optionForm.name,
+      description: descInput?.value || optionForm.description,
+      routing_group: routingInput?.value || optionForm.routing_group,
+      free_shipping_threshold: thresholdInput?.value ? parseFloat(thresholdInput.value) : null
+    };
+
     setSaving(true);
     try {
       if (editingItem) {
-        await axios.put(`${API}/shipping/options/${editingItem.id}`, optionForm);
+        await axios.put(`${API}/shipping/options/${editingItem.id}`, formData);
       } else {
-        await axios.post(`${API}/shipping/options`, optionForm);
+        await axios.post(`${API}/shipping/options`, formData);
       }
       await fetchAllData();
       setShowOptionModal(false);
@@ -104,31 +111,21 @@ const OptionsTab = ({
   };
 
   const toggleServiceId = (serviceId) => {
-    if (optionForm.service_ids.includes(serviceId)) {
-      setOptionForm(prev => ({
-        ...prev,
-        service_ids: prev.service_ids.filter(id => id !== serviceId)
-      }));
-    } else {
-      setOptionForm(prev => ({
-        ...prev,
-        service_ids: [...prev.service_ids, serviceId]
-      }));
-    }
+    setOptionForm(prev => {
+      const newServiceIds = prev.service_ids.includes(serviceId)
+        ? prev.service_ids.filter(id => id !== serviceId)
+        : [...prev.service_ids, serviceId];
+      return { ...prev, service_ids: newServiceIds };
+    });
   };
 
   const toggleFreeZone = (zoneCode) => {
-    if (optionForm.free_shipping_zones.includes(zoneCode)) {
-      setOptionForm(prev => ({
-        ...prev,
-        free_shipping_zones: prev.free_shipping_zones.filter(code => code !== zoneCode)
-      }));
-    } else {
-      setOptionForm(prev => ({
-        ...prev,
-        free_shipping_zones: [...prev.free_shipping_zones, zoneCode]
-      }));
-    }
+    setOptionForm(prev => {
+      const newZones = prev.free_shipping_zones.includes(zoneCode)
+        ? prev.free_shipping_zones.filter(code => code !== zoneCode)
+        : [...prev.free_shipping_zones, zoneCode];
+      return { ...prev, free_shipping_zones: newZones };
+    });
   };
 
   return (
@@ -212,119 +209,125 @@ const OptionsTab = ({
 
       {/* Option Modal */}
       <Dialog open={showOptionModal} onOpenChange={setShowOptionModal}>
-        <DialogContent key={editingItem?.id || 'new-option'} className="bg-gray-800 border-gray-700 text-white max-w-lg max-h-[90vh] overflow-y-auto">
+        <DialogContent className="bg-gray-800 border-gray-700 text-white max-w-lg max-h-[90vh] overflow-y-auto">
           <DialogHeader>
             <DialogTitle>{editingItem ? 'Edit Shipping Option' : 'Create Shipping Option'}</DialogTitle>
             <DialogDescription className="text-gray-400">
               Configure checkout shipping options and free shipping rules
             </DialogDescription>
           </DialogHeader>
-          <div className="space-y-4 py-4">
-            <div>
-              <Label className="text-gray-300">Option Name</Label>
-              <StableInput
-                key={`option-name-${editingItem?.id || 'new'}`}
-                name="name"
-                defaultValue={optionForm.name}
-                onBlur={(e) => setOptionForm(prev => ({...prev, name: e.target.value}))}
-                placeholder="e.g., Standard Shipping"
-                className="bg-gray-700 border-gray-600 text-white mt-1"
-              />
-            </div>
-            <div>
-              <Label className="text-gray-300">Description</Label>
-              <textarea
-                key={`option-desc-${editingItem?.id || 'new'}`}
-                defaultValue={optionForm.description}
-                onBlur={(e) => setOptionForm(prev => ({...prev, description: e.target.value}))}
-                placeholder="Shown at checkout..."
-                rows={2}
-                className="w-full mt-1 px-3 py-2 bg-gray-700 border border-gray-600 rounded-md text-white text-sm placeholder:text-gray-500 focus:outline-none focus:ring-2 focus:ring-teal-500"
-              />
-            </div>
+          <form ref={formRef} onSubmit={(e) => e.preventDefault()}>
+            <div className="space-y-4 py-4">
+              <div>
+                <Label className="text-gray-300">Option Name</Label>
+                <Input
+                  name="name"
+                  defaultValue={optionForm.name}
+                  placeholder="e.g., Standard Shipping"
+                  className="bg-gray-700 border-gray-600 text-white mt-1"
+                />
+              </div>
+              <div>
+                <Label className="text-gray-300">Description</Label>
+                <textarea
+                  name="description"
+                  defaultValue={optionForm.description}
+                  placeholder="Shown at checkout..."
+                  rows={2}
+                  className="w-full mt-1 px-3 py-2 bg-gray-700 border border-gray-600 rounded-md text-white text-sm placeholder:text-gray-500 focus:outline-none focus:ring-2 focus:ring-teal-500"
+                />
+              </div>
 
-            {/* Routing Group */}
-            <div>
-              <Label className="text-gray-300">
-                Routing Group
-                <span className="text-gray-500 text-xs ml-2">(Options in same group show only cheapest to customer)</span>
-              </Label>
-              <StableInput
-                key={`option-routing-${editingItem?.id || 'new'}`}
-                name="routing_group"
-                defaultValue={optionForm.routing_group}
-                onBlur={(e) => setOptionForm(prev => ({...prev, routing_group: e.target.value}))}
-                placeholder="e.g., standard, express (leave empty to always show)"
-                className="bg-gray-700 border-gray-600 text-white mt-1"
-              />
-            </div>
-            
-            {/* Linked Services */}
-            <div>
-              <Label className="text-gray-300 mb-2 block">Linked Services</Label>
-              <div className="space-y-2 max-h-32 overflow-y-auto">
-                {services.map(service => (
-                  <label key={service.id} className="flex items-center gap-2 p-2 bg-gray-900 rounded cursor-pointer hover:bg-gray-700">
-                    <input
-                      type="checkbox"
-                      checked={optionForm.service_ids.includes(service.id)}
-                      onChange={() => toggleServiceId(service.id)}
-                      className="rounded border-gray-600"
-                    />
-                    <span className="text-white text-sm">{service.name}</span>
-                    <span className="text-gray-500 text-xs">({service.code})</span>
-                  </label>
-                ))}
+              {/* Routing Group */}
+              <div>
+                <Label className="text-gray-300">
+                  Routing Group
+                  <span className="text-gray-500 text-xs ml-2">(Options in same group show only cheapest to customer)</span>
+                </Label>
+                <Input
+                  name="routing_group"
+                  defaultValue={optionForm.routing_group}
+                  placeholder="e.g., standard, express (leave empty to always show)"
+                  className="bg-gray-700 border-gray-600 text-white mt-1"
+                />
+              </div>
+              
+              {/* Linked Services */}
+              <div>
+                <Label className="text-gray-300 mb-2 block">Linked Services</Label>
+                <div className="space-y-2 max-h-32 overflow-y-auto bg-gray-900 rounded-lg p-2">
+                  {services.length === 0 ? (
+                    <p className="text-gray-500 text-sm p-2">No services available. Create services first.</p>
+                  ) : (
+                    services.map(service => (
+                      <label 
+                        key={service.id} 
+                        className="flex items-center gap-3 p-2 rounded cursor-pointer hover:bg-gray-700 transition-colors"
+                      >
+                        <input
+                          type="checkbox"
+                          checked={optionForm.service_ids.includes(service.id)}
+                          onChange={() => toggleServiceId(service.id)}
+                          className="w-4 h-4 rounded border-gray-600 bg-gray-700 text-teal-500 focus:ring-teal-500 focus:ring-offset-gray-800"
+                        />
+                        <span className="text-white text-sm">{service.name}</span>
+                        <span className="text-gray-500 text-xs">({service.code})</span>
+                      </label>
+                    ))
+                  )}
+                </div>
+              </div>
+
+              {/* Free Shipping Threshold */}
+              <div>
+                <Label className="text-gray-300">Free Shipping Threshold ($)</Label>
+                <Input
+                  name="free_shipping_threshold"
+                  type="number"
+                  step="0.01"
+                  defaultValue={optionForm.free_shipping_threshold || ''}
+                  placeholder="e.g., 150.00 (leave empty for none)"
+                  className="bg-gray-700 border-gray-600 text-white mt-1"
+                />
+              </div>
+
+              {/* Free Shipping Zones */}
+              <div>
+                <Label className="text-gray-300 mb-2 block">Free Shipping Zones (if threshold met)</Label>
+                <div className="flex flex-wrap gap-2 max-h-24 overflow-y-auto p-2 bg-gray-900 rounded-lg">
+                  {zones.length === 0 ? (
+                    <p className="text-gray-500 text-sm">No zones available.</p>
+                  ) : (
+                    zones.map(zone => (
+                      <button
+                        key={zone.code}
+                        type="button"
+                        onClick={() => toggleFreeZone(zone.code)}
+                        className={`px-2 py-1 rounded text-xs transition-colors ${
+                          optionForm.free_shipping_zones.includes(zone.code)
+                            ? 'bg-emerald-500/30 text-emerald-400 border border-emerald-500/50'
+                            : 'bg-gray-700 text-gray-300 border border-gray-600 hover:bg-gray-600'
+                        }`}
+                      >
+                        {zone.name}
+                      </button>
+                    ))
+                  )}
+                </div>
+                {optionForm.free_shipping_zones.length === 0 && optionForm.free_shipping_threshold && (
+                  <p className="text-gray-500 text-xs mt-1">All zones will be eligible if none selected</p>
+                )}
+              </div>
+
+              <div className="flex items-center justify-between pt-2 border-t border-gray-700">
+                <Label className="text-gray-300">Option Active</Label>
+                <Switch
+                  checked={optionForm.is_active}
+                  onCheckedChange={(checked) => setOptionForm(prev => ({...prev, is_active: checked}))}
+                />
               </div>
             </div>
-
-            {/* Free Shipping Threshold */}
-            <div>
-              <Label className="text-gray-300">Free Shipping Threshold ($)</Label>
-              <StableInput
-                key={`option-threshold-${editingItem?.id || 'new'}`}
-                type="number"
-                step="0.01"
-                name="free_shipping_threshold"
-                defaultValue={optionForm.free_shipping_threshold || ''}
-                onBlur={(e) => setOptionForm(prev => ({...prev, free_shipping_threshold: e.target.value ? parseFloat(e.target.value) : null}))}
-                placeholder="e.g., 150.00 (leave empty for none)"
-                className="bg-gray-700 border-gray-600 text-white mt-1"
-              />
-            </div>
-
-            {/* Free Shipping Zones */}
-            <div>
-              <Label className="text-gray-300 mb-2 block">Free Shipping Zones (if threshold met)</Label>
-              <div className="flex flex-wrap gap-2 max-h-24 overflow-y-auto">
-                {zones.map(zone => (
-                  <button
-                    key={zone.code}
-                    type="button"
-                    onClick={() => toggleFreeZone(zone.code)}
-                    className={`px-2 py-1 rounded text-xs transition-colors ${
-                      optionForm.free_shipping_zones.includes(zone.code)
-                        ? 'bg-emerald-500/30 text-emerald-400 border border-emerald-500/50'
-                        : 'bg-gray-700 text-gray-300 border border-gray-600 hover:bg-gray-600'
-                    }`}
-                  >
-                    {zone.name}
-                  </button>
-                ))}
-              </div>
-              {optionForm.free_shipping_zones.length === 0 && optionForm.free_shipping_threshold && (
-                <p className="text-gray-500 text-xs mt-1">All zones will be eligible if none selected</p>
-              )}
-            </div>
-
-            <div className="flex items-center justify-between pt-2 border-t border-gray-700">
-              <Label className="text-gray-300">Option Active</Label>
-              <Switch
-                checked={optionForm.is_active}
-                onCheckedChange={(checked) => setOptionForm(prev => ({...prev, is_active: checked}))}
-              />
-            </div>
-          </div>
+          </form>
           <DialogFooter>
             <Button variant="outline" onClick={() => setShowOptionModal(false)} className="border-gray-600">
               Cancel
