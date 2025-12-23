@@ -32,6 +32,7 @@ import OptionsTab from './shipping/OptionsTab';
 import CategoriesTab from './shipping/CategoriesTab';
 import PackagesTab from './shipping/PackagesTab';
 import ServicesTab from './shipping/ServicesTab';
+import ZonesTab from './shipping/ZonesTab';
 
 const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
 const API = `${BACKEND_URL}/api`;
