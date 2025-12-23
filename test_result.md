@@ -1814,3 +1814,78 @@ if category_id:
 - ✅ Tag inserter shows image options
 
 ### Status: COMPLETE ✓
+
+---
+
+## Import/Export System + eBay Theme Conditionals - 2025-12-23
+
+### Features Implemented
+
+#### 1. eBay Theme Conditional Image Tags
+- Added IF/ELSE conditional syntax for images:
+  - `{{#if_image_1}}...{{/if_image_1}}` - Shows content only if image 1 exists
+  - `{{#if_has_images}}...{{/if_has_images}}` - Shows content only if product has any images
+  - `{{#if_no_images}}...{{/if_no_images}}` - Shows content only if NO images
+  - `{{#if_store_logo}}...{{/if_store_logo}}` - Shows content only if store logo exists
+- Fixed store logo loading with proper placeholder URL
+- Updated Modern Clean template to use conditional image blocks
+
+#### 2. Comprehensive Import/Export System (Maropost-style)
+
+**Backend: `/app/backend/routes/import_export.py`**
+- 12 category fields defined (ID, Name, Slug, Description, Parent ID, Image URL, Status, Sort Order, Meta Title/Description, Dates)
+- 34 product fields defined (ID, SKU, Name, Description, Price, Compare Price, Cost, Stock, Categories, Brand, Vendor, Barcode, Weight, Dimensions, Status, Images 1-6, Meta fields, Tags, Custom fields, Dates)
+
+**Endpoints:**
+- `GET /api/import-export/{entity}/fields` - Get available fields
+- `GET /api/import-export/{entity}/template` - Download CSV template
+- `POST /api/import-export/{entity}/preview` - Preview CSV before import
+- `POST /api/import-export/{entity}/import` - Execute import with field mapping
+- `POST /api/import-export/{entity}/export` - Export with filters
+
+**Frontend: `/app/frontend/src/components/ImportExport.jsx`**
+
+**Import Dialog Features:**
+- 4-step wizard (Upload → Map Fields → Preview → Results)
+- Download CSV template button
+- Drag & drop file upload
+- Auto-detect field mappings
+- Manual field mapping UI with dropdowns
+- "Update existing" option (match by SKU/Name)
+- "Skip errors" option
+- Data preview before import
+- Progress indicator
+- Success/error result with detailed error list
+
+**Export Dialog Features:**
+- Filter options (Status, Category, Stock Status)
+- Field selection with checkboxes
+- "Select All" / "Clear" buttons
+- Field count indicator
+- CSV export with timestamp filename
+
+#### 3. UI Integration
+- Added Import/Export buttons to Products page header
+- Added Import/Export buttons to Categories page header
+- Buttons styled consistently with existing UI
+
+### Files Created/Modified
+- `/app/backend/routes/import_export.py` - NEW: Complete import/export backend
+- `/app/backend/server.py` - Added import_export router
+- `/app/frontend/src/components/ImportExport.jsx` - NEW: Import/Export dialogs
+- `/app/frontend/src/pages/merchant/MerchantCategories.jsx` - Added Import/Export buttons
+- `/app/frontend/src/pages/merchant/MerchantProducts.jsx` - Added Import/Export buttons
+- `/app/frontend/src/pages/merchant/EbayIntegration.jsx` - Added conditional image logic
+
+### Testing Results
+- ✅ Category fields endpoint returns 12 fields
+- ✅ Product fields endpoint returns 34 fields
+- ✅ Category template downloads correctly
+- ✅ Product template downloads correctly
+- ✅ Product export generates valid CSV
+- ✅ Import dialog opens with template download option
+- ✅ Export dialog shows all filters and field selection
+- ✅ Categories page has Import/Export buttons
+- ✅ Products page has Import/Export buttons
+
+### Status: COMPLETE ✓
