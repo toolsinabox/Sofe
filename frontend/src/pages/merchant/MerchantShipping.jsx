@@ -173,7 +173,15 @@ const MerchantShipping = () => {
     categories: [],
     is_active: true,
     sort_order: 0,
-    rates: []
+    rates: [],
+    // Additional fields
+    tracking_url: '',
+    internal_description: '',
+    packaging_allowance_kg: 0,
+    packaging_allowance_percent: 0,
+    round_up_weight: false,
+    ignore_physical_weight: false,
+    ship_to_po_box: false
   });
   const [expandedService, setExpandedService] = useState(null);
   const [showRateImportModal, setShowRateImportModal] = useState(false);
