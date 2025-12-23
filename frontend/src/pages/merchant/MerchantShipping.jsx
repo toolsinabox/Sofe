@@ -3180,7 +3180,7 @@ const MerchantShipping = () => {
 
         {/* Option Modal */}
         <Dialog open={showOptionModal} onOpenChange={setShowOptionModal}>
-          <DialogContent className="bg-gray-800 border-gray-700 text-white max-w-lg max-h-[90vh] overflow-y-auto">
+          <DialogContent key={editingItem?.id || 'new-option'} className="bg-gray-800 border-gray-700 text-white max-w-lg max-h-[90vh] overflow-y-auto">
             <DialogHeader>
               <DialogTitle>{editingItem ? 'Edit Shipping Option' : 'Create Shipping Option'}</DialogTitle>
               <DialogDescription className="text-gray-400">
