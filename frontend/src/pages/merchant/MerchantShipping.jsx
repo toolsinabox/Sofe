@@ -723,7 +723,12 @@ const MerchantShipping = () => {
       {/* Tab Content */}
       <div>
         {activeTab === 'overview' && overviewContent}
-        {activeTab === 'zones' && <ZonesTab />}
+        {activeTab === 'zones' && (
+          <ZonesTab 
+            zones={zones}
+            fetchAllData={fetchAllData}
+          />
+        )}
         {activeTab === 'services' && (
           <ServicesTab
             services={services}
