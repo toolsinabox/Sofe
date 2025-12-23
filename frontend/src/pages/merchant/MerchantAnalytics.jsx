@@ -63,42 +63,42 @@ const MerchantAnalytics = () => {
   const maxRevenue = Math.max(...chartData.revenue);
 
   return (
-    <div className="p-6">
-      <div className="flex justify-between items-center mb-6">
+    <div className="p-4">
+      <div className="flex justify-between items-center mb-4">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900">Analytics</h1>
-          <p className="text-gray-500 text-sm mt-1">Track your store performance and sales</p>
+          <h1 className="text-xl font-bold text-gray-900">Analytics</h1>
+          <p className="text-gray-500 text-xs">Track your store performance and sales</p>
         </div>
-        <div className="flex items-center gap-3">
+        <div className="flex items-center gap-2">
           <select
             value={dateRange}
             onChange={(e) => setDateRange(e.target.value)}
-            className="h-10 px-3 bg-white border border-gray-200 rounded-md text-gray-900"
+            className="h-8 px-2 bg-white border border-gray-200 rounded-md text-gray-900 text-sm"
           >
             <option value="7d">Last 7 days</option>
             <option value="30d">Last 30 days</option>
             <option value="90d">Last 90 days</option>
             <option value="12m">Last 12 months</option>
           </select>
-          <Button variant="outline" className="border-gray-200">
-            <Calendar size={16} className="mr-2" /> Custom Range
+          <Button variant="outline" size="sm" className="border-gray-200 h-8">
+            <Calendar size={14} className="mr-1" /> Custom
           </Button>
         </div>
       </div>
 
       {/* Stats Grid */}
-      <div className="grid grid-cols-4 gap-4 mb-6">
+      <div className="grid grid-cols-4 gap-3 mb-4">
         <StatCard title="Total Revenue" value={stats.revenue} change={stats.revenue_change} icon={DollarSign} prefix="$" />
         <StatCard title="Total Orders" value={stats.orders} change={stats.orders_change} icon={ShoppingCart} />
         <StatCard title="New Customers" value={stats.customers} change={stats.customers_change} icon={Users} />
         <StatCard title="Avg. Order Value" value={stats.avg_order} change={stats.avg_order_change} icon={Package} prefix="$" />
       </div>
 
-      <div className="grid grid-cols-3 gap-6">
+      <div className="grid grid-cols-3 gap-4">
         {/* Revenue Chart */}
-        <div className="col-span-2 bg-white rounded-lg border border-gray-200 p-6">
-          <h2 className="text-lg font-semibold text-gray-900 mb-4">Revenue Overview</h2>
-          <div className="flex items-end justify-between h-48 gap-2">
+        <div className="col-span-2 bg-white rounded-lg border border-gray-200 p-4">
+          <h2 className="text-sm font-semibold text-gray-900 mb-3">Revenue Overview</h2>
+          <div className="flex items-end justify-between h-36 gap-1.5">
             {chartData.labels.map((label, i) => (
               <div key={label} className="flex-1 flex flex-col items-center">
                 <div
@@ -106,7 +106,7 @@ const MerchantAnalytics = () => {
                   style={{ height: `${(chartData.revenue[i] / maxRevenue) * 100}%` }}
                   title={`$${chartData.revenue[i]}`}
                 />
-                <span className="text-xs text-gray-500 mt-2">{label}</span>
+                <span className="text-xs text-gray-500 mt-1">{label}</span>
               </div>
             ))}
           </div>
