@@ -3189,7 +3189,9 @@ async def render_content_zone(zone_name: str):
 async def get_all_reviews(
     status: Optional[str] = None,
     product_id: Optional[str] = None,
-    limit: int = 50
+    rating: Optional[int] = None,
+    featured: Optional[bool] = None,
+    limit: int = 100
 ):
     """Get all reviews with optional filters"""
     query = {}
@@ -3197,45 +3199,134 @@ async def get_all_reviews(
         query["status"] = status
     if product_id:
         query["product_id"] = product_id
+    if rating:
+        query["rating"] = rating
+    if featured is not None:
+        query["is_featured"] = featured
     
     reviews = await db.reviews.find(query, {"_id": 0}).sort("created_at", -1).to_list(limit)
+    
+    # Enrich with product info if missing
+    for review in reviews:
+        if not review.get("product_name") and review.get("product_id"):
+            product = await db.products.find_one({"id": review["product_id"]}, {"_id": 0, "name": 1, "sku": 1})
+            if product:
+                review["product_name"] = product.get("name")
+                review["product_sku"] = product.get("sku")
+    
     return reviews
 
-@api_router.get("/reviews/product/{product_id}")
-async def get_product_reviews(product_id: str):
-    """Get approved reviews for a product"""
-    reviews = await db.reviews.find(
-        {"product_id": product_id, "status": "approved"},
-        {"_id": 0}
-    ).sort("created_at", -1).to_list(100)
+@api_router.get("/reviews/stats")
+async def get_review_stats():
+    """Get review statistics for dashboard"""
+    all_reviews = await db.reviews.find({}, {"_id": 0, "rating": 1, "status": 1}).to_list(10000)
     
-    # Calculate average rating
-    if reviews:
-        avg_rating = sum(r["rating"] for r in reviews) / len(reviews)
+    total = len(all_reviews)
+    pending = sum(1 for r in all_reviews if r.get("status") == "pending")
+    approved = sum(1 for r in all_reviews if r.get("status") == "approved")
+    rejected = sum(1 for r in all_reviews if r.get("status") == "rejected")
+    
+    # Rating distribution
+    rating_dist = {1: 0, 2: 0, 3: 0, 4: 0, 5: 0}
+    for r in all_reviews:
+        rating = r.get("rating", 0)
+        if rating in rating_dist:
+            rating_dist[rating] += 1
+    
+    avg_rating = sum(r.get("rating", 0) for r in all_reviews) / total if total > 0 else 0
+    
+    return {
+        "total": total,
+        "pending": pending,
+        "approved": approved,
+        "rejected": rejected,
+        "average_rating": round(avg_rating, 1),
+        "rating_distribution": rating_dist
+    }
+
+@api_router.get("/reviews/product/{product_id}")
+async def get_product_reviews(product_id: str, include_pending: bool = False):
+    """Get reviews for a product"""
+    query = {"product_id": product_id}
+    if not include_pending:
+        query["status"] = "approved"
+    
+    reviews = await db.reviews.find(query, {"_id": 0}).sort("created_at", -1).to_list(100)
+    
+    # Calculate statistics
+    approved_reviews = [r for r in reviews if r.get("status") == "approved"]
+    if approved_reviews:
+        avg_rating = sum(r["rating"] for r in approved_reviews) / len(approved_reviews)
+        rating_dist = {1: 0, 2: 0, 3: 0, 4: 0, 5: 0}
+        for r in approved_reviews:
+            rating_dist[r["rating"]] += 1
     else:
         avg_rating = 0
+        rating_dist = {1: 0, 2: 0, 3: 0, 4: 0, 5: 0}
     
     return {
         "reviews": reviews,
-        "count": len(reviews),
-        "average_rating": round(avg_rating, 1)
+        "count": len(approved_reviews),
+        "average_rating": round(avg_rating, 1),
+        "rating_distribution": rating_dist
     }
 
 @api_router.post("/reviews", response_model=ProductReview)
 async def create_review(review: ProductReviewCreate):
-    """Submit a new product review"""
+    """Submit a new product review (customer or admin)"""
+    product_id = review.product_id
+    product_name = None
+    product_sku = review.product_sku
+    
+    # If SKU provided, look up product
+    if review.product_sku and not review.product_id:
+        product = await db.products.find_one({"sku": review.product_sku}, {"_id": 0})
+        if product:
+            product_id = product["id"]
+            product_name = product.get("name")
+            product_sku = product.get("sku")
+        else:
+            raise HTTPException(status_code=404, detail=f"Product with SKU '{review.product_sku}' not found")
+    elif review.product_id:
+        product = await db.products.find_one({"id": review.product_id}, {"_id": 0})
+        if product:
+            product_name = product.get("name")
+            product_sku = product.get("sku")
+    
+    if not product_id:
+        raise HTTPException(status_code=400, detail="Either product_id or product_sku is required")
+    
     new_review = ProductReview(
-        **review.dict(),
-        status="pending"  # All reviews start as pending
+        product_id=product_id,
+        product_sku=product_sku,
+        product_name=product_name,
+        customer_name=review.customer_name,
+        customer_email=review.customer_email,
+        rating=review.rating,
+        title=review.title,
+        content=review.content,
+        images=review.images,
+        verified_purchase=review.verified_purchase,
+        status=review.status
     )
     await db.reviews.insert_one(new_review.dict())
+    
+    # Update product review count
+    if product_id:
+        approved_count = await db.reviews.count_documents({"product_id": product_id, "status": "approved"})
+        await db.products.update_one({"id": product_id}, {"$set": {"reviews_count": approved_count}})
+    
     return new_review
 
 @api_router.put("/reviews/{review_id}")
 async def update_review(review_id: str, update: ProductReviewUpdate):
-    """Update a review (mainly for moderation)"""
+    """Update a review (moderation, reply, etc.)"""
     update_data = {k: v for k, v in update.dict().items() if v is not None}
-    update_data["updated_at"] = datetime.now(timezone.utc)
+    update_data["updated_at"] = datetime.now(timezone.utc).isoformat()
+    
+    # If adding admin reply, add timestamp
+    if update.admin_reply is not None:
+        update_data["admin_reply_at"] = datetime.now(timezone.utc).isoformat()
     
     result = await db.reviews.update_one(
         {"id": review_id},
@@ -3244,14 +3335,28 @@ async def update_review(review_id: str, update: ProductReviewUpdate):
     if result.matched_count == 0:
         raise HTTPException(status_code=404, detail="Review not found")
     
+    # Update product review count if status changed
+    if update.status:
+        review = await db.reviews.find_one({"id": review_id}, {"_id": 0})
+        if review and review.get("product_id"):
+            approved_count = await db.reviews.count_documents({"product_id": review["product_id"], "status": "approved"})
+            await db.products.update_one({"id": review["product_id"]}, {"$set": {"reviews_count": approved_count}})
+    
     return {"message": "Review updated"}
 
 @api_router.delete("/reviews/{review_id}")
 async def delete_review(review_id: str):
     """Delete a review"""
+    review = await db.reviews.find_one({"id": review_id}, {"_id": 0})
     result = await db.reviews.delete_one({"id": review_id})
     if result.deleted_count == 0:
         raise HTTPException(status_code=404, detail="Review not found")
+    
+    # Update product review count
+    if review and review.get("product_id"):
+        approved_count = await db.reviews.count_documents({"product_id": review["product_id"], "status": "approved"})
+        await db.products.update_one({"id": review["product_id"]}, {"$set": {"reviews_count": approved_count}})
+    
     return {"message": "Review deleted"}
 
 @api_router.post("/reviews/{review_id}/helpful")
@@ -3262,6 +3367,29 @@ async def mark_review_helpful(review_id: str):
         {"$inc": {"helpful_votes": 1}}
     )
     return {"message": "Vote recorded"}
+
+@api_router.post("/reviews/upload-image")
+async def upload_review_image(file: UploadFile = File(...)):
+    """Upload an image for a review"""
+    if not file.content_type.startswith('image/'):
+        raise HTTPException(status_code=400, detail="File must be an image")
+    
+    # Create reviews upload directory
+    reviews_dir = UPLOADS_DIR / "reviews"
+    reviews_dir.mkdir(exist_ok=True)
+    
+    # Generate unique filename
+    ext = file.filename.split('.')[-1] if '.' in file.filename else 'jpg'
+    filename = f"{uuid.uuid4()}.{ext}"
+    file_path = reviews_dir / filename
+    
+    # Save file
+    contents = await file.read()
+    with open(file_path, "wb") as f:
+        f.write(contents)
+    
+    # Return URL
+    return {"url": f"{BACKEND_URL}/uploads/reviews/{filename}"}
 
 # ==================== STOCK NOTIFICATIONS ====================
 
