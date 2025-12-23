@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useCallback } from 'react';
+import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import { 
   Search, 
@@ -10,7 +11,8 @@ import {
   Zap,
   RefreshCw,
   Loader2,
-  AlertCircle
+  AlertCircle,
+  ExternalLink
 } from 'lucide-react';
 import { Button } from '../../components/ui/button';
 import { Input } from '../../components/ui/input';
@@ -19,7 +21,16 @@ import { Label } from '../../components/ui/label';
 
 const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
 
+// Addons with dedicated integration pages
+const DEDICATED_INTEGRATIONS = {
+  'ebay': '/merchant/integrations/ebay',
+  // Add more as they are built:
+  // 'amazon': '/merchant/integrations/amazon',
+  // 'stripe': '/merchant/integrations/stripe',
+};
+
 const MerchantAddons = () => {
+  const navigate = useNavigate();
   const [searchQuery, setSearchQuery] = useState('');
   const [activeCategory, setActiveCategory] = useState('all');
   const [showConfigModal, setShowConfigModal] = useState(null);
