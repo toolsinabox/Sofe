@@ -1523,3 +1523,67 @@ Implemented "Park Sale" and "Void Sale" functionality in the POS system.
   - Updated Park and Void buttons with proper onClick handlers
 
 ### Status: COMPLETE ✓ (Build passes, UI verified)
+
+---
+
+## Feature - eBay Integration (Full Implementation) - 2025-01-XX
+
+### Summary
+Implemented a fully functional eBay marketplace integration similar to Maropost's eBay connection.
+
+### Backend API Created
+File: `/app/backend/routes/ebay.py`
+
+**Endpoints:**
+- `POST /api/ebay/connect` - Connect eBay account with API credentials
+- `GET /api/ebay/status` - Get connection status and statistics
+- `DELETE /api/ebay/disconnect` - Disconnect eBay account
+- `GET /api/ebay/oauth/authorize` - Get OAuth authorization URL
+- `POST /api/ebay/oauth/callback` - Handle OAuth callback
+- `GET /api/ebay/categories` - Get eBay categories
+- `POST /api/ebay/listings` - Create new listing
+- `POST /api/ebay/listings/{id}/publish` - Publish draft listing
+- `GET /api/ebay/listings` - Get all listings
+- `DELETE /api/ebay/listings/{id}` - Delete listing
+- `POST /api/ebay/sync/inventory` - Sync inventory to eBay
+- `POST /api/ebay/sync/orders` - Import orders from eBay
+- `GET /api/ebay/orders` - Get imported orders
+- `POST /api/ebay/orders/{id}/tracking` - Push tracking to eBay
+- `PUT /api/ebay/settings` - Update sync settings
+- `GET /api/ebay/settings` - Get sync settings
+
+### Frontend Page Created
+File: `/app/frontend/src/pages/merchant/EbayIntegration.jsx`
+
+**Features:**
+- Connection modal with API credentials form
+- Sandbox/Production mode toggle
+- Status dashboard with listing/order counts
+- Listings tab - create, view, delete eBay listings
+- Orders tab - import and view eBay orders
+- Settings tab - auto-sync, interval, order import, tracking push
+- Quick actions for sync and import
+
+### Integration Features
+1. **OAuth Authentication** - Client credentials + user authorization
+2. **Product Sync** - Push products to eBay as inventory items
+3. **Inventory Sync** - Automatic stock level updates
+4. **Order Import** - Import eBay orders into local system
+5. **Tracking Push** - Send shipping tracking back to eBay
+
+### Addons Page Updated
+- eBay now shows "Configure" button with arrow
+- Clicking opens dedicated integration page
+- Pattern ready for other integrations (Amazon, Stripe, etc.)
+
+### Database Collections
+- `ebay_config` - API credentials and sync settings
+- `ebay_listings` - Product listings on eBay
+- `ebay_orders` - Imported eBay orders
+
+### Testing
+- Backend API endpoints verified via curl
+- Frontend connect modal screenshot verified
+- Build passes successfully
+
+### Status: COMPLETE ✓
