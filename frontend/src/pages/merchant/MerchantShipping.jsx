@@ -3159,6 +3159,12 @@ const MerchantShipping = () => {
                     </div>
                     <p className="text-gray-500 text-sm mb-3">{option.description || 'No description'}</p>
                     <div className="flex flex-wrap gap-2">
+                      {option.routing_group && (
+                        <span className="px-2 py-1 bg-purple-500/20 text-purple-400 text-xs rounded flex items-center gap-1">
+                          <Layers className="w-3 h-3" />
+                          Group: {option.routing_group}
+                        </span>
+                      )}
                       {option.free_shipping_threshold && (
                         <span className="px-2 py-1 bg-emerald-500/20 text-emerald-400 text-xs rounded flex items-center gap-1">
                           <DollarSign className="w-3 h-3" />
