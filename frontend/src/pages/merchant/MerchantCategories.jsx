@@ -193,29 +193,6 @@ const MerchantCategories = () => {
             </div>
           </div>
         ))}
-                <p className="text-sm text-gray-500 mt-2 line-clamp-2">{category.description}</p>
-              )}
-              <div className="flex items-center gap-2 mt-4">
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={() => openModal(category)}
-                  className="flex-1 border-gray-200 text-gray-700 hover:bg-gray-50"
-                >
-                  <Edit className="w-3 h-3 mr-1" /> Edit
-                </Button>
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={() => handleDelete(category.id)}
-                  className="border-red-200 text-red-600 hover:bg-red-50"
-                >
-                  <Trash2 className="w-3 h-3" />
-                </Button>
-              </div>
-            </div>
-          </div>
-        ))}
       </div>
 
       {categories.length === 0 && (
