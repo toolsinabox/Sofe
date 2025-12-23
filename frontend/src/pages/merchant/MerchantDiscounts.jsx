@@ -138,34 +138,34 @@ const MerchantDiscounts = () => {
   };
 
   return (
-    <div className="p-6">
-      <div className="flex justify-between items-center mb-6">
+    <div className="p-4">
+      <div className="flex justify-between items-center mb-4">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900">Discounts & Coupons</h1>
-          <p className="text-gray-500 text-sm mt-1">Create and manage discount codes for your store</p>
+          <h1 className="text-xl font-bold text-gray-900">Discounts & Coupons</h1>
+          <p className="text-gray-500 text-xs">Create and manage discount codes for your store</p>
         </div>
-        <Button onClick={() => openModal()} className="bg-blue-600 hover:bg-blue-700">
-          <Plus size={16} className="mr-2" /> Create Discount
+        <Button onClick={() => openModal()} size="sm" className="bg-blue-600 hover:bg-blue-700">
+          <Plus size={14} className="mr-1" /> Create Discount
         </Button>
       </div>
 
       {/* Stats Cards */}
-      <div className="grid grid-cols-4 gap-4 mb-6">
-        <div className="bg-white rounded-lg border border-gray-200 p-4">
-          <p className="text-gray-500 text-sm">Active Discounts</p>
-          <p className="text-2xl font-bold text-gray-900">{discounts.filter(d => d.is_active).length}</p>
+      <div className="grid grid-cols-4 gap-3 mb-4">
+        <div className="bg-white rounded-lg border border-gray-200 p-3">
+          <p className="text-gray-500 text-xs">Active Discounts</p>
+          <p className="text-xl font-bold text-gray-900">{discounts.filter(d => d.is_active).length}</p>
         </div>
-        <div className="bg-white rounded-lg border border-gray-200 p-4">
-          <p className="text-gray-500 text-sm">Total Discounts</p>
-          <p className="text-2xl font-bold text-gray-900">{discounts.length}</p>
+        <div className="bg-white rounded-lg border border-gray-200 p-3">
+          <p className="text-gray-500 text-xs">Total Discounts</p>
+          <p className="text-xl font-bold text-gray-900">{discounts.length}</p>
         </div>
-        <div className="bg-white rounded-lg border border-gray-200 p-4">
-          <p className="text-gray-500 text-sm">Total Uses</p>
-          <p className="text-2xl font-bold text-gray-900">{discounts.reduce((sum, d) => sum + d.used_count, 0)}</p>
+        <div className="bg-white rounded-lg border border-gray-200 p-3">
+          <p className="text-gray-500 text-xs">Total Uses</p>
+          <p className="text-xl font-bold text-gray-900">{discounts.reduce((sum, d) => sum + d.used_count, 0)}</p>
         </div>
-        <div className="bg-white rounded-lg border border-gray-200 p-4">
-          <p className="text-gray-500 text-sm">Avg. Discount</p>
-          <p className="text-2xl font-bold text-gray-900">
+        <div className="bg-white rounded-lg border border-gray-200 p-3">
+          <p className="text-gray-500 text-xs">Avg. Discount</p>
+          <p className="text-xl font-bold text-gray-900">
             {Math.round(discounts.filter(d => d.type === 'percentage').reduce((sum, d) => sum + d.value, 0) / discounts.filter(d => d.type === 'percentage').length || 0)}%
           </p>
         </div>
