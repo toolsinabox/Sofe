@@ -1,10 +1,12 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { Link, useParams } from 'react-router-dom';
 import axios from 'axios';
-import { ArrowLeft, Star, Minus, Plus, Heart, Share2, Truck, Shield, RotateCcw, ShoppingCart, MapPin, Loader2 } from 'lucide-react';
+import { useDropzone } from 'react-dropzone';
+import { ArrowLeft, Star, Minus, Plus, Heart, Share2, Truck, Shield, RotateCcw, ShoppingCart, MapPin, Loader2, MessageSquare, ThumbsUp, Camera, X, User, Check } from 'lucide-react';
 import { Button } from '../../components/ui/button';
 import { Input } from '../../components/ui/input';
 import { Label } from '../../components/ui/label';
+import { Textarea } from '../../components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../../components/ui/select';
 import ProductCarousel from '../../components/store/ProductCarousel';
 import { useCart } from './StoreLayout';
@@ -29,6 +31,23 @@ const ProductDetail = () => {
   const [shippingOptions, setShippingOptions] = useState([]);
   const [calculatingShipping, setCalculatingShipping] = useState(false);
   const [shippingCalculated, setShippingCalculated] = useState(false);
+
+  // Reviews state
+  const [reviewsData, setReviewsData] = useState({ reviews: [], count: 0, average_rating: 0, rating_distribution: {} });
+  const [showReviewForm, setShowReviewForm] = useState(false);
+  const [reviewForm, setReviewForm] = useState({
+    customer_name: '',
+    customer_email: '',
+    rating: 5,
+    title: '',
+    content: '',
+    images: []
+  });
+  const [submittingReview, setSubmittingReview] = useState(false);
+  const [reviewSubmitted, setReviewSubmitted] = useState(false);
+  const [uploadingImages, setUploadingImages] = useState(false);
+  const [reviewFilter, setReviewFilter] = useState('all');
+  const [expandedReview, setExpandedReview] = useState(null);
 
   useEffect(() => {
     fetchProduct();
