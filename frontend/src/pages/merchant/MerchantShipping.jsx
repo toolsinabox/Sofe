@@ -2647,7 +2647,14 @@ const MerchantShipping = () => {
       <div>
         {activeTab === 'overview' && overviewContent}
         {activeTab === 'zones' && <ZonesTab />}
-        {activeTab === 'services' && <ServicesTab />}
+        {activeTab === 'services' && (
+          <ServicesTab
+            services={services}
+            zones={zones}
+            categories={categories}
+            onRefresh={fetchAllData}
+          />
+        )}
         {activeTab === 'categories' && (
           <CategoriesTab
             categories={categories}
