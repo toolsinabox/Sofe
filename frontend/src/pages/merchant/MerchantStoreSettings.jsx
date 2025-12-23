@@ -35,7 +35,6 @@ const MerchantStoreSettings = () => {
     meta_title: '',
     meta_description: '',
     google_analytics_id: '',
-    // Order number settings
     order_prefix: 'ORD',
     order_number_start: 1001
   });
@@ -106,7 +105,7 @@ const MerchantStoreSettings = () => {
   if (loading) {
     return (
       <div className="flex items-center justify-center h-64">
-        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-cyan-500"></div>
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-500"></div>
       </div>
     );
   }
@@ -114,8 +113,8 @@ const MerchantStoreSettings = () => {
   return (
     <div className="p-6 max-w-5xl mx-auto">
       <div className="flex items-center justify-between mb-6">
-        <h1 className="text-2xl font-bold text-white">Store Settings</h1>
-        <Button onClick={handleSave} disabled={saving} className="bg-cyan-600 hover:bg-cyan-700">
+        <h1 className="text-2xl font-bold text-gray-900">Store Settings</h1>
+        <Button onClick={handleSave} disabled={saving} className="bg-blue-600 hover:bg-blue-700">
           <Save className="w-4 h-4 mr-2" />
           {saving ? 'Saving...' : 'Save Settings'}
         </Button>
@@ -123,31 +122,31 @@ const MerchantStoreSettings = () => {
 
       <div className="space-y-6">
         {/* Logo Upload */}
-        <div className="bg-gray-800 rounded-lg border border-gray-700 p-6">
-          <h2 className="text-lg font-semibold text-white mb-4 flex items-center gap-2">
-            <Image className="w-5 h-5 text-cyan-500" />
+        <div className="bg-white rounded-lg border border-gray-200 p-6">
+          <h2 className="text-lg font-semibold text-gray-900 mb-4 flex items-center gap-2">
+            <Image className="w-5 h-5 text-blue-600" />
             Store Logo
           </h2>
           <div className="flex items-start gap-6">
             <div
               {...getLogoRootProps()}
               className={`border-2 border-dashed rounded-lg p-6 text-center cursor-pointer transition-colors flex-1 ${
-                isLogoDragActive ? 'border-cyan-500 bg-cyan-500/10' : 'border-gray-600 hover:border-gray-500'
+                isLogoDragActive ? 'border-blue-500 bg-blue-50' : 'border-gray-200 hover:border-gray-300'
               }`}
             >
               <input {...getLogoInputProps()} />
               <Upload className="w-8 h-8 mx-auto mb-2 text-gray-400" />
               {uploadingLogo ? (
-                <p className="text-gray-400">Uploading...</p>
+                <p className="text-gray-500">Uploading...</p>
               ) : (
-                <p className="text-gray-400">
+                <p className="text-gray-500">
                   {isLogoDragActive ? 'Drop logo here' : 'Drag & drop logo or click to upload'}
                 </p>
               )}
-              <p className="text-xs text-gray-500 mt-1">PNG, JPG, SVG up to 2MB</p>
+              <p className="text-xs text-gray-400 mt-1">PNG, JPG, SVG up to 2MB</p>
             </div>
             {settings.store_logo && (
-              <div className="w-32 h-32 bg-gray-700 rounded-lg flex items-center justify-center overflow-hidden">
+              <div className="w-32 h-32 bg-gray-100 rounded-lg flex items-center justify-center overflow-hidden">
                 <img src={settings.store_logo} alt="Store Logo" className="max-w-full max-h-full object-contain" />
               </div>
             )}
@@ -155,154 +154,154 @@ const MerchantStoreSettings = () => {
         </div>
 
         {/* Basic Info */}
-        <div className="bg-gray-800 rounded-lg border border-gray-700 p-6">
-          <h2 className="text-lg font-semibold text-white mb-4 flex items-center gap-2">
-            <Globe className="w-5 h-5 text-cyan-500" />
+        <div className="bg-white rounded-lg border border-gray-200 p-6">
+          <h2 className="text-lg font-semibold text-gray-900 mb-4 flex items-center gap-2">
+            <Globe className="w-5 h-5 text-blue-600" />
             Basic Information
           </h2>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
-              <Label className="text-gray-300">Store Name</Label>
+              <Label className="text-gray-700">Store Name</Label>
               <Input
                 name="store_name"
                 value={settings.store_name}
                 onChange={handleChange}
-                className="bg-gray-700 border-gray-600 text-white"
+                className="bg-gray-50 border-gray-200 text-gray-900"
               />
               <p className="text-xs text-gray-500 mt-1">Appears in the browser tab after page title</p>
             </div>
             <div>
-              <Label className="text-gray-300">Homepage Title</Label>
+              <Label className="text-gray-700">Homepage Title</Label>
               <Input
                 name="homepage_title"
                 value={settings.homepage_title || 'Home'}
                 onChange={handleChange}
                 placeholder="Home"
-                className="bg-gray-700 border-gray-600 text-white"
+                className="bg-gray-50 border-gray-200 text-gray-900"
               />
               <p className="text-xs text-gray-500 mt-1">Browser tab title for homepage (e.g., "Welcome" or "Home")</p>
             </div>
             <div>
-              <Label className="text-gray-300">Store URL</Label>
+              <Label className="text-gray-700">Store URL</Label>
               <Input
                 name="store_url"
                 value={settings.store_url}
                 onChange={handleChange}
                 placeholder="https://yourstore.com"
-                className="bg-gray-700 border-gray-600 text-white"
+                className="bg-gray-50 border-gray-200 text-gray-900"
               />
             </div>
             <div>
-              <Label className="text-gray-300">Currency</Label>
+              <Label className="text-gray-700">Currency</Label>
               <Input
                 name="currency"
                 value={settings.currency}
                 onChange={handleChange}
-                className="bg-gray-700 border-gray-600 text-white"
+                className="bg-gray-50 border-gray-200 text-gray-900"
               />
             </div>
             <div>
-              <Label className="text-gray-300">Currency Symbol</Label>
+              <Label className="text-gray-700">Currency Symbol</Label>
               <Input
                 name="currency_symbol"
                 value={settings.currency_symbol}
                 onChange={handleChange}
-                className="bg-gray-700 border-gray-600 text-white"
+                className="bg-gray-50 border-gray-200 text-gray-900"
               />
             </div>
           </div>
         </div>
 
         {/* Contact Info */}
-        <div className="bg-gray-800 rounded-lg border border-gray-700 p-6">
-          <h2 className="text-lg font-semibold text-white mb-4 flex items-center gap-2">
-            <Mail className="w-5 h-5 text-cyan-500" />
+        <div className="bg-white rounded-lg border border-gray-200 p-6">
+          <h2 className="text-lg font-semibold text-gray-900 mb-4 flex items-center gap-2">
+            <Mail className="w-5 h-5 text-blue-600" />
             Contact Information
           </h2>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
-              <Label className="text-gray-300">Email</Label>
+              <Label className="text-gray-700">Email</Label>
               <Input
                 name="store_email"
                 type="email"
                 value={settings.store_email}
                 onChange={handleChange}
-                className="bg-gray-700 border-gray-600 text-white"
+                className="bg-gray-50 border-gray-200 text-gray-900"
               />
             </div>
             <div>
-              <Label className="text-gray-300">Phone</Label>
+              <Label className="text-gray-700">Phone</Label>
               <Input
                 name="store_phone"
                 value={settings.store_phone}
                 onChange={handleChange}
-                className="bg-gray-700 border-gray-600 text-white"
+                className="bg-gray-50 border-gray-200 text-gray-900"
               />
             </div>
           </div>
         </div>
 
         {/* Address */}
-        <div className="bg-gray-800 rounded-lg border border-gray-700 p-6">
-          <h2 className="text-lg font-semibold text-white mb-4 flex items-center gap-2">
-            <MapPin className="w-5 h-5 text-cyan-500" />
+        <div className="bg-white rounded-lg border border-gray-200 p-6">
+          <h2 className="text-lg font-semibold text-gray-900 mb-4 flex items-center gap-2">
+            <MapPin className="w-5 h-5 text-blue-600" />
             Store Address
           </h2>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div className="md:col-span-2">
-              <Label className="text-gray-300">Street Address</Label>
+              <Label className="text-gray-700">Street Address</Label>
               <Input
                 name="store_address"
                 value={settings.store_address || ''}
                 onChange={handleChange}
-                className="bg-gray-700 border-gray-600 text-white"
+                className="bg-gray-50 border-gray-200 text-gray-900"
               />
             </div>
             <div>
-              <Label className="text-gray-300">City</Label>
+              <Label className="text-gray-700">City</Label>
               <Input
                 name="store_city"
                 value={settings.store_city || ''}
                 onChange={handleChange}
-                className="bg-gray-700 border-gray-600 text-white"
+                className="bg-gray-50 border-gray-200 text-gray-900"
               />
             </div>
             <div>
-              <Label className="text-gray-300">State/Province</Label>
+              <Label className="text-gray-700">State/Province</Label>
               <Input
                 name="store_state"
                 value={settings.store_state || ''}
                 onChange={handleChange}
-                className="bg-gray-700 border-gray-600 text-white"
+                className="bg-gray-50 border-gray-200 text-gray-900"
               />
             </div>
             <div>
-              <Label className="text-gray-300">ZIP/Postal Code</Label>
+              <Label className="text-gray-700">ZIP/Postal Code</Label>
               <Input
                 name="store_zip"
                 value={settings.store_zip || ''}
                 onChange={handleChange}
-                className="bg-gray-700 border-gray-600 text-white"
+                className="bg-gray-50 border-gray-200 text-gray-900"
               />
             </div>
             <div>
-              <Label className="text-gray-300">Country</Label>
+              <Label className="text-gray-700">Country</Label>
               <Input
                 name="store_country"
                 value={settings.store_country || ''}
                 onChange={handleChange}
-                className="bg-gray-700 border-gray-600 text-white"
+                className="bg-gray-50 border-gray-200 text-gray-900"
               />
             </div>
           </div>
         </div>
 
         {/* Social Media */}
-        <div className="bg-gray-800 rounded-lg border border-gray-700 p-6">
-          <h2 className="text-lg font-semibold text-white mb-4">Social Media Links</h2>
+        <div className="bg-white rounded-lg border border-gray-200 p-6">
+          <h2 className="text-lg font-semibold text-gray-900 mb-4">Social Media Links</h2>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
-              <Label className="text-gray-300 flex items-center gap-2">
+              <Label className="text-gray-700 flex items-center gap-2">
                 <Facebook className="w-4 h-4" /> Facebook
               </Label>
               <Input
@@ -310,11 +309,11 @@ const MerchantStoreSettings = () => {
                 value={settings.store_facebook || ''}
                 onChange={handleChange}
                 placeholder="https://facebook.com/yourstore"
-                className="bg-gray-700 border-gray-600 text-white"
+                className="bg-gray-50 border-gray-200 text-gray-900"
               />
             </div>
             <div>
-              <Label className="text-gray-300 flex items-center gap-2">
+              <Label className="text-gray-700 flex items-center gap-2">
                 <Instagram className="w-4 h-4" /> Instagram
               </Label>
               <Input
@@ -322,11 +321,11 @@ const MerchantStoreSettings = () => {
                 value={settings.store_instagram || ''}
                 onChange={handleChange}
                 placeholder="https://instagram.com/yourstore"
-                className="bg-gray-700 border-gray-600 text-white"
+                className="bg-gray-50 border-gray-200 text-gray-900"
               />
             </div>
             <div>
-              <Label className="text-gray-300 flex items-center gap-2">
+              <Label className="text-gray-700 flex items-center gap-2">
                 <Twitter className="w-4 h-4" /> Twitter
               </Label>
               <Input
@@ -334,11 +333,11 @@ const MerchantStoreSettings = () => {
                 value={settings.store_twitter || ''}
                 onChange={handleChange}
                 placeholder="https://twitter.com/yourstore"
-                className="bg-gray-700 border-gray-600 text-white"
+                className="bg-gray-50 border-gray-200 text-gray-900"
               />
             </div>
             <div>
-              <Label className="text-gray-300 flex items-center gap-2">
+              <Label className="text-gray-700 flex items-center gap-2">
                 <Youtube className="w-4 h-4" /> YouTube
               </Label>
               <Input
@@ -346,109 +345,109 @@ const MerchantStoreSettings = () => {
                 value={settings.store_youtube || ''}
                 onChange={handleChange}
                 placeholder="https://youtube.com/@yourstore"
-                className="bg-gray-700 border-gray-600 text-white"
+                className="bg-gray-50 border-gray-200 text-gray-900"
               />
             </div>
           </div>
         </div>
 
         {/* Shipping & Tax */}
-        <div className="bg-gray-800 rounded-lg border border-gray-700 p-6">
-          <h2 className="text-lg font-semibold text-white mb-4">Shipping & Tax</h2>
+        <div className="bg-white rounded-lg border border-gray-200 p-6">
+          <h2 className="text-lg font-semibold text-gray-900 mb-4">Shipping & Tax</h2>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
-              <Label className="text-gray-300">Free Shipping Threshold ($)</Label>
+              <Label className="text-gray-700">Free Shipping Threshold ($)</Label>
               <Input
                 name="free_shipping_threshold"
                 type="number"
                 value={settings.free_shipping_threshold}
                 onChange={handleChange}
-                className="bg-gray-700 border-gray-600 text-white"
+                className="bg-gray-50 border-gray-200 text-gray-900"
               />
             </div>
             <div>
-              <Label className="text-gray-300">Tax Rate (%)</Label>
+              <Label className="text-gray-700">Tax Rate (%)</Label>
               <Input
                 name="tax_rate"
                 type="number"
                 step="0.01"
                 value={(settings.tax_rate * 100).toFixed(2)}
                 onChange={(e) => setSettings(prev => ({ ...prev, tax_rate: parseFloat(e.target.value) / 100 }))}
-                className="bg-gray-700 border-gray-600 text-white"
+                className="bg-gray-50 border-gray-200 text-gray-900"
               />
             </div>
           </div>
         </div>
 
         {/* Order Number Settings */}
-        <div className="bg-gray-800 rounded-lg border border-gray-700 p-6">
-          <h2 className="text-lg font-semibold text-white mb-4">Order Number Settings</h2>
-          <p className="text-gray-400 text-sm mb-4">
-            Configure how order numbers are generated. The order number will be: <span className="text-emerald-400 font-mono">{settings.order_prefix || 'ORD'}-{settings.order_number_start || 1001}</span>
+        <div className="bg-white rounded-lg border border-gray-200 p-6">
+          <h2 className="text-lg font-semibold text-gray-900 mb-4">Order Number Settings</h2>
+          <p className="text-gray-500 text-sm mb-4">
+            Configure how order numbers are generated. The order number will be: <span className="text-blue-600 font-mono">{settings.order_prefix || 'ORD'}-{settings.order_number_start || 1001}</span>
           </p>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
-              <Label className="text-gray-300">Order Prefix</Label>
+              <Label className="text-gray-700">Order Prefix</Label>
               <Input
                 name="order_prefix"
                 value={settings.order_prefix || ''}
                 onChange={handleChange}
                 placeholder="ORD"
-                className="bg-gray-700 border-gray-600 text-white font-mono"
+                className="bg-gray-50 border-gray-200 text-gray-900 font-mono"
               />
               <p className="text-gray-500 text-xs mt-1">e.g., ORD, INV, TOOLS, etc.</p>
             </div>
             <div>
-              <Label className="text-gray-300">Starting Number</Label>
+              <Label className="text-gray-700">Starting Number</Label>
               <Input
                 name="order_number_start"
                 type="number"
                 min="1"
                 value={settings.order_number_start || 1001}
                 onChange={(e) => setSettings(prev => ({ ...prev, order_number_start: parseInt(e.target.value) || 1001 }))}
-                className="bg-gray-700 border-gray-600 text-white font-mono"
+                className="bg-gray-50 border-gray-200 text-gray-900 font-mono"
               />
               <p className="text-gray-500 text-xs mt-1">Order numbers will increment from this value</p>
             </div>
           </div>
-          <div className="mt-4 p-3 bg-blue-500/10 border border-blue-500/30 rounded-lg">
-            <p className="text-blue-400 text-sm">
+          <div className="mt-4 p-3 bg-blue-50 border border-blue-200 rounded-lg">
+            <p className="text-blue-700 text-sm">
               <strong>Note:</strong> Changing these settings will only affect new orders. Existing order numbers will remain unchanged.
             </p>
           </div>
         </div>
 
         {/* SEO */}
-        <div className="bg-gray-800 rounded-lg border border-gray-700 p-6">
-          <h2 className="text-lg font-semibold text-white mb-4">SEO Settings</h2>
+        <div className="bg-white rounded-lg border border-gray-200 p-6">
+          <h2 className="text-lg font-semibold text-gray-900 mb-4">SEO Settings</h2>
           <div className="space-y-4">
             <div>
-              <Label className="text-gray-300">Meta Title</Label>
+              <Label className="text-gray-700">Meta Title</Label>
               <Input
                 name="meta_title"
                 value={settings.meta_title || ''}
                 onChange={handleChange}
-                className="bg-gray-700 border-gray-600 text-white"
+                className="bg-gray-50 border-gray-200 text-gray-900"
               />
             </div>
             <div>
-              <Label className="text-gray-300">Meta Description</Label>
+              <Label className="text-gray-700">Meta Description</Label>
               <textarea
                 name="meta_description"
                 value={settings.meta_description || ''}
                 onChange={handleChange}
                 rows={3}
-                className="w-full bg-gray-700 border border-gray-600 text-white rounded-md p-2"
+                className="w-full bg-gray-50 border border-gray-200 text-gray-900 rounded-md p-2"
               />
             </div>
             <div>
-              <Label className="text-gray-300">Google Analytics ID</Label>
+              <Label className="text-gray-700">Google Analytics ID</Label>
               <Input
                 name="google_analytics_id"
                 value={settings.google_analytics_id || ''}
                 onChange={handleChange}
                 placeholder="G-XXXXXXXXXX"
-                className="bg-gray-700 border-gray-600 text-white"
+                className="bg-gray-50 border-gray-200 text-gray-900"
               />
             </div>
           </div>

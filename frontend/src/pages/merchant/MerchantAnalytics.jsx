@@ -41,20 +41,20 @@ const MerchantAnalytics = () => {
   ]);
 
   const StatCard = ({ title, value, change, icon: Icon, prefix = '', suffix = '' }) => (
-    <div className="bg-gray-800 rounded-lg p-5">
+    <div className="bg-white rounded-lg border border-gray-200 p-5">
       <div className="flex items-center justify-between">
-        <div className="p-2 bg-gray-700 rounded-lg">
-          <Icon size={20} className="text-blue-400" />
+        <div className="p-2 bg-gray-100 rounded-lg">
+          <Icon size={20} className="text-blue-600" />
         </div>
         <div className={`flex items-center gap-1 text-sm ${
-          change >= 0 ? 'text-green-400' : 'text-red-400'
+          change >= 0 ? 'text-green-600' : 'text-red-600'
         }`}>
           {change >= 0 ? <ArrowUpRight size={14} /> : <ArrowDownRight size={14} />}
           {Math.abs(change)}%
         </div>
       </div>
-      <p className="text-gray-400 text-sm mt-3">{title}</p>
-      <p className="text-2xl font-bold text-white mt-1">
+      <p className="text-gray-500 text-sm mt-3">{title}</p>
+      <p className="text-2xl font-bold text-gray-900 mt-1">
         {prefix}{typeof value === 'number' ? value.toLocaleString() : value}{suffix}
       </p>
     </div>
@@ -66,21 +66,21 @@ const MerchantAnalytics = () => {
     <div className="p-6">
       <div className="flex justify-between items-center mb-6">
         <div>
-          <h1 className="text-2xl font-bold text-white">Analytics</h1>
-          <p className="text-gray-400 text-sm mt-1">Track your store performance and sales</p>
+          <h1 className="text-2xl font-bold text-gray-900">Analytics</h1>
+          <p className="text-gray-500 text-sm mt-1">Track your store performance and sales</p>
         </div>
         <div className="flex items-center gap-3">
           <select
             value={dateRange}
             onChange={(e) => setDateRange(e.target.value)}
-            className="h-10 px-3 bg-gray-800 border border-gray-700 rounded-md text-white"
+            className="h-10 px-3 bg-white border border-gray-200 rounded-md text-gray-900"
           >
             <option value="7d">Last 7 days</option>
             <option value="30d">Last 30 days</option>
             <option value="90d">Last 90 days</option>
             <option value="12m">Last 12 months</option>
           </select>
-          <Button variant="outline" className="border-gray-700">
+          <Button variant="outline" className="border-gray-200">
             <Calendar size={16} className="mr-2" /> Custom Range
           </Button>
         </div>
@@ -96,13 +96,13 @@ const MerchantAnalytics = () => {
 
       <div className="grid grid-cols-3 gap-6">
         {/* Revenue Chart */}
-        <div className="col-span-2 bg-gray-800 rounded-lg p-6">
-          <h2 className="text-lg font-semibold text-white mb-4">Revenue Overview</h2>
+        <div className="col-span-2 bg-white rounded-lg border border-gray-200 p-6">
+          <h2 className="text-lg font-semibold text-gray-900 mb-4">Revenue Overview</h2>
           <div className="flex items-end justify-between h-48 gap-2">
             {chartData.labels.map((label, i) => (
               <div key={label} className="flex-1 flex flex-col items-center">
                 <div
-                  className="w-full bg-blue-500/80 rounded-t hover:bg-blue-400 transition-colors cursor-pointer"
+                  className="w-full bg-blue-500 rounded-t hover:bg-blue-600 transition-colors cursor-pointer"
                   style={{ height: `${(chartData.revenue[i] / maxRevenue) * 100}%` }}
                   title={`$${chartData.revenue[i]}`}
                 />
@@ -110,33 +110,33 @@ const MerchantAnalytics = () => {
               </div>
             ))}
           </div>
-          <div className="flex items-center justify-center gap-6 mt-4 pt-4 border-t border-gray-700">
+          <div className="flex items-center justify-center gap-6 mt-4 pt-4 border-t border-gray-100">
             <div className="flex items-center gap-2">
               <div className="w-3 h-3 rounded-full bg-blue-500"></div>
-              <span className="text-sm text-gray-400">Revenue</span>
+              <span className="text-sm text-gray-500">Revenue</span>
             </div>
-            <div className="text-sm text-gray-400">
-              Total: <span className="text-white font-medium">${chartData.revenue.reduce((a, b) => a + b, 0).toLocaleString()}</span>
+            <div className="text-sm text-gray-500">
+              Total: <span className="text-gray-900 font-medium">${chartData.revenue.reduce((a, b) => a + b, 0).toLocaleString()}</span>
             </div>
           </div>
         </div>
 
         {/* Top Products */}
-        <div className="bg-gray-800 rounded-lg p-6">
-          <h2 className="text-lg font-semibold text-white mb-4">Top Products</h2>
+        <div className="bg-white rounded-lg border border-gray-200 p-6">
+          <h2 className="text-lg font-semibold text-gray-900 mb-4">Top Products</h2>
           <div className="space-y-4">
             {topProducts.map((product, i) => (
               <div key={i} className="flex items-center justify-between">
                 <div className="flex items-center gap-3">
-                  <span className="w-6 h-6 rounded-full bg-gray-700 flex items-center justify-center text-xs text-gray-400">
+                  <span className="w-6 h-6 rounded-full bg-gray-100 flex items-center justify-center text-xs text-gray-500">
                     {i + 1}
                   </span>
                   <div>
-                    <p className="text-white text-sm truncate max-w-[140px]">{product.name}</p>
+                    <p className="text-gray-900 text-sm truncate max-w-[140px]">{product.name}</p>
                     <p className="text-xs text-gray-500">{product.sales} sales</p>
                   </div>
                 </div>
-                <span className="text-green-400 text-sm font-medium">${product.revenue.toFixed(2)}</span>
+                <span className="text-green-600 text-sm font-medium">${product.revenue.toFixed(2)}</span>
               </div>
             ))}
           </div>
@@ -144,11 +144,11 @@ const MerchantAnalytics = () => {
       </div>
 
       {/* Recent Orders */}
-      <div className="bg-gray-800 rounded-lg p-6 mt-6">
-        <h2 className="text-lg font-semibold text-white mb-4">Recent Orders</h2>
+      <div className="bg-white rounded-lg border border-gray-200 p-6 mt-6">
+        <h2 className="text-lg font-semibold text-gray-900 mb-4">Recent Orders</h2>
         <table className="w-full">
           <thead>
-            <tr className="text-gray-400 text-sm">
+            <tr className="text-gray-500 text-sm">
               <th className="text-left pb-3">Order ID</th>
               <th className="text-left pb-3">Customer</th>
               <th className="text-left pb-3">Date</th>
@@ -158,20 +158,20 @@ const MerchantAnalytics = () => {
           </thead>
           <tbody>
             {recentOrders.map(order => (
-              <tr key={order.id} className="border-t border-gray-700">
-                <td className="py-3 text-white font-mono text-sm">{order.id}</td>
-                <td className="py-3 text-gray-300">{order.customer}</td>
-                <td className="py-3 text-gray-400 text-sm">{order.date}</td>
+              <tr key={order.id} className="border-t border-gray-100">
+                <td className="py-3 text-gray-900 font-mono text-sm">{order.id}</td>
+                <td className="py-3 text-gray-700">{order.customer}</td>
+                <td className="py-3 text-gray-500 text-sm">{order.date}</td>
                 <td className="py-3">
                   <span className={`px-2 py-1 rounded text-xs font-medium ${
-                    order.status === 'completed' ? 'bg-green-500/20 text-green-400' :
-                    order.status === 'processing' ? 'bg-blue-500/20 text-blue-400' :
-                    'bg-yellow-500/20 text-yellow-400'
+                    order.status === 'completed' ? 'bg-green-100 text-green-700' :
+                    order.status === 'processing' ? 'bg-blue-100 text-blue-700' :
+                    'bg-yellow-100 text-yellow-700'
                   }`}>
                     {order.status}
                   </span>
                 </td>
-                <td className="py-3 text-right text-white font-medium">${order.total.toFixed(2)}</td>
+                <td className="py-3 text-right text-gray-900 font-medium">${order.total.toFixed(2)}</td>
               </tr>
             ))}
           </tbody>
