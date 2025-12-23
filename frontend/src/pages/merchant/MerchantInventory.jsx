@@ -88,57 +88,57 @@ const MerchantInventory = () => {
   };
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-4">
       {/* Stats */}
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
         <Card className="bg-white border-gray-200">
-          <CardContent className="p-6">
+          <CardContent className="p-3">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-gray-500 text-sm">Total Products</p>
-                <p className="text-2xl font-bold text-gray-900">{inventory.length}</p>
+                <p className="text-gray-500 text-xs">Total Products</p>
+                <p className="text-xl font-bold text-gray-900">{inventory.length}</p>
               </div>
-              <div className="w-12 h-12 rounded-xl bg-blue-50 flex items-center justify-center">
-                <Package size={24} className="text-blue-600" />
+              <div className="w-8 h-8 rounded-lg bg-blue-50 flex items-center justify-center">
+                <Package size={16} className="text-blue-600" />
               </div>
             </div>
           </CardContent>
         </Card>
         <Card className="bg-white border-gray-200">
-          <CardContent className="p-6">
+          <CardContent className="p-3">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-gray-500 text-sm">Total Units</p>
-                <p className="text-2xl font-bold text-gray-900">{totalUnits.toLocaleString()}</p>
+                <p className="text-gray-500 text-xs">Total Units</p>
+                <p className="text-xl font-bold text-gray-900">{totalUnits.toLocaleString()}</p>
               </div>
-              <div className="w-12 h-12 rounded-xl bg-emerald-50 flex items-center justify-center">
-                <TrendingUp size={24} className="text-emerald-600" />
+              <div className="w-8 h-8 rounded-lg bg-emerald-50 flex items-center justify-center">
+                <TrendingUp size={16} className="text-emerald-600" />
               </div>
             </div>
           </CardContent>
         </Card>
         <Card className="bg-white border-gray-200">
-          <CardContent className="p-6">
+          <CardContent className="p-3">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-gray-500 text-sm">Low Stock</p>
-                <p className="text-2xl font-bold text-yellow-600">{lowStockItems.length}</p>
+                <p className="text-gray-500 text-xs">Low Stock</p>
+                <p className="text-xl font-bold text-yellow-600">{lowStockItems.length}</p>
               </div>
-              <div className="w-12 h-12 rounded-xl bg-yellow-50 flex items-center justify-center">
-                <AlertTriangle size={24} className="text-yellow-600" />
+              <div className="w-8 h-8 rounded-lg bg-yellow-50 flex items-center justify-center">
+                <AlertTriangle size={16} className="text-yellow-600" />
               </div>
             </div>
           </CardContent>
         </Card>
         <Card className="bg-white border-gray-200">
-          <CardContent className="p-6">
+          <CardContent className="p-3">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-gray-500 text-sm">Out of Stock</p>
-                <p className="text-2xl font-bold text-red-600">{outOfStockItems.length}</p>
+                <p className="text-gray-500 text-xs">Out of Stock</p>
+                <p className="text-xl font-bold text-red-600">{outOfStockItems.length}</p>
               </div>
-              <div className="w-12 h-12 rounded-xl bg-red-50 flex items-center justify-center">
-                <TrendingDown size={24} className="text-red-600" />
+              <div className="w-8 h-8 rounded-lg bg-red-50 flex items-center justify-center">
+                <TrendingDown size={16} className="text-red-600" />
               </div>
             </div>
           </CardContent>
