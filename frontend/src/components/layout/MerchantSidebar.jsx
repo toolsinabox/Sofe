@@ -106,9 +106,22 @@ const navGroups = [
     label: 'Marketing',
     icon: Tag,
     items: [
+      { path: '/merchant/coupons', icon: Ticket, label: 'Coupons' },
       { path: '/merchant/discounts', icon: Tag, label: 'Discounts' },
+      { path: '/merchant/loyalty', icon: Crown, label: 'Loyalty Program' },
+      { path: '/merchant/gift-cards', icon: Gift, label: 'Gift Cards' },
+      { path: '/merchant/flash-sales', icon: Zap, label: 'Flash Sales' },
       { path: '/merchant/seo', icon: Search, label: 'SEO Tools' },
       { path: '/merchant/analytics', icon: BarChart3, label: 'Analytics' },
+      { path: '/merchant/advanced-analytics', icon: TrendingUp, label: 'Advanced Analytics' },
+    ]
+  },
+  {
+    id: 'operations',
+    label: 'Operations',
+    icon: Building2,
+    items: [
+      { path: '/merchant/suppliers', icon: Truck, label: 'Suppliers & POs' },
     ]
   },
   {
