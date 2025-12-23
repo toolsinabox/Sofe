@@ -2181,7 +2181,7 @@ const MerchantProducts = () => {
           </div>
           <ImportExportButtons 
             entityType="products" 
-            onImportSuccess={fetchProducts}
+            onImportSuccess={fetchData}
             categories={categories}
           />
           <Button 
