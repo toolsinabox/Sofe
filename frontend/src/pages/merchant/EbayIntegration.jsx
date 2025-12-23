@@ -802,6 +802,29 @@ const EbayIntegration = () => {
     </tr>
   </table>
 
+  <!-- Product Images Gallery -->
+  <div style="padding: 30px; background: #f8f9fa;">
+    <table width="100%" cellpadding="0" cellspacing="0">
+      <tr>
+        <td width="60%" style="vertical-align: top; padding-right: 20px;">
+          <img src="{{product_image_1}}" alt="{{product_name}}" style="width: 100%; border-radius: 8px; border: 1px solid #dee2e6;" />
+        </td>
+        <td width="40%" style="vertical-align: top;">
+          <table width="100%" cellpadding="5" cellspacing="0">
+            <tr>
+              <td width="50%"><img src="{{product_image_2}}" alt="{{product_name}}" style="width: 100%; border-radius: 6px; border: 1px solid #dee2e6;" /></td>
+              <td width="50%"><img src="{{product_image_3}}" alt="{{product_name}}" style="width: 100%; border-radius: 6px; border: 1px solid #dee2e6;" /></td>
+            </tr>
+            <tr>
+              <td width="50%"><img src="{{product_image_4}}" alt="{{product_name}}" style="width: 100%; border-radius: 6px; border: 1px solid #dee2e6;" /></td>
+              <td width="50%"><img src="{{product_image_5}}" alt="{{product_name}}" style="width: 100%; border-radius: 6px; border: 1px solid #dee2e6;" /></td>
+            </tr>
+          </table>
+        </td>
+      </tr>
+    </table>
+  </div>
+
   <!-- Product Header Bar -->
   <div style="background: #f8f9fa; padding: 15px 30px; border-bottom: 1px solid #dee2e6;">
     <table width="100%" cellpadding="0" cellspacing="0">
