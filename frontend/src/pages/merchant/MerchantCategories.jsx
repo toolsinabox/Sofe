@@ -130,26 +130,26 @@ const MerchantCategories = () => {
   }
 
   return (
-    <div className="p-6">
-      <div className="flex items-center justify-between mb-6">
+    <div className="p-4">
+      <div className="flex items-center justify-between mb-4">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900">Categories</h1>
-          <p className="text-gray-500">Manage your product categories</p>
+          <h1 className="text-xl font-bold text-gray-900">Categories</h1>
+          <p className="text-gray-500 text-sm">Manage your product categories</p>
         </div>
-        <Button onClick={() => openModal()} className="bg-blue-600 hover:bg-blue-700">
-          <Plus className="w-4 h-4 mr-2" />
+        <Button onClick={() => openModal()} size="sm" className="bg-blue-600 hover:bg-blue-700">
+          <Plus className="w-3 h-3 mr-1" />
           Add Category
         </Button>
       </div>
 
       {/* Categories Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+      <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-3">
         {categories.map((category, index) => (
           <div
             key={category.id}
-            className="bg-white rounded-lg border border-gray-200 overflow-hidden hover:border-gray-300 hover:shadow-sm transition-all"
+            className="bg-white rounded-lg border border-gray-200 overflow-hidden hover:border-gray-300 hover:shadow-sm transition-all group"
           >
-            <div className="aspect-video bg-gray-100 relative">
+            <div className="aspect-square bg-gray-100 relative">
               {category.image ? (
                 <img
                   src={category.image}
@@ -158,31 +158,41 @@ const MerchantCategories = () => {
                 />
               ) : (
                 <div className="w-full h-full flex items-center justify-center">
-                  <FolderOpen className="w-12 h-12 text-gray-300" />
+                  <FolderOpen className="w-8 h-8 text-gray-300" />
                 </div>
               )}
-              <div className="absolute top-2 right-2 flex gap-1">
-                <span className={`px-2 py-1 rounded text-xs font-medium ${
+              <div className="absolute top-1.5 right-1.5">
+                <span className={`px-1.5 py-0.5 rounded text-xs font-medium ${
                   category.is_active ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'
                 }`}>
-                  {category.is_active ? 'Active' : 'Inactive'}
+                  {category.is_active ? 'Active' : 'Off'}
                 </span>
               </div>
             </div>
-            <div className="p-4">
-              <div className="flex items-start justify-between">
-                <div>
-                  <h3 className="font-semibold text-gray-900">{category.name}</h3>
-                  <p className="text-sm text-gray-500 mt-1">
-                    {category.product_count} products
-                  </p>
-                </div>
-                <div className="flex items-center gap-2 text-gray-400">
-                  <GripVertical className="w-4 h-4" />
-                  <span className="text-xs">#{category.sort_order + 1}</span>
-                </div>
+            <div className="p-2">
+              <h3 className="font-medium text-gray-900 text-sm truncate">{category.name}</h3>
+              <p className="text-xs text-gray-500">{category.product_count} products</p>
+              <div className="flex items-center gap-1 mt-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => openModal(category)}
+                  className="flex-1 h-7 text-xs border-gray-200 text-gray-700 hover:bg-gray-50"
+                >
+                  <Edit className="w-3 h-3 mr-1" /> Edit
+                </Button>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => handleDelete(category.id)}
+                  className="h-7 px-2 border-red-200 text-red-600 hover:bg-red-50"
+                >
+                  <Trash2 className="w-3 h-3" />
+                </Button>
               </div>
-              {category.description && (
+            </div>
+          </div>
+        ))}
                 <p className="text-sm text-gray-500 mt-2 line-clamp-2">{category.description}</p>
               )}
               <div className="flex items-center gap-2 mt-4">
