@@ -1737,6 +1737,837 @@ const EbayIntegration = () => {
             </div>
           )}
 
+          {/* Theme Editor Tab */}
+          {activeTab === 'theme' && (
+            <div className="space-y-6">
+              {/* Theme Editor Header */}
+              <div className="flex items-center justify-between">
+                <div>
+                  <h3 className="font-semibold text-gray-900">eBay Listing Theme Editor</h3>
+                  <p className="text-sm text-gray-500">Customize how your products appear on eBay</p>
+                </div>
+                <div className="flex items-center gap-2">
+                  <div className="flex bg-gray-100 rounded-lg p-1">
+                    <button
+                      onClick={() => setThemePreview('desktop')}
+                      className={`p-2 rounded ${themePreview === 'desktop' ? 'bg-white shadow-sm' : ''}`}
+                    >
+                      <Monitor className="w-4 h-4 text-gray-600" />
+                    </button>
+                    <button
+                      onClick={() => setThemePreview('mobile')}
+                      className={`p-2 rounded ${themePreview === 'mobile' ? 'bg-white shadow-sm' : ''}`}
+                    >
+                      <Smartphone className="w-4 h-4 text-gray-600" />
+                    </button>
+                  </div>
+                  <Button className="bg-yellow-500 hover:bg-yellow-600">
+                    <Save className="w-4 h-4 mr-2" />
+                    Save Theme
+                  </Button>
+                </div>
+              </div>
+
+              <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                {/* Theme Settings Panel */}
+                <div className="lg:col-span-1 space-y-4">
+                  {/* Template Selection */}
+                  <div className="bg-white rounded-xl border border-gray-200 p-4">
+                    <h4 className="font-medium text-gray-900 mb-3 flex items-center gap-2">
+                      <Layout className="w-4 h-4 text-yellow-500" />
+                      Template
+                    </h4>
+                    <div className="space-y-2">
+                      {listingTemplates.map(template => (
+                        <label
+                          key={template.id}
+                          className={`flex items-start gap-3 p-3 rounded-lg border cursor-pointer transition-colors ${
+                            themeSettings.template === template.id
+                              ? 'border-yellow-500 bg-yellow-50'
+                              : 'border-gray-200 hover:border-gray-300'
+                          }`}
+                        >
+                          <input
+                            type="radio"
+                            name="template"
+                            value={template.id}
+                            checked={themeSettings.template === template.id}
+                            onChange={(e) => setThemeSettings(s => ({...s, template: e.target.value}))}
+                            className="mt-1"
+                          />
+                          <div>
+                            <p className="font-medium text-gray-900 text-sm">{template.name}</p>
+                            <p className="text-xs text-gray-500">{template.description}</p>
+                          </div>
+                        </label>
+                      ))}
+                    </div>
+                  </div>
+
+                  {/* Colors */}
+                  <div className="bg-white rounded-xl border border-gray-200 p-4">
+                    <h4 className="font-medium text-gray-900 mb-3 flex items-center gap-2">
+                      <Palette className="w-4 h-4 text-yellow-500" />
+                      Colors
+                    </h4>
+                    <div className="space-y-3">
+                      <div>
+                        <Label className="text-xs text-gray-500">Primary Color</Label>
+                        <div className="flex gap-2 mt-1">
+                          <input
+                            type="color"
+                            value={themeSettings.primaryColor}
+                            onChange={(e) => setThemeSettings(s => ({...s, primaryColor: e.target.value}))}
+                            className="w-10 h-10 rounded border border-gray-200 cursor-pointer"
+                          />
+                          <Input
+                            value={themeSettings.primaryColor}
+                            onChange={(e) => setThemeSettings(s => ({...s, primaryColor: e.target.value}))}
+                            className="flex-1 font-mono text-sm"
+                          />
+                        </div>
+                      </div>
+                      <div>
+                        <Label className="text-xs text-gray-500">Accent Color</Label>
+                        <div className="flex gap-2 mt-1">
+                          <input
+                            type="color"
+                            value={themeSettings.accentColor}
+                            onChange={(e) => setThemeSettings(s => ({...s, accentColor: e.target.value}))}
+                            className="w-10 h-10 rounded border border-gray-200 cursor-pointer"
+                          />
+                          <Input
+                            value={themeSettings.accentColor}
+                            onChange={(e) => setThemeSettings(s => ({...s, accentColor: e.target.value}))}
+                            className="flex-1 font-mono text-sm"
+                          />
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Layout Options */}
+                  <div className="bg-white rounded-xl border border-gray-200 p-4">
+                    <h4 className="font-medium text-gray-900 mb-3 flex items-center gap-2">
+                      <Layers className="w-4 h-4 text-yellow-500" />
+                      Layout Options
+                    </h4>
+                    <div className="space-y-3">
+                      <div>
+                        <Label className="text-xs text-gray-500">Gallery Layout</Label>
+                        <Select 
+                          value={themeSettings.galleryLayout}
+                          onValueChange={(v) => setThemeSettings(s => ({...s, galleryLayout: v}))}
+                        >
+                          <SelectTrigger className="mt-1">
+                            <SelectValue />
+                          </SelectTrigger>
+                          <SelectContent className="bg-white">
+                            <SelectItem value="main-thumb">Main + Thumbnails</SelectItem>
+                            <SelectItem value="grid">Grid Gallery</SelectItem>
+                            <SelectItem value="carousel">Carousel</SelectItem>
+                            <SelectItem value="single">Single Image</SelectItem>
+                          </SelectContent>
+                        </Select>
+                      </div>
+                      <div>
+                        <Label className="text-xs text-gray-500">Header Style</Label>
+                        <Select 
+                          value={themeSettings.headerStyle}
+                          onValueChange={(v) => setThemeSettings(s => ({...s, headerStyle: v}))}
+                        >
+                          <SelectTrigger className="mt-1">
+                            <SelectValue />
+                          </SelectTrigger>
+                          <SelectContent className="bg-white">
+                            <SelectItem value="banner">Full Banner</SelectItem>
+                            <SelectItem value="minimal">Minimal</SelectItem>
+                            <SelectItem value="logo-only">Logo Only</SelectItem>
+                            <SelectItem value="none">No Header</SelectItem>
+                          </SelectContent>
+                        </Select>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Display Options */}
+                  <div className="bg-white rounded-xl border border-gray-200 p-4">
+                    <h4 className="font-medium text-gray-900 mb-3 flex items-center gap-2">
+                      <Eye className="w-4 h-4 text-yellow-500" />
+                      Display Options
+                    </h4>
+                    <div className="space-y-3">
+                      <div className="flex items-center justify-between">
+                        <Label className="text-sm text-gray-700">Show Brand Logo</Label>
+                        <Switch
+                          checked={themeSettings.showBrandLogo}
+                          onCheckedChange={(c) => setThemeSettings(s => ({...s, showBrandLogo: c}))}
+                        />
+                      </div>
+                      <div className="flex items-center justify-between">
+                        <Label className="text-sm text-gray-700">Show Trust Badges</Label>
+                        <Switch
+                          checked={themeSettings.showTrustBadges}
+                          onCheckedChange={(c) => setThemeSettings(s => ({...s, showTrustBadges: c}))}
+                        />
+                      </div>
+                      <div className="flex items-center justify-between">
+                        <Label className="text-sm text-gray-700">Show Shipping Info</Label>
+                        <Switch
+                          checked={themeSettings.showShippingInfo}
+                          onCheckedChange={(c) => setThemeSettings(s => ({...s, showShippingInfo: c}))}
+                        />
+                      </div>
+                      <div className="flex items-center justify-between">
+                        <Label className="text-sm text-gray-700">Show Return Policy</Label>
+                        <Switch
+                          checked={themeSettings.showReturnPolicy}
+                          onCheckedChange={(c) => setThemeSettings(s => ({...s, showReturnPolicy: c}))}
+                        />
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Live Preview */}
+                <div className="lg:col-span-2">
+                  <div className="bg-white rounded-xl border border-gray-200 overflow-hidden">
+                    <div className="p-4 border-b border-gray-200 bg-gray-50 flex items-center justify-between">
+                      <h4 className="font-medium text-gray-900">Live Preview</h4>
+                      <span className="text-xs text-gray-500">{themePreview === 'desktop' ? 'Desktop View' : 'Mobile View'}</span>
+                    </div>
+                    <div className={`p-4 ${themePreview === 'mobile' ? 'max-w-sm mx-auto' : ''}`}>
+                      {/* Simulated eBay Listing Preview */}
+                      <div className="border border-gray-200 rounded-lg overflow-hidden" style={{fontFamily: themeSettings.fontFamily}}>
+                        {/* Header */}
+                        {themeSettings.headerStyle !== 'none' && (
+                          <div 
+                            className="p-4 text-white"
+                            style={{backgroundColor: themeSettings.primaryColor}}
+                          >
+                            <div className="flex items-center gap-3">
+                              {themeSettings.showBrandLogo && (
+                                <div className="w-12 h-12 bg-white/20 rounded-lg flex items-center justify-center">
+                                  <span className="text-xl">🏪</span>
+                                </div>
+                              )}
+                              <div>
+                                <h2 className="font-bold">Your Store Name</h2>
+                                <p className="text-sm opacity-80">Trusted Seller • 99.8% Positive</p>
+                              </div>
+                            </div>
+                          </div>
+                        )}
+                        
+                        {/* Product Content */}
+                        <div className="p-4">
+                          {/* Gallery */}
+                          <div className={`mb-4 ${themeSettings.galleryLayout === 'grid' ? 'grid grid-cols-2 gap-2' : ''}`}>
+                            {themeSettings.galleryLayout === 'main-thumb' && (
+                              <>
+                                <div className="aspect-square bg-gray-100 rounded-lg mb-2 flex items-center justify-center">
+                                  <ImageIcon className="w-16 h-16 text-gray-300" />
+                                </div>
+                                <div className="flex gap-2">
+                                  {[1,2,3,4].map(i => (
+                                    <div key={i} className="w-16 h-16 bg-gray-100 rounded flex items-center justify-center">
+                                      <ImageIcon className="w-6 h-6 text-gray-300" />
+                                    </div>
+                                  ))}
+                                </div>
+                              </>
+                            )}
+                            {themeSettings.galleryLayout === 'grid' && (
+                              <>
+                                {[1,2,3,4].map(i => (
+                                  <div key={i} className="aspect-square bg-gray-100 rounded-lg flex items-center justify-center">
+                                    <ImageIcon className="w-8 h-8 text-gray-300" />
+                                  </div>
+                                ))}
+                              </>
+                            )}
+                          </div>
+
+                          {/* Title & Price */}
+                          <h3 className="font-bold text-lg text-gray-900 mb-2">Sample Product Title - Premium Quality Item</h3>
+                          <div className="flex items-center gap-3 mb-4">
+                            <span className="text-2xl font-bold" style={{color: themeSettings.accentColor}}>$129.99</span>
+                            <span className="text-gray-400 line-through">$159.99</span>
+                            <span className="px-2 py-1 text-xs rounded" style={{backgroundColor: themeSettings.accentColor, color: 'white'}}>
+                              19% OFF
+                            </span>
+                          </div>
+
+                          {/* Trust Badges */}
+                          {themeSettings.showTrustBadges && (
+                            <div className="flex gap-4 mb-4 p-3 bg-gray-50 rounded-lg">
+                              <div className="flex items-center gap-1 text-xs text-gray-600">
+                                <Shield className="w-4 h-4 text-green-500" />
+                                <span>Buyer Protection</span>
+                              </div>
+                              <div className="flex items-center gap-1 text-xs text-gray-600">
+                                <Truck className="w-4 h-4 text-blue-500" />
+                                <span>Fast Shipping</span>
+                              </div>
+                              <div className="flex items-center gap-1 text-xs text-gray-600">
+                                <RotateCcw className="w-4 h-4 text-purple-500" />
+                                <span>Easy Returns</span>
+                              </div>
+                            </div>
+                          )}
+
+                          {/* Description */}
+                          <div className="prose prose-sm text-gray-600 mb-4">
+                            <p>This is where your product description will appear. You can customize the layout and styling using the theme editor on the left.</p>
+                          </div>
+
+                          {/* Shipping Info */}
+                          {themeSettings.showShippingInfo && (
+                            <div className="p-3 bg-blue-50 rounded-lg mb-4">
+                              <div className="flex items-center gap-2 text-sm text-blue-700">
+                                <Truck className="w-4 h-4" />
+                                <span><strong>Free Shipping</strong> - Estimated delivery: 3-5 business days</span>
+                              </div>
+                            </div>
+                          )}
+
+                          {/* Return Policy */}
+                          {themeSettings.showReturnPolicy && (
+                            <div className="p-3 bg-gray-50 rounded-lg">
+                              <div className="flex items-center gap-2 text-sm text-gray-600">
+                                <RotateCcw className="w-4 h-4" />
+                                <span><strong>30 Day Returns</strong> - Buyer pays return shipping</span>
+                              </div>
+                            </div>
+                          )}
+                        </div>
+
+                        {/* Footer */}
+                        <div className="p-4 bg-gray-50 border-t border-gray-200 text-center text-sm text-gray-500">
+                          Thank you for shopping with us! Contact: support@yourstore.com
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Custom HTML/CSS Editor */}
+                  {themeSettings.template === 'custom' && (
+                    <div className="mt-4 bg-white rounded-xl border border-gray-200 p-4">
+                      <h4 className="font-medium text-gray-900 mb-3 flex items-center gap-2">
+                        <Code className="w-4 h-4 text-yellow-500" />
+                        Custom HTML Template
+                      </h4>
+                      <Textarea
+                        value={themeSettings.descriptionTemplate}
+                        onChange={(e) => setThemeSettings(s => ({...s, descriptionTemplate: e.target.value}))}
+                        className="font-mono text-sm h-48"
+                        placeholder="Enter your custom HTML..."
+                      />
+                      <p className="text-xs text-gray-500 mt-2">
+                        Available variables: {'{{product_name}}'}, {'{{product_description}}'}, {'{{product_price}}'}, {'{{product_specs}}'}, {'{{store_name}}'}, {'{{store_logo}}'}
+                      </p>
+                    </div>
+                  )}
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* Categories Mapping Tab */}
+          {activeTab === 'categories' && (
+            <div className="space-y-6">
+              <div className="flex items-center justify-between">
+                <div>
+                  <h3 className="font-semibold text-gray-900">Category Mapping</h3>
+                  <p className="text-sm text-gray-500">Map your store categories to eBay categories</p>
+                </div>
+                <Button 
+                  onClick={() => setShowCategoryModal(true)}
+                  className="bg-yellow-500 hover:bg-yellow-600"
+                >
+                  <Plus className="w-4 h-4 mr-2" />
+                  Add Mapping
+                </Button>
+              </div>
+
+              {/* Category Mappings Table */}
+              <div className="bg-white rounded-xl border border-gray-200 overflow-hidden">
+                <table className="w-full">
+                  <thead className="bg-gray-50">
+                    <tr>
+                      <th className="text-left px-4 py-3 text-xs font-medium text-gray-500">Your Category</th>
+                      <th className="text-left px-4 py-3 text-xs font-medium text-gray-500">
+                        <ArrowLeftRight className="w-4 h-4 inline mr-1" />
+                      </th>
+                      <th className="text-left px-4 py-3 text-xs font-medium text-gray-500">eBay Category</th>
+                      <th className="text-left px-4 py-3 text-xs font-medium text-gray-500">Products</th>
+                      <th className="w-20"></th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {/* Sample mappings */}
+                    {[
+                      { local: 'Electronics', ebay: 'Consumer Electronics', ebayId: '293', count: 45 },
+                      { local: 'Clothing', ebay: 'Clothing, Shoes & Accessories', ebayId: '11450', count: 120 },
+                      { local: 'Home & Garden', ebay: 'Home & Garden', ebayId: '11700', count: 78 },
+                      { local: 'Sports', ebay: 'Sporting Goods', ebayId: '888', count: 34 },
+                    ].map((mapping, idx) => (
+                      <tr key={idx} className="border-t border-gray-100 hover:bg-gray-50">
+                        <td className="px-4 py-3">
+                          <div className="flex items-center gap-2">
+                            <FolderTree className="w-4 h-4 text-gray-400" />
+                            <span className="text-sm font-medium text-gray-900">{mapping.local}</span>
+                          </div>
+                        </td>
+                        <td className="px-4 py-3">
+                          <ArrowRight className="w-4 h-4 text-gray-300" />
+                        </td>
+                        <td className="px-4 py-3">
+                          <div>
+                            <span className="text-sm text-gray-900">{mapping.ebay}</span>
+                            <span className="text-xs text-gray-400 ml-2">({mapping.ebayId})</span>
+                          </div>
+                        </td>
+                        <td className="px-4 py-3">
+                          <span className="px-2 py-1 bg-gray-100 rounded text-xs text-gray-600">
+                            {mapping.count} products
+                          </span>
+                        </td>
+                        <td className="px-4 py-3">
+                          <div className="flex gap-1">
+                            <Button variant="ghost" size="sm">
+                              <Edit className="w-4 h-4 text-gray-400" />
+                            </Button>
+                            <Button variant="ghost" size="sm">
+                              <Trash2 className="w-4 h-4 text-red-400" />
+                            </Button>
+                          </div>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+
+              {/* Auto-Map Section */}
+              <div className="bg-blue-50 rounded-xl border border-blue-200 p-4">
+                <div className="flex items-start gap-3">
+                  <Sparkles className="w-5 h-5 text-blue-500 mt-0.5" />
+                  <div className="flex-1">
+                    <h4 className="font-medium text-blue-900">Auto-Map Categories</h4>
+                    <p className="text-sm text-blue-700 mb-3">
+                      Let us automatically suggest eBay categories based on your product names and descriptions.
+                    </p>
+                    <Button variant="outline" size="sm" className="border-blue-300 text-blue-700 hover:bg-blue-100">
+                      <Zap className="w-4 h-4 mr-2" />
+                      Run Auto-Mapping
+                    </Button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* Pricing Rules Tab */}
+          {activeTab === 'pricing' && (
+            <div className="space-y-6">
+              <div className="flex items-center justify-between">
+                <div>
+                  <h3 className="font-semibold text-gray-900">Pricing Rules</h3>
+                  <p className="text-sm text-gray-500">Set up automatic price adjustments for eBay listings</p>
+                </div>
+                <Button 
+                  onClick={() => setShowPricingRuleModal(true)}
+                  className="bg-yellow-500 hover:bg-yellow-600"
+                >
+                  <Plus className="w-4 h-4 mr-2" />
+                  Add Rule
+                </Button>
+              </div>
+
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                {/* Default Pricing */}
+                <div className="bg-white rounded-xl border border-gray-200 p-6">
+                  <h4 className="font-medium text-gray-900 mb-4 flex items-center gap-2">
+                    <DollarSign className="w-4 h-4 text-yellow-500" />
+                    Default Pricing
+                  </h4>
+                  <div className="space-y-4">
+                    <div>
+                      <Label className="text-sm text-gray-700">Markup Type</Label>
+                      <Select 
+                        value={pricingRules.default_markup_type}
+                        onValueChange={(v) => setPricingRules(r => ({...r, default_markup_type: v}))}
+                      >
+                        <SelectTrigger className="mt-1">
+                          <SelectValue />
+                        </SelectTrigger>
+                        <SelectContent className="bg-white">
+                          <SelectItem value="percentage">Percentage (%)</SelectItem>
+                          <SelectItem value="fixed">Fixed Amount ($)</SelectItem>
+                          <SelectItem value="none">No Markup</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
+                    <div>
+                      <Label className="text-sm text-gray-700">
+                        Markup Value {pricingRules.default_markup_type === 'percentage' ? '(%)' : '($)'}
+                      </Label>
+                      <Input
+                        type="number"
+                        value={pricingRules.default_markup_value}
+                        onChange={(e) => setPricingRules(r => ({...r, default_markup_value: parseFloat(e.target.value) || 0}))}
+                        className="mt-1"
+                      />
+                    </div>
+                    <div>
+                      <Label className="text-sm text-gray-700">Round to Nearest</Label>
+                      <Select 
+                        value={pricingRules.round_to_nearest.toString()}
+                        onValueChange={(v) => setPricingRules(r => ({...r, round_to_nearest: parseFloat(v)}))}
+                      >
+                        <SelectTrigger className="mt-1">
+                          <SelectValue />
+                        </SelectTrigger>
+                        <SelectContent className="bg-white">
+                          <SelectItem value="0">No Rounding</SelectItem>
+                          <SelectItem value="0.99">$X.99</SelectItem>
+                          <SelectItem value="0.95">$X.95</SelectItem>
+                          <SelectItem value="1">Whole Dollar</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
+                    <div>
+                      <Label className="text-sm text-gray-700">Minimum Price ($)</Label>
+                      <Input
+                        type="number"
+                        value={pricingRules.minimum_price}
+                        onChange={(e) => setPricingRules(r => ({...r, minimum_price: parseFloat(e.target.value) || 0}))}
+                        className="mt-1"
+                      />
+                    </div>
+                  </div>
+                </div>
+
+                {/* Price Calculator */}
+                <div className="bg-white rounded-xl border border-gray-200 p-6">
+                  <h4 className="font-medium text-gray-900 mb-4 flex items-center gap-2">
+                    <Percent className="w-4 h-4 text-yellow-500" />
+                    Price Calculator
+                  </h4>
+                  <div className="space-y-4">
+                    <div>
+                      <Label className="text-sm text-gray-700">Your Price</Label>
+                      <Input type="number" placeholder="100.00" className="mt-1" />
+                    </div>
+                    <div className="p-4 bg-gray-50 rounded-lg">
+                      <div className="flex justify-between text-sm mb-2">
+                        <span className="text-gray-500">Your Price</span>
+                        <span className="text-gray-900">$100.00</span>
+                      </div>
+                      <div className="flex justify-between text-sm mb-2">
+                        <span className="text-gray-500">Markup (10%)</span>
+                        <span className="text-gray-900">+$10.00</span>
+                      </div>
+                      <div className="flex justify-between text-sm mb-2">
+                        <span className="text-gray-500">eBay Fees (~13%)</span>
+                        <span className="text-red-600">-$14.30</span>
+                      </div>
+                      <div className="border-t border-gray-200 pt-2 mt-2">
+                        <div className="flex justify-between font-medium">
+                          <span className="text-gray-900">eBay Price</span>
+                          <span className="text-yellow-600">$109.99</span>
+                        </div>
+                        <div className="flex justify-between text-sm">
+                          <span className="text-gray-500">Your Profit</span>
+                          <span className="text-emerald-600">$95.69</span>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              {/* Custom Rules */}
+              <div className="bg-white rounded-xl border border-gray-200 overflow-hidden">
+                <div className="p-4 border-b border-gray-200">
+                  <h4 className="font-medium text-gray-900">Custom Pricing Rules</h4>
+                  <p className="text-sm text-gray-500">Rules are applied in order from top to bottom</p>
+                </div>
+                <table className="w-full">
+                  <thead className="bg-gray-50">
+                    <tr>
+                      <th className="text-left px-4 py-3 text-xs font-medium text-gray-500">Rule Name</th>
+                      <th className="text-left px-4 py-3 text-xs font-medium text-gray-500">Condition</th>
+                      <th className="text-left px-4 py-3 text-xs font-medium text-gray-500">Adjustment</th>
+                      <th className="text-left px-4 py-3 text-xs font-medium text-gray-500">Status</th>
+                      <th className="w-20"></th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {[
+                      { name: 'Clearance Items', condition: 'Tag = Clearance', adjustment: '-15%', active: true },
+                      { name: 'Premium Products', condition: 'Price > $500', adjustment: '+5%', active: true },
+                      { name: 'Electronics', condition: 'Category = Electronics', adjustment: '+8%', active: false },
+                    ].map((rule, idx) => (
+                      <tr key={idx} className="border-t border-gray-100 hover:bg-gray-50">
+                        <td className="px-4 py-3 text-sm font-medium text-gray-900">{rule.name}</td>
+                        <td className="px-4 py-3 text-sm text-gray-500">{rule.condition}</td>
+                        <td className="px-4 py-3">
+                          <span className={`px-2 py-1 rounded text-xs ${
+                            rule.adjustment.startsWith('+') ? 'bg-emerald-100 text-emerald-700' : 'bg-red-100 text-red-700'
+                          }`}>
+                            {rule.adjustment}
+                          </span>
+                        </td>
+                        <td className="px-4 py-3">
+                          <Switch checked={rule.active} />
+                        </td>
+                        <td className="px-4 py-3">
+                          <Button variant="ghost" size="sm">
+                            <Trash2 className="w-4 h-4 text-red-400" />
+                          </Button>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          )}
+
+          {/* Inventory Rules Tab */}
+          {activeTab === 'inventory' && (
+            <div className="space-y-6">
+              <div>
+                <h3 className="font-semibold text-gray-900">Inventory Management</h3>
+                <p className="text-sm text-gray-500">Configure how inventory syncs between your store and eBay</p>
+              </div>
+
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                {/* Sync Settings */}
+                <div className="bg-white rounded-xl border border-gray-200 p-6">
+                  <h4 className="font-medium text-gray-900 mb-4 flex items-center gap-2">
+                    <RefreshCw className="w-4 h-4 text-yellow-500" />
+                    Sync Settings
+                  </h4>
+                  <div className="space-y-4">
+                    <div>
+                      <Label className="text-sm text-gray-700">Sync Direction</Label>
+                      <Select 
+                        value={inventoryRules.sync_direction}
+                        onValueChange={(v) => setInventoryRules(r => ({...r, sync_direction: v}))}
+                      >
+                        <SelectTrigger className="mt-1">
+                          <SelectValue />
+                        </SelectTrigger>
+                        <SelectContent className="bg-white">
+                          <SelectItem value="push">Push to eBay (Your Store → eBay)</SelectItem>
+                          <SelectItem value="pull">Pull from eBay (eBay → Your Store)</SelectItem>
+                          <SelectItem value="both">Two-way Sync</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
+                    <div className="flex items-center justify-between py-2">
+                      <div>
+                        <p className="text-sm font-medium text-gray-900">Sync on Order</p>
+                        <p className="text-xs text-gray-500">Update stock when orders are placed</p>
+                      </div>
+                      <Switch
+                        checked={inventoryRules.sync_on_order}
+                        onCheckedChange={(c) => setInventoryRules(r => ({...r, sync_on_order: c}))}
+                      />
+                    </div>
+                    <div className="flex items-center justify-between py-2">
+                      <div>
+                        <p className="text-sm font-medium text-gray-900">Sync on Stock Change</p>
+                        <p className="text-xs text-gray-500">Update eBay when you adjust inventory</p>
+                      </div>
+                      <Switch
+                        checked={inventoryRules.sync_on_stock_change}
+                        onCheckedChange={(c) => setInventoryRules(r => ({...r, sync_on_stock_change: c}))}
+                      />
+                    </div>
+                  </div>
+                </div>
+
+                {/* Stock Rules */}
+                <div className="bg-white rounded-xl border border-gray-200 p-6">
+                  <h4 className="font-medium text-gray-900 mb-4 flex items-center gap-2">
+                    <Box className="w-4 h-4 text-yellow-500" />
+                    Stock Rules
+                  </h4>
+                  <div className="space-y-4">
+                    <div>
+                      <Label className="text-sm text-gray-700">Buffer Stock</Label>
+                      <Input
+                        type="number"
+                        value={inventoryRules.buffer_stock}
+                        onChange={(e) => setInventoryRules(r => ({...r, buffer_stock: parseInt(e.target.value) || 0}))}
+                        className="mt-1"
+                      />
+                      <p className="text-xs text-gray-500 mt-1">Reserve this many units (not listed on eBay)</p>
+                    </div>
+                    <div>
+                      <Label className="text-sm text-gray-700">Out of Stock Action</Label>
+                      <Select 
+                        value={inventoryRules.out_of_stock_action}
+                        onValueChange={(v) => setInventoryRules(r => ({...r, out_of_stock_action: v}))}
+                      >
+                        <SelectTrigger className="mt-1">
+                          <SelectValue />
+                        </SelectTrigger>
+                        <SelectContent className="bg-white">
+                          <SelectItem value="set_zero">Set quantity to 0</SelectItem>
+                          <SelectItem value="end_listing">End listing</SelectItem>
+                          <SelectItem value="out_of_stock">Mark as out of stock</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
+                    <div>
+                      <Label className="text-sm text-gray-700">Low Stock Alert Threshold</Label>
+                      <Input
+                        type="number"
+                        value={inventoryRules.low_stock_threshold}
+                        onChange={(e) => setInventoryRules(r => ({...r, low_stock_threshold: parseInt(e.target.value) || 0}))}
+                        className="mt-1"
+                      />
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              {/* Inventory Status */}
+              <div className="bg-white rounded-xl border border-gray-200 p-6">
+                <h4 className="font-medium text-gray-900 mb-4">Inventory Status</h4>
+                <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                  <div className="p-4 bg-emerald-50 rounded-lg text-center">
+                    <p className="text-2xl font-bold text-emerald-600">156</p>
+                    <p className="text-sm text-emerald-700">In Stock</p>
+                  </div>
+                  <div className="p-4 bg-yellow-50 rounded-lg text-center">
+                    <p className="text-2xl font-bold text-yellow-600">23</p>
+                    <p className="text-sm text-yellow-700">Low Stock</p>
+                  </div>
+                  <div className="p-4 bg-red-50 rounded-lg text-center">
+                    <p className="text-2xl font-bold text-red-600">8</p>
+                    <p className="text-sm text-red-700">Out of Stock</p>
+                  </div>
+                  <div className="p-4 bg-blue-50 rounded-lg text-center">
+                    <p className="text-2xl font-bold text-blue-600">12</p>
+                    <p className="text-sm text-blue-700">Pending Sync</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* Analytics Tab */}
+          {activeTab === 'analytics' && (
+            <div className="space-y-6">
+              <div className="flex items-center justify-between">
+                <div>
+                  <h3 className="font-semibold text-gray-900">eBay Analytics</h3>
+                  <p className="text-sm text-gray-500">Track your eBay sales performance</p>
+                </div>
+                <Select value={analyticsDateRange} onValueChange={setAnalyticsDateRange}>
+                  <SelectTrigger className="w-40">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent className="bg-white">
+                    <SelectItem value="7d">Last 7 Days</SelectItem>
+                    <SelectItem value="30d">Last 30 Days</SelectItem>
+                    <SelectItem value="90d">Last 90 Days</SelectItem>
+                    <SelectItem value="365d">Last Year</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+
+              {/* Stats Cards */}
+              <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+                <div className="bg-white rounded-xl border border-gray-200 p-4">
+                  <div className="flex items-center justify-between mb-2">
+                    <span className="text-sm text-gray-500">Total Sales</span>
+                    <DollarSign className="w-4 h-4 text-emerald-500" />
+                  </div>
+                  <p className="text-2xl font-bold text-gray-900">$12,450</p>
+                  <p className="text-xs text-emerald-600 flex items-center gap-1 mt-1">
+                    <TrendingUp className="w-3 h-3" /> +15% vs last period
+                  </p>
+                </div>
+                <div className="bg-white rounded-xl border border-gray-200 p-4">
+                  <div className="flex items-center justify-between mb-2">
+                    <span className="text-sm text-gray-500">Orders</span>
+                    <ShoppingCart className="w-4 h-4 text-blue-500" />
+                  </div>
+                  <p className="text-2xl font-bold text-gray-900">87</p>
+                  <p className="text-xs text-emerald-600 flex items-center gap-1 mt-1">
+                    <TrendingUp className="w-3 h-3" /> +8% vs last period
+                  </p>
+                </div>
+                <div className="bg-white rounded-xl border border-gray-200 p-4">
+                  <div className="flex items-center justify-between mb-2">
+                    <span className="text-sm text-gray-500">Avg Order Value</span>
+                    <BarChart3 className="w-4 h-4 text-purple-500" />
+                  </div>
+                  <p className="text-2xl font-bold text-gray-900">$143.10</p>
+                  <p className="text-xs text-emerald-600 flex items-center gap-1 mt-1">
+                    <TrendingUp className="w-3 h-3" /> +6% vs last period
+                  </p>
+                </div>
+                <div className="bg-white rounded-xl border border-gray-200 p-4">
+                  <div className="flex items-center justify-between mb-2">
+                    <span className="text-sm text-gray-500">Conversion Rate</span>
+                    <Percent className="w-4 h-4 text-yellow-500" />
+                  </div>
+                  <p className="text-2xl font-bold text-gray-900">4.2%</p>
+                  <p className="text-xs text-red-600 flex items-center gap-1 mt-1">
+                    <TrendingUp className="w-3 h-3 rotate-180" /> -2% vs last period
+                  </p>
+                </div>
+              </div>
+
+              {/* Charts Placeholder */}
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                <div className="bg-white rounded-xl border border-gray-200 p-6">
+                  <h4 className="font-medium text-gray-900 mb-4">Sales Over Time</h4>
+                  <div className="h-64 bg-gray-50 rounded-lg flex items-center justify-center">
+                    <div className="text-center">
+                      <BarChart3 className="w-12 h-12 text-gray-300 mx-auto mb-2" />
+                      <p className="text-sm text-gray-400">Sales chart visualization</p>
+                      <p className="text-xs text-gray-300">Connect eBay to see real data</p>
+                    </div>
+                  </div>
+                </div>
+                <div className="bg-white rounded-xl border border-gray-200 p-6">
+                  <h4 className="font-medium text-gray-900 mb-4">Top Selling Products</h4>
+                  <div className="space-y-3">
+                    {[
+                      { name: 'Premium Wireless Headphones', sales: 23, revenue: '$2,069.77' },
+                      { name: 'Smart Watch Pro', sales: 18, revenue: '$3,599.82' },
+                      { name: 'Bluetooth Speaker', sales: 15, revenue: '$1,199.85' },
+                      { name: 'USB-C Hub Adapter', sales: 12, revenue: '$479.88' },
+                      { name: 'Laptop Stand', sales: 10, revenue: '$349.90' },
+                    ].map((product, idx) => (
+                      <div key={idx} className="flex items-center justify-between py-2 border-b border-gray-100 last:border-0">
+                        <div className="flex items-center gap-3">
+                          <span className="w-6 h-6 bg-yellow-100 text-yellow-700 rounded-full flex items-center justify-center text-xs font-medium">
+                            {idx + 1}
+                          </span>
+                          <span className="text-sm text-gray-900">{product.name}</span>
+                        </div>
+                        <div className="text-right">
+                          <p className="text-sm font-medium text-gray-900">{product.revenue}</p>
+                          <p className="text-xs text-gray-400">{product.sales} sold</p>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              </div>
+            </div>
+          )}
+
           {/* Settings Tab */}
           {activeTab === 'settings' && (
             <div className="max-w-2xl">
