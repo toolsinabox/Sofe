@@ -576,18 +576,332 @@ const ProductEditor = ({ product, categories, onSave, onClose, templateTags }) =
                     />
                   </div>
                   
+                  {/* Full Description with WYSIWYG/Source Editor */}
                   <div className="space-y-2">
-                    <Label className="text-gray-700 flex items-center gap-2">
-                      Full Description
-                      <span className="text-xs text-gray-500 font-mono">[@product_description@]</span>
-                    </Label>
-                    <Textarea
-                      className="bg-gray-50 border-gray-200 text-gray-900 min-h-40"
-                      placeholder="Detailed product description (HTML supported)"
-                      value={formData.description || ''}
-                      onChange={(e) => handleChange('description', e.target.value)}
-                    />
-                    <p className="text-xs text-gray-500">HTML tags are supported for formatting</p>
+                    <div className="flex items-center justify-between">
+                      <Label className="text-gray-700 flex items-center gap-2">
+                        Full Description
+                        <span className="text-xs text-gray-500 font-mono">[@product_description@]</span>
+                      </Label>
+                      {/* Editor Mode Toggle */}
+                      <div className="flex bg-gray-100 rounded-lg p-0.5">
+                        <button
+                          type="button"
+                          onClick={() => setDescriptionEditorMode('wysiwyg')}
+                          className={`flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium rounded-md transition-colors ${
+                            descriptionEditorMode === 'wysiwyg' 
+                              ? 'bg-white text-gray-900 shadow-sm' 
+                              : 'text-gray-500 hover:text-gray-700'
+                          }`}
+                        >
+                          <Type className="w-3.5 h-3.5" />
+                          WYSIWYG
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => setDescriptionEditorMode('source')}
+                          className={`flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium rounded-md transition-colors ${
+                            descriptionEditorMode === 'source' 
+                              ? 'bg-white text-gray-900 shadow-sm' 
+                              : 'text-gray-500 hover:text-gray-700'
+                          }`}
+                        >
+                          <Code className="w-3.5 h-3.5" />
+                          Source Code
+                        </button>
+                      </div>
+                    </div>
+
+                    {/* WYSIWYG Editor */}
+                    {descriptionEditorMode === 'wysiwyg' && (
+                      <div className="border border-gray-200 rounded-lg overflow-hidden bg-white">
+                        {/* Toolbar */}
+                        <div className="flex items-center gap-1 p-2 border-b border-gray-200 bg-gray-50 flex-wrap">
+                          {/* Text Formatting */}
+                          <div className="flex items-center gap-0.5 pr-2 border-r border-gray-200">
+                            <button
+                              type="button"
+                              onClick={() => document.execCommand('bold')}
+                              className="p-1.5 rounded hover:bg-gray-200 transition-colors"
+                              title="Bold (Ctrl+B)"
+                            >
+                              <Bold className="w-4 h-4 text-gray-600" />
+                            </button>
+                            <button
+                              type="button"
+                              onClick={() => document.execCommand('italic')}
+                              className="p-1.5 rounded hover:bg-gray-200 transition-colors"
+                              title="Italic (Ctrl+I)"
+                            >
+                              <Italic className="w-4 h-4 text-gray-600" />
+                            </button>
+                            <button
+                              type="button"
+                              onClick={() => document.execCommand('underline')}
+                              className="p-1.5 rounded hover:bg-gray-200 transition-colors"
+                              title="Underline (Ctrl+U)"
+                            >
+                              <Underline className="w-4 h-4 text-gray-600" />
+                            </button>
+                          </div>
+
+                          {/* Headings */}
+                          <div className="flex items-center gap-0.5 px-2 border-r border-gray-200">
+                            <button
+                              type="button"
+                              onClick={() => document.execCommand('formatBlock', false, 'h2')}
+                              className="p-1.5 rounded hover:bg-gray-200 transition-colors"
+                              title="Heading 1"
+                            >
+                              <Heading1 className="w-4 h-4 text-gray-600" />
+                            </button>
+                            <button
+                              type="button"
+                              onClick={() => document.execCommand('formatBlock', false, 'h3')}
+                              className="p-1.5 rounded hover:bg-gray-200 transition-colors"
+                              title="Heading 2"
+                            >
+                              <Heading2 className="w-4 h-4 text-gray-600" />
+                            </button>
+                            <button
+                              type="button"
+                              onClick={() => document.execCommand('formatBlock', false, 'p')}
+                              className="p-1.5 rounded hover:bg-gray-200 transition-colors text-xs font-medium text-gray-600"
+                              title="Paragraph"
+                            >
+                              ¶
+                            </button>
+                          </div>
+
+                          {/* Alignment */}
+                          <div className="flex items-center gap-0.5 px-2 border-r border-gray-200">
+                            <button
+                              type="button"
+                              onClick={() => document.execCommand('justifyLeft')}
+                              className="p-1.5 rounded hover:bg-gray-200 transition-colors"
+                              title="Align Left"
+                            >
+                              <AlignLeft className="w-4 h-4 text-gray-600" />
+                            </button>
+                            <button
+                              type="button"
+                              onClick={() => document.execCommand('justifyCenter')}
+                              className="p-1.5 rounded hover:bg-gray-200 transition-colors"
+                              title="Align Center"
+                            >
+                              <AlignCenter className="w-4 h-4 text-gray-600" />
+                            </button>
+                            <button
+                              type="button"
+                              onClick={() => document.execCommand('justifyRight')}
+                              className="p-1.5 rounded hover:bg-gray-200 transition-colors"
+                              title="Align Right"
+                            >
+                              <AlignRight className="w-4 h-4 text-gray-600" />
+                            </button>
+                          </div>
+
+                          {/* Lists */}
+                          <div className="flex items-center gap-0.5 px-2 border-r border-gray-200">
+                            <button
+                              type="button"
+                              onClick={() => document.execCommand('insertUnorderedList')}
+                              className="p-1.5 rounded hover:bg-gray-200 transition-colors"
+                              title="Bullet List"
+                            >
+                              <List className="w-4 h-4 text-gray-600" />
+                            </button>
+                            <button
+                              type="button"
+                              onClick={() => document.execCommand('insertOrderedList')}
+                              className="p-1.5 rounded hover:bg-gray-200 transition-colors"
+                              title="Numbered List"
+                            >
+                              <ListOrdered className="w-4 h-4 text-gray-600" />
+                            </button>
+                          </div>
+
+                          {/* Insert */}
+                          <div className="flex items-center gap-0.5 px-2 border-r border-gray-200">
+                            <button
+                              type="button"
+                              onClick={() => {
+                                const url = prompt('Enter URL:');
+                                if (url) document.execCommand('createLink', false, url);
+                              }}
+                              className="p-1.5 rounded hover:bg-gray-200 transition-colors"
+                              title="Insert Link"
+                            >
+                              <Link2 className="w-4 h-4 text-gray-600" />
+                            </button>
+                            <button
+                              type="button"
+                              onClick={() => {
+                                const url = prompt('Enter image URL:');
+                                if (url) document.execCommand('insertImage', false, url);
+                              }}
+                              className="p-1.5 rounded hover:bg-gray-200 transition-colors"
+                              title="Insert Image"
+                            >
+                              <ImageIcon className="w-4 h-4 text-gray-600" />
+                            </button>
+                            <button
+                              type="button"
+                              onClick={() => document.execCommand('formatBlock', false, 'blockquote')}
+                              className="p-1.5 rounded hover:bg-gray-200 transition-colors"
+                              title="Quote"
+                            >
+                              <Quote className="w-4 h-4 text-gray-600" />
+                            </button>
+                            <button
+                              type="button"
+                              onClick={() => document.execCommand('insertHorizontalRule')}
+                              className="p-1.5 rounded hover:bg-gray-200 transition-colors"
+                              title="Horizontal Line"
+                            >
+                              <Minus className="w-4 h-4 text-gray-600" />
+                            </button>
+                          </div>
+
+                          {/* Undo/Redo */}
+                          <div className="flex items-center gap-0.5 pl-2">
+                            <button
+                              type="button"
+                              onClick={() => document.execCommand('undo')}
+                              className="p-1.5 rounded hover:bg-gray-200 transition-colors"
+                              title="Undo (Ctrl+Z)"
+                            >
+                              <Undo className="w-4 h-4 text-gray-600" />
+                            </button>
+                            <button
+                              type="button"
+                              onClick={() => document.execCommand('redo')}
+                              className="p-1.5 rounded hover:bg-gray-200 transition-colors"
+                              title="Redo (Ctrl+Y)"
+                            >
+                              <Redo className="w-4 h-4 text-gray-600" />
+                            </button>
+                          </div>
+                        </div>
+
+                        {/* Editable Content Area */}
+                        <div
+                          ref={wysiwygRef}
+                          contentEditable
+                          className="min-h-48 p-4 text-gray-900 focus:outline-none prose prose-sm max-w-none"
+                          style={{ minHeight: '200px' }}
+                          dangerouslySetInnerHTML={{ __html: formData.description || '' }}
+                          onBlur={(e) => handleChange('description', e.currentTarget.innerHTML)}
+                          onInput={(e) => handleChange('description', e.currentTarget.innerHTML)}
+                        />
+
+                        {/* Status Bar */}
+                        <div className="px-3 py-1.5 border-t border-gray-200 bg-gray-50 flex items-center justify-between text-xs text-gray-500">
+                          <span>Visual Editor • Click to edit</span>
+                          <span>{(formData.description || '').replace(/<[^>]*>/g, '').length} characters</span>
+                        </div>
+                      </div>
+                    )}
+
+                    {/* Source Code Editor */}
+                    {descriptionEditorMode === 'source' && (
+                      <div className="border border-gray-200 rounded-lg overflow-hidden">
+                        {/* Source Code Header */}
+                        <div className="flex items-center justify-between px-3 py-2 bg-gray-800 text-gray-300">
+                          <div className="flex items-center gap-2">
+                            <Code className="w-4 h-4" />
+                            <span className="text-xs font-medium">HTML Source</span>
+                          </div>
+                          <div className="flex items-center gap-2 text-xs">
+                            <span className="text-gray-500">UTF-8</span>
+                            <span className="text-gray-500">•</span>
+                            <span>{(formData.description || '').length} chars</span>
+                          </div>
+                        </div>
+
+                        {/* Code Editor with Line Numbers */}
+                        <div className="relative flex bg-gray-900">
+                          {/* Line Numbers */}
+                          <div className="w-10 bg-gray-800 text-right pr-2 pt-3 text-xs text-gray-500 font-mono select-none border-r border-gray-700">
+                            {Array.from({ length: Math.max((formData.description || '').split('\n').length, 10) }, (_, i) => (
+                              <div key={i} className="h-5 leading-5">{i + 1}</div>
+                            ))}
+                          </div>
+                          
+                          {/* Code Area */}
+                          <textarea
+                            className="flex-1 min-h-48 p-3 font-mono text-sm bg-gray-900 text-green-400 resize-none focus:outline-none"
+                            style={{ lineHeight: '1.25rem', tabSize: 2 }}
+                            value={formData.description || ''}
+                            onChange={(e) => handleChange('description', e.target.value)}
+                            placeholder="<p>Enter your HTML content here...</p>"
+                            spellCheck={false}
+                          />
+                        </div>
+
+                        {/* Quick HTML Tags */}
+                        <div className="px-3 py-2 border-t border-gray-700 bg-gray-800 flex items-center gap-2 flex-wrap">
+                          <span className="text-xs text-gray-400">Quick Insert:</span>
+                          {[
+                            { tag: '<p></p>', label: 'P' },
+                            { tag: '<h2></h2>', label: 'H2' },
+                            { tag: '<h3></h3>', label: 'H3' },
+                            { tag: '<strong></strong>', label: 'B' },
+                            { tag: '<em></em>', label: 'I' },
+                            { tag: '<ul><li></li></ul>', label: 'UL' },
+                            { tag: '<ol><li></li></ol>', label: 'OL' },
+                            { tag: '<a href=""></a>', label: 'Link' },
+                            { tag: '<img src="" alt="" />', label: 'Img' },
+                            { tag: '<br />', label: 'BR' },
+                            { tag: '<hr />', label: 'HR' },
+                            { tag: '<div class=""></div>', label: 'Div' },
+                          ].map(item => (
+                            <button
+                              key={item.tag}
+                              type="button"
+                              onClick={() => {
+                                const currentVal = formData.description || '';
+                                handleChange('description', currentVal + item.tag);
+                              }}
+                              className="px-2 py-0.5 text-xs bg-gray-700 hover:bg-gray-600 text-gray-300 rounded transition-colors font-mono"
+                            >
+                              {item.label}
+                            </button>
+                          ))}
+                        </div>
+                      </div>
+                    )}
+
+                    {/* Preview Toggle */}
+                    <div className="flex items-center justify-between">
+                      <p className="text-xs text-gray-500">
+                        {descriptionEditorMode === 'wysiwyg' 
+                          ? 'Format text visually • Switch to Source Code for HTML editing' 
+                          : 'Edit raw HTML • Switch to WYSIWYG for visual editing'}
+                      </p>
+                      <button
+                        type="button"
+                        onClick={() => {
+                          const preview = document.getElementById('description-preview');
+                          if (preview) {
+                            preview.classList.toggle('hidden');
+                          }
+                        }}
+                        className="text-xs text-blue-600 hover:text-blue-700 flex items-center gap-1"
+                      >
+                        <Eye className="w-3 h-3" />
+                        Toggle Preview
+                      </button>
+                    </div>
+
+                    {/* Live Preview */}
+                    <div id="description-preview" className="hidden border border-gray-200 rounded-lg p-4 bg-gray-50">
+                      <div className="text-xs text-gray-500 mb-2 font-medium">Preview:</div>
+                      <div 
+                        className="prose prose-sm max-w-none text-gray-900"
+                        dangerouslySetInnerHTML={{ __html: formData.description || '<em>No content yet...</em>' }}
+                      />
+                    </div>
                   </div>
                 </div>
               )}
