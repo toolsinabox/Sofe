@@ -234,7 +234,7 @@ const MerchantSidebar = ({ collapsed, setCollapsed, mobileOpen, setMobileOpen })
   const sidebarContent = (
     <>
       {/* Logo */}
-      <div className="h-14 flex items-center justify-between px-4 border-b border-gray-200">
+      <div className="h-14 flex items-center justify-between px-4 border-b border-slate-700">
         {!collapsed && (
           <div className="flex items-center gap-2">
             {storeSettings.store_logo ? (
@@ -249,15 +249,15 @@ const MerchantSidebar = ({ collapsed, setCollapsed, mobileOpen, setMobileOpen })
               />
             ) : null}
             <div 
-              className={`w-8 h-8 bg-blue-600 rounded-lg items-center justify-center ${storeSettings.store_logo ? 'hidden' : 'flex'}`}
+              className={`w-8 h-8 bg-blue-500 rounded-lg items-center justify-center ${storeSettings.store_logo ? 'hidden' : 'flex'}`}
             >
               <span className="text-white font-bold text-sm">{getInitials(storeSettings.store_name)}</span>
             </div>
-            <span className="text-gray-900 font-semibold truncate max-w-[140px]">{storeSettings.store_name}</span>
+            <span className="text-white font-semibold truncate max-w-[140px]">{storeSettings.store_name}</span>
           </div>
         )}
         {collapsed && (
-          <div className="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center mx-auto">
+          <div className="w-8 h-8 bg-blue-500 rounded-lg flex items-center justify-center mx-auto">
             <span className="text-white font-bold text-sm">{getInitials(storeSettings.store_name)}</span>
           </div>
         )}
