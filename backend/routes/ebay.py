@@ -260,9 +260,112 @@ async def connect_ebay_account(credentials: EbayCredentials):
             "token_expires": ebay_config["token_expires"]
         }
         
+    except HTTPException as e:
+        # Parse the eBay error for better messaging
+        error_detail = str(e.detail)
+        
+        if "invalid_client" in error_detail:
+            raise HTTPException(
+                status_code=400,
+                detail={
+                    "error": "Invalid Credentials",
+                    "message": "The Client ID or Client Secret is incorrect.",
+                    "troubleshooting": [
+                        "Verify you copied the credentials correctly from eBay Developer Portal",
+                        f"Make sure you're using {'Sandbox' if credentials.sandbox_mode else 'Production'} credentials",
+                        "Check that your eBay app is active and not expired",
+                        "Ensure you're using the correct App ID (not the Cert ID) for Client ID"
+                    ],
+                    "help_url": "https://developer.ebay.com/my/keys"
+                }
+            )
+        elif "invalid_scope" in error_detail:
+            raise HTTPException(
+                status_code=400,
+                detail={
+                    "error": "Invalid Scopes",
+                    "message": "Your eBay app doesn't have the required permissions.",
+                    "troubleshooting": [
+                        "Go to your eBay Developer app settings",
+                        "Enable OAuth scopes for Sell APIs",
+                        "Required: sell.inventory, sell.fulfillment, sell.account"
+                    ],
+                    "help_url": "https://developer.ebay.com/my/keys"
+                }
+            )
+        else:
+            raise HTTPException(
+                status_code=400,
+                detail={
+                    "error": "Connection Failed",
+                    "message": error_detail,
+                    "troubleshooting": [
+                        "Double-check your Client ID and Client Secret",
+                        "Verify Sandbox/Production mode matches your credentials",
+                        "Try creating a new app on eBay Developer Portal"
+                    ],
+                    "help_url": "https://developer.ebay.com/my/keys"
+                }
+            )
     except Exception as e:
         logger.error(f"Failed to connect eBay: {str(e)}")
-        raise HTTPException(status_code=400, detail=f"Failed to connect: {str(e)}")
+        raise HTTPException(
+            status_code=400,
+            detail={
+                "error": "Connection Failed", 
+                "message": str(e),
+                "troubleshooting": [
+                    "Double-check your Client ID and Client Secret",
+                    "Verify Sandbox/Production mode matches your credentials",
+                    "Try creating a new app on eBay Developer Portal"
+                ],
+                "help_url": "https://developer.ebay.com/my/keys"
+            }
+        )
+
+
+@router.post("/test-connection")
+async def test_ebay_connection(credentials: EbayCredentials):
+    """
+    Test eBay credentials without saving them.
+    Use this to validate credentials before connecting.
+    """
+    client = EbayClient(credentials.dict(), sandbox=credentials.sandbox_mode)
+    
+    try:
+        token = await client.get_application_token()
+        return {
+            "success": True,
+            "message": "Credentials are valid!",
+            "sandbox_mode": credentials.sandbox_mode,
+            "token_preview": token[:20] + "..." if token else None
+        }
+    except HTTPException as e:
+        error_detail = str(e.detail)
+        
+        if "invalid_client" in error_detail:
+            return {
+                "success": False,
+                "error": "Invalid Credentials",
+                "message": "The Client ID or Client Secret is incorrect.",
+                "troubleshooting": [
+                    "Verify you copied the credentials correctly",
+                    f"Make sure you're using {'Sandbox' if credentials.sandbox_mode else 'Production'} credentials",
+                    "Check that your eBay app is active"
+                ]
+            }
+        else:
+            return {
+                "success": False,
+                "error": "Connection Failed",
+                "message": error_detail
+            }
+    except Exception as e:
+        return {
+            "success": False,
+            "error": "Connection Failed",
+            "message": str(e)
+        }
 
 
 @router.get("/status")
