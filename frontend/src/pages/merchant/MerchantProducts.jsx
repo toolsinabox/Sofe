@@ -787,6 +787,145 @@ const ProductEditor = ({ product, categories, onSave, onClose, templateTags }) =
                       </div>
                     )}
                   </div>
+                  
+                  {/* Base Tags Section */}
+                  <div className="space-y-3 pt-4 border-t border-gray-200">
+                    <Label className="text-gray-700 flex items-center gap-2">
+                      <Bookmark size={16} className="text-blue-500" />
+                      Base Tags
+                      <span className="text-xs text-gray-500 font-mono">[@product_base_tags@]</span>
+                    </Label>
+                    <p className="text-xs text-gray-500">
+                      Select pre-defined tags to highlight special product attributes. These appear as badges on product listings.
+                    </p>
+                    <div className="flex flex-wrap gap-2">
+                      {BASE_TAGS.map(baseTag => (
+                        <button
+                          key={baseTag.id}
+                          type="button"
+                          onClick={() => toggleBaseTag(baseTag.id)}
+                          className={`px-3 py-1.5 rounded-full text-sm font-medium border transition-all ${
+                            formData.base_tags?.includes(baseTag.id)
+                              ? `${baseTag.color} ring-2 ring-offset-1 ring-blue-400`
+                              : 'bg-gray-50 text-gray-500 border-gray-200 hover:bg-gray-100'
+                          }`}
+                        >
+                          {formData.base_tags?.includes(baseTag.id) && (
+                            <Check size={12} className="inline mr-1" />
+                          )}
+                          {baseTag.label}
+                        </button>
+                      ))}
+                    </div>
+                    {formData.base_tags?.length > 0 && (
+                      <p className="text-xs text-emerald-600">
+                        {formData.base_tags.length} base tag{formData.base_tags.length > 1 ? 's' : ''} selected
+                      </p>
+                    )}
+                  </div>
+                </div>
+              )}
+              
+              {/* Specifics Tab */}
+              {activeTab === 'specifics' && (
+                <div className="space-y-6 max-w-3xl">
+                  <div>
+                    <Label className="text-gray-700 text-lg flex items-center gap-2">
+                      <Layers size={18} className="text-blue-500" />
+                      Product Specifications
+                    </Label>
+                    <p className="text-xs text-gray-500 mt-1">
+                      Add custom attributes like Color, Size, Material, etc. These appear in the product details section.
+                    </p>
+                  </div>
+                  
+                  {/* Add new spec */}
+                  <div className="p-4 bg-gray-50 rounded-lg border border-gray-200">
+                    <div className="grid grid-cols-2 gap-3">
+                      <div className="space-y-1">
+                        <Label className="text-gray-600 text-xs">Attribute Name</Label>
+                        <Input
+                          className="bg-white border-gray-200 text-gray-900"
+                          placeholder="e.g., Color, Size, Material"
+                          value={newSpecName}
+                          onChange={(e) => setNewSpecName(e.target.value)}
+                          onKeyPress={(e) => e.key === 'Enter' && (e.preventDefault(), addSpecific())}
+                        />
+                      </div>
+                      <div className="space-y-1">
+                        <Label className="text-gray-600 text-xs">Value</Label>
+                        <div className="flex gap-2">
+                          <Input
+                            className="bg-white border-gray-200 text-gray-900 flex-1"
+                            placeholder="e.g., Red, Large, Cotton"
+                            value={newSpecValue}
+                            onChange={(e) => setNewSpecValue(e.target.value)}
+                            onKeyPress={(e) => e.key === 'Enter' && (e.preventDefault(), addSpecific())}
+                          />
+                          <Button onClick={addSpecific} variant="outline" className="border-gray-200 text-gray-700">
+                            <Plus size={16} />
+                          </Button>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  
+                  {/* Specs list */}
+                  {formData.specifics?.length > 0 ? (
+                    <div className="space-y-2">
+                      <Label className="text-gray-600 text-sm">Added Specifications ({formData.specifics.length})</Label>
+                      <div className="border border-gray-200 rounded-lg overflow-hidden">
+                        <table className="w-full">
+                          <thead className="bg-gray-50">
+                            <tr>
+                              <th className="text-left px-4 py-2 text-xs font-medium text-gray-600 w-1/3">Attribute</th>
+                              <th className="text-left px-4 py-2 text-xs font-medium text-gray-600">Value</th>
+                              <th className="w-10"></th>
+                            </tr>
+                          </thead>
+                          <tbody>
+                            {formData.specifics.map((spec, idx) => (
+                              <tr key={idx} className="border-t border-gray-100 hover:bg-gray-50">
+                                <td className="px-4 py-2 text-sm font-medium text-gray-700">{spec.name}</td>
+                                <td className="px-4 py-2 text-sm text-gray-600">{spec.value}</td>
+                                <td className="px-2">
+                                  <button
+                                    onClick={() => removeSpecific(idx)}
+                                    className="p-1 text-gray-400 hover:text-red-500 transition-colors"
+                                  >
+                                    <X size={14} />
+                                  </button>
+                                </td>
+                              </tr>
+                            ))}
+                          </tbody>
+                        </table>
+                      </div>
+                    </div>
+                  ) : (
+                    <div className="text-center py-8 text-gray-400 border border-dashed border-gray-200 rounded-lg">
+                      <Layers size={32} className="mx-auto mb-2 opacity-50" />
+                      <p className="text-sm">No specifications added yet</p>
+                      <p className="text-xs">Add attributes like Color, Size, Weight to provide more product details</p>
+                    </div>
+                  )}
+                  
+                  {/* Common specifications suggestions */}
+                  <div className="p-4 bg-blue-50 rounded-lg border border-blue-100">
+                    <p className="text-sm font-medium text-blue-700 mb-2">Common Specifications</p>
+                    <div className="flex flex-wrap gap-2">
+                      {['Color', 'Size', 'Material', 'Weight', 'Dimensions', 'Warranty', 'Model', 'Capacity', 'Power', 'Voltage'].map(suggestion => (
+                        <button
+                          key={suggestion}
+                          type="button"
+                          onClick={() => setNewSpecName(suggestion)}
+                          className="px-2 py-1 text-xs bg-white rounded border border-blue-200 text-blue-600 hover:bg-blue-100 transition-colors"
+                        >
+                          + {suggestion}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
                 </div>
               )}
               
