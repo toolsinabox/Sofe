@@ -1167,6 +1167,23 @@ const EbayIntegration = () => {
   <!-- Main Content -->
   <div style="padding: 30px; background: #181818;">
     
+    <!-- Tech Product Image Gallery -->
+    <div style="margin-bottom: 30px; background: #1e1e1e; border-radius: 12px; padding: 20px;">
+      <div style="display: flex; gap: 20px; flex-wrap: wrap;">
+        <div style="flex: 0 0 350px; max-width: 100%;">
+          <img src="{{product_image_1}}" alt="{{product_name}}" style="width: 100%; border-radius: 8px; border: 2px solid #333;" />
+        </div>
+        <div style="flex: 1; min-width: 150px;">
+          <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px;">
+            <img src="{{product_image_2}}" alt="{{product_name}}" style="width: 100%; aspect-ratio: 1; object-fit: cover; border-radius: 6px; border: 2px solid #333;" />
+            <img src="{{product_image_3}}" alt="{{product_name}}" style="width: 100%; aspect-ratio: 1; object-fit: cover; border-radius: 6px; border: 2px solid #333;" />
+            <img src="{{product_image_4}}" alt="{{product_name}}" style="width: 100%; aspect-ratio: 1; object-fit: cover; border-radius: 6px; border: 2px solid #333;" />
+            <img src="{{product_image_5}}" alt="{{product_name}}" style="width: 100%; aspect-ratio: 1; object-fit: cover; border-radius: 6px; border: 2px solid #333;" />
+          </div>
+        </div>
+      </div>
+    </div>
+
     <!-- Price & Stock Row -->
     <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px; flex-wrap: wrap; gap: 15px;">
       <div>
