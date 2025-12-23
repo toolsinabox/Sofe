@@ -1342,6 +1342,16 @@ const EbayIntegration = () => {
   <!-- Content -->
   <div style="padding: 40px 20px;">
     
+    <!-- Clean Image Gallery -->
+    <div style="margin-bottom: 40px;">
+      <img src="{{product_image_1}}" alt="{{product_name}}" style="width: 100%; max-width: 600px; display: block; margin: 0 auto 20px;" />
+      <div style="display: flex; justify-content: center; gap: 10px; flex-wrap: wrap;">
+        <img src="{{product_image_2}}" alt="{{product_name}}" style="width: 80px; height: 80px; object-fit: cover; border: 1px solid #eee;" />
+        <img src="{{product_image_3}}" alt="{{product_name}}" style="width: 80px; height: 80px; object-fit: cover; border: 1px solid #eee;" />
+        <img src="{{product_image_4}}" alt="{{product_name}}" style="width: 80px; height: 80px; object-fit: cover; border: 1px solid #eee;" />
+      </div>
+    </div>
+
     <!-- Title -->
     <h1 style="font-size: 28px; font-weight: 400; color: #111; margin: 0 0 15px 0; line-height: 1.4;">
       {{product_name}}
