@@ -1029,10 +1029,9 @@ async def calculate_shipping(request: ShippingCalculationRequest):
         if service_categories and not service_categories.intersection(item_categories):
             continue
         
-        # Check service-level max_length constraint (in meters, convert to mm)
-        service_max_length = service.get("max_length")
-        if service_max_length and service_max_length > 0:
-            service_max_length_mm = service_max_length * 1000  # Convert meters to mm
+        # Check service-level max_length constraint (in mm)
+        service_max_length_mm = service.get("max_length")
+        if service_max_length_mm and service_max_length_mm > 0:
             if max_item_length_mm > service_max_length_mm:
                 # Item exceeds service max length, skip this service entirely
                 continue
