@@ -23,6 +23,27 @@ client = AsyncIOMotorClient(MONGO_URL)
 db = client[DB_NAME]
 
 
+# ============== HELPER FUNCTIONS ==============
+
+def safe_float(value, default=0.0):
+    """Safely convert value to float, returning default if None or invalid"""
+    if value is None:
+        return default
+    try:
+        return float(value)
+    except (ValueError, TypeError):
+        return default
+
+def safe_int(value, default=0):
+    """Safely convert value to int, returning default if None or invalid"""
+    if value is None:
+        return default
+    try:
+        return int(value)
+    except (ValueError, TypeError):
+        return default
+
+
 # ============== PYDANTIC MODELS ==============
 
 class ShippingZone(BaseModel):
