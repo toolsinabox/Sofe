@@ -92,9 +92,9 @@ StableInput.displayName = 'StableInput';
 // Memoized service form input component to prevent focus loss
 const ServiceFormInput = React.memo(({ label, name, value, onChange, placeholder, type = 'text', step, className = '', prefix, suffix }) => (
   <div>
-    <Label className="text-gray-300 text-sm">{label}</Label>
+    <Label className="text-gray-700 text-sm">{label}</Label>
     <div className={`flex items-center gap-1 mt-1 ${prefix || suffix ? '' : ''}`}>
-      {prefix && <span className="text-gray-400">{prefix}</span>}
+      {prefix && <span className="text-gray-500">{prefix}</span>}
       <Input
         type={type}
         step={step}
@@ -102,9 +102,9 @@ const ServiceFormInput = React.memo(({ label, name, value, onChange, placeholder
         value={value}
         onChange={onChange}
         placeholder={placeholder}
-        className={`bg-gray-700 border-gray-600 text-white ${className}`}
+        className={`bg-gray-700 border-gray-200 text-gray-900 ${className}`}
       />
-      {suffix && <span className="text-gray-400 text-sm whitespace-nowrap">{suffix}</span>}
+      {suffix && <span className="text-gray-500 text-sm whitespace-nowrap">{suffix}</span>}
     </div>
   </div>
 ));
@@ -386,47 +386,47 @@ const MerchantShipping = () => {
     <>
       {/* Stats Cards */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-        <div className="bg-gray-800 rounded-xl p-5 border border-gray-700">
+        <div className="bg-white rounded-xl p-5 border border-gray-200">
           <div className="flex items-center gap-3">
-            <div className="w-12 h-12 rounded-lg bg-blue-500/20 flex items-center justify-center">
-              <MapPin className="w-6 h-6 text-blue-400" />
+            <div className="w-12 h-12 rounded-lg bg-blue-50 flex items-center justify-center">
+              <MapPin className="w-6 h-6 text-blue-600" />
             </div>
             <div>
-              <p className="text-gray-400 text-sm">Shipping Zones</p>
-              <p className="text-2xl font-bold text-white">{zones.length}</p>
+              <p className="text-gray-500 text-sm">Shipping Zones</p>
+              <p className="text-2xl font-bold text-gray-900">{zones.length}</p>
             </div>
           </div>
         </div>
-        <div className="bg-gray-800 rounded-xl p-5 border border-gray-700">
+        <div className="bg-white rounded-xl p-5 border border-gray-200">
           <div className="flex items-center gap-3">
-            <div className="w-12 h-12 rounded-lg bg-emerald-500/20 flex items-center justify-center">
-              <Truck className="w-6 h-6 text-emerald-400" />
+            <div className="w-12 h-12 rounded-lg bg-emerald-50 flex items-center justify-center">
+              <Truck className="w-6 h-6 text-emerald-600" />
             </div>
             <div>
-              <p className="text-gray-400 text-sm">Shipping Services</p>
-              <p className="text-2xl font-bold text-white">{services.length}</p>
+              <p className="text-gray-500 text-sm">Shipping Services</p>
+              <p className="text-2xl font-bold text-gray-900">{services.length}</p>
             </div>
           </div>
         </div>
-        <div className="bg-gray-800 rounded-xl p-5 border border-gray-700">
+        <div className="bg-white rounded-xl p-5 border border-gray-200">
           <div className="flex items-center gap-3">
-            <div className="w-12 h-12 rounded-lg bg-purple-500/20 flex items-center justify-center">
-              <Tag className="w-6 h-6 text-purple-400" />
+            <div className="w-12 h-12 rounded-lg bg-purple-50 flex items-center justify-center">
+              <Tag className="w-6 h-6 text-purple-600" />
             </div>
             <div>
-              <p className="text-gray-400 text-sm">Categories</p>
-              <p className="text-2xl font-bold text-white">{categories.length}</p>
+              <p className="text-gray-500 text-sm">Categories</p>
+              <p className="text-2xl font-bold text-gray-900">{categories.length}</p>
             </div>
           </div>
         </div>
-        <div className="bg-gray-800 rounded-xl p-5 border border-gray-700">
+        <div className="bg-white rounded-xl p-5 border border-gray-200">
           <div className="flex items-center gap-3">
-            <div className="w-12 h-12 rounded-lg bg-orange-500/20 flex items-center justify-center">
-              <Box className="w-6 h-6 text-orange-400" />
+            <div className="w-12 h-12 rounded-lg bg-orange-50 flex items-center justify-center">
+              <Box className="w-6 h-6 text-orange-600" />
             </div>
             <div>
-              <p className="text-gray-400 text-sm">Package Types</p>
-              <p className="text-2xl font-bold text-white">{packages.length}</p>
+              <p className="text-gray-500 text-sm">Package Types</p>
+              <p className="text-2xl font-bold text-gray-900">{packages.length}</p>
             </div>
           </div>
         </div>
@@ -436,60 +436,60 @@ const MerchantShipping = () => {
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
         <button 
           onClick={() => { setActiveTab('zones'); }}
-          className="bg-gray-800 rounded-xl p-6 border border-gray-700 hover:border-blue-500/50 transition-all text-left group"
+          className="bg-white rounded-xl p-6 border border-gray-200 hover:border-blue-500/50 transition-all text-left group"
         >
           <div className="flex items-center justify-between">
             <div>
-              <h4 className="text-white font-semibold mb-1">Manage Zones</h4>
+              <h4 className="text-gray-900 font-semibold mb-1">Manage Zones</h4>
               <p className="text-gray-500 text-sm">Configure shipping regions and postcodes</p>
             </div>
-            <MapPin className="w-8 h-8 text-blue-400 group-hover:scale-110 transition-transform" />
+            <MapPin className="w-8 h-8 text-blue-600 group-hover:scale-110 transition-transform" />
           </div>
         </button>
         <button 
           onClick={() => { setActiveTab('services'); }}
-          className="bg-gray-800 rounded-xl p-6 border border-gray-700 hover:border-emerald-500/50 transition-all text-left group"
+          className="bg-white rounded-xl p-6 border border-gray-200 hover:border-emerald-500/50 transition-all text-left group"
         >
           <div className="flex items-center justify-between">
             <div>
-              <h4 className="text-white font-semibold mb-1">Configure Services</h4>
+              <h4 className="text-gray-900 font-semibold mb-1">Configure Services</h4>
               <p className="text-gray-500 text-sm">Set up shipping rates and carriers</p>
             </div>
-            <DollarSign className="w-8 h-8 text-emerald-400 group-hover:scale-110 transition-transform" />
+            <DollarSign className="w-8 h-8 text-emerald-600 group-hover:scale-110 transition-transform" />
           </div>
         </button>
         <button 
           onClick={() => { setActiveTab('options'); }}
-          className="bg-gray-800 rounded-xl p-6 border border-gray-700 hover:border-orange-500/50 transition-all text-left group"
+          className="bg-white rounded-xl p-6 border border-gray-200 hover:border-orange-500/50 transition-all text-left group"
         >
           <div className="flex items-center justify-between">
             <div>
-              <h4 className="text-white font-semibold mb-1">Shipping Options</h4>
+              <h4 className="text-gray-900 font-semibold mb-1">Shipping Options</h4>
               <p className="text-gray-500 text-sm">Free shipping thresholds & rules</p>
             </div>
-            <Settings className="w-8 h-8 text-orange-400 group-hover:scale-110 transition-transform" />
+            <Settings className="w-8 h-8 text-orange-600 group-hover:scale-110 transition-transform" />
           </div>
         </button>
       </div>
 
       {/* Recent Zones Preview */}
-      <div className="bg-gray-800 rounded-xl p-6 border border-gray-700">
+      <div className="bg-white rounded-xl p-6 border border-gray-200">
         <div className="flex items-center justify-between mb-4">
-          <h3 className="text-lg font-semibold text-white">Active Shipping Zones</h3>
-          <Button variant="outline" size="sm" onClick={() => setActiveTab('zones')} className="border-gray-600">
+          <h3 className="text-lg font-semibold text-gray-900">Active Shipping Zones</h3>
+          <Button variant="outline" size="sm" onClick={() => setActiveTab('zones')} className="border-gray-200">
             View All
           </Button>
         </div>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
           {zones.slice(0, 6).map(zone => (
-            <div key={zone.id} className="bg-gray-900 rounded-lg p-4 border border-gray-700">
+            <div key={zone.id} className="bg-gray-50 rounded-lg p-4 border border-gray-200">
               <div className="flex items-center gap-2 mb-2">
-                <MapPin className="w-4 h-4 text-blue-400" />
-                <span className="text-white font-medium">{zone.name}</span>
+                <MapPin className="w-4 h-4 text-blue-600" />
+                <span className="text-gray-900 font-medium">{zone.name}</span>
               </div>
               <p className="text-gray-500 text-sm">{zone.postcodes?.slice(0, 3).join(', ')}{zone.postcodes?.length > 3 ? '...' : ''}</p>
               <div className="flex items-center gap-2 mt-2">
-                <span className={`px-2 py-0.5 rounded text-xs ${zone.is_active ? 'bg-emerald-500/20 text-emerald-400' : 'bg-gray-700 text-gray-400'}`}>
+                <span className={`px-2 py-0.5 rounded text-xs ${zone.is_active ? 'bg-emerald-50 text-emerald-600' : 'bg-gray-700 text-gray-500'}`}>
                   {zone.is_active ? 'Active' : 'Inactive'}
                 </span>
                 <span className="text-gray-600 text-xs">{zone.code}</span>
@@ -507,25 +507,25 @@ const MerchantShipping = () => {
       {overviewStats}
       
       {/* Shipping Calculator - NOT memoized to allow input updates */}
-      <div className="bg-gray-800 rounded-xl p-6 border border-gray-700">
-        <h3 className="text-lg font-semibold text-white mb-4 flex items-center gap-2">
-          <Calculator className="w-5 h-5 text-emerald-400" />
+      <div className="bg-white rounded-xl p-6 border border-gray-200">
+        <h3 className="text-lg font-semibold text-gray-900 mb-4 flex items-center gap-2">
+          <Calculator className="w-5 h-5 text-emerald-600" />
           Shipping Rate Calculator
         </h3>
         
         {/* Row 1: Postcode, Suburb, Weight */}
         <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-4">
           <div>
-            <Label className="text-gray-400 text-sm">Postcode</Label>
+            <Label className="text-gray-500 text-sm">Postcode</Label>
             <Input 
               placeholder="e.g., 2000"
               value={calcPostcode}
               onChange={(e) => setCalcPostcode(e.target.value)}
-              className="bg-gray-700 border-gray-600 text-white mt-1"
+              className="bg-gray-700 border-gray-200 text-gray-900 mt-1"
             />
           </div>
           <div>
-            <Label className="text-gray-400 text-sm flex items-center gap-2">
+            <Label className="text-gray-500 text-sm flex items-center gap-2">
               Suburb
               {loadingSuburbs && <Loader2 className="w-3 h-3 animate-spin text-gray-500" />}
             </Label>
@@ -534,10 +534,10 @@ const MerchantShipping = () => {
               onValueChange={setCalcSuburb}
               disabled={calcSuburbs.length === 0}
             >
-              <SelectTrigger className="bg-gray-700 border-gray-600 text-white mt-1">
+              <SelectTrigger className="bg-gray-700 border-gray-200 text-gray-900 mt-1">
                 <SelectValue placeholder={calcSuburbs.length === 0 ? "Enter postcode first" : "Select suburb"} />
               </SelectTrigger>
-              <SelectContent className="bg-gray-800 border-gray-700 max-h-60">
+              <SelectContent className="bg-white border-gray-200 max-h-60">
                 {calcSuburbs.map((s, idx) => (
                   <SelectItem key={idx} value={s.suburb}>
                     {s.suburb} ({s.state})
@@ -550,23 +550,23 @@ const MerchantShipping = () => {
             )}
           </div>
           <div>
-            <Label className="text-gray-400 text-sm">Actual Weight (kg)</Label>
+            <Label className="text-gray-500 text-sm">Actual Weight (kg)</Label>
             <Input 
               type="number"
               placeholder="1"
               value={calcWeight}
               onChange={(e) => setCalcWeight(e.target.value)}
-              className="bg-gray-700 border-gray-600 text-white mt-1"
+              className="bg-gray-700 border-gray-200 text-gray-900 mt-1"
             />
           </div>
           <div>
-            <Label className="text-gray-400 text-sm">Cart Total ($)</Label>
+            <Label className="text-gray-500 text-sm">Cart Total ($)</Label>
             <Input 
               type="number"
               placeholder="100"
               value={calcTotal}
               onChange={(e) => setCalcTotal(e.target.value)}
-              className="bg-gray-700 border-gray-600 text-white mt-1"
+              className="bg-gray-700 border-gray-200 text-gray-900 mt-1"
             />
           </div>
         </div>
@@ -574,33 +574,33 @@ const MerchantShipping = () => {
         {/* Row 2: Shipping Dimensions */}
         <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-4">
           <div>
-            <Label className="text-gray-400 text-sm">Shipping Length (cm)</Label>
+            <Label className="text-gray-500 text-sm">Shipping Length (cm)</Label>
             <Input 
               type="number"
               placeholder="0"
               value={calcLength}
               onChange={(e) => setCalcLength(e.target.value)}
-              className="bg-gray-700 border-gray-600 text-white mt-1"
+              className="bg-gray-700 border-gray-200 text-gray-900 mt-1"
             />
           </div>
           <div>
-            <Label className="text-gray-400 text-sm">Shipping Width (cm)</Label>
+            <Label className="text-gray-500 text-sm">Shipping Width (cm)</Label>
             <Input 
               type="number"
               placeholder="0"
               value={calcWidth}
               onChange={(e) => setCalcWidth(e.target.value)}
-              className="bg-gray-700 border-gray-600 text-white mt-1"
+              className="bg-gray-700 border-gray-200 text-gray-900 mt-1"
             />
           </div>
           <div>
-            <Label className="text-gray-400 text-sm">Shipping Height (cm)</Label>
+            <Label className="text-gray-500 text-sm">Shipping Height (cm)</Label>
             <Input 
               type="number"
               placeholder="0"
               value={calcHeight}
               onChange={(e) => setCalcHeight(e.target.value)}
-              className="bg-gray-700 border-gray-600 text-white mt-1"
+              className="bg-gray-700 border-gray-200 text-gray-900 mt-1"
             />
           </div>
           <div className="flex items-end">
@@ -621,35 +621,35 @@ const MerchantShipping = () => {
 
         {/* Calculator Results */}
         {calcResult && (
-          <div className="mt-4 p-4 bg-gray-900 rounded-lg">
+          <div className="mt-4 p-4 bg-gray-50 rounded-lg">
             {calcResult.error ? (
-              <p className="text-red-400">{calcResult.error}</p>
+              <p className="text-red-600">{calcResult.error}</p>
             ) : (
               <>
                 {calcResult.zone && (
                   <div className="mb-3">
-                    <p className="text-gray-400 text-sm">
-                      Zone: <span className="text-white font-medium">{calcResult.zone.name}</span> ({calcResult.zone.code})
+                    <p className="text-gray-500 text-sm">
+                      Zone: <span className="text-gray-900 font-medium">{calcResult.zone.name}</span> ({calcResult.zone.code})
                     </p>
                     {calcSuburb && (
-                      <p className="text-gray-400 text-sm">
-                        Suburb: <span className="text-emerald-400 font-medium">{calcSuburb}</span>
+                      <p className="text-gray-500 text-sm">
+                        Suburb: <span className="text-emerald-600 font-medium">{calcSuburb}</span>
                       </p>
                     )}
                   </div>
                 )}
                 {calcResult.options && calcResult.options.length > 0 ? (
                   <div className="space-y-2">
-                    <p className="text-gray-300 text-sm font-medium">Available shipping options:</p>
+                    <p className="text-gray-700 text-sm font-medium">Available shipping options:</p>
                     {calcResult.options.map((opt, idx) => (
-                      <div key={idx} className="p-3 bg-gray-800 rounded-lg">
+                      <div key={idx} className="p-3 bg-white rounded-lg">
                         <div className="flex items-center justify-between">
                           <div>
-                            <p className="text-white font-medium">{opt.service_name || opt.name}</p>
+                            <p className="text-gray-900 font-medium">{opt.service_name || opt.name}</p>
                             <p className="text-gray-500 text-xs">{opt.delivery_estimate || opt.description || `${opt.delivery_days || 0} business days`}</p>
                           </div>
                           <div className="text-right">
-                            <p className={`font-bold ${(opt.price === 0 || opt.is_free) ? 'text-emerald-400' : 'text-white'}`}>
+                            <p className={`font-bold ${(opt.price === 0 || opt.is_free) ? 'text-emerald-600' : 'text-gray-900'}`}>
                               {(opt.price === 0 || opt.is_free) ? 'FREE' : `$${(opt.price || 0).toFixed(2)}`}
                             </p>
                             {opt.price > 0 && opt.gst_amount > 0 && (
@@ -666,7 +666,7 @@ const MerchantShipping = () => {
                     ))}
                   </div>
                 ) : (
-                  <p className="text-gray-400 text-sm">No shipping options available for this destination.</p>
+                  <p className="text-gray-500 text-sm">No shipping options available for this destination.</p>
                 )}
               </>
             )}
@@ -878,15 +878,15 @@ const MerchantShipping = () => {
 
         <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
           <div>
-            <h2 className="text-xl font-bold text-white">Shipping Zones</h2>
-            <p className="text-gray-400 text-sm">Define geographic regions for shipping rates</p>
+            <h2 className="text-xl font-bold text-gray-900">Shipping Zones</h2>
+            <p className="text-gray-500 text-sm">Define geographic regions for shipping rates</p>
           </div>
           <div className="flex flex-wrap gap-2">
             <Button 
               variant="outline" 
               size="sm" 
               onClick={handleExportZones}
-              className="border-gray-600"
+              className="border-gray-200"
               disabled={zones.length === 0}
             >
               <Download className="w-4 h-4 mr-2" /> Export CSV
@@ -895,7 +895,7 @@ const MerchantShipping = () => {
               variant="outline" 
               size="sm" 
               onClick={openImportModal}
-              className="border-gray-600"
+              className="border-gray-200"
             >
               <Upload className="w-4 h-4 mr-2" /> Import CSV
             </Button>
@@ -908,40 +908,40 @@ const MerchantShipping = () => {
         {/* Zones List */}
         <div className="grid gap-4">
           {zones.length === 0 ? (
-            <div className="bg-gray-800 rounded-xl p-8 text-center border border-gray-700">
+            <div className="bg-white rounded-xl p-8 text-center border border-gray-200">
               <MapPin className="w-12 h-12 text-gray-600 mx-auto mb-3" />
-              <p className="text-gray-400 mb-4">No shipping zones configured</p>
+              <p className="text-gray-500 mb-4">No shipping zones configured</p>
               <Button onClick={() => openZoneModal()}>Create Your First Zone</Button>
             </div>
           ) : (
             zones.map(zone => (
               <div 
                 key={zone.id} 
-                className={`bg-gray-800 rounded-xl p-5 border ${zone.is_active ? 'border-gray-700' : 'border-gray-700/50 opacity-60'}`}
+                className={`bg-white rounded-xl p-5 border ${zone.is_active ? 'border-gray-200' : 'border-gray-200/50 opacity-60'}`}
               >
                 <div className="flex items-start justify-between">
                   <div className="flex-1">
                     <div className="flex items-center gap-3 mb-2">
-                      <MapPin className="w-5 h-5 text-blue-400" />
-                      <h3 className="text-lg font-semibold text-white">{zone.name}</h3>
-                      <span className="px-2 py-0.5 bg-gray-700 text-gray-300 text-xs rounded font-mono">{zone.code}</span>
+                      <MapPin className="w-5 h-5 text-blue-600" />
+                      <h3 className="text-lg font-semibold text-gray-900">{zone.name}</h3>
+                      <span className="px-2 py-0.5 bg-gray-700 text-gray-700 text-xs rounded font-mono">{zone.code}</span>
                       {!zone.is_active && (
-                        <span className="px-2 py-0.5 bg-gray-700 text-gray-400 text-xs rounded">Inactive</span>
+                        <span className="px-2 py-0.5 bg-gray-700 text-gray-500 text-xs rounded">Inactive</span>
                       )}
                     </div>
                     <div className="flex flex-wrap gap-2 mb-2">
-                      <span className="flex items-center gap-1 text-gray-400 text-sm">
+                      <span className="flex items-center gap-1 text-gray-500 text-sm">
                         <Globe className="w-4 h-4" /> {zone.country}
                       </span>
                     </div>
                     <div className="flex flex-wrap gap-1">
                       {zone.postcodes?.slice(0, 8).map((pc, i) => (
-                        <span key={i} className="px-2 py-1 bg-gray-900 text-gray-300 text-xs rounded">
+                        <span key={i} className="px-2 py-1 bg-gray-50 text-gray-700 text-xs rounded">
                           {pc}
                         </span>
                       ))}
                       {zone.postcodes?.length > 8 && (
-                        <span className="px-2 py-1 bg-gray-900 text-gray-500 text-xs rounded">
+                        <span className="px-2 py-1 bg-gray-50 text-gray-500 text-xs rounded">
                           +{zone.postcodes.length - 8} more
                         </span>
                       )}
@@ -950,13 +950,13 @@ const MerchantShipping = () => {
                   <div className="flex items-center gap-2">
                     <button
                       onClick={() => openZoneModal(zone)}
-                      className="p-2 rounded-lg hover:bg-gray-700 text-gray-400 hover:text-white transition-colors"
+                      className="p-2 rounded-lg hover:bg-gray-100 text-gray-500 hover:text-gray-900 transition-colors"
                     >
                       <Edit className="w-4 h-4" />
                     </button>
                     <button
                       onClick={() => handleDeleteZone(zone.id)}
-                      className="p-2 rounded-lg hover:bg-gray-700 text-gray-400 hover:text-red-400 transition-colors"
+                      className="p-2 rounded-lg hover:bg-gray-100 text-gray-500 hover:text-red-600 transition-colors"
                     >
                       <Trash2 className="w-4 h-4" />
                     </button>
@@ -969,47 +969,47 @@ const MerchantShipping = () => {
 
         {/* Zone Modal */}
         <Dialog open={showZoneModal} onOpenChange={setShowZoneModal}>
-          <DialogContent key={editingItem?.id || 'new-zone'} className="bg-gray-800 border-gray-700 text-white max-w-lg">
+          <DialogContent key={editingItem?.id || 'new-zone'} className="bg-white border-gray-200 text-gray-900 max-w-lg">
             <DialogHeader>
               <DialogTitle>{editingItem ? 'Edit Shipping Zone' : 'Create Shipping Zone'}</DialogTitle>
-              <DialogDescription className="text-gray-400">
+              <DialogDescription className="text-gray-500">
                 Define a geographic region for shipping rates
               </DialogDescription>
             </DialogHeader>
             <div className="space-y-4 py-4">
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <Label className="text-gray-300">Zone Code</Label>
+                  <Label className="text-gray-700">Zone Code</Label>
                   <StableInput
                     key={`zone-code-${editingItem?.id || 'new'}`}
                     name="code"
                     defaultValue={zoneForm.code}
                     onBlur={(e) => setZoneForm(prev => ({...prev, code: e.target.value.toUpperCase()}))}
                     placeholder="e.g., SYD_METRO"
-                    className="bg-gray-700 border-gray-600 text-white mt-1"
+                    className="bg-gray-700 border-gray-200 text-gray-900 mt-1"
                     style={{textTransform: 'uppercase'}}
                   />
                 </div>
                 <div>
-                  <Label className="text-gray-300">Zone Name</Label>
+                  <Label className="text-gray-700">Zone Name</Label>
                   <StableInput
                     key={`zone-name-${editingItem?.id || 'new'}`}
                     name="name"
                     defaultValue={zoneForm.name}
                     onBlur={(e) => setZoneForm(prev => ({...prev, name: e.target.value}))}
                     placeholder="e.g., Sydney Metro"
-                    className="bg-gray-700 border-gray-600 text-white mt-1"
+                    className="bg-gray-700 border-gray-200 text-gray-900 mt-1"
                   />
                 </div>
               </div>
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <Label className="text-gray-300">Country Code</Label>
+                  <Label className="text-gray-700">Country Code</Label>
                   <Select value={zoneForm.country} onValueChange={(v) => setZoneForm(prev => ({...prev, country: v}))}>
-                    <SelectTrigger className="bg-gray-700 border-gray-600 text-white mt-1">
+                    <SelectTrigger className="bg-gray-700 border-gray-200 text-gray-900 mt-1">
                       <SelectValue />
                     </SelectTrigger>
-                    <SelectContent className="bg-gray-800 border-gray-700">
+                    <SelectContent className="bg-white border-gray-200">
                       <SelectItem value="AU">Australia (AU)</SelectItem>
                       <SelectItem value="NZ">New Zealand (NZ)</SelectItem>
                       <SelectItem value="US">United States (US)</SelectItem>
@@ -1019,31 +1019,31 @@ const MerchantShipping = () => {
                   </Select>
                 </div>
                 <div>
-                  <Label className="text-gray-300">Sort Order</Label>
+                  <Label className="text-gray-700">Sort Order</Label>
                   <StableInput
                     key={`zone-sort-${editingItem?.id || 'new'}`}
                     type="number"
                     name="sort_order"
                     defaultValue={zoneForm.sort_order}
                     onBlur={(e) => setZoneForm(prev => ({...prev, sort_order: parseInt(e.target.value) || 0}))}
-                    className="bg-gray-700 border-gray-600 text-white mt-1"
+                    className="bg-gray-700 border-gray-200 text-gray-900 mt-1"
                   />
                 </div>
               </div>
               <div>
-                <Label className="text-gray-300">Postcodes (comma-separated, ranges supported)</Label>
+                <Label className="text-gray-700">Postcodes (comma-separated, ranges supported)</Label>
                 <textarea
                   key={`zone-postcodes-${editingItem?.id || 'new'}`}
                   defaultValue={postcodesInput}
                   onBlur={(e) => setPostcodesInput(e.target.value)}
                   placeholder="e.g., 2000-2234, 2555-2574, 2740-2786"
                   rows={3}
-                  className="w-full mt-1 px-3 py-2 bg-gray-700 border border-gray-600 rounded-md text-white text-sm placeholder:text-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  className="w-full mt-1 px-3 py-2 bg-gray-700 border border-gray-200 rounded-md text-gray-900 text-sm placeholder:text-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500"
                 />
                 <p className="text-gray-500 text-xs mt-1">Use ranges like "2000-2234" or individual postcodes</p>
               </div>
               <div className="flex items-center justify-between">
-                <Label className="text-gray-300">Zone Active</Label>
+                <Label className="text-gray-700">Zone Active</Label>
                 <Switch
                   checked={zoneForm.is_active}
                   onCheckedChange={(checked) => setZoneForm(prev => ({...prev, is_active: checked}))}
@@ -1051,7 +1051,7 @@ const MerchantShipping = () => {
               </div>
             </div>
             <DialogFooter>
-              <Button variant="outline" onClick={() => setShowZoneModal(false)} className="border-gray-600">
+              <Button variant="outline" onClick={() => setShowZoneModal(false)} className="border-gray-200">
                 Cancel
               </Button>
               <Button onClick={handleSaveZone} disabled={saving} className="bg-blue-600 hover:bg-blue-700">
@@ -1064,13 +1064,13 @@ const MerchantShipping = () => {
 
         {/* Import Modal */}
         <Dialog open={showZoneImportModal} onOpenChange={setShowZoneImportModal}>
-          <DialogContent className="bg-gray-800 border-gray-700 text-white max-w-lg">
+          <DialogContent className="bg-white border-gray-200 text-gray-900 max-w-lg">
             <DialogHeader>
               <DialogTitle className="flex items-center gap-2">
-                <Upload className="w-5 h-5 text-blue-400" />
+                <Upload className="w-5 h-5 text-blue-600" />
                 Import Shipping Zones
               </DialogTitle>
-              <DialogDescription className="text-gray-400">
+              <DialogDescription className="text-gray-500">
                 Upload a CSV file to import shipping zones in Maropost format
               </DialogDescription>
             </DialogHeader>
@@ -1078,11 +1078,11 @@ const MerchantShipping = () => {
             <div className="space-y-4 py-4">
               {/* Upload Progress - shown when importing */}
               {zoneImporting && (
-                <div className="bg-gray-900 rounded-lg p-6 border border-gray-700">
+                <div className="bg-gray-50 rounded-lg p-6 border border-gray-200">
                   <div className="flex items-center gap-3 mb-4">
-                    <Loader2 className="w-6 h-6 text-blue-400 animate-spin" />
+                    <Loader2 className="w-6 h-6 text-blue-600 animate-spin" />
                     <div>
-                      <p className="text-white font-medium">Uploading & Processing...</p>
+                      <p className="text-gray-900 font-medium">Uploading & Processing...</p>
                     </div>
                   </div>
                   <div className="w-full bg-gray-700 rounded-full h-2">
@@ -1091,7 +1091,7 @@ const MerchantShipping = () => {
                       style={{ width: `${zoneUploadProgress}%` }}
                     />
                   </div>
-                  <p className="text-gray-400 text-xs mt-2 text-center">{zoneUploadProgress}% complete</p>
+                  <p className="text-gray-500 text-xs mt-2 text-center">{zoneUploadProgress}% complete</p>
                 </div>
               )}
 
@@ -1105,23 +1105,23 @@ const MerchantShipping = () => {
                   {zoneImportResult.success ? (
                     <div className="space-y-2">
                       <div className="flex items-center gap-2">
-                        <CheckCircle className="w-5 h-5 text-emerald-400" />
-                        <span className="text-emerald-400 font-medium">Import Successful!</span>
+                        <CheckCircle className="w-5 h-5 text-emerald-600" />
+                        <span className="text-emerald-600 font-medium">Import Successful!</span>
                       </div>
-                      <div className="text-sm text-gray-300 space-y-1">
-                        <p>Mode: <span className="text-white">{zoneImportResult.mode}</span></p>
+                      <div className="text-sm text-gray-700 space-y-1">
+                        <p>Mode: <span className="text-gray-900">{zoneImportResult.mode}</span></p>
                         {zoneImportResult.rows_processed !== undefined && (
-                          <p>Rows processed: <span className="text-white">{zoneImportResult.rows_processed}</span></p>
+                          <p>Rows processed: <span className="text-gray-900">{zoneImportResult.rows_processed}</span></p>
                         )}
-                        <p>Zones created: <span className="text-emerald-400">{zoneImportResult.zones_created}</span></p>
-                        <p>Zones updated: <span className="text-blue-400">{zoneImportResult.zones_updated}</span></p>
+                        <p>Zones created: <span className="text-emerald-600">{zoneImportResult.zones_created}</span></p>
+                        <p>Zones updated: <span className="text-blue-600">{zoneImportResult.zones_updated}</span></p>
                       </div>
                     </div>
                   ) : (
                     <div className="flex items-start gap-2">
-                      <AlertCircle className="w-5 h-5 text-red-400 flex-shrink-0 mt-0.5" />
+                      <AlertCircle className="w-5 h-5 text-red-600 flex-shrink-0 mt-0.5" />
                       <div>
-                        <span className="text-red-400 font-medium">Import Failed</span>
+                        <span className="text-red-600 font-medium">Import Failed</span>
                         <p className="text-red-300 text-sm mt-1">{zoneImportResult.error}</p>
                       </div>
                     </div>
@@ -1133,12 +1133,12 @@ const MerchantShipping = () => {
               {!zoneImporting && !zoneImportResult && (
                 <>
                   {/* Format Info */}
-                  <div className="bg-gray-900 rounded-lg p-4 border border-gray-700">
-                    <h4 className="text-sm font-medium text-white mb-2">CSV Format (Maropost Compatible)</h4>
-                    <p className="text-gray-400 text-xs mb-2">Required columns:</p>
+                  <div className="bg-gray-50 rounded-lg p-4 border border-gray-200">
+                    <h4 className="text-sm font-medium text-gray-900 mb-2">CSV Format (Maropost Compatible)</h4>
+                    <p className="text-gray-500 text-xs mb-2">Required columns:</p>
                     <div className="flex flex-wrap gap-2">
                       {['Country', 'Courier', 'From Post Code', 'To Post Code', 'Zone Code', 'Zone Name'].map(col => (
-                        <span key={col} className="px-2 py-1 bg-gray-800 text-gray-300 text-xs rounded font-mono">
+                        <span key={col} className="px-2 py-1 bg-white text-gray-700 text-xs rounded font-mono">
                           {col}
                         </span>
                       ))}
@@ -1148,7 +1148,7 @@ const MerchantShipping = () => {
                   {/* Download Template Button */}
                   <Button 
                     variant="outline" 
-                    className="w-full border-gray-600 border-dashed"
+                    className="w-full border-gray-200 border-dashed"
                     onClick={handleDownloadTemplate}
                   >
                     <FileDown className="w-4 h-4 mr-2" />
@@ -1157,14 +1157,14 @@ const MerchantShipping = () => {
 
                   {/* Import Mode Selection */}
                   <div>
-                    <Label className="text-gray-300 mb-2 block">Import Mode</Label>
+                    <Label className="text-gray-700 mb-2 block">Import Mode</Label>
                     <div className="grid grid-cols-2 gap-2">
                       <button
                         onClick={() => setZoneImportMode('merge')}
                         className={`p-3 rounded-lg border text-left transition-all ${
                           zoneImportMode === 'merge' 
-                            ? 'border-blue-500 bg-blue-500/10 text-white' 
-                            : 'border-gray-700 text-gray-400 hover:border-gray-600'
+                            ? 'border-blue-500 bg-blue-500/10 text-gray-900' 
+                            : 'border-gray-200 text-gray-500 hover:border-gray-200'
                         }`}
                       >
                         <div className="font-medium text-sm">Merge</div>
@@ -1174,8 +1174,8 @@ const MerchantShipping = () => {
                         onClick={() => setZoneImportMode('replace')}
                         className={`p-3 rounded-lg border text-left transition-all ${
                           zoneImportMode === 'replace' 
-                            ? 'border-orange-500 bg-orange-500/10 text-white' 
-                            : 'border-gray-700 text-gray-400 hover:border-gray-600'
+                            ? 'border-orange-500 bg-orange-500/10 text-gray-900' 
+                            : 'border-gray-200 text-gray-500 hover:border-gray-200'
                         }`}
                       >
                         <div className="font-medium text-sm">Replace</div>
@@ -1187,7 +1187,7 @@ const MerchantShipping = () => {
                   {/* Warning for Replace Mode */}
                   {zoneImportMode === 'replace' && (
                     <div className="flex items-start gap-2 p-3 bg-orange-500/10 border border-orange-500/30 rounded-lg">
-                      <AlertTriangle className="w-5 h-5 text-orange-400 flex-shrink-0 mt-0.5" />
+                      <AlertTriangle className="w-5 h-5 text-orange-600 flex-shrink-0 mt-0.5" />
                       <p className="text-orange-300 text-sm">
                         Replace mode will delete all existing zones before importing. This cannot be undone.
                       </p>
@@ -1211,7 +1211,7 @@ const MerchantShipping = () => {
                   <Button 
                     variant="outline"
                     onClick={() => setZoneImportResult(null)}
-                    className="flex-1 border-gray-600"
+                    className="flex-1 border-gray-200"
                   >
                     Import Another
                   </Button>
@@ -1224,13 +1224,13 @@ const MerchantShipping = () => {
                 <Button 
                   variant="outline" 
                   onClick={handleDeleteAllZones}
-                  className="border-red-500/50 text-red-400 hover:bg-red-500/10 sm:mr-auto"
+                  className="border-red-500/50 text-red-600 hover:bg-red-500/10 sm:mr-auto"
                 >
                   <Trash2 className="w-4 h-4 mr-2" />
                   Delete All Zones
                 </Button>
               )}
-              <Button variant="outline" onClick={() => { setShowZoneImportModal(false); setZoneImportResult(null); }} className="border-gray-600">
+              <Button variant="outline" onClick={() => { setShowZoneImportModal(false); setZoneImportResult(null); }} className="border-gray-200">
                 Close
               </Button>
             </DialogFooter>
@@ -1244,7 +1244,7 @@ const MerchantShipping = () => {
   if (loading) {
     return (
       <div className="flex items-center justify-center h-64">
-        <Loader2 className="w-8 h-8 text-emerald-400 animate-spin" />
+        <Loader2 className="w-8 h-8 text-emerald-600 animate-spin" />
       </div>
     );
   }
@@ -1254,13 +1254,13 @@ const MerchantShipping = () => {
       {/* Header */}
       <div className="flex items-center justify-between mb-6">
         <div>
-          <h1 className="text-2xl font-bold text-white flex items-center gap-2">
-            <Truck className="w-7 h-7 text-emerald-400" />
+          <h1 className="text-2xl font-bold text-gray-900 flex items-center gap-2">
+            <Truck className="w-7 h-7 text-emerald-600" />
             Shipping Management
           </h1>
-          <p className="text-gray-400 text-sm mt-1">Configure zones, services, rates, and shipping rules</p>
+          <p className="text-gray-500 text-sm mt-1">Configure zones, services, rates, and shipping rules</p>
         </div>
-        <Button variant="outline" onClick={fetchAllData} className="border-gray-600">
+        <Button variant="outline" onClick={fetchAllData} className="border-gray-200">
           <RefreshCw className="w-4 h-4 mr-2" /> Refresh
         </Button>
       </div>
@@ -1273,8 +1273,8 @@ const MerchantShipping = () => {
             onClick={() => setActiveTab(tab.id)}
             className={`flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium whitespace-nowrap transition-all ${
               activeTab === tab.id
-                ? 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/30'
-                : 'text-gray-400 hover:text-white hover:bg-gray-800'
+                ? 'bg-emerald-50 text-emerald-600 border border-emerald-500/30'
+                : 'text-gray-500 hover:text-gray-900 hover:bg-white'
             }`}
           >
             <tab.icon className="w-4 h-4" />
