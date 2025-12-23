@@ -1357,3 +1357,50 @@ Implemented a comprehensive Addons & Integrations marketplace page for the merch
 - Test configuration modal
 
 ### Status: TESTING REQUIRED
+
+---
+
+## Feature - Enhanced Product Information Page - 2025-01-XX
+
+### Summary
+Enhanced the product editor with Base Tags and Specifics functionality as requested.
+
+### Implementation
+
+#### 1. New "Specifics" Tab
+- Added new tab to product editor for custom product attributes
+- Features:
+  - Add custom attribute name/value pairs
+  - Table display of added specifications  
+  - Quick-add buttons for common specs (Color, Size, Material, Weight, Dimensions, Warranty, Model, Capacity, Power, Voltage)
+  - Empty state with helpful instructions
+- File: `/app/frontend/src/pages/merchant/MerchantProducts.jsx`
+
+#### 2. Base Tags Section (in Categories tab)
+- Added 12 pre-defined system tags:
+  - New Arrival, Best Seller, Clearance, Limited Edition
+  - Exclusive, Eco-Friendly, Handmade, Imported
+  - Australian Made, Extended Warranty, Gift Ready, Bundle Deal
+- Toggle selection with visual feedback
+- Color-coded badges matching product listing display
+- Counter showing number of selected tags
+
+### New Data Fields Added
+- `base_tags: []` - Array of selected base tag IDs
+- `specifics: []` - Array of {name, value} objects
+
+### Files Modified
+- `/app/frontend/src/pages/merchant/MerchantProducts.jsx`
+  - Added BASE_TAGS constant with 12 pre-defined tags
+  - Added toggleBaseTag() function
+  - Added addSpecific() and removeSpecific() functions
+  - Added Specifics tab content with form and table
+  - Added Base Tags section to Categories tab
+  - Updated formData initialization and useEffect
+
+### Verification
+- Build compiles successfully
+- Specifics tab visible and functional (screenshot verified)
+- Common specifications quick-add buttons working
+
+### Status: COMPLETE ✓
