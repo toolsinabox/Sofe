@@ -2313,15 +2313,31 @@ const EbayIntegration = () => {
                             {/* Gallery */}
                             <div className="mb-4">
                               <div className="aspect-square bg-gray-100 rounded-lg mb-2 flex items-center justify-center relative overflow-hidden">
-                                <ImageIcon className="w-16 h-16 text-gray-300" />
+                                {previewProduct.images && previewProduct.images.length > 0 ? (
+                                  <img 
+                                    src={previewProduct.images[0]} 
+                                    alt={previewProduct.name}
+                                    className="w-full h-full object-cover"
+                                  />
+                                ) : (
+                                  <ImageIcon className="w-16 h-16 text-gray-300" />
+                                )}
                                 <span className="absolute bottom-2 right-2 bg-black/50 text-white text-xs px-2 py-1 rounded">
-                                  1/4
+                                  1/{Math.max(previewProduct.images?.length || 1, 4)}
                                 </span>
                               </div>
                               <div className="flex gap-2">
-                                {[1,2,3,4].map(i => (
-                                  <div key={i} className={`w-16 h-16 bg-gray-100 rounded flex items-center justify-center border-2 ${i === 1 ? 'border-yellow-500' : 'border-transparent'}`}>
-                                    <ImageIcon className="w-6 h-6 text-gray-300" />
+                                {[0,1,2,3].map(i => (
+                                  <div key={i} className={`w-16 h-16 bg-gray-100 rounded flex items-center justify-center border-2 overflow-hidden ${i === 0 ? 'border-yellow-500' : 'border-transparent'}`}>
+                                    {previewProduct.images && previewProduct.images[i] ? (
+                                      <img 
+                                        src={previewProduct.images[i]} 
+                                        alt={`${previewProduct.name} ${i+1}`}
+                                        className="w-full h-full object-cover"
+                                      />
+                                    ) : (
+                                      <ImageIcon className="w-6 h-6 text-gray-300" />
+                                    )}
                                   </div>
                                 ))}
                               </div>
@@ -2329,31 +2345,43 @@ const EbayIntegration = () => {
 
                             {/* Title & Price */}
                             <h3 className="font-bold text-lg text-gray-900 mb-2">
-                              {'{{product_name}}'}
+                              {previewProduct.name}
                             </h3>
                             <div className="flex items-center gap-3 mb-4 flex-wrap">
                               <span className="text-2xl font-bold" style={{color: themeSettings.accentColor}}>
-                                {'{{product_price}}'}
+                                ${previewProduct.price?.toFixed(2) || '0.00'}
                               </span>
-                              <span className="text-gray-400 line-through text-sm">$159.99</span>
-                              <span 
-                                className="px-2 py-1 text-xs rounded font-medium"
-                                style={{backgroundColor: themeSettings.accentColor, color: 'white'}}
-                              >
-                                SALE
-                              </span>
+                              {previewProduct.compare_price && previewProduct.compare_price > previewProduct.price && (
+                                <>
+                                  <span className="text-gray-400 line-through text-sm">
+                                    ${previewProduct.compare_price.toFixed(2)}
+                                  </span>
+                                  <span 
+                                    className="px-2 py-1 text-xs rounded font-medium"
+                                    style={{backgroundColor: themeSettings.accentColor, color: 'white'}}
+                                  >
+                                    {Math.round((1 - previewProduct.price / previewProduct.compare_price) * 100)}% OFF
+                                  </span>
+                                </>
+                              )}
                             </div>
 
                             {/* SKU & Condition */}
-                            <div className="flex gap-4 mb-4 text-sm">
+                            <div className="flex gap-4 mb-4 text-sm flex-wrap">
                               <div>
                                 <span className="text-gray-500">SKU:</span>{' '}
-                                <span className="font-mono">{'{{product_sku}}'}</span>
+                                <span className="font-mono text-gray-900">{previewProduct.sku}</span>
                               </div>
                               <div>
                                 <span className="text-gray-500">Condition:</span>{' '}
-                                <span className="text-green-600 font-medium">New</span>
+                                <span className="text-green-600 font-medium">{previewProduct.condition}</span>
                               </div>
+                              {previewProduct.brand && previewProduct.brand !== 'Unbranded' && (
+                                <div>
+                                  <span className="text-gray-500">Brand:</span>{' '}
+                                  <span className="text-gray-900">{previewProduct.brand}</span>
+                                </div>
+                              )}
                             </div>
 
                             {/* Trust Badges */}
@@ -2377,7 +2405,14 @@ const EbayIntegration = () => {
                             {/* Stock Level */}
                             {themeSettings.showStockLevel && (
                               <div className="flex items-center gap-2 mb-4 text-sm">
-                                <span className="w-2 h-2 bg-green-500 rounded-full"></span>
+                                <span className={`w-2 h-2 rounded-full ${previewProduct.stock > 10 ? 'bg-green-500' : previewProduct.stock > 0 ? 'bg-yellow-500' : 'bg-red-500'}`}></span>
+                                <span className={previewProduct.stock > 10 ? 'text-green-600' : previewProduct.stock > 0 ? 'text-yellow-600' : 'text-red-600'}>
+                                  {previewProduct.stock > 10 ? 'In Stock' : previewProduct.stock > 0 ? 'Low Stock' : 'Out of Stock'}
+                                </span>
+                                <span className="text-gray-400">•</span>
+                                <span className="text-gray-500">{previewProduct.stock} available</span>
+                              </div>
+                            )}
                                 <span className="text-green-600">In Stock</span>
                                 <span className="text-gray-400">•</span>
                                 <span className="text-gray-500">{'{{product_stock}}'} available</span>
