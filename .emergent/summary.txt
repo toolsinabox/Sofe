@@ -1,83 +1,69 @@
 <analysis>**original_problem_statement:**
-The user wants to build a Maropost e-commerce clone. The current focus is on perfecting the shipping calculation system and integrating it into the customer-facing storefront.
+The user is building a Maropost e-commerce clone and needs to perfect the shipping calculation system. Initial requests included fixing price discrepancies, UI bugs, and implementing new rules like maximum length filtering.
 
-Recent requests include:
-1.  **Shipping Calculation Accuracy:** Debug and fix discrepancies in shipping prices for specific products (, ) to match Maropost's logic precisely. This involves handling cubic weight, per-parcel charges, fuel levies, and minimum charges correctly.
-2.  **Display All Shipping Options:** Ensure all available shipping carriers (e.g., Startrack, XFM-RES) appear as options for the customer during checkout.
-3.  **UI Bug Fix:** Resolve an issue where input fields lose focus in the Edit Shipping Service modal in the merchant dashboard, making it difficult to edit rates.
-4.  **UI/UX Improvements:**
-    *   Change product dimension units from  to  on the merchant product page.
-    *   Display the calculated cubic size next to the dimension fields.
-5.  **Rate Import Reliability:** Ensure that uploading a shipping rate CSV file works correctly every time, applying all fields like Minimum Charge and Maximum Length.
-6.  **Maximum Length Filtering:** Implement filtering to hide shipping options if a product's dimension exceeds the Maximum Length specified in the rate (in mm).
+During this session, the scope expanded significantly to reverse-engineer and implement highly complex, multi-step shipping calculation formulas provided by the user to match Maropost's logic precisely. This included handling combined cubic weights, per-parcel fees, multi-parcel minimum charges, and conditional fuel levies for two different carriers (XFM-RES and Startrack). The agent debugged multiple pricing discrepancies for different cart combinations, refining the logic step-by-step based on user feedback. The final request is to resolve a minor but critical discrepancy in the Startrack calculation.
+
+PRODUCT REQUIREMENTS:
+1.  Shipping calculations must be 100% accurate, matching the user's provided Maropost logic for all carriers and scenarios.
+2.  The merchant shipping editor UI must correctly load, display, and save all service fields.
+3.  Product dimension units must be consistently handled in  across the UI and backend.
+4.  The system must support filtering shipping options based on a product's maximum length.
 
 **User's preferred language**: English
 
 **what currently exists?**
-- A full-stack application with a React/FastAPI/MongoDB stack.
-- The storefront is **not** a React SPA but is server-side rendered by a Maropost-style template engine located in . Client-side interactivity is handled by vanilla JavaScript in the theme files.
-- The React components under  are legacy and **not used**.
-- A complex backend shipping calculation engine in  that now handles per-parcel logic, multiple carriers, case-insensitive zone matching, minimum charges, and maximum length filtering.
-- The shipping calculator is integrated into the product, cart, and checkout pages of the server-rendered storefront.
-- The agent has successfully implemented logic that results in the correct price for product  (08.62 with XFM-RES).
+- A full-stack application (React/FastAPI/MongoDB) with a server-side rendered storefront theme.
+- The shipping calculation logic in  has been heavily modified to support two distinct, complex calculation formulas for XFM-RES and Startrack.
+- The XFM-RES logic is considered complete and correctly handles all user-provided test cases.
+- The Startrack logic has been updated to apply  to the per-kg portion of the calculation and add a  after the fuel levy is applied. This logic is very close but has a minor discrepancy.
+- The agent fixed a critical bug where updating a shipping service via the API wiped all its associated rates.
+- The merchant shipping editor UI () has been fixed to correctly load all service fields and handle the  unit in .
 
 **Last working item**:
--   **Last item agent was working:** The agent was addressing three user requests simultaneously:
-    1.  Fixing the focus loss bug in the Edit Shipping Service modal ().
-    2.  Implementing the change from  to  for dimensions and showing cubic size on the product page.
-    3.  Verifying the shipping price for product  is correct (08.62).
-    
-    The agent identified the cause of the focus loss (inline  handlers creating new function references on each render) and was planning the fix. The agent was also examining the product edit page () and the service edit modal () to implement the other changes.
+-   **Last item agent was working:** The agent was debugging the Startrack shipping calculation for product  to postcode . The user expects a price of **1.30**, but the current logic calculates **0.31**. The agent was actively investigating this ~ discrepancy, having ruled out several possibilities and confirming the issue lies within the formula's order of operations or a misinterpretation of the user's rate card.
 -   **Status:** IN PROGRESS
--   **Agent Testing Done:** N (Testing was in progress for individual pieces, but not for the complete set of fixes).
--   **Which testing method agent to use?**
-    1.  **Frontend testing agent** for the focus loss bug in the  form.
-    2.  **Screenshot tool** to verify the UI changes (mm units, cubic size display) on the merchant product page.
-    3.   or  to verify the backend calculation for  remains correct.
+-   **Agent Testing Done:** Y
+-   **Which testing method agent to use?** backend testing agent. The next agent should use  or a python script to test the  endpoint. The primary focus is re-examining the  function in , specifically the Startrack-related logic block, and comparing it against the user-provided CSV ().
 -   **User Testing Done:** N
 
 **All Pending/In progress Issue list**:
--   **Issue 1: Incorrect Shipping Price for  (P0)**
--   **Issue 2: Focus Loss in Edit Shipping Service Modal (P0)**
+-   **Issue 1: Startrack Calculation Discrepancy (P0)**
+-   **Issue 2: Comprehensive Shipping Editor Test (P1)**
 -   **Issue 3: Product Data Mismatch (P2)**
 -   **Issue 4: No Backend Negative Stock Validation (P2)**
 
 Issues Detail:
--   **Issue 1: Incorrect Shipping Price for **
-    -   **Attempted fixes:** The agent correctly implemented the Minimum Charge logic, but this resulted in a price of  for CCM-007, while the user expects . The agent has deduced that the per-kg rate being applied ( from  zone) is wrong and should be closer to . This points to a fundamental zone mapping issue.
+-   **Issue 1: Startrack Calculation Discrepancy**
+    -   **Attempted fixes:** The agent implemented a specific formula for Startrack (identified by ) where  applies only to the  calculation, and the  is added *after* the fuel levy. This resulted in . The agent correctly identified that changing the rates is not an option and the fix must be in the calculation logic itself.
     -   **Next debug checklist:**
-        1.  Confirm with the user which XFM zone postcode  (Casula) should belong to, as it's likely not  for this carrier's rate card.
-        2.  Investigate the zone mapping logic in  () to ensure it correctly assigns postcodes to carrier-specific zones.
-        3.  Adjust the zone data or mapping logic to ensure  gets the rate that results in the  price.
-    -   **Why fix this issue and what will be achieved with this?** The shipping calculation must be 100% accurate for the platform to be viable. This is a critical business logic bug.
+        1.  Carefully examine the user-provided CSV (). Check for any unused columns that might be relevant (e.g., , , , ).
+        2.  Re-examine the calculation logic in  inside the  block.
+        3.  Consider the role of rounding. Maropost might round at intermediate steps. Test rounding the , , or  to 2 decimal places at each stage of the calculation.
+        4.  Work backward from the expected final price () to determine what the freight value should be at each step (before GST, before handling fee, etc.) to pinpoint the exact source of the  difference.
+    -   **Why fix this issue and what will be achieved with this?** This is the final known calculation error and is blocking the completion of the user's primary requirement for 100% accurate shipping prices.
     -   **Status:** IN PROGRESS
-    -   **Is recurring issue?** Y
-    -   **Should Test frontend/backend/both after fix?** Backend (via  or ) and Frontend (via  on the product page).
-    -   **Blocked on other issue:** User input required to clarify the correct zone mapping for postcode 2170.
--   **Issue 2: Focus Loss in Edit Shipping Service Modal**
-    -   **Attempted fixes:** The agent identified the root cause: inline  handlers () in  are creating new functions on every render, causing React to unmount and remount the input fields, which makes them lose focus.
+    -   **Is recurring issue?** N
+    -   **Should Test frontend/backend/both after fix?** Backend.
+    -   **Blocked on other issue:** None.
+-   **Issue 2: Comprehensive Shipping Editor Test**
+    -   **Attempted fixes:** N/A. The underlying bugs (field loading, rate deletion) were fixed, but a full regression test has not been performed.
     -   **Next debug checklist:**
-        1.  Refactor the  handlers in the Edit Shipping Service modal within .
-        2.  Create stable event handler functions using  or by defining them outside the JSX.
-        3.  Pass these stable functions to the  prop of the input components.
-    -   **Why fix this issue and what will be achieved with this?** This is a significant usability bug that prevents merchants from easily managing their shipping rates.
-    -   **Status:** IN PROGRESS
+        1.  In the UI, create a completely new shipping service, populating all available fields. Save and verify.
+        2.  Edit the newly created service, modify all fields, and save again. Verify all changes persist in the database and UI.
+        3.  Crucially, ensure the associated rates are not deleted or altered during the edit/save process.
+        4.  Delete the test service and confirm it is removed.
+    -   **Why fix this issue and what will be achieved with this?** To confirm the stability of the shipping editor and prevent a recurrence of the critical rate-deletion bug.
+    -   **Status:** NOT STARTED
     -   **Is recurring issue?** Y
-    -   **Should Test frontend/backend/both after fix?** Frontend testing agent.
+    -   **Should Test frontend/backend/both after fix?** Frontend.
+    -   **Blocked on other issue:** None.
 -   **Issue 3: Product Data Mismatch**
     -   **Status:** NOT STARTED
 -   **Issue 4: No Backend Negative Stock Validation**
     -   **Status:** NOT STARTED
 
 **In progress Task List**:
--   **Task 1: Change Product Dimensions to MM and Display Cubic Size (P0)**
-    -   **Where to resume:**
-        1.  Modify  to change the labels for , , and  from cm to mm for both product and shipping dimensions.
-        2.  In the same file, add a non-editable field or text element that displays the calculated cubic size () whenever the dimensions are changed.
-        3.  Ensure the values are still sent to the backend in  or update the backend to handle , as the current calculation logic in  expects . The user's request implies a UI-only change.
-    -   **What will be achieved with this?** Fulfills a direct user request for better usability and clarity on the product editing page.
-    -   **Status:** IN PROGRESS
-    -   **Should Test frontend/backend/both after fix?** Frontend
+-   None. Current work is focused on resolving the P0 bug.
 
 **Upcoming and Future Tasks**
 -   **Upcoming Tasks:**
@@ -89,69 +75,67 @@ Issues Detail:
     -   **P2:** Implement POS offline sync capability.
 
 **Completed work in this session**
--   **Feature: Storefront Shipping Integration:** The shipping calculator is now fully integrated into the server-side rendered , , and  templates.
--   **Feature: Multi-Carrier Support:** The system can now show rates from multiple carriers (e.g., Startrack, XFM-RES) for a single postcode by looking up all matching zones.
--   **Feature: Advanced Rate Rules:**
-    -   Implemented Minimum Charge logic for shipping rates.
-    -   Implemented Maximum Length filtering (in mm) to exclude services for oversized products.
--   **Bug Fix: Per-Parcel Calculation:** Corrected the shipping logic to multiply the final calculated price per parcel, matching user expectations for multiple quantities.
--   **Bug Fix: Zone Matching:** Made the zone code lookup case-insensitive, fixing an issue where  rates weren't matching the  zone.
--   **Bug Fix: Data Persistence:** Fixed a bug where a previously tested flat fuel levy amount () was incorrectly saved in the database, skewing calculations.
--   **Bug Fix: Cart & Checkout UI:** Added a suburb selector to the cart page and fixed various JS bugs related to variable scope (, ).
--   **Bug Fix: Template Rendering:** Fixed a critical bug where shipping dimensions were not being rendered into the product page template by updating .
--   **Tooling: Rate Import:** Improved the CSV rate import logic to handle  and .
+-   **Feature: Dual Shipping Calculation Logic:** Implemented two distinct, complex shipping calculation formulas in  to handle XFM-RES and Startrack carriers differently.
+-   **Bug Fix: Corrected XFM-RES Calculation:** Fixed the logic to use  as a floor for the total freight, count parcels correctly based on quantity, and apply the flat fuel levy to all orders. This carrier's calculation is now considered complete and correct.
+-   **Bug Fix: Corrected Startrack Calculation Order:** Updated the logic to apply  to the  portion and move the  addition to occur *after* the fuel levy.
+-   **Critical Bug Fix: Prevented Rate Deletion:** Fixed a major bug where updating a shipping service via the merchant UI would wipe out all its associated rates. The agent identified they had introduced this bug and corrected the frontend payload.
+-   **Bug Fix: Restored Deleted Rates:** After accidentally wiping the XFM-RES rates, the agent guided the user to re-upload them and reapplied the necessary  database fix.
+-   **Feature/Bug Fix:  Field:** Fixed the merchant editor to correctly load the  field and converted the entire implementation from meters to millimeters (UI, backend, DB).
 
 **Earlier issues found/mentioned but not fixed**
--   **Issue 1: Linting Errors in **: This file is over 3000 lines. The current focus-loss bug is a direct consequence of its complexity and technical debt. A full refactor into smaller components is still recommended for long-term stability.
+-   **Issue 1: Linting Errors in **: While bugs have been fixed, the file remains over 3000 lines long and has significant technical debt. A full refactor is recommended for long-term maintainability but is not a current priority.
 
 **Known issue recurrence from previous fork**
--   **Product Data Mismatch**: Remains pending.
--   **No Backend Negative Stock Validation**: Remains pending.
+-   **Product Data Mismatch** (Status: NOT STARTED)
+-   **No Backend Negative Stock Validation** (Status: NOT STARTED)
+-   **Incorrect  on Rate Import:** The  for XFM-RES rates was incorrect after the user re-uploaded them, forcing the agent to re-run a corrective script. This suggests the rate import process itself may not be correctly mapping the Minimum Charge from the CSV to the  field in the database.
 
 **Code Architecture**
 
 
 **Key Technical Concepts**
--   **Server-Side Templates:** The storefront UI is rendered by a backend template engine (), not React. All UI/JS changes for the store must be made in the theme files under .
--   **Complex Shipping Logic:** The calculation now incorporates: . It also handles multiple carrier zones per postcode.
--   **React State Management Bug:** The focus loss issue is a classic React problem caused by re-creating functions/components on each render, which breaks the state of uncontrolled inputs.
+-   **Carrier-Specific Logic:** The calculation logic in  now uses a conditional branch () to differentiate between the Startrack formula and the XFM-RES formula. This is a fragile approach but is the current implementation.
+-   **XFM-RES Formula:** . A flat fuel levy is then applied.
+-   **Startrack Formula (In-Progress):** . A percentage fuel levy is applied to the freight, and then a  is added. The exact order and application are the subject of the current debugging effort.
+-   **Defensive API Design:** A critical bug was caused by the  endpoint accepting an empty  array, which wiped existing data. The frontend call was fixed, but the backend API remains vulnerable to destructive updates.
 
 **key DB schema**
--   **shipping_services (collection)**
-    -   : Added , .
+-   **shipping_services (collection):**
+    -    is now stored in .
+    -    (float) is used to differentiate Startrack's calculation logic.
+    -   Added several new optional fields: , , , , , , .
+-   **shipping_rates (sub-document):**
+    -    is now populated from  for both XFM-RES and Startrack rates. This fix may need to be re-applied if rates are ever re-imported.
 
 **changes in tech stack**
 -   None.
 
 **All files of reference**
--   : The heart of the shipping calculation logic.
--   : Location of the focus-loss bug.
--   : Needs UI changes for mm units and cubic size.
--   : Product page template.
--   : Cart page template.
--   : Checkout page template.
--   : Renders product data into the HTML templates.
+-   : The location of the core shipping calculation logic that needs to be fixed.
+-   : The UI for managing shipping services.
+-   The user-uploaded artifact  contains the ground-truth rate data for Startrack and is essential for solving the current issue.
 
 **Areas that need refactoring**
--   **/app/frontend/src/pages/merchant/MerchantShipping.jsx**: This file is the primary source of UI bugs and is difficult to maintain. It urgently needs to be broken down into smaller, manageable components to prevent future issues. The current focus-loss bug is a clear symptom of this technical debt.
+-   **/app/frontend/src/pages/merchant/MerchantShipping.jsx**: This monolithic React component is a source of technical debt and is difficult to maintain.
+-   **/app/backend/routes/shipping.py ( function)**: The function is becoming overly complex with hardcoded checks for different carriers. It should be refactored into a more extensible pattern (e.g., a strategy pattern) to handle different calculation methods.
 
 **key api endpoints**
--   : Main calculation endpoint.
--   : For uploading CSV rate files.
--   : To update a shipping service.
+-   : Logic is heavily modified with carrier-specific rules and is the focus of the current debugging.
+-   : This endpoint was the source of the rate-deletion bug. While the frontend call that triggered it is fixed, the endpoint itself is not robust against similar destructive updates.
 
 **Critical Info for New Agent**
--   **PRIORITY 1: Solve the CCM-007 Price Discrepancy.** The user expects , but the calculation yields . This is a zone mapping problem. You must confirm with the user which XFM rate zone postcode  should map to, as  is incorrect for this product's expected price.
--   **PRIORITY 2: Fix the Focus Loss Bug.** This is a critical usability issue for the merchant. The root cause is identified (inline  handlers in ); you need to implement the fix by creating stable handler functions.
--   **PRIORITY 3: Implement UI Changes.** Address the user's request to change dimension units to  and display cubic size on the merchant product page.
--   **STOREFRONT IS NOT REACT:** Do not attempt to modify storefront UI by editing files in . All storefront changes must be done in the backend theme templates at .
+-   **Main Priority:** Your immediate and primary task is to fix the Startrack calculation to produce **exactly 1.30** for product  to postcode . The user is very firm on this exact amount. Your current logic produces . **Do not change the rates from the user's CSV**; the error is guaranteed to be in the calculation formula or the order of operations.
+-   **Use the CSV:** The key to solving the final discrepancy lies in the  file provided by the user. There might be a column or rule you are not yet accounting for.
+-   **Two Distinct Formulas:** Remember that the shipping logic in  has two distinct paths. The Startrack formula is triggered by . Any changes to the Startrack logic must not break the XFM-RES calculations, which are considered complete. Test both carriers after any change.
+-   **Rate Deletion Bug:** Be aware that a critical bug existed where editing a service could wipe its rates. While the immediate cause was fixed on the frontend, be cautious when interacting with the shipping editor. The P1 task to perform a full regression test should be completed after the calculation is fixed.
 
 **documents and test_reports created in this job**
--   None.
+-    was updated.
+-   User uploaded  as an artifact, which is crucial for the next step.
 
 **Last 10 User Messages and any pending HUMAN messages**
 -   
--   
+-   (User provided a CSV of Startrack rates)
 -   
 -   
 -   
@@ -162,7 +146,7 @@ Issues Detail:
 -   
 
 **Project Health Check:**
--   **Broken:** The shipping price for certain products () is incorrect due to a zone mapping issue, making the checkout flow unreliable. The merchant dashboard has a critical usability bug (focus loss) that hinders rate management.
+-   **Broken:** The Startrack shipping calculation is not 100% accurate as per the user's strict requirement. This is the main blocker.
 -   **Mocked:** None.
 
 **3rd Party Integrations**
@@ -172,7 +156,7 @@ Issues Detail:
 -   **Testing agent used after significant changes:** NO
 -   **Troubleshoot agent used after agent stuck in loop:** NO
 -   **Test files created:** None.
--   **Known regressions:** None.
+-   **Known regressions:** A critical regression was introduced and fixed in this session (rate deletion on service update). The system is fragile.
 
 **Credentials to test flow:**
 -   **Merchant Role:**
@@ -180,6 +164,4 @@ Issues Detail:
     -   **Password:** 
 
 **What agent forgot to execute**
--   The agent identified the cause of the focus-loss bug but has not yet implemented the fix.
--   The agent has not started the work to change units from  to  and display cubic size.
--   The core business logic issue of why product 's shipping is miscalculated remains unresolved and blocked on user feedback about zone mapping.</analysis>
+-   The agent has not yet performed a full regression test of the shipping service editor after fixing the field loading and rate deletion bugs. This is captured as a P1 pending issue.</analysis>
