@@ -137,6 +137,27 @@ const MerchantShipping = () => {
     is_active: true,
     sort_order: 0
   });
+
+  // Category form state (moved to parent level for persistence)
+  const [categoryForm, setCategoryForm] = useState({
+    code: '',
+    name: '',
+    description: '',
+    is_default: false,
+    is_active: true
+  });
+
+  // Package form state (moved to parent level for persistence)
+  const [packageForm, setPackageForm] = useState({
+    name: '',
+    code: '',
+    length: 0,
+    width: 0,
+    height: 0,
+    max_weight: 0,
+    tare_weight: 0,
+    is_active: true
+  });
   
   // Calculator state
   const [calcPostcode, setCalcPostcode] = useState('');
