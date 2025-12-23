@@ -163,7 +163,7 @@ const MerchantShipping = () => {
     charge_type: 'weight',
     min_charge: 0,
     max_charge: null,
-    max_length: null,  // Maximum item length in meters (e.g., 1.4 = 1400mm)
+    max_length: null,  // Maximum item length in mm (e.g., 1400)
     handling_fee: 0,
     fuel_levy_percent: 0,
     fuel_levy_amount: 0,
