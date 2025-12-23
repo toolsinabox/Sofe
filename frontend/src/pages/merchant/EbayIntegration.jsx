@@ -1784,25 +1784,7 @@ const EbayIntegration = () => {
             </div>
           )}
         </div>
-      ) : (
-        /* Not Connected State */
-        <div className="text-center py-12 bg-gray-50 rounded-xl border border-gray-200">
-          <div className="w-16 h-16 bg-yellow-100 rounded-full flex items-center justify-center mx-auto mb-4">
-            <span className="text-3xl">🛒</span>
-          </div>
-          <h3 className="text-lg font-semibold text-gray-900 mb-2">Connect Your eBay Account</h3>
-          <p className="text-gray-500 mb-6 max-w-md mx-auto">
-            Link your eBay seller account to sync products, manage listings, and import orders automatically.
-          </p>
-          <Button 
-            onClick={() => setShowSetupWizard(true)}
-            className="bg-yellow-500 hover:bg-yellow-600"
-          >
-            <Zap className="w-4 h-4 mr-2" />
-            Start Setup Wizard
-          </Button>
-        </div>
-      )}
+      </div>
 
       {/* Create Listing Modal */}
       <Dialog open={showCreateListing} onOpenChange={setShowCreateListing}>
