@@ -2913,7 +2913,7 @@ const MerchantShipping = () => {
 
         {/* Package Modal */}
         <Dialog open={showPackageModal} onOpenChange={setShowPackageModal}>
-          <DialogContent className="bg-gray-800 border-gray-700 text-white max-w-md">
+          <DialogContent key={editingItem?.id || 'new-package'} className="bg-gray-800 border-gray-700 text-white max-w-md">
             <DialogHeader>
               <DialogTitle>{editingItem ? 'Edit Package' : 'Create Package'}</DialogTitle>
               <DialogDescription className="text-gray-400">
@@ -2924,18 +2924,23 @@ const MerchantShipping = () => {
               <div className="grid grid-cols-2 gap-4">
                 <div>
                   <Label className="text-gray-300">Package Code</Label>
-                  <Input
-                    value={packageForm.code}
-                    onChange={(e) => setPackageForm({...packageForm, code: e.target.value.toLowerCase()})}
+                  <StableInput
+                    key={`pkg-code-${editingItem?.id || 'new'}`}
+                    name="code"
+                    defaultValue={packageForm.code}
+                    onBlur={(e) => setPackageForm(prev => ({...prev, code: e.target.value.toLowerCase()}))}
                     placeholder="e.g., small_box"
                     className="bg-gray-700 border-gray-600 text-white mt-1"
+                    style={{textTransform: 'lowercase'}}
                   />
                 </div>
                 <div>
                   <Label className="text-gray-300">Package Name</Label>
-                  <Input
-                    value={packageForm.name}
-                    onChange={(e) => setPackageForm({...packageForm, name: e.target.value})}
+                  <StableInput
+                    key={`pkg-name-${editingItem?.id || 'new'}`}
+                    name="name"
+                    defaultValue={packageForm.name}
+                    onBlur={(e) => setPackageForm(prev => ({...prev, name: e.target.value}))}
                     placeholder="e.g., Small Box"
                     className="bg-gray-700 border-gray-600 text-white mt-1"
                   />
@@ -2943,7 +2948,7 @@ const MerchantShipping = () => {
               </div>
               <div>
                 <Label className="text-gray-300">Package Type</Label>
-                <Select value={packageForm.package_type} onValueChange={(v) => setPackageForm({...packageForm, package_type: v})}>
+                <Select value={packageForm.package_type} onValueChange={(v) => setPackageForm(prev => ({...prev, package_type: v}))}>
                   <SelectTrigger className="bg-gray-700 border-gray-600 text-white mt-1">
                     <SelectValue />
                   </SelectTrigger>
@@ -2959,25 +2964,31 @@ const MerchantShipping = () => {
               <div>
                 <Label className="text-gray-300">Dimensions (cm)</Label>
                 <div className="grid grid-cols-3 gap-2 mt-1">
-                  <Input
+                  <StableInput
+                    key={`pkg-length-${editingItem?.id || 'new'}`}
                     type="number"
+                    name="length"
                     placeholder="Length"
-                    value={packageForm.length}
-                    onChange={(e) => setPackageForm({...packageForm, length: parseFloat(e.target.value) || 0})}
+                    defaultValue={packageForm.length}
+                    onBlur={(e) => setPackageForm(prev => ({...prev, length: parseFloat(e.target.value) || 0}))}
                     className="bg-gray-700 border-gray-600 text-white"
                   />
-                  <Input
+                  <StableInput
+                    key={`pkg-width-${editingItem?.id || 'new'}`}
                     type="number"
+                    name="width"
                     placeholder="Width"
-                    value={packageForm.width}
-                    onChange={(e) => setPackageForm({...packageForm, width: parseFloat(e.target.value) || 0})}
+                    defaultValue={packageForm.width}
+                    onBlur={(e) => setPackageForm(prev => ({...prev, width: parseFloat(e.target.value) || 0}))}
                     className="bg-gray-700 border-gray-600 text-white"
                   />
-                  <Input
+                  <StableInput
+                    key={`pkg-height-${editingItem?.id || 'new'}`}
                     type="number"
+                    name="height"
                     placeholder="Height"
-                    value={packageForm.height}
-                    onChange={(e) => setPackageForm({...packageForm, height: parseFloat(e.target.value) || 0})}
+                    defaultValue={packageForm.height}
+                    onBlur={(e) => setPackageForm(prev => ({...prev, height: parseFloat(e.target.value) || 0}))}
                     className="bg-gray-700 border-gray-600 text-white"
                   />
                 </div>
@@ -2985,21 +2996,25 @@ const MerchantShipping = () => {
               <div className="grid grid-cols-2 gap-4">
                 <div>
                   <Label className="text-gray-300">Max Weight (kg)</Label>
-                  <Input
+                  <StableInput
+                    key={`pkg-maxwt-${editingItem?.id || 'new'}`}
                     type="number"
                     step="0.1"
-                    value={packageForm.max_weight}
-                    onChange={(e) => setPackageForm({...packageForm, max_weight: parseFloat(e.target.value) || 0})}
+                    name="max_weight"
+                    defaultValue={packageForm.max_weight}
+                    onBlur={(e) => setPackageForm(prev => ({...prev, max_weight: parseFloat(e.target.value) || 0}))}
                     className="bg-gray-700 border-gray-600 text-white mt-1"
                   />
                 </div>
                 <div>
                   <Label className="text-gray-300">Tare Weight (kg)</Label>
-                  <Input
+                  <StableInput
+                    key={`pkg-tarewt-${editingItem?.id || 'new'}`}
                     type="number"
                     step="0.01"
-                    value={packageForm.tare_weight}
-                    onChange={(e) => setPackageForm({...packageForm, tare_weight: parseFloat(e.target.value) || 0})}
+                    name="tare_weight"
+                    defaultValue={packageForm.tare_weight}
+                    onBlur={(e) => setPackageForm(prev => ({...prev, tare_weight: parseFloat(e.target.value) || 0}))}
                     className="bg-gray-700 border-gray-600 text-white mt-1"
                   />
                 </div>
@@ -3008,7 +3023,7 @@ const MerchantShipping = () => {
                 <Label className="text-gray-300">Package Active</Label>
                 <Switch
                   checked={packageForm.is_active}
-                  onCheckedChange={(checked) => setPackageForm({...packageForm, is_active: checked})}
+                  onCheckedChange={(checked) => setPackageForm(prev => ({...prev, is_active: checked}))}
                 />
               </div>
             </div>
