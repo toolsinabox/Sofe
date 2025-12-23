@@ -1328,14 +1328,6 @@ const MerchantShipping = () => {
             options={options}
             services={services}
             zones={zones}
-            optionForm={optionForm}
-            setOptionForm={setOptionForm}
-            editingItem={editingItem}
-            setEditingItem={setEditingItem}
-            showOptionModal={showOptionModal}
-            setShowOptionModal={setShowOptionModal}
-            saving={saving}
-            setSaving={setSaving}
             fetchAllData={fetchAllData}
           />
         )}
