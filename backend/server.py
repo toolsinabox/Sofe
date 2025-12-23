@@ -6573,6 +6573,10 @@ app.include_router(api_router)
 app.include_router(auth_router, prefix="/api")
 app.include_router(shipping_router, prefix="/api")
 
+# Initialize and include addons router
+addons_module.set_database(db)
+app.include_router(addons_module.router, prefix="/api")
+
 app.add_middleware(
     CORSMiddleware,
     allow_credentials=True,
