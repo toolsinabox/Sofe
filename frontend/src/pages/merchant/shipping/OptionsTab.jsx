@@ -117,30 +117,24 @@ const OptionRow = ({ option, services, zones, onUpdate, onDelete }) => {
     setSaving(true);
     setSaveStatus(null);
     try {
-      await axios.put(`${API}/shipping/options/${option.id}`, {
-        ...localOption,
-        ...updatedData
-      });
+      await axios.put(`${API}/shipping/options/${option.id}`, updatedData);
       setSaveStatus('success');
-      onUpdate?.();
       setTimeout(() => setSaveStatus(null), 2000);
+      // Don't call onUpdate here to avoid re-fetching and overwriting local state
     } catch (error) {
       console.error('Error saving option:', error);
       setSaveStatus('error');
+      // Revert to original on error
+      setLocalOption(option);
       setTimeout(() => setSaveStatus(null), 3000);
     } finally {
       setSaving(false);
     }
   };
 
-  const updateField = (field, value) => {
+  const handleFieldChange = (field, value) => {
     const updated = { ...localOption, [field]: value };
     setLocalOption(updated);
-    return updated;
-  };
-
-  const handleFieldChange = (field, value) => {
-    const updated = updateField(field, value);
     saveOption(updated);
   };
 
