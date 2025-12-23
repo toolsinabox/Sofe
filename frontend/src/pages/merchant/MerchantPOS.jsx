@@ -1088,13 +1088,13 @@ const MerchantPOS = () => {
   if (showSetup && !currentShift) {
     return (
       <div className="h-[calc(100vh-120px)] flex items-center justify-center p-4 bg-gradient-to-br from-slate-50 to-slate-100">
-        <Card className="w-full max-w-md bg-white border-slate-200 shadow-xl">
+        <Card className="w-full max-w-md bg-white border-gray-200 shadow-xl">
           <CardHeader className="text-center pb-2">
             <div className="w-16 h-16 bg-gradient-to-br from-cyan-500 to-teal-500 rounded-2xl flex items-center justify-center mx-auto mb-4 shadow-lg shadow-cyan-500/25">
               <Monitor className="w-8 h-8 text-gray-900" />
             </div>
-            <CardTitle className="text-slate-800 text-xl">POS Setup</CardTitle>
-            <p className="text-slate-500 text-sm mt-1">Select your outlet and register to begin</p>
+            <CardTitle className="text-gray-900 text-xl">POS Setup</CardTitle>
+            <p className="text-gray-500 text-sm mt-1">Select your outlet and register to begin</p>
           </CardHeader>
           
           <CardContent className="space-y-4 pt-4">
@@ -1108,14 +1108,14 @@ const MerchantPOS = () => {
                   setSelectedRegister(null);
                 }}
               >
-                <SelectTrigger className="bg-white border-slate-200 text-slate-800">
+                <SelectTrigger className="bg-white border-gray-200 text-gray-900">
                   <SelectValue placeholder="Select outlet..." />
                 </SelectTrigger>
-                <SelectContent className="bg-white border-slate-200">
+                <SelectContent className="bg-white border-gray-200">
                   {outlets.map(outlet => (
-                    <SelectItem key={outlet.id} value={outlet.id} className="text-slate-700 hover:bg-slate-100">
+                    <SelectItem key={outlet.id} value={outlet.id} className="text-gray-700 hover:bg-gray-100">
                       <div className="flex items-center gap-2">
-                        <Building2 className="w-4 h-4 text-slate-400" />
+                        <Building2 className="w-4 h-4 text-gray-500" />
                         {outlet.name}
                       </div>
                     </SelectItem>
@@ -1134,14 +1134,14 @@ const MerchantPOS = () => {
                 }}
                 disabled={!selectedOutlet}
               >
-                <SelectTrigger className="bg-white border-slate-200 text-slate-800">
+                <SelectTrigger className="bg-white border-gray-200 text-gray-900">
                   <SelectValue placeholder="Select register..." />
                 </SelectTrigger>
-                <SelectContent className="bg-white border-slate-200">
+                <SelectContent className="bg-white border-gray-200">
                   {registers.filter(r => r.outlet_id === selectedOutlet?.id).map(register => (
-                    <SelectItem key={register.id} value={register.id} className="text-slate-700 hover:bg-slate-100">
+                    <SelectItem key={register.id} value={register.id} className="text-gray-700 hover:bg-gray-100">
                       <div className="flex items-center gap-2">
-                        <Monitor className="w-4 h-4 text-slate-400" />
+                        <Monitor className="w-4 h-4 text-gray-500" />
                         {register.name}
                       </div>
                     </SelectItem>
@@ -1163,13 +1163,13 @@ const MerchantPOS = () => {
         
         {/* Open Shift Modal */}
         <Dialog open={showOpenShift} onOpenChange={setShowOpenShift}>
-          <DialogContent className="bg-white border-slate-200 text-slate-800 max-w-sm">
+          <DialogContent className="bg-white border-gray-200 text-gray-900 max-w-sm">
             <DialogHeader>
-              <DialogTitle className="flex items-center gap-2 text-slate-800">
+              <DialogTitle className="flex items-center gap-2 text-gray-900">
                 <PlayCircle className="w-5 h-5 text-blue-600" />
                 Open Shift
               </DialogTitle>
-              <DialogDescription className="text-slate-500">
+              <DialogDescription className="text-gray-500">
                 Enter your opening cash float to begin selling
               </DialogDescription>
             </DialogHeader>
@@ -1193,10 +1193,10 @@ const MerchantPOS = () => {
                   value={openingFloat}
                   onChange={(e) => setOpeningFloat(e.target.value)}
                   placeholder="0.00"
-                  className="bg-white border-slate-200 text-slate-800 text-xl text-center py-3 rounded-xl"
+                  className="bg-white border-gray-200 text-gray-900 text-xl text-center py-3 rounded-xl"
                   autoFocus
                 />
-                <p className="text-xs text-slate-500 mt-2">Enter the starting cash amount in the drawer</p>
+                <p className="text-xs text-gray-500 mt-2">Enter the starting cash amount in the drawer</p>
               </div>
               
               <div className="grid grid-cols-4 gap-2">
@@ -1205,7 +1205,7 @@ const MerchantPOS = () => {
                     key={amount}
                     variant="outline"
                     onClick={() => setOpeningFloat(amount.toString())}
-                    className="border-slate-200 text-slate-600 hover:bg-slate-100 rounded-lg"
+                    className="border-gray-200 text-slate-600 hover:bg-gray-100 rounded-lg"
                   >
                     ${amount}
                   </Button>
@@ -1236,21 +1236,21 @@ const MerchantPOS = () => {
     <div className="h-screen flex flex-col bg-gradient-to-br from-slate-50 to-slate-100">
       {/* Top Header Bar - Light Theme 2026 Style */}
       {currentShift && (
-        <div className="bg-white border-b border-slate-200 px-4 py-3 flex items-center justify-between shadow-sm">
+        <div className="bg-white border-b border-gray-200 px-4 py-3 flex items-center justify-between shadow-sm">
           <div className="flex items-center gap-6">
             <div className="flex items-center gap-2">
               <div className="w-2.5 h-2.5 bg-emerald-500 rounded-full animate-pulse" />
-              <span className="font-semibold text-slate-800">Shift Active</span>
+              <span className="font-semibold text-gray-900">Shift Active</span>
             </div>
-            <div className="hidden md:flex items-center gap-1.5 text-slate-500">
+            <div className="hidden md:flex items-center gap-1.5 text-gray-500">
               <Building2 className="w-4 h-4" />
               <span className="text-sm">{selectedOutlet?.name}</span>
             </div>
-            <div className="hidden md:flex items-center gap-1.5 text-slate-500">
+            <div className="hidden md:flex items-center gap-1.5 text-gray-500">
               <Monitor className="w-4 h-4" />
               <span className="text-sm">{selectedRegister?.name}</span>
             </div>
-            <div className="flex items-center gap-1.5 text-slate-500">
+            <div className="flex items-center gap-1.5 text-gray-500">
               <Clock className="w-4 h-4" />
               <span className="text-sm">{formatTimeElapsed(currentShift.opened_at)}</span>
             </div>
@@ -1274,7 +1274,7 @@ const MerchantPOS = () => {
               variant="ghost"
               size="sm"
               onClick={() => setShowCashMovement(true)}
-              className="text-slate-500 hover:text-slate-700 hover:bg-slate-100"
+              className="text-gray-500 hover:text-gray-700 hover:bg-gray-100"
             >
               <DollarSign className="w-4 h-4 mr-1.5" />
               <span className="hidden sm:inline">Cash In/Out</span>
@@ -1286,7 +1286,7 @@ const MerchantPOS = () => {
                 fetchShiftHistory();
                 setShowShiftHistory(true);
               }}
-              className="text-slate-500 hover:text-slate-700 hover:bg-slate-100"
+              className="text-gray-500 hover:text-gray-700 hover:bg-gray-100"
             >
               <History className="w-4 h-4 mr-1.5" />
               <span className="hidden sm:inline">History</span>
@@ -1307,16 +1307,16 @@ const MerchantPOS = () => {
       {/* Main POS Interface - Maropost Style */}
       <div className="flex-1 flex overflow-hidden">
         {/* Left Sidebar - Categories (Collapsible) */}
-        <div className={`bg-white border-r border-slate-200 transition-all duration-300 flex flex-col ${
+        <div className={`bg-white border-r border-gray-200 transition-all duration-300 flex flex-col ${
           sidebarCollapsed ? 'w-16' : 'w-56'
         }`}>
-          <div className="p-3 border-b border-slate-200 flex items-center justify-between">
+          <div className="p-3 border-b border-gray-200 flex items-center justify-between">
             {!sidebarCollapsed && (
-              <span className="font-semibold text-slate-700 text-sm">Categories</span>
+              <span className="font-semibold text-gray-700 text-sm">Categories</span>
             )}
             <button
               onClick={() => setSidebarCollapsed(!sidebarCollapsed)}
-              className="p-1.5 hover:bg-slate-100 rounded-lg text-slate-500"
+              className="p-1.5 hover:bg-gray-100 rounded-lg text-gray-500"
             >
               {sidebarCollapsed ? <ChevronRight className="w-4 h-4" /> : <ChevronLeft className="w-4 h-4" />}
             </button>
@@ -1328,7 +1328,7 @@ const MerchantPOS = () => {
               className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-xl transition-all ${
                 selectedCategory === 'all' 
                   ? 'bg-gradient-to-r from-cyan-500 to-teal-500 text-gray-900 shadow-lg shadow-cyan-500/25' 
-                  : 'text-slate-600 hover:bg-slate-100'
+                  : 'text-slate-600 hover:bg-gray-100'
               }`}
             >
               <Grid3X3 className="w-5 h-5 flex-shrink-0" />
@@ -1341,7 +1341,7 @@ const MerchantPOS = () => {
                 className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-xl transition-all ${
                   selectedCategory === cat 
                     ? 'bg-gradient-to-r from-cyan-500 to-teal-500 text-gray-900 shadow-lg shadow-cyan-500/25' 
-                    : 'text-slate-600 hover:bg-slate-100'
+                    : 'text-slate-600 hover:bg-gray-100'
                 }`}
               >
                 <Tag className="w-5 h-5 flex-shrink-0" />
@@ -1355,20 +1355,20 @@ const MerchantPOS = () => {
         <div className="flex-1 flex flex-col p-4 overflow-hidden">
           {/* Search Bar */}
           <div className="relative mb-4">
-            <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 w-5 h-5" />
+            <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-500 w-5 h-5" />
             <Input
               ref={searchInputRef}
               type="text"
               placeholder="Search products by name, SKU, or scan barcode..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="pl-12 pr-12 py-3 bg-white border-slate-200 text-slate-800 rounded-xl shadow-sm focus:border-blue-500 focus:ring-cyan-500/20 text-base"
+              className="pl-12 pr-12 py-3 bg-white border-gray-200 text-gray-900 rounded-xl shadow-sm focus:border-blue-500 focus:ring-cyan-500/20 text-base"
               autoFocus
             />
             {searchQuery && (
               <button
                 onClick={() => setSearchQuery('')}
-                className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600"
+                className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-500 hover:text-slate-600"
               >
                 <X className="w-5 h-5" />
               </button>
@@ -1377,10 +1377,10 @@ const MerchantPOS = () => {
 
           {/* Products Header */}
           <div className="flex items-center justify-between mb-3">
-            <h2 className="text-slate-700 font-semibold flex items-center gap-2">
+            <h2 className="text-gray-700 font-semibold flex items-center gap-2">
               <Package className="w-5 h-5 text-blue-600" />
               Products
-              <span className="text-slate-400 font-normal text-sm">({filteredProducts.length})</span>
+              <span className="text-gray-500 font-normal text-sm">({filteredProducts.length})</span>
             </h2>
           </div>
 
@@ -1391,7 +1391,7 @@ const MerchantPOS = () => {
                 <Loader2 className="w-8 h-8 animate-spin text-blue-600" />
               </div>
             ) : filteredProducts.length === 0 ? (
-              <div className="flex flex-col items-center justify-center py-16 text-slate-400">
+              <div className="flex flex-col items-center justify-center py-16 text-gray-500">
                 <Package className="w-16 h-16 mb-4 opacity-30" />
                 <p className="text-lg font-medium">No products found</p>
                 <p className="text-sm">Try a different search term</p>
@@ -1414,11 +1414,11 @@ const MerchantPOS = () => {
                         <img src={product.image} alt={product.name} className="w-full h-full object-cover group-hover:scale-105 transition-transform" />
                       ) : (
                         <div className="w-full h-full flex items-center justify-center">
-                          <Image className="w-10 h-10 text-slate-300" />
+                          <Image className="w-10 h-10 text-gray-600" />
                         </div>
                       )}
                     </div>
-                    <p className="text-slate-800 text-sm font-medium truncate">{product.name}</p>
+                    <p className="text-gray-900 text-sm font-medium truncate">{product.name}</p>
                     <div className="flex items-center justify-between mt-1.5">
                       <p className="text-cyan-600 font-bold">${product.price.toFixed(2)}</p>
                       <p className={`text-xs px-2 py-0.5 rounded-full ${
@@ -1439,9 +1439,9 @@ const MerchantPOS = () => {
         </div>
 
         {/* Right Panel - Cart (Maropost Style) */}
-        <div className="w-96 bg-white border-l border-slate-200 flex flex-col shadow-xl">
+        <div className="w-96 bg-white border-l border-gray-200 flex flex-col shadow-xl">
           {/* Customer Section */}
-          <div className="p-4 border-b border-slate-200">
+          <div className="p-4 border-b border-gray-200">
             {customer ? (
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-3">
@@ -1449,13 +1449,13 @@ const MerchantPOS = () => {
                     {customer.name?.charAt(0)?.toUpperCase() || 'C'}
                   </div>
                   <div>
-                    <p className="font-semibold text-slate-800">{customer.name}</p>
-                    <p className="text-xs text-slate-500">{customer.email}</p>
+                    <p className="font-semibold text-gray-900">{customer.name}</p>
+                    <p className="text-xs text-gray-500">{customer.email}</p>
                   </div>
                 </div>
                 <button 
                   onClick={() => setCustomer(null)}
-                  className="p-1.5 hover:bg-slate-100 rounded-lg text-slate-400 hover:text-slate-600"
+                  className="p-1.5 hover:bg-gray-100 rounded-lg text-gray-500 hover:text-slate-600"
                 >
                   <X className="w-4 h-4" />
                 </button>
@@ -1463,7 +1463,7 @@ const MerchantPOS = () => {
             ) : (
               <button
                 onClick={() => setShowCustomerSearch(true)}
-                className="w-full flex items-center justify-center gap-2 py-3 border-2 border-dashed border-slate-300 rounded-xl text-slate-500 hover:border-blue-500 hover:text-cyan-600 hover:bg-cyan-50/50 transition-all"
+                className="w-full flex items-center justify-center gap-2 py-3 border-2 border-dashed border-slate-300 rounded-xl text-gray-500 hover:border-blue-500 hover:text-cyan-600 hover:bg-cyan-50/50 transition-all"
               >
                 <UserPlus className="w-5 h-5" />
                 <span className="font-medium">Add customer to sale</span>
@@ -1474,10 +1474,10 @@ const MerchantPOS = () => {
           {/* Cart Items */}
           <div className="flex-1 overflow-y-auto p-4 space-y-3">
             {cart.length === 0 ? (
-              <div className="h-full flex flex-col items-center justify-center text-slate-400 py-12">
+              <div className="h-full flex flex-col items-center justify-center text-gray-500 py-12">
                 <ShoppingCart className="w-16 h-16 mb-4 opacity-30" />
                 <p className="font-medium">Cart is empty</p>
-                <p className="text-sm text-slate-400 mt-1">Click products to add them</p>
+                <p className="text-sm text-gray-500 mt-1">Click products to add them</p>
               </div>
             ) : (
               cart.map((item, index) => (
@@ -1485,30 +1485,30 @@ const MerchantPOS = () => {
                   key={index}
                   className="flex items-center gap-3 p-3 bg-slate-50 rounded-xl"
                 >
-                  <div className="w-14 h-14 bg-white rounded-lg overflow-hidden flex-shrink-0 border border-slate-200">
+                  <div className="w-14 h-14 bg-white rounded-lg overflow-hidden flex-shrink-0 border border-gray-200">
                     {item.image ? (
                       <img src={item.image} alt={item.name} className="w-full h-full object-cover" />
                     ) : (
                       <div className="w-full h-full flex items-center justify-center">
-                        <Package className="w-6 h-6 text-slate-300" />
+                        <Package className="w-6 h-6 text-gray-600" />
                       </div>
                     )}
                   </div>
                   <div className="flex-1 min-w-0">
-                    <p className="font-medium text-slate-800 text-sm truncate">{item.name}</p>
+                    <p className="font-medium text-gray-900 text-sm truncate">{item.name}</p>
                     <p className="text-cyan-600 font-semibold">${item.price.toFixed(2)}</p>
                   </div>
                   <div className="flex items-center gap-1">
                     <button
                       onClick={() => updateQuantity(index, item.quantity - 1)}
-                      className="w-8 h-8 flex items-center justify-center rounded-lg bg-white border border-slate-200 text-slate-500 hover:bg-slate-100"
+                      className="w-8 h-8 flex items-center justify-center rounded-lg bg-white border border-gray-200 text-gray-500 hover:bg-gray-100"
                     >
                       <Minus className="w-3.5 h-3.5" />
                     </button>
-                    <span className="w-8 text-center font-semibold text-slate-800">{item.quantity}</span>
+                    <span className="w-8 text-center font-semibold text-gray-900">{item.quantity}</span>
                     <button
                       onClick={() => updateQuantity(index, item.quantity + 1)}
-                      className="w-8 h-8 flex items-center justify-center rounded-lg bg-white border border-slate-200 text-slate-500 hover:bg-slate-100"
+                      className="w-8 h-8 flex items-center justify-center rounded-lg bg-white border border-gray-200 text-gray-500 hover:bg-gray-100"
                     >
                       <Plus className="w-3.5 h-3.5" />
                     </button>
@@ -1525,24 +1525,24 @@ const MerchantPOS = () => {
           </div>
 
           {/* Totals Section */}
-          <div className="p-4 border-t border-slate-200 bg-slate-50 space-y-2">
+          <div className="p-4 border-t border-gray-200 bg-slate-50 space-y-2">
             <div className="flex justify-between text-sm">
-              <span className="text-slate-500">Subtotal</span>
-              <span className="text-slate-700">${subtotal.toFixed(2)}</span>
+              <span className="text-gray-500">Subtotal</span>
+              <span className="text-gray-700">${subtotal.toFixed(2)}</span>
             </div>
             {discountAmount > 0 && (
               <div className="flex justify-between text-sm">
-                <span className="text-slate-500">Discount</span>
+                <span className="text-gray-500">Discount</span>
                 <span className="text-rose-500">-${discountAmount.toFixed(2)}</span>
               </div>
             )}
             <div className="flex justify-between text-sm">
-              <span className="text-slate-500">GST (10%)</span>
-              <span className="text-slate-700">${tax.toFixed(2)}</span>
+              <span className="text-gray-500">GST (10%)</span>
+              <span className="text-gray-700">${tax.toFixed(2)}</span>
             </div>
             {shippingCost > 0 && (
               <div className="flex justify-between text-sm">
-                <span className="text-slate-500 flex items-center gap-1">
+                <span className="text-gray-500 flex items-center gap-1">
                   <Truck className="w-3.5 h-3.5" />
                   Shipping
                 </span>
@@ -1551,13 +1551,13 @@ const MerchantPOS = () => {
             )}
             <div className="h-px bg-slate-200 my-2" />
             <div className="flex justify-between items-center">
-              <span className="text-slate-700 font-semibold text-lg">Total</span>
+              <span className="text-gray-700 font-semibold text-lg">Total</span>
               <span className="text-cyan-600 font-bold text-2xl">${total.toFixed(2)}</span>
             </div>
           </div>
 
           {/* Action Buttons */}
-          <div className="p-4 space-y-3 border-t border-slate-200">
+          <div className="p-4 space-y-3 border-t border-gray-200">
             {/* Pay Now Button */}
             <Button
               onClick={() => setShowPayment(true)}
@@ -1574,14 +1574,14 @@ const MerchantPOS = () => {
                 variant="outline"
                 onClick={() => setShowDiscount(true)}
                 disabled={cart.length === 0}
-                className="border-slate-200 text-slate-600 hover:bg-slate-100 rounded-xl"
+                className="border-gray-200 text-slate-600 hover:bg-gray-100 rounded-xl"
               >
                 <Percent className="w-4 h-4 mr-1" />
                 Discount
               </Button>
               <Button
                 variant="outline"
-                className="border-slate-200 text-slate-600 hover:bg-slate-100 rounded-xl"
+                className="border-gray-200 text-slate-600 hover:bg-gray-100 rounded-xl"
                 disabled={cart.length === 0}
               >
                 <PauseCircle className="w-4 h-4 mr-1" />
