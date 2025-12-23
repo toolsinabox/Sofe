@@ -3932,6 +3932,36 @@ async def get_store_settings():
         return StoreSettings()
     return StoreSettings(**settings)
 
+@api_router.get("/store/logo-base64")
+async def get_store_logo_base64():
+    """Get store logo as base64 data URL to avoid CORS issues in iframe preview"""
+    import httpx
+    import base64
+    
+    settings = await db.store_settings.find_one({"id": "store_settings"})
+    if not settings or not settings.get("store_logo"):
+        raise HTTPException(status_code=404, detail="No store logo found")
+    
+    logo_url = settings.get("store_logo")
+    
+    try:
+        async with httpx.AsyncClient() as client:
+            response = await client.get(logo_url, timeout=10.0)
+            response.raise_for_status()
+            
+            # Determine content type
+            content_type = response.headers.get("content-type", "image/png")
+            if ";" in content_type:
+                content_type = content_type.split(";")[0].strip()
+            
+            # Convert to base64
+            base64_data = base64.b64encode(response.content).decode("utf-8")
+            data_url = f"data:{content_type};base64,{base64_data}"
+            
+            return {"data_url": data_url}
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Failed to fetch logo: {str(e)}")
+
 @api_router.put("/store/settings", response_model=StoreSettings)
 async def update_store_settings(settings: StoreSettingsUpdate):
     update_data = {k: v for k, v in settings.dict().items() if v is not None}
