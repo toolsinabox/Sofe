@@ -324,7 +324,7 @@ const MerchantSidebar = ({ collapsed, setCollapsed, mobileOpen, setMobileOpen })
 
       {/* Mobile Sidebar */}
       <aside
-        className={`lg:hidden fixed left-0 top-0 h-screen bg-white border-r border-gray-200 transition-transform duration-300 z-50 flex flex-col w-[280px] ${
+        className={`lg:hidden fixed left-0 top-0 h-screen bg-slate-800 transition-transform duration-300 z-50 flex flex-col w-[280px] ${
           mobileOpen ? 'translate-x-0' : '-translate-x-full'
         }`}
       >
