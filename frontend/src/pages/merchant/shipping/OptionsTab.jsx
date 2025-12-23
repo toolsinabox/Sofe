@@ -39,8 +39,12 @@ const InlineInput = ({ value, onChange, onSave, type = 'text', prefix = '', suff
     }
   };
 
+  const handleClick = (e) => {
+    e.stopPropagation();
+  };
+
   return (
-    <div className={`flex items-center gap-1 ${className}`}>
+    <div className={`flex items-center gap-1 ${className}`} onClick={handleClick}>
       {prefix && <span className="text-gray-500 text-sm">{prefix}</span>}
       <input
         ref={inputRef}
@@ -50,10 +54,11 @@ const InlineInput = ({ value, onChange, onSave, type = 'text', prefix = '', suff
         onFocus={() => setIsFocused(true)}
         onBlur={handleBlur}
         onKeyDown={handleKeyDown}
+        onClick={handleClick}
         placeholder={placeholder}
         min={min}
         step={step}
-        className="bg-transparent border-b border-transparent hover:border-gray-600 focus:border-teal-500 focus:outline-none px-1 py-0.5 text-sm transition-colors w-full"
+        className="bg-transparent border-b border-gray-600 hover:border-gray-500 focus:border-teal-500 focus:outline-none px-1 py-0.5 text-sm transition-colors w-full"
       />
       {suffix && <span className="text-gray-500 text-sm">{suffix}</span>}
     </div>
