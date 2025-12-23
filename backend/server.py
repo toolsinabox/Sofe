@@ -191,6 +191,7 @@ class ProductUpdate(BaseModel):
     barcode: Optional[str] = None
     mpn: Optional[str] = None
     category_id: Optional[str] = None
+    category_ids: Optional[List[str]] = None  # Multiple categories support
     brand: Optional[str] = None
     manufacturer: Optional[str] = None
     tags: Optional[List[str]] = None
