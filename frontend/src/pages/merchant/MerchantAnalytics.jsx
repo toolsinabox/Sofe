@@ -7,20 +7,20 @@ const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
 const API = `${BACKEND_URL}/api`;
 
 const StatCard = ({ title, value, change, icon: Icon, prefix = '', suffix = '' }) => (
-  <div className="bg-white rounded-lg border border-gray-200 p-5">
+  <div className="bg-white rounded-lg border border-gray-200 p-3">
     <div className="flex items-center justify-between">
-      <div className="p-2 bg-gray-100 rounded-lg">
-        <Icon size={20} className="text-blue-600" />
+      <div className="p-1.5 bg-gray-100 rounded-lg">
+        <Icon size={14} className="text-blue-600" />
       </div>
-      <div className={`flex items-center gap-1 text-sm ${
+      <div className={`flex items-center gap-0.5 text-xs ${
         change >= 0 ? 'text-green-600' : 'text-red-600'
       }`}>
-        {change >= 0 ? <ArrowUpRight size={14} /> : <ArrowDownRight size={14} />}
+        {change >= 0 ? <ArrowUpRight size={12} /> : <ArrowDownRight size={12} />}
         {Math.abs(change)}%
       </div>
     </div>
-    <p className="text-gray-500 text-sm mt-3">{title}</p>
-    <p className="text-2xl font-bold text-gray-900 mt-1">
+    <p className="text-gray-500 text-xs mt-2">{title}</p>
+    <p className="text-xl font-bold text-gray-900">
       {prefix}{typeof value === 'number' ? value.toLocaleString() : value}{suffix}
     </p>
   </div>
