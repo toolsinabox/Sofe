@@ -1275,3 +1275,43 @@ User requested that all `per_kg_rate` values be rounded to 2 decimal places (e.g
 - `/app/backend/routes/shipping.py` (line 665)
 
 ### Status: COMPLETE ✓
+
+---
+
+## Fix - Min Charge = Base Rate for All Services - 2025-01-XX
+
+### Issue
+Shipping calculations were returning incorrect (lower) prices because `min_charge` was set to 0 for most services. According to Maropost's calculation logic, the minimum charge should be applied BEFORE the fuel levy.
+
+### Example (XFM COM to Casula 2170)
+- **Before fix:** $64.56 (min_charge not applied)
+- **After fix:** $108.63 ✓ (matches Maropost)
+
+### Maropost Calculation Formula
+```
+1. Chargeable kg = cubic × modifier (231.60 kg)
+2. Per-kg freight = chargeable kg × rate ($30.11)
+3. + First parcel charge ($16.25) = $46.36
+4. Apply minimum = max($46.36, $78.00) = $78.00
+5. Fuel levy 26.6% = $78.00 × 1.266 = $98.75
+6. GST 10% = $98.75 × 1.10 = $108.63
+```
+
+### Solution
+Updated all shipping rates where `min_charge = 0` to set `min_charge = base_rate`:
+- XFM (COM): 175 rates
+- Followmont (COM): 75 rates
+- Hi-Trans (COM): 191 rates
+- CRL Logistics (REST): 175 rates
+- Toll iPec (REST): 44 rates
+- Toll iPec (COM): 44 rates
+- CRL Logistics (COM): 175 rates
+- TFM Xpress (REST): 45 rates
+- TFM Xpress (COM): 45 rates
+
+**Total: 9 services, 969 rates updated**
+
+### Verification
+All 11 services now have min_charge properly set equal to base_rate.
+
+### Status: COMPLETE ✓
