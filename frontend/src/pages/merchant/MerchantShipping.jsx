@@ -2594,14 +2594,6 @@ const MerchantShipping = () => {
 
   // ============== CATEGORIES TAB ==============
   const CategoriesTab = () => {
-    const [categoryForm, setCategoryForm] = useState({
-      code: '',
-      name: '',
-      description: '',
-      is_default: false,
-      is_active: true
-    });
-
     const openCategoryModal = (category = null) => {
       if (category) {
         setEditingItem(category);
