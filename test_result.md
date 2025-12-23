@@ -1315,3 +1315,45 @@ Updated all shipping rates where `min_charge = 0` to set `min_charge = base_rate
 All 11 services now have min_charge properly set equal to base_rate.
 
 ### Status: COMPLETE ✓
+
+---
+
+## Feature - Addons & Integrations Page - 2025-01-XX
+
+### Summary
+Implemented a comprehensive Addons & Integrations marketplace page for the merchant portal.
+
+### Implementation
+1. **Route Added:** `/merchant/addons` → `MerchantAddons.jsx`
+2. **Sidebar Link:** Added "Integrations" group with "Addons & Apps" submenu item
+3. **File:** `/app/frontend/src/pages/merchant/MerchantAddons.jsx`
+
+### Features
+- Category filtering (All, Marketplaces, Shipping, Payments, Marketing, Analytics, Communication)
+- 25+ mock integrations including:
+  - **Marketplaces:** eBay, Amazon AU, Kogan, Catch, Google Shopping, Facebook/Instagram Shop
+  - **Shipping:** StarTrack, Australia Post, Sendle, Shippit
+  - **Payments:** Stripe, PayPal, Afterpay, Zip Pay
+  - **Marketing:** Mailchimp, Klaviyo, Google Ads, Meta Ads
+  - **Analytics:** Google Analytics 4, Hotjar
+  - **Communication:** Zendesk, Intercom, SMS Notifications
+- Install/uninstall functionality
+- Enable/disable toggles for installed addons
+- Configuration modal with API key fields
+- Search functionality
+- Popular integrations banner
+- Stats display (installed/active count)
+
+### Files Modified
+- `/app/frontend/src/App.js` - Added import and route
+- `/app/frontend/src/components/layout/MerchantSidebar.jsx` - Added Integrations group
+
+### Testing Required
+- Verify page loads at /merchant/addons
+- Test category filtering
+- Test search functionality
+- Test install/uninstall addon
+- Test enable/disable toggle
+- Test configuration modal
+
+### Status: TESTING REQUIRED
