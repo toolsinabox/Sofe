@@ -290,6 +290,8 @@ const ProductEditor = ({ product, categories, onSave, onClose, templateTags }) =
         width: product.width?.toString() || '',
         height: product.height?.toString() || '',
         tags: product.tags || [],
+        base_tags: product.base_tags || [],
+        specifics: product.specifics || [],
         // Convert images array to 12-slot format
         images: (() => {
           const slots = Array(12).fill(null);
