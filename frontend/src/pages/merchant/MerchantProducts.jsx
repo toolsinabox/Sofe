@@ -193,6 +193,22 @@ const TemplateTag = ({ tag, description }) => {
   );
 };
 
+// Base Tags - Pre-defined system tags for product classification
+const BASE_TAGS = [
+  { id: 'new', label: 'New Arrival', color: 'bg-green-100 text-green-700 border-green-200' },
+  { id: 'bestseller', label: 'Best Seller', color: 'bg-yellow-100 text-yellow-700 border-yellow-200' },
+  { id: 'clearance', label: 'Clearance', color: 'bg-red-100 text-red-700 border-red-200' },
+  { id: 'limited', label: 'Limited Edition', color: 'bg-purple-100 text-purple-700 border-purple-200' },
+  { id: 'exclusive', label: 'Exclusive', color: 'bg-indigo-100 text-indigo-700 border-indigo-200' },
+  { id: 'eco', label: 'Eco-Friendly', color: 'bg-emerald-100 text-emerald-700 border-emerald-200' },
+  { id: 'handmade', label: 'Handmade', color: 'bg-amber-100 text-amber-700 border-amber-200' },
+  { id: 'imported', label: 'Imported', color: 'bg-blue-100 text-blue-700 border-blue-200' },
+  { id: 'australian', label: 'Australian Made', color: 'bg-sky-100 text-sky-700 border-sky-200' },
+  { id: 'warranty', label: 'Extended Warranty', color: 'bg-gray-100 text-gray-700 border-gray-200' },
+  { id: 'gift', label: 'Gift Ready', color: 'bg-pink-100 text-pink-700 border-pink-200' },
+  { id: 'bundle', label: 'Bundle Deal', color: 'bg-orange-100 text-orange-700 border-orange-200' },
+];
+
 // Product Editor Modal
 const ProductEditor = ({ product, categories, onSave, onClose, templateTags }) => {
   const [formData, setFormData] = useState({
@@ -215,6 +231,7 @@ const ProductEditor = ({ product, categories, onSave, onClose, templateTags }) =
     brand: '',
     manufacturer: '',
     tags: [],
+    base_tags: [], // Pre-defined system tags
     // Images - 12 slots (can be sparse, e.g., slot 12 filled but not 11)
     images: Array(12).fill(null),
     thumbnail: '',
@@ -243,6 +260,8 @@ const ProductEditor = ({ product, categories, onSave, onClose, templateTags }) =
     is_active: true,
     is_featured: false,
     visibility: 'visible',
+    // Specifics/Attributes
+    specifics: [],
     // Custom
     custom_fields: {},
     ...product
