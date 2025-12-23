@@ -2768,6 +2768,13 @@ const EbayIntegration = () => {
                     )}
                     {savingTheme ? 'Saving...' : 'Save Theme'}
                   </Button>
+                  
+                  {/* Save Status Message */}
+                  {themeSaveMessage && (
+                    <span className={`text-sm font-medium ${themeSaveMessage.type === 'success' ? 'text-green-600' : 'text-red-600'}`}>
+                      {themeSaveMessage.type === 'success' ? '✓' : '✗'} {themeSaveMessage.text}
+                    </span>
+                  )}
                 </div>
               </div>
 
