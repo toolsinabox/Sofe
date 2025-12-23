@@ -6578,6 +6578,10 @@ app.include_router(shipping_router, prefix="/api")
 addons_module.set_database(db)
 app.include_router(addons_module.router, prefix="/api")
 
+# Initialize and include eBay router
+ebay_module.set_database(db)
+app.include_router(ebay_module.router, prefix="/api")
+
 app.add_middleware(
     CORSMiddleware,
     allow_credentials=True,
