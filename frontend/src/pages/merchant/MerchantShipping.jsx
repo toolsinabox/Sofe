@@ -1038,7 +1038,7 @@ const MerchantShipping = () => {
                   onBlur={(e) => setPostcodesInput(e.target.value)}
                   placeholder="e.g., 2000-2234, 2555-2574, 2740-2786"
                   rows={3}
-                  className="w-full mt-1 px-3 py-2 bg-gray-700 border border-gray-200 rounded-md text-gray-900 text-sm placeholder:text-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  className="w-full mt-1 px-3 py-2 bg-gray-50 border border-gray-200 rounded-md text-gray-900 text-sm placeholder:text-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500"
                 />
                 <p className="text-gray-500 text-xs mt-1">Use ranges like "2000-2234" or individual postcodes</p>
               </div>

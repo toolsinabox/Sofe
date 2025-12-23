@@ -1533,13 +1533,13 @@ const MerchantProducts = () => {
           <div className="flex items-center bg-gray-50 rounded-lg p-1">
             <button
               onClick={() => setViewMode('grid')}
-              className={`p-2 rounded ${viewMode === 'grid' ? 'bg-gray-700 text-gray-900' : 'text-gray-500 hover:text-gray-900'}`}
+              className={`p-2 rounded ${viewMode === 'grid' ? 'bg-blue-100 text-blue-700' : 'text-gray-500 hover:text-gray-900'}`}
             >
               <Grid size={18} />
             </button>
             <button
               onClick={() => setViewMode('list')}
-              className={`p-2 rounded ${viewMode === 'list' ? 'bg-gray-700 text-gray-900' : 'text-gray-500 hover:text-gray-900'}`}
+              className={`p-2 rounded ${viewMode === 'list' ? 'bg-blue-100 text-blue-700' : 'text-gray-500 hover:text-gray-900'}`}
             >
               <List size={18} />
             </button>

@@ -1708,7 +1708,7 @@ const MerchantPOS = () => {
                   +${((currentShift?.expected_cash || 0) - (currentShift?.opening_float || 0)).toFixed(2)}
                 </span>
               </div>
-              <div className="h-px bg-gray-700 my-2" />
+              <div className="h-px bg-gray-200 my-2" />
               <div className="flex justify-between font-semibold">
                 <span className="text-gray-700">Expected Cash</span>
                 <span className="text-gray-900 text-lg">${currentShift?.expected_cash?.toFixed(2)}</span>
