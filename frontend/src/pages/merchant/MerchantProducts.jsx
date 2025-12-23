@@ -314,6 +314,8 @@ const ProductEditor = ({ product, categories, onSave, onClose, templateTags }) =
         tags: product.tags || [],
         base_tags: product.base_tags || [],
         specifics: product.specifics || [],
+        // Handle multiple categories - convert from category_id if needed
+        category_ids: product.category_ids || (product.category_id ? [product.category_id] : []),
         // Convert images array to 12-slot format
         images: (() => {
           const slots = Array(12).fill(null);
