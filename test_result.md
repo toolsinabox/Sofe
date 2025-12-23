@@ -1404,3 +1404,61 @@ Enhanced the product editor with Base Tags and Specifics functionality as reques
 - Common specifications quick-add buttons working
 
 ### Status: COMPLETE ✓
+
+---
+
+## Enhancement - Addons Backend API Integration - 2025-01-XX
+
+### Summary
+Made the Addons/Integrations page fully functional with backend persistence.
+
+### Backend API Created
+File: `/app/backend/routes/addons.py`
+
+**Endpoints:**
+- `GET /api/addons/available` - List all available addons in marketplace
+- `GET /api/addons/` - Get all addons with installation status
+- `POST /api/addons/{addon_id}/install` - Install an addon
+- `DELETE /api/addons/{addon_id}/uninstall` - Uninstall an addon
+- `PUT /api/addons/{addon_id}/toggle` - Enable/disable addon
+- `PUT /api/addons/{addon_id}/config` - Update addon configuration
+- `GET /api/addons/{addon_id}` - Get specific addon details
+- `POST /api/addons/sync-all` - Trigger sync for all enabled addons
+
+### Database Collection
+Collection: `addons`
+Schema:
+```json
+{
+  "id": "string",
+  "addon_id": "string (e.g., 'ebay', 'stripe')",
+  "installed": "boolean",
+  "enabled": "boolean",
+  "config": {
+    "api_key": "string",
+    "secret_key": "string",
+    "auto_sync_inventory": "boolean",
+    "import_orders": "boolean",
+    "sandbox_mode": "boolean"
+  },
+  "installed_at": "ISO datetime",
+  "updated_at": "ISO datetime"
+}
+```
+
+### Frontend Updated
+File: `/app/frontend/src/pages/merchant/MerchantAddons.jsx`
+- Replaced local state with API calls
+- Added loading states and error handling
+- Config modal saves to database
+- Shows "Updated: date" on installed addons
+- Shows "This addon is configured" indicator
+
+### Testing
+- Verified install/uninstall via API ✓
+- Verified enable/disable toggle ✓
+- Verified config persistence ✓
+- Verified UI loads from API ✓
+- Screenshot verified config modal with saved data ✓
+
+### Status: COMPLETE ✓
