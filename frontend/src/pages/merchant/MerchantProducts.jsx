@@ -391,6 +391,35 @@ const ProductEditor = ({ product, categories, onSave, onClose, templateTags }) =
     }));
   };
   
+  // Base tags management
+  const toggleBaseTag = (tagId) => {
+    setFormData(prev => ({
+      ...prev,
+      base_tags: prev.base_tags.includes(tagId)
+        ? prev.base_tags.filter(t => t !== tagId)
+        : [...prev.base_tags, tagId]
+    }));
+  };
+  
+  // Specifics/Attributes management
+  const addSpecific = () => {
+    if (newSpecName.trim() && newSpecValue.trim()) {
+      setFormData(prev => ({
+        ...prev,
+        specifics: [...prev.specifics, { name: newSpecName.trim(), value: newSpecValue.trim() }]
+      }));
+      setNewSpecName('');
+      setNewSpecValue('');
+    }
+  };
+  
+  const removeSpecific = (index) => {
+    setFormData(prev => ({
+      ...prev,
+      specifics: prev.specifics.filter((_, i) => i !== index)
+    }));
+  };
+  
   const handleSave = async () => {
     setSaving(true);
     try {
