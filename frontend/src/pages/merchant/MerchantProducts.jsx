@@ -1049,22 +1049,120 @@ const ProductEditor = ({ product, categories, onSave, onClose, templateTags }) =
               {/* Categorization Tab */}
               {activeTab === 'categorization' && (
                 <div className="space-y-6 max-w-3xl">
+                  {/* Multiple Categories Selection */}
                   <div className="space-y-2">
                     <Label className="text-gray-700 flex items-center gap-2">
-                      Category
+                      Categories
                       <span className="text-xs text-gray-500 font-mono">[@product_category@]</span>
                     </Label>
-                    <Select value={formData.category_id || '_none'} onValueChange={(v) => handleChange('category_id', v === '_none' ? '' : v)}>
-                      <SelectTrigger className="bg-gray-50 border-gray-200 text-gray-700">
-                        <SelectValue placeholder="Select category" />
-                      </SelectTrigger>
-                      <SelectContent className="bg-white border-gray-200">
-                        <SelectItem value="_none" className="text-gray-700">No Category</SelectItem>
-                        {categories.map(cat => (
-                          <SelectItem key={cat.id} value={cat.id} className="text-gray-700">{cat.name}</SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
+                    <p className="text-xs text-gray-500">Select one or more categories for this product</p>
+                    
+                    {/* Selected Categories Pills */}
+                    {formData.category_ids && formData.category_ids.length > 0 && (
+                      <div className="flex flex-wrap gap-2 p-3 bg-gray-50 rounded-lg border border-gray-200">
+                        {formData.category_ids.map(catId => {
+                          const category = categories.find(c => c.id === catId);
+                          return category ? (
+                            <span 
+                              key={catId}
+                              className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-yellow-100 text-yellow-800 rounded-full text-sm border border-yellow-200"
+                            >
+                              {category.name}
+                              <button
+                                type="button"
+                                onClick={() => {
+                                  const newIds = formData.category_ids.filter(id => id !== catId);
+                                  handleChange('category_ids', newIds);
+                                  // Also update category_id for backward compatibility
+                                  handleChange('category_id', newIds[0] || '');
+                                }}
+                                className="hover:bg-yellow-200 rounded-full p-0.5 transition-colors"
+                              >
+                                <X className="w-3.5 h-3.5" />
+                              </button>
+                            </span>
+                          ) : null;
+                        })}
+                      </div>
+                    )}
+
+                    {/* Category Checkboxes */}
+                    <div className="border border-gray-200 rounded-lg bg-white max-h-64 overflow-y-auto">
+                      {categories.length === 0 ? (
+                        <div className="p-4 text-center text-gray-500 text-sm">
+                          No categories available. Create categories first.
+                        </div>
+                      ) : (
+                        <div className="divide-y divide-gray-100">
+                          {categories.map(cat => {
+                            const isSelected = formData.category_ids?.includes(cat.id);
+                            return (
+                              <label
+                                key={cat.id}
+                                className={`flex items-center gap-3 px-4 py-3 cursor-pointer transition-colors hover:bg-gray-50 ${
+                                  isSelected ? 'bg-yellow-50' : ''
+                                }`}
+                              >
+                                <input
+                                  type="checkbox"
+                                  checked={isSelected}
+                                  onChange={(e) => {
+                                    let newIds;
+                                    if (e.target.checked) {
+                                      newIds = [...(formData.category_ids || []), cat.id];
+                                    } else {
+                                      newIds = (formData.category_ids || []).filter(id => id !== cat.id);
+                                    }
+                                    handleChange('category_ids', newIds);
+                                    // Also update category_id for backward compatibility (use first selected)
+                                    handleChange('category_id', newIds[0] || '');
+                                  }}
+                                  className="w-4 h-4 rounded border-gray-300 text-yellow-500 focus:ring-yellow-500"
+                                />
+                                <div className="flex-1">
+                                  <span className="text-gray-900 text-sm font-medium">{cat.name}</span>
+                                  {cat.description && (
+                                    <p className="text-xs text-gray-500">{cat.description}</p>
+                                  )}
+                                </div>
+                                {isSelected && (
+                                  <Check className="w-4 h-4 text-yellow-500" />
+                                )}
+                              </label>
+                            );
+                          })}
+                        </div>
+                      )}
+                    </div>
+                    
+                    {/* Quick Actions */}
+                    <div className="flex items-center gap-2">
+                      <button
+                        type="button"
+                        onClick={() => {
+                          handleChange('category_ids', categories.map(c => c.id));
+                          handleChange('category_id', categories[0]?.id || '');
+                        }}
+                        className="text-xs text-blue-600 hover:text-blue-700"
+                      >
+                        Select All
+                      </button>
+                      <span className="text-gray-300">|</span>
+                      <button
+                        type="button"
+                        onClick={() => {
+                          handleChange('category_ids', []);
+                          handleChange('category_id', '');
+                        }}
+                        className="text-xs text-blue-600 hover:text-blue-700"
+                      >
+                        Clear All
+                      </button>
+                      <span className="flex-1"></span>
+                      <span className="text-xs text-gray-500">
+                        {formData.category_ids?.length || 0} selected
+                      </span>
+                    </div>
                   </div>
                   
                   <div className="space-y-2">
