@@ -1029,3 +1029,56 @@ async def get_sync_settings():
         "last_sync": config.get("last_sync"),
         "sync_config": config.get("sync_config", EbaySyncConfig().dict())
     }
+
+
+# ==================== EBAY THEME ====================
+
+@router.put("/theme")
+async def save_ebay_theme(theme: EbayTheme):
+    """Save eBay listing theme template and settings"""
+    if db is None:
+        raise HTTPException(status_code=500, detail="Database not initialized")
+    
+    now = datetime.now(timezone.utc).isoformat()
+    
+    theme_data = {
+        "template_id": theme.template_id,
+        "template_html": theme.template_html,
+        "settings": theme.settings.dict(),
+        "updated_at": now
+    }
+    
+    # Upsert the theme (only one theme config per store)
+    result = await db.ebay_theme.update_one(
+        {},
+        {
+            "$set": theme_data,
+            "$setOnInsert": {"created_at": now}
+        },
+        upsert=True
+    )
+    
+    return {
+        "success": True,
+        "message": "Theme saved successfully",
+        "template_id": theme.template_id
+    }
+
+
+@router.get("/theme")
+async def get_ebay_theme():
+    """Get saved eBay listing theme"""
+    if db is None:
+        raise HTTPException(status_code=500, detail="Database not initialized")
+    
+    theme = await db.ebay_theme.find_one({}, {"_id": 0})
+    
+    if not theme:
+        # Return default theme
+        return {
+            "template_id": "modern",
+            "template_html": "",
+            "settings": EbayThemeSettings().dict()
+        }
+    
+    return theme
