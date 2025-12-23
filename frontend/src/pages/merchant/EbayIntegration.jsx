@@ -639,14 +639,787 @@ const EbayIntegration = () => {
     { id: 'help', label: 'Help', icon: HelpCircle },
   ];
 
-  // eBay Listing Templates
-  const listingTemplates = [
-    { id: 'modern', name: 'Modern Clean', description: 'Minimalist design with focus on product images' },
-    { id: 'professional', name: 'Professional', description: 'Corporate style with detailed specifications' },
-    { id: 'boutique', name: 'Boutique', description: 'Elegant design for premium products' },
-    { id: 'tech', name: 'Tech Store', description: 'Technical specs focused layout' },
-    { id: 'custom', name: 'Custom HTML', description: 'Full control with custom HTML/CSS' },
-  ];
+  // eBay Listing Templates - Full HTML Code
+  const EBAY_TEMPLATES = {
+    modern: {
+      name: 'Modern Clean',
+      description: 'Minimalist design with clean lines and focus on product images',
+      preview: '✨',
+      html: `<!-- MODERN CLEAN TEMPLATE -->
+<div style="max-width: 900px; margin: 0 auto; font-family: 'Segoe UI', Arial, sans-serif; color: #333; line-height: 1.6;">
+  
+  <!-- Store Header -->
+  <div style="background: linear-gradient(135deg, {{primary_color}} 0%, #1a1a2e 100%); padding: 25px 30px; border-radius: 12px 12px 0 0;">
+    <table width="100%" cellpadding="0" cellspacing="0">
+      <tr>
+        <td>
+          <img src="{{store_logo}}" alt="{{store_name}}" style="height: 50px; border-radius: 8px;" />
+        </td>
+        <td align="right" style="color: #fff;">
+          <div style="font-size: 18px; font-weight: 600;">{{store_name}}</div>
+          <div style="font-size: 12px; opacity: 0.8;">⭐ Top Rated Seller • 99.8% Positive Feedback</div>
+        </td>
+      </tr>
+    </table>
+  </div>
+
+  <!-- Main Content -->
+  <div style="background: #fff; padding: 30px; border: 1px solid #e0e0e0; border-top: none;">
+    
+    <!-- Product Title -->
+    <h1 style="font-size: 24px; font-weight: 600; color: #1a1a2e; margin: 0 0 20px 0; padding-bottom: 15px; border-bottom: 2px solid {{primary_color}};">
+      {{product_name}}
+    </h1>
+
+    <!-- Price & Stock -->
+    <div style="display: flex; align-items: center; gap: 20px; margin-bottom: 25px; flex-wrap: wrap;">
+      <span style="font-size: 32px; font-weight: 700; color: {{accent_color}};">{{product_price}}</span>
+      <span style="background: #e8f5e9; color: #2e7d32; padding: 6px 14px; border-radius: 20px; font-size: 13px; font-weight: 500;">
+        ✓ {{product_stock}} In Stock
+      </span>
+      <span style="background: #fff3e0; color: #ef6c00; padding: 6px 14px; border-radius: 20px; font-size: 13px; font-weight: 500;">
+        🔥 Hot Item
+      </span>
+    </div>
+
+    <!-- Trust Badges -->
+    <div style="display: flex; gap: 15px; margin-bottom: 30px; flex-wrap: wrap;">
+      <div style="display: flex; align-items: center; gap: 8px; padding: 10px 16px; background: #f8f9fa; border-radius: 8px;">
+        <span style="font-size: 18px;">🛡️</span>
+        <span style="font-size: 13px; color: #555;">Buyer Protection</span>
+      </div>
+      <div style="display: flex; align-items: center; gap: 8px; padding: 10px 16px; background: #f8f9fa; border-radius: 8px;">
+        <span style="font-size: 18px;">🚚</span>
+        <span style="font-size: 13px; color: #555;">Fast Shipping</span>
+      </div>
+      <div style="display: flex; align-items: center; gap: 8px; padding: 10px 16px; background: #f8f9fa; border-radius: 8px;">
+        <span style="font-size: 18px;">↩️</span>
+        <span style="font-size: 13px; color: #555;">30-Day Returns</span>
+      </div>
+    </div>
+
+    <!-- Product Description -->
+    <div style="margin-bottom: 30px;">
+      <h2 style="font-size: 18px; color: #1a1a2e; margin: 0 0 15px 0; padding-bottom: 10px; border-bottom: 1px solid #eee;">
+        📋 Product Description
+      </h2>
+      <div style="color: #555; font-size: 15px;">
+        {{product_description}}
+      </div>
+    </div>
+
+    <!-- Specifications -->
+    <div style="margin-bottom: 30px;">
+      <h2 style="font-size: 18px; color: #1a1a2e; margin: 0 0 15px 0; padding-bottom: 10px; border-bottom: 1px solid #eee;">
+        📊 Specifications
+      </h2>
+      <table width="100%" cellpadding="12" cellspacing="0" style="border: 1px solid #eee; border-radius: 8px; overflow: hidden;">
+        <tr style="background: #f8f9fa;">
+          <td style="border-bottom: 1px solid #eee; font-weight: 500; width: 30%;">Brand</td>
+          <td style="border-bottom: 1px solid #eee;">{{product_brand}}</td>
+        </tr>
+        <tr>
+          <td style="border-bottom: 1px solid #eee; font-weight: 500;">SKU</td>
+          <td style="border-bottom: 1px solid #eee; font-family: monospace;">{{product_sku}}</td>
+        </tr>
+        <tr style="background: #f8f9fa;">
+          <td style="border-bottom: 1px solid #eee; font-weight: 500;">Condition</td>
+          <td style="border-bottom: 1px solid #eee;">{{product_condition}}</td>
+        </tr>
+        <tr>
+          <td style="border-bottom: 1px solid #eee; font-weight: 500;">Weight</td>
+          <td style="border-bottom: 1px solid #eee;">{{product_weight}}</td>
+        </tr>
+        <tr style="background: #f8f9fa;">
+          <td style="font-weight: 500;">Dimensions</td>
+          <td>{{product_dimensions}}</td>
+        </tr>
+      </table>
+    </div>
+
+    <!-- Shipping Info -->
+    <div style="background: linear-gradient(135deg, #e3f2fd 0%, #bbdefb 100%); padding: 20px; border-radius: 10px; margin-bottom: 30px;">
+      <div style="font-weight: 600; color: #1565c0; margin-bottom: 8px;">🚚 Shipping Information</div>
+      <div style="color: #1976d2; font-size: 14px;">{{shipping_cost}} • Estimated delivery: 3-5 business days</div>
+    </div>
+
+    <!-- Return Policy -->
+    <div style="background: #f5f5f5; padding: 20px; border-radius: 10px;">
+      <div style="font-weight: 600; color: #555; margin-bottom: 8px;">↩️ Return Policy</div>
+      <div style="color: #666; font-size: 14px;">{{return_policy}}</div>
+    </div>
+  </div>
+
+  <!-- Footer -->
+  <div style="background: #1a1a2e; color: #fff; padding: 25px 30px; border-radius: 0 0 12px 12px; text-align: center;">
+    <div style="font-size: 16px; margin-bottom: 8px;">Thank you for shopping with {{store_name}}!</div>
+    <div style="font-size: 13px; opacity: 0.7;">📧 {{store_email}} • 📞 {{store_phone}}</div>
+  </div>
+
+</div>
+<!-- END MODERN CLEAN TEMPLATE -->`
+    },
+
+    professional: {
+      name: 'Professional Business',
+      description: 'Corporate style perfect for B2B and professional products',
+      preview: '💼',
+      html: `<!-- PROFESSIONAL BUSINESS TEMPLATE -->
+<div style="max-width: 950px; margin: 0 auto; font-family: 'Arial', sans-serif; color: #2c3e50; background: #fff;">
+
+  <!-- Corporate Header -->
+  <table width="100%" cellpadding="0" cellspacing="0" style="background: {{primary_color}}; border-bottom: 4px solid {{accent_color}};">
+    <tr>
+      <td style="padding: 20px 30px;">
+        <table width="100%" cellpadding="0" cellspacing="0">
+          <tr>
+            <td width="200">
+              <img src="{{store_logo}}" alt="{{store_name}}" style="height: 60px;" />
+            </td>
+            <td align="right" style="color: #fff; vertical-align: middle;">
+              <div style="font-size: 12px; text-transform: uppercase; letter-spacing: 1px; opacity: 0.8;">Authorized Dealer</div>
+              <div style="font-size: 20px; font-weight: bold;">{{store_name}}</div>
+            </td>
+          </tr>
+        </table>
+      </td>
+    </tr>
+  </table>
+
+  <!-- Product Header Bar -->
+  <div style="background: #f8f9fa; padding: 15px 30px; border-bottom: 1px solid #dee2e6;">
+    <table width="100%" cellpadding="0" cellspacing="0">
+      <tr>
+        <td style="font-size: 12px; color: #6c757d;">
+          SKU: <strong style="color: #2c3e50;">{{product_sku}}</strong> &nbsp;|&nbsp; 
+          Category: <strong style="color: #2c3e50;">{{product_category}}</strong>
+        </td>
+        <td align="right">
+          <span style="background: #28a745; color: #fff; padding: 5px 12px; border-radius: 3px; font-size: 11px; font-weight: bold;">
+            ✓ IN STOCK
+          </span>
+        </td>
+      </tr>
+    </table>
+  </div>
+
+  <!-- Main Content Area -->
+  <div style="padding: 30px;">
+    
+    <!-- Product Title -->
+    <h1 style="font-size: 28px; font-weight: bold; color: #1a252f; margin: 0 0 10px 0; line-height: 1.3;">
+      {{product_name}}
+    </h1>
+    <div style="font-size: 14px; color: #6c757d; margin-bottom: 25px;">
+      by <strong>{{product_brand}}</strong> &nbsp;|&nbsp; Condition: <strong>{{product_condition}}</strong>
+    </div>
+
+    <!-- Price Box -->
+    <div style="background: linear-gradient(to right, #f8f9fa, #fff); border: 2px solid {{primary_color}}; border-radius: 8px; padding: 25px; margin-bottom: 30px;">
+      <table width="100%" cellpadding="0" cellspacing="0">
+        <tr>
+          <td>
+            <div style="font-size: 14px; color: #6c757d; margin-bottom: 5px;">Your Price</div>
+            <div style="font-size: 36px; font-weight: bold; color: {{accent_color}};">{{product_price}}</div>
+          </td>
+          <td align="right" style="vertical-align: bottom;">
+            <div style="font-size: 13px; color: #28a745;">
+              ✓ Quantity Available: {{product_stock}}<br/>
+              ✓ Usually ships within 24 hours
+            </div>
+          </td>
+        </tr>
+      </table>
+    </div>
+
+    <!-- Quick Info Cards -->
+    <table width="100%" cellpadding="10" cellspacing="0" style="margin-bottom: 30px;">
+      <tr>
+        <td width="33%" style="background: #e8f5e9; padding: 15px; border-radius: 6px; text-align: center;">
+          <div style="font-size: 24px; margin-bottom: 5px;">🛡️</div>
+          <div style="font-size: 12px; font-weight: bold; color: #2e7d32;">BUYER PROTECTION</div>
+          <div style="font-size: 11px; color: #388e3c;">Money Back Guarantee</div>
+        </td>
+        <td width="33%" style="background: #e3f2fd; padding: 15px; border-radius: 6px; text-align: center;">
+          <div style="font-size: 24px; margin-bottom: 5px;">🚚</div>
+          <div style="font-size: 12px; font-weight: bold; color: #1565c0;">FAST SHIPPING</div>
+          <div style="font-size: 11px; color: #1976d2;">{{shipping_cost}}</div>
+        </td>
+        <td width="33%" style="background: #fff3e0; padding: 15px; border-radius: 6px; text-align: center;">
+          <div style="font-size: 24px; margin-bottom: 5px;">↩️</div>
+          <div style="font-size: 12px; font-weight: bold; color: #e65100;">EASY RETURNS</div>
+          <div style="font-size: 11px; color: #ef6c00;">30-Day Policy</div>
+        </td>
+      </tr>
+    </table>
+
+    <!-- Description Section -->
+    <div style="margin-bottom: 30px;">
+      <div style="background: {{primary_color}}; color: #fff; padding: 12px 20px; font-weight: bold; font-size: 14px; text-transform: uppercase; letter-spacing: 1px;">
+        Product Description
+      </div>
+      <div style="border: 1px solid #dee2e6; border-top: none; padding: 20px; background: #fff;">
+        {{product_description}}
+      </div>
+    </div>
+
+    <!-- Technical Specifications -->
+    <div style="margin-bottom: 30px;">
+      <div style="background: {{primary_color}}; color: #fff; padding: 12px 20px; font-weight: bold; font-size: 14px; text-transform: uppercase; letter-spacing: 1px;">
+        Technical Specifications
+      </div>
+      <table width="100%" cellpadding="0" cellspacing="0" style="border: 1px solid #dee2e6; border-top: none;">
+        <tr>
+          <td style="padding: 12px 20px; border-bottom: 1px solid #dee2e6; background: #f8f9fa; font-weight: bold; width: 200px;">Brand</td>
+          <td style="padding: 12px 20px; border-bottom: 1px solid #dee2e6;">{{product_brand}}</td>
+        </tr>
+        <tr>
+          <td style="padding: 12px 20px; border-bottom: 1px solid #dee2e6; background: #f8f9fa; font-weight: bold;">Model / SKU</td>
+          <td style="padding: 12px 20px; border-bottom: 1px solid #dee2e6; font-family: monospace;">{{product_sku}}</td>
+        </tr>
+        <tr>
+          <td style="padding: 12px 20px; border-bottom: 1px solid #dee2e6; background: #f8f9fa; font-weight: bold;">UPC / EAN</td>
+          <td style="padding: 12px 20px; border-bottom: 1px solid #dee2e6; font-family: monospace;">{{product_upc}}</td>
+        </tr>
+        <tr>
+          <td style="padding: 12px 20px; border-bottom: 1px solid #dee2e6; background: #f8f9fa; font-weight: bold;">MPN</td>
+          <td style="padding: 12px 20px; border-bottom: 1px solid #dee2e6; font-family: monospace;">{{product_mpn}}</td>
+        </tr>
+        <tr>
+          <td style="padding: 12px 20px; border-bottom: 1px solid #dee2e6; background: #f8f9fa; font-weight: bold;">Weight</td>
+          <td style="padding: 12px 20px; border-bottom: 1px solid #dee2e6;">{{product_weight}}</td>
+        </tr>
+        <tr>
+          <td style="padding: 12px 20px; background: #f8f9fa; font-weight: bold;">Dimensions</td>
+          <td style="padding: 12px 20px;">{{product_dimensions}}</td>
+        </tr>
+      </table>
+    </div>
+
+    <!-- Shipping & Returns -->
+    <table width="100%" cellpadding="0" cellspacing="15">
+      <tr>
+        <td width="50%" valign="top">
+          <div style="border: 1px solid #dee2e6; border-radius: 6px; overflow: hidden;">
+            <div style="background: #e3f2fd; padding: 12px 15px; font-weight: bold; color: #1565c0;">
+              📦 Shipping Information
+            </div>
+            <div style="padding: 15px; font-size: 13px; color: #555;">
+              {{shipping_cost}}<br/>
+              Estimated delivery: 3-5 business days<br/>
+              Ships from: United States
+            </div>
+          </div>
+        </td>
+        <td width="50%" valign="top">
+          <div style="border: 1px solid #dee2e6; border-radius: 6px; overflow: hidden;">
+            <div style="background: #fff3e0; padding: 12px 15px; font-weight: bold; color: #e65100;">
+              ↩️ Return Policy
+            </div>
+            <div style="padding: 15px; font-size: 13px; color: #555;">
+              {{return_policy}}<br/>
+              Buyer pays return shipping<br/>
+              Refund or replacement available
+            </div>
+          </div>
+        </td>
+      </tr>
+    </table>
+
+  </div>
+
+  <!-- Footer -->
+  <div style="background: #2c3e50; color: #fff; padding: 25px 30px; text-align: center;">
+    <div style="font-size: 16px; font-weight: bold; margin-bottom: 10px;">{{store_name}}</div>
+    <div style="font-size: 12px; opacity: 0.8;">
+      Questions? Contact us: {{store_email}} | {{store_phone}}
+    </div>
+    <div style="font-size: 11px; opacity: 0.6; margin-top: 10px;">
+      © {{current_date}} {{store_name}}. All Rights Reserved.
+    </div>
+  </div>
+
+</div>
+<!-- END PROFESSIONAL BUSINESS TEMPLATE -->`
+    },
+
+    boutique: {
+      name: 'Luxury Boutique',
+      description: 'Elegant design for premium and luxury products',
+      preview: '👑',
+      html: `<!-- LUXURY BOUTIQUE TEMPLATE -->
+<div style="max-width: 900px; margin: 0 auto; font-family: 'Georgia', 'Times New Roman', serif; color: #333; background: #fff;">
+
+  <!-- Elegant Header -->
+  <div style="background: linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 100%); padding: 40px; text-align: center; border-bottom: 3px solid {{accent_color}};">
+    <img src="{{store_logo}}" alt="{{store_name}}" style="height: 70px; margin-bottom: 15px;" />
+    <div style="color: {{accent_color}}; font-size: 14px; letter-spacing: 3px; text-transform: uppercase;">Premium Collection</div>
+  </div>
+
+  <!-- Gold Accent Bar -->
+  <div style="height: 4px; background: linear-gradient(90deg, transparent, {{accent_color}}, transparent);"></div>
+
+  <!-- Main Content -->
+  <div style="padding: 50px 40px; background: #fafafa;">
+    
+    <!-- Product Title -->
+    <div style="text-align: center; margin-bottom: 40px;">
+      <div style="font-size: 12px; color: {{accent_color}}; letter-spacing: 2px; text-transform: uppercase; margin-bottom: 10px;">
+        {{product_brand}}
+      </div>
+      <h1 style="font-size: 32px; font-weight: normal; color: #1a1a1a; margin: 0; line-height: 1.4;">
+        {{product_name}}
+      </h1>
+      <div style="width: 60px; height: 2px; background: {{accent_color}}; margin: 20px auto;"></div>
+    </div>
+
+    <!-- Price Display -->
+    <div style="text-align: center; margin-bottom: 40px;">
+      <div style="font-size: 42px; color: #1a1a1a; font-weight: 300; letter-spacing: 2px;">
+        {{product_price}}
+      </div>
+      <div style="font-size: 13px; color: #888; margin-top: 10px;">
+        Free Express Shipping Worldwide
+      </div>
+    </div>
+
+    <!-- Luxury Features -->
+    <table width="100%" cellpadding="0" cellspacing="0" style="margin-bottom: 50px;">
+      <tr>
+        <td width="25%" style="text-align: center; padding: 20px;">
+          <div style="font-size: 28px; margin-bottom: 10px;">✨</div>
+          <div style="font-size: 11px; text-transform: uppercase; letter-spacing: 1px; color: #666;">Authentic</div>
+        </td>
+        <td width="25%" style="text-align: center; padding: 20px; border-left: 1px solid #ddd;">
+          <div style="font-size: 28px; margin-bottom: 10px;">🎁</div>
+          <div style="font-size: 11px; text-transform: uppercase; letter-spacing: 1px; color: #666;">Gift Wrapped</div>
+        </td>
+        <td width="25%" style="text-align: center; padding: 20px; border-left: 1px solid #ddd;">
+          <div style="font-size: 28px; margin-bottom: 10px;">🚚</div>
+          <div style="font-size: 11px; text-transform: uppercase; letter-spacing: 1px; color: #666;">Express Ship</div>
+        </td>
+        <td width="25%" style="text-align: center; padding: 20px; border-left: 1px solid #ddd;">
+          <div style="font-size: 28px; margin-bottom: 10px;">🛡️</div>
+          <div style="font-size: 11px; text-transform: uppercase; letter-spacing: 1px; color: #666;">Guaranteed</div>
+        </td>
+      </tr>
+    </table>
+
+    <!-- Description -->
+    <div style="background: #fff; padding: 40px; border: 1px solid #e0e0e0; margin-bottom: 30px;">
+      <h2 style="font-size: 14px; text-transform: uppercase; letter-spacing: 2px; color: {{accent_color}}; margin: 0 0 20px 0; font-weight: normal;">
+        About This Piece
+      </h2>
+      <div style="font-size: 15px; line-height: 1.8; color: #555;">
+        {{product_description}}
+      </div>
+    </div>
+
+    <!-- Details Grid -->
+    <div style="background: #fff; border: 1px solid #e0e0e0; margin-bottom: 30px;">
+      <div style="background: #1a1a1a; color: #fff; padding: 15px 25px;">
+        <span style="font-size: 12px; text-transform: uppercase; letter-spacing: 2px;">Product Details</span>
+      </div>
+      <table width="100%" cellpadding="0" cellspacing="0">
+        <tr>
+          <td style="padding: 18px 25px; border-bottom: 1px solid #eee; color: #888; width: 40%;">Reference</td>
+          <td style="padding: 18px 25px; border-bottom: 1px solid #eee; font-family: monospace;">{{product_sku}}</td>
+        </tr>
+        <tr>
+          <td style="padding: 18px 25px; border-bottom: 1px solid #eee; color: #888;">Brand</td>
+          <td style="padding: 18px 25px; border-bottom: 1px solid #eee;">{{product_brand}}</td>
+        </tr>
+        <tr>
+          <td style="padding: 18px 25px; border-bottom: 1px solid #eee; color: #888;">Condition</td>
+          <td style="padding: 18px 25px; border-bottom: 1px solid #eee;">{{product_condition}}</td>
+        </tr>
+        <tr>
+          <td style="padding: 18px 25px; color: #888;">Availability</td>
+          <td style="padding: 18px 25px; color: #2e7d32;">{{product_stock}} Available</td>
+        </tr>
+      </table>
+    </div>
+
+    <!-- Shipping & Returns -->
+    <table width="100%" cellpadding="0" cellspacing="15" style="margin-bottom: 30px;">
+      <tr>
+        <td width="50%" valign="top" style="background: #fff; border: 1px solid #e0e0e0; padding: 25px;">
+          <div style="font-size: 12px; text-transform: uppercase; letter-spacing: 1px; color: {{accent_color}}; margin-bottom: 15px;">
+            Shipping
+          </div>
+          <div style="font-size: 14px; color: #555; line-height: 1.7;">
+            {{shipping_cost}}<br/>
+            Express delivery within 2-4 business days<br/>
+            Signature required on delivery
+          </div>
+        </td>
+        <td width="50%" valign="top" style="background: #fff; border: 1px solid #e0e0e0; padding: 25px;">
+          <div style="font-size: 12px; text-transform: uppercase; letter-spacing: 1px; color: {{accent_color}}; margin-bottom: 15px;">
+            Returns
+          </div>
+          <div style="font-size: 14px; color: #555; line-height: 1.7;">
+            {{return_policy}}<br/>
+            Free return shipping<br/>
+            Full refund guaranteed
+          </div>
+        </td>
+      </tr>
+    </table>
+
+  </div>
+
+  <!-- Footer -->
+  <div style="background: #1a1a1a; color: #fff; padding: 40px; text-align: center;">
+    <div style="font-size: 20px; margin-bottom: 10px; font-weight: 300;">{{store_name}}</div>
+    <div style="font-size: 12px; color: {{accent_color}}; letter-spacing: 2px; margin-bottom: 15px;">LUXURY RETAIL</div>
+    <div style="font-size: 12px; color: #888;">
+      {{store_email}} • {{store_phone}}
+    </div>
+  </div>
+
+</div>
+<!-- END LUXURY BOUTIQUE TEMPLATE -->`
+    },
+
+    tech: {
+      name: 'Tech Store',
+      description: 'Modern tech-focused design with specs highlights',
+      preview: '🔧',
+      html: `<!-- TECH STORE TEMPLATE -->
+<div style="max-width: 950px; margin: 0 auto; font-family: 'Roboto', 'Arial', sans-serif; color: #e0e0e0; background: #121212;">
+
+  <!-- Tech Header -->
+  <div style="background: linear-gradient(180deg, #1e1e1e 0%, #121212 100%); padding: 25px 30px; border-bottom: 2px solid {{accent_color}};">
+    <table width="100%" cellpadding="0" cellspacing="0">
+      <tr>
+        <td>
+          <img src="{{store_logo}}" alt="{{store_name}}" style="height: 45px;" />
+        </td>
+        <td align="right">
+          <span style="color: {{accent_color}}; font-size: 12px; font-weight: bold; text-transform: uppercase; letter-spacing: 1px;">
+            🔌 Tech Specialist
+          </span>
+        </td>
+      </tr>
+    </table>
+  </div>
+
+  <!-- Product Title Bar -->
+  <div style="background: #1e1e1e; padding: 25px 30px;">
+    <div style="font-size: 11px; color: {{accent_color}}; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 8px;">
+      {{product_brand}} • {{product_category}}
+    </div>
+    <h1 style="font-size: 26px; font-weight: 500; color: #fff; margin: 0;">
+      {{product_name}}
+    </h1>
+  </div>
+
+  <!-- Main Content -->
+  <div style="padding: 30px; background: #181818;">
+    
+    <!-- Price & Stock Row -->
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px; flex-wrap: wrap; gap: 15px;">
+      <div>
+        <div style="font-size: 38px; font-weight: 700; color: {{accent_color}};">{{product_price}}</div>
+        <div style="font-size: 12px; color: #888; margin-top: 5px;">Free Shipping on orders over $50</div>
+      </div>
+      <div style="display: flex; gap: 10px; flex-wrap: wrap;">
+        <span style="background: #2e7d32; color: #fff; padding: 8px 16px; border-radius: 4px; font-size: 12px; font-weight: 500;">
+          ✓ IN STOCK ({{product_stock}})
+        </span>
+        <span style="background: #1565c0; color: #fff; padding: 8px 16px; border-radius: 4px; font-size: 12px; font-weight: 500;">
+          🚚 SHIPS TODAY
+        </span>
+      </div>
+    </div>
+
+    <!-- Tech Specs Quick View -->
+    <div style="background: #1e1e1e; border: 1px solid #333; border-radius: 8px; padding: 20px; margin-bottom: 30px;">
+      <div style="font-size: 13px; font-weight: 600; color: {{accent_color}}; text-transform: uppercase; margin-bottom: 15px;">
+        ⚡ Quick Specs
+      </div>
+      <table width="100%" cellpadding="8" cellspacing="0">
+        <tr>
+          <td style="color: #888; font-size: 13px; border-right: 1px solid #333; padding-right: 15px;">SKU</td>
+          <td style="color: #fff; font-family: 'Courier New', monospace; font-size: 13px; padding-left: 15px;">{{product_sku}}</td>
+          <td style="color: #888; font-size: 13px; border-left: 1px solid #333; border-right: 1px solid #333; padding: 0 15px;">Brand</td>
+          <td style="color: #fff; font-size: 13px; padding-left: 15px;">{{product_brand}}</td>
+        </tr>
+        <tr>
+          <td style="color: #888; font-size: 13px; border-right: 1px solid #333; padding-right: 15px; padding-top: 10px;">UPC</td>
+          <td style="color: #fff; font-family: 'Courier New', monospace; font-size: 13px; padding-left: 15px; padding-top: 10px;">{{product_upc}}</td>
+          <td style="color: #888; font-size: 13px; border-left: 1px solid #333; border-right: 1px solid #333; padding: 10px 15px 0;">Condition</td>
+          <td style="color: #4caf50; font-size: 13px; padding-left: 15px; padding-top: 10px;">{{product_condition}}</td>
+        </tr>
+      </table>
+    </div>
+
+    <!-- Features Grid -->
+    <table width="100%" cellpadding="0" cellspacing="10" style="margin-bottom: 30px;">
+      <tr>
+        <td width="25%" style="background: #1e1e1e; border: 1px solid #333; border-radius: 6px; padding: 20px; text-align: center;">
+          <div style="font-size: 24px; margin-bottom: 8px;">🛡️</div>
+          <div style="font-size: 11px; color: #888; text-transform: uppercase;">Warranty</div>
+          <div style="font-size: 13px; color: #fff; margin-top: 5px;">Included</div>
+        </td>
+        <td width="25%" style="background: #1e1e1e; border: 1px solid #333; border-radius: 6px; padding: 20px; text-align: center;">
+          <div style="font-size: 24px; margin-bottom: 8px;">📦</div>
+          <div style="font-size: 11px; color: #888; text-transform: uppercase;">Package</div>
+          <div style="font-size: 13px; color: #fff; margin-top: 5px;">{{product_weight}}</div>
+        </td>
+        <td width="25%" style="background: #1e1e1e; border: 1px solid #333; border-radius: 6px; padding: 20px; text-align: center;">
+          <div style="font-size: 24px; margin-bottom: 8px;">📐</div>
+          <div style="font-size: 11px; color: #888; text-transform: uppercase;">Dimensions</div>
+          <div style="font-size: 13px; color: #fff; margin-top: 5px;">{{product_dimensions}}</div>
+        </td>
+        <td width="25%" style="background: #1e1e1e; border: 1px solid #333; border-radius: 6px; padding: 20px; text-align: center;">
+          <div style="font-size: 24px; margin-bottom: 8px;">↩️</div>
+          <div style="font-size: 11px; color: #888; text-transform: uppercase;">Returns</div>
+          <div style="font-size: 13px; color: #fff; margin-top: 5px;">30 Days</div>
+        </td>
+      </tr>
+    </table>
+
+    <!-- Product Description -->
+    <div style="background: #1e1e1e; border: 1px solid #333; border-radius: 8px; overflow: hidden; margin-bottom: 30px;">
+      <div style="background: linear-gradient(90deg, {{accent_color}}, #1e88e5); padding: 12px 20px;">
+        <span style="color: #fff; font-weight: 600; font-size: 13px; text-transform: uppercase;">📋 Product Description</span>
+      </div>
+      <div style="padding: 25px; color: #ccc; font-size: 14px; line-height: 1.7;">
+        {{product_description}}
+      </div>
+    </div>
+
+    <!-- Full Specifications -->
+    <div style="background: #1e1e1e; border: 1px solid #333; border-radius: 8px; overflow: hidden; margin-bottom: 30px;">
+      <div style="background: #252525; padding: 12px 20px; border-bottom: 1px solid #333;">
+        <span style="color: #fff; font-weight: 600; font-size: 13px; text-transform: uppercase;">🔧 Technical Specifications</span>
+      </div>
+      <table width="100%" cellpadding="0" cellspacing="0">
+        <tr>
+          <td style="padding: 15px 20px; border-bottom: 1px solid #333; color: #888; background: #1a1a1a; width: 30%;">Brand</td>
+          <td style="padding: 15px 20px; border-bottom: 1px solid #333; color: #fff;">{{product_brand}}</td>
+        </tr>
+        <tr>
+          <td style="padding: 15px 20px; border-bottom: 1px solid #333; color: #888; background: #1a1a1a;">Model / SKU</td>
+          <td style="padding: 15px 20px; border-bottom: 1px solid #333; color: {{accent_color}}; font-family: monospace;">{{product_sku}}</td>
+        </tr>
+        <tr>
+          <td style="padding: 15px 20px; border-bottom: 1px solid #333; color: #888; background: #1a1a1a;">MPN</td>
+          <td style="padding: 15px 20px; border-bottom: 1px solid #333; color: #fff; font-family: monospace;">{{product_mpn}}</td>
+        </tr>
+        <tr>
+          <td style="padding: 15px 20px; border-bottom: 1px solid #333; color: #888; background: #1a1a1a;">UPC / Barcode</td>
+          <td style="padding: 15px 20px; border-bottom: 1px solid #333; color: #fff; font-family: monospace;">{{product_upc}}</td>
+        </tr>
+        <tr>
+          <td style="padding: 15px 20px; border-bottom: 1px solid #333; color: #888; background: #1a1a1a;">Weight</td>
+          <td style="padding: 15px 20px; border-bottom: 1px solid #333; color: #fff;">{{product_weight}}</td>
+        </tr>
+        <tr>
+          <td style="padding: 15px 20px; color: #888; background: #1a1a1a;">Dimensions</td>
+          <td style="padding: 15px 20px; color: #fff;">{{product_dimensions}}</td>
+        </tr>
+      </table>
+    </div>
+
+    <!-- Shipping & Support -->
+    <table width="100%" cellpadding="0" cellspacing="15">
+      <tr>
+        <td width="50%" valign="top" style="background: #1e1e1e; border: 1px solid #333; border-radius: 8px; padding: 20px;">
+          <div style="color: {{accent_color}}; font-weight: 600; font-size: 13px; margin-bottom: 12px;">🚚 Shipping</div>
+          <div style="color: #ccc; font-size: 13px; line-height: 1.6;">
+            {{shipping_cost}}<br/>
+            Orders placed before 3PM ship same day<br/>
+            Tracking number provided
+          </div>
+        </td>
+        <td width="50%" valign="top" style="background: #1e1e1e; border: 1px solid #333; border-radius: 8px; padding: 20px;">
+          <div style="color: {{accent_color}}; font-weight: 600; font-size: 13px; margin-bottom: 12px;">💬 Support</div>
+          <div style="color: #ccc; font-size: 13px; line-height: 1.6;">
+            {{return_policy}}<br/>
+            Technical support available<br/>
+            Email: {{store_email}}
+          </div>
+        </td>
+      </tr>
+    </table>
+
+  </div>
+
+  <!-- Footer -->
+  <div style="background: #0a0a0a; padding: 30px; text-align: center; border-top: 1px solid #333;">
+    <div style="font-size: 18px; font-weight: 600; color: #fff; margin-bottom: 8px;">{{store_name}}</div>
+    <div style="font-size: 12px; color: {{accent_color}};">Your Trusted Tech Partner</div>
+    <div style="font-size: 11px; color: #666; margin-top: 15px;">
+      {{store_email}} • {{store_phone}}
+    </div>
+  </div>
+
+</div>
+<!-- END TECH STORE TEMPLATE -->`
+    },
+
+    minimal: {
+      name: 'Minimalist',
+      description: 'Clean, distraction-free design that lets product speak',
+      preview: '🎯',
+      html: `<!-- MINIMALIST TEMPLATE -->
+<div style="max-width: 800px; margin: 0 auto; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; color: #222; background: #fff;">
+
+  <!-- Simple Header -->
+  <div style="padding: 30px 0; text-align: center; border-bottom: 1px solid #eee;">
+    <div style="font-size: 20px; font-weight: 600; color: #111;">{{store_name}}</div>
+  </div>
+
+  <!-- Content -->
+  <div style="padding: 40px 20px;">
+    
+    <!-- Title -->
+    <h1 style="font-size: 28px; font-weight: 400; color: #111; margin: 0 0 15px 0; line-height: 1.4;">
+      {{product_name}}
+    </h1>
+    
+    <!-- Brand & SKU -->
+    <div style="font-size: 13px; color: #888; margin-bottom: 30px;">
+      {{product_brand}} &nbsp;·&nbsp; {{product_sku}}
+    </div>
+
+    <!-- Price -->
+    <div style="font-size: 32px; font-weight: 300; color: #111; margin-bottom: 30px;">
+      {{product_price}}
+    </div>
+
+    <!-- Simple Tags -->
+    <div style="display: flex; gap: 10px; margin-bottom: 40px; flex-wrap: wrap;">
+      <span style="font-size: 12px; color: #666; padding: 6px 12px; border: 1px solid #ddd; border-radius: 20px;">
+        ✓ Free Shipping
+      </span>
+      <span style="font-size: 12px; color: #666; padding: 6px 12px; border: 1px solid #ddd; border-radius: 20px;">
+        ✓ {{product_stock}} Available
+      </span>
+      <span style="font-size: 12px; color: #666; padding: 6px 12px; border: 1px solid #ddd; border-radius: 20px;">
+        ✓ 30-Day Returns
+      </span>
+    </div>
+
+    <!-- Divider -->
+    <div style="height: 1px; background: #eee; margin: 40px 0;"></div>
+
+    <!-- Description -->
+    <div style="margin-bottom: 40px;">
+      <h2 style="font-size: 14px; font-weight: 600; color: #111; margin: 0 0 15px 0; text-transform: uppercase; letter-spacing: 1px;">
+        Description
+      </h2>
+      <div style="font-size: 15px; line-height: 1.8; color: #444;">
+        {{product_description}}
+      </div>
+    </div>
+
+    <!-- Details -->
+    <div style="margin-bottom: 40px;">
+      <h2 style="font-size: 14px; font-weight: 600; color: #111; margin: 0 0 15px 0; text-transform: uppercase; letter-spacing: 1px;">
+        Details
+      </h2>
+      <table width="100%" cellpadding="0" cellspacing="0" style="font-size: 14px;">
+        <tr>
+          <td style="padding: 12px 0; border-bottom: 1px solid #f0f0f0; color: #888; width: 140px;">Brand</td>
+          <td style="padding: 12px 0; border-bottom: 1px solid #f0f0f0; color: #333;">{{product_brand}}</td>
+        </tr>
+        <tr>
+          <td style="padding: 12px 0; border-bottom: 1px solid #f0f0f0; color: #888;">SKU</td>
+          <td style="padding: 12px 0; border-bottom: 1px solid #f0f0f0; color: #333; font-family: monospace;">{{product_sku}}</td>
+        </tr>
+        <tr>
+          <td style="padding: 12px 0; border-bottom: 1px solid #f0f0f0; color: #888;">Condition</td>
+          <td style="padding: 12px 0; border-bottom: 1px solid #f0f0f0; color: #333;">{{product_condition}}</td>
+        </tr>
+        <tr>
+          <td style="padding: 12px 0; border-bottom: 1px solid #f0f0f0; color: #888;">Weight</td>
+          <td style="padding: 12px 0; border-bottom: 1px solid #f0f0f0; color: #333;">{{product_weight}}</td>
+        </tr>
+        <tr>
+          <td style="padding: 12px 0; color: #888;">Dimensions</td>
+          <td style="padding: 12px 0; color: #333;">{{product_dimensions}}</td>
+        </tr>
+      </table>
+    </div>
+
+    <!-- Divider -->
+    <div style="height: 1px; background: #eee; margin: 40px 0;"></div>
+
+    <!-- Shipping & Returns -->
+    <div style="display: flex; gap: 40px; flex-wrap: wrap;">
+      <div style="flex: 1; min-width: 200px;">
+        <h3 style="font-size: 13px; font-weight: 600; color: #111; margin: 0 0 10px 0; text-transform: uppercase; letter-spacing: 1px;">
+          Shipping
+        </h3>
+        <div style="font-size: 14px; color: #666; line-height: 1.7;">
+          {{shipping_cost}}<br/>
+          Delivery: 3-5 business days
+        </div>
+      </div>
+      <div style="flex: 1; min-width: 200px;">
+        <h3 style="font-size: 13px; font-weight: 600; color: #111; margin: 0 0 10px 0; text-transform: uppercase; letter-spacing: 1px;">
+          Returns
+        </h3>
+        <div style="font-size: 14px; color: #666; line-height: 1.7;">
+          {{return_policy}}<br/>
+          Hassle-free process
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- Simple Footer -->
+  <div style="padding: 30px 20px; text-align: center; border-top: 1px solid #eee;">
+    <div style="font-size: 14px; color: #666;">
+      Thank you for shopping with us
+    </div>
+    <div style="font-size: 12px; color: #999; margin-top: 8px;">
+      {{store_email}}
+    </div>
+  </div>
+
+</div>
+<!-- END MINIMALIST TEMPLATE -->`
+    }
+  };
+
+  // Function to get full template HTML with colors applied
+  const getFullTemplateHTML = (templateId) => {
+    const template = EBAY_TEMPLATES[templateId];
+    if (!template) return '';
+    
+    // Replace color variables with actual values
+    let html = template.html;
+    html = html.replace(/\{\{primary_color\}\}/g, themeSettings.primaryColor);
+    html = html.replace(/\{\{accent_color\}\}/g, themeSettings.accentColor);
+    html = html.replace(/\{\{secondary_color\}\}/g, themeSettings.secondaryColor);
+    
+    return html;
+  };
+
+  // Apply template to editor
+  const applyTemplate = (templateId) => {
+    const fullHTML = getFullTemplateHTML(templateId);
+    setThemeSettings(prev => ({
+      ...prev,
+      template: templateId,
+      headerHTML: fullHTML,
+      descriptionTemplate: fullHTML,
+      activeTemplate: templateId
+    }));
+  };
+
+  // eBay Listing Templates for selector (simplified for UI)
+  const listingTemplates = Object.entries(EBAY_TEMPLATES).map(([id, template]) => ({
+    id,
+    name: template.name,
+    description: template.description,
+    preview: template.preview
+  }));
 
   // Sample eBay categories for demo
   const sampleEbayCategories = [
