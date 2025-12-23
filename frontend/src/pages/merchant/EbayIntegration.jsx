@@ -390,6 +390,16 @@ const EbayIntegration = () => {
     }
   }, []);
 
+  // Fetch store settings (for theme preview logo)
+  const fetchStoreSettings = useCallback(async () => {
+    try {
+      const response = await axios.get(`${BACKEND_URL}/api/store/settings`);
+      setStoreSettings(response.data || null);
+    } catch (error) {
+      console.error('Failed to fetch store settings:', error);
+    }
+  }, []);
+
   useEffect(() => {
     fetchStatus();
   }, [fetchStatus]);
