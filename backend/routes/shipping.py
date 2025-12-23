@@ -1072,14 +1072,14 @@ async def calculate_shipping(request: ShippingCalculationRequest):
         # Count number of parcels (each unit is a separate parcel, based on total quantity)
         num_parcels = sum(item.get("quantity", 1) for item in request.items)
         
-        # Get rate values
-        per_parcel_rate = rate.get("per_parcel_rate", rate.get("first_parcel", rate.get("base_rate", 0)))
-        per_kg_rate = rate.get("per_kg_rate", 0)
-        rate_min_charge = rate.get("min_charge", 0)
+        # Get rate values - ensure all numeric fields default to 0 if None
+        per_parcel_rate = rate.get("per_parcel_rate") or rate.get("first_parcel") or rate.get("base_rate") or 0
+        per_kg_rate = rate.get("per_kg_rate") or 0
+        rate_min_charge = rate.get("min_charge") or 0
         
-        # Get fuel levy settings
-        fuel_levy_percent = service.get("fuel_levy_percent", 0)
-        fuel_levy_amount = service.get("fuel_levy_amount", 0)
+        # Get fuel levy settings - ensure defaults to 0 if None
+        fuel_levy_percent = service.get("fuel_levy_percent") or 0
+        fuel_levy_amount = service.get("fuel_levy_amount") or 0
         
         # ============================================================
         # MAROPOST CALCULATION METHOD:
@@ -1092,8 +1092,8 @@ async def calculate_shipping(request: ShippingCalculationRequest):
         # 7. GST added at the end
         # ============================================================
         
-        # Get handling fee (determines which calculation method to use)
-        handling_fee = service.get("handling_fee", 0)
+        # Get handling fee (determines which calculation method to use) - default to 0 if None
+        handling_fee = service.get("handling_fee") or 0
         
         if handling_fee > 0:
             # STARTRACK-STYLE CALCULATION:
