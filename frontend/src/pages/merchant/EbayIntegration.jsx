@@ -2985,7 +2985,7 @@ const EbayIntegration = () => {
                       </div>
                     </div>
                     
-                    {/* eBay Frame Simulation */}
+                    {/* eBay Frame Simulation with Iframe Preview */}
                     <div className="p-4 bg-gray-100">
                       <div className={`mx-auto transition-all duration-300 ${
                         themePreview === 'desktop' ? 'max-w-full' : 
@@ -3003,16 +3003,26 @@ const EbayIntegration = () => {
                               <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
                               <path d="M7 11V7a5 5 0 0110 0v4"></path>
                             </svg>
-                            ebay.com/itm/123456789
+                            ebay.com/itm/{previewProduct.sku || '123456789'}
                           </div>
                         </div>
                         
-                        {/* Listing Preview */}
-                        <div 
-                          className="bg-white border-x border-b border-gray-200 rounded-b-lg overflow-hidden"
-                          style={{fontFamily: themeSettings.fontFamily, fontSize: themeSettings.fontSize || '14px'}}
-                        >
-                          {/* Store Header */}
+                        {/* Live HTML Preview using iframe */}
+                        <div className="bg-white border-x border-b border-gray-200 rounded-b-lg overflow-hidden">
+                          <iframe
+                            srcDoc={getPreviewHtml()}
+                            title="eBay Listing Preview"
+                            className="w-full border-0"
+                            style={{ 
+                              minHeight: '600px',
+                              height: themePreview === 'mobile' ? '500px' : themePreview === 'tablet' ? '600px' : '700px'
+                            }}
+                            sandbox="allow-same-origin"
+                          />
+                        </div>
+                      </div>
+                    </div>
+                  </div>
                           {themeSettings.showBrandLogo && (
                             <div 
                               className="p-4 text-white"
