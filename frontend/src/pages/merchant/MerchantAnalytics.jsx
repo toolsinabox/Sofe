@@ -6,6 +6,26 @@ import { Button } from '../../components/ui/button';
 const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
 const API = `${BACKEND_URL}/api`;
 
+const StatCard = ({ title, value, change, icon: Icon, prefix = '', suffix = '' }) => (
+  <div className="bg-white rounded-lg border border-gray-200 p-5">
+    <div className="flex items-center justify-between">
+      <div className="p-2 bg-gray-100 rounded-lg">
+        <Icon size={20} className="text-blue-600" />
+      </div>
+      <div className={`flex items-center gap-1 text-sm ${
+        change >= 0 ? 'text-green-600' : 'text-red-600'
+      }`}>
+        {change >= 0 ? <ArrowUpRight size={14} /> : <ArrowDownRight size={14} />}
+        {Math.abs(change)}%
+      </div>
+    </div>
+    <p className="text-gray-500 text-sm mt-3">{title}</p>
+    <p className="text-2xl font-bold text-gray-900 mt-1">
+      {prefix}{typeof value === 'number' ? value.toLocaleString() : value}{suffix}
+    </p>
+  </div>
+);
+
 const MerchantAnalytics = () => {
   const [dateRange, setDateRange] = useState('30d');
   const [stats, setStats] = useState({
@@ -39,26 +59,6 @@ const MerchantAnalytics = () => {
     { id: 'ORD-003', customer: 'Mike Wilson', total: 234.00, status: 'pending', date: '2025-12-20' },
     { id: 'ORD-004', customer: 'Emma Davis', total: 67.25, status: 'completed', date: '2025-12-20' }
   ]);
-
-  const StatCard = ({ title, value, change, icon: Icon, prefix = '', suffix = '' }) => (
-    <div className="bg-white rounded-lg border border-gray-200 p-5">
-      <div className="flex items-center justify-between">
-        <div className="p-2 bg-gray-100 rounded-lg">
-          <Icon size={20} className="text-blue-600" />
-        </div>
-        <div className={`flex items-center gap-1 text-sm ${
-          change >= 0 ? 'text-green-600' : 'text-red-600'
-        }`}>
-          {change >= 0 ? <ArrowUpRight size={14} /> : <ArrowDownRight size={14} />}
-          {Math.abs(change)}%
-        </div>
-      </div>
-      <p className="text-gray-500 text-sm mt-3">{title}</p>
-      <p className="text-2xl font-bold text-gray-900 mt-1">
-        {prefix}{typeof value === 'number' ? value.toLocaleString() : value}{suffix}
-      </p>
-    </div>
-  );
 
   const maxRevenue = Math.max(...chartData.revenue);
 

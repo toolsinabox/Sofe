@@ -179,7 +179,7 @@ const MerchantStoreSettings = () => {
                 placeholder="Home"
                 className="bg-gray-50 border-gray-200 text-gray-900"
               />
-              <p className="text-xs text-gray-500 mt-1">Browser tab title for homepage (e.g., "Welcome" or "Home")</p>
+              <p className="text-xs text-gray-500 mt-1">Browser tab title for homepage (e.g., &quot;Welcome&quot; or &quot;Home&quot;)</p>
             </div>
             <div>
               <Label className="text-gray-700">Store URL</Label>

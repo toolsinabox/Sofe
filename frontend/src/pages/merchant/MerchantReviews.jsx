@@ -50,7 +50,7 @@ const MerchantReviews = () => {
     }
   };
 
-  const StarRating = ({ rating }) => (
+  const renderStarRating = (rating) => (
     <div className="flex gap-0.5">
       {[1, 2, 3, 4, 5].map((star) => (
         <Star
@@ -168,7 +168,7 @@ const MerchantReviews = () => {
                     <p className="text-sm text-gray-500">{review.customer_email}</p>
                   </td>
                   <td className="p-4">
-                    <StarRating rating={review.rating} />
+                    {renderStarRating(review.rating)}
                   </td>
                   <td className="p-4 max-w-md">
                     <p className="text-gray-900 font-medium truncate">{review.title}</p>
