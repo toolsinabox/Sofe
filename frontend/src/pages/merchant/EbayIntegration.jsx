@@ -395,7 +395,24 @@ const EbayIntegration = () => {
   const fetchStoreSettings = useCallback(async () => {
     try {
       const response = await axios.get(`${BACKEND_URL}/api/store/settings`);
-      setStoreSettings(response.data || null);
+      const settings = response.data || null;
+      setStoreSettings(settings);
+      
+      // Convert logo to base64 for iframe preview (to avoid CORS issues)
+      if (settings?.store_logo) {
+        try {
+          const logoResponse = await fetch(settings.store_logo);
+          const blob = await logoResponse.blob();
+          const reader = new FileReader();
+          reader.onloadend = () => {
+            setStoreLogoBase64(reader.result);
+          };
+          reader.readAsDataURL(blob);
+        } catch (logoError) {
+          console.warn('Could not convert logo to base64 for preview:', logoError);
+          setStoreLogoBase64(null);
+        }
+      }
     } catch (error) {
       console.error('Failed to fetch store settings:', error);
     }
