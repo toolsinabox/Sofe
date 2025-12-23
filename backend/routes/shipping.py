@@ -713,6 +713,9 @@ async def import_service_rates_csv(
                 existing_rates[rate["zone_code"]] = rate
             new_rates = list(existing_rates.values())
         
+        # Sanitize rates to ensure min_charge = base_rate when not set
+        new_rates = sanitize_shipping_rates(new_rates)
+        
         # Update service with new rates
         await db.shipping_services.update_one(
             {"id": service_id},
