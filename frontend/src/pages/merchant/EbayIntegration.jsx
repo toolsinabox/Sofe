@@ -1737,337 +1737,730 @@ const EbayIntegration = () => {
             </div>
           )}
 
-          {/* Theme Editor Tab */}
+          {/* Theme Editor Tab - SUPER ADVANCED */}
           {activeTab === 'theme' && (
-            <div className="space-y-6">
+            <div className="space-y-4">
               {/* Theme Editor Header */}
-              <div className="flex items-center justify-between">
+              <div className="flex items-center justify-between flex-wrap gap-4">
                 <div>
-                  <h3 className="font-semibold text-gray-900">eBay Listing Theme Editor</h3>
-                  <p className="text-sm text-gray-500">Customize how your products appear on eBay</p>
+                  <h3 className="font-semibold text-gray-900">Advanced eBay Theme Editor</h3>
+                  <p className="text-sm text-gray-500">Design professional listing templates with live preview</p>
                 </div>
-                <div className="flex items-center gap-2">
+                <div className="flex items-center gap-2 flex-wrap">
+                  {/* Preview Product Selector */}
+                  <div className="flex items-center gap-2 bg-gray-100 rounded-lg px-3 py-1.5">
+                    <Package className="w-4 h-4 text-gray-500" />
+                    <Select 
+                      value={themeSettings.previewProduct || 'sample'}
+                      onValueChange={(v) => setThemeSettings(s => ({...s, previewProduct: v}))}
+                    >
+                      <SelectTrigger className="w-44 h-8 border-0 bg-transparent text-sm">
+                        <SelectValue placeholder="Preview Product" />
+                      </SelectTrigger>
+                      <SelectContent className="bg-white">
+                        <SelectItem value="sample">Sample Product</SelectItem>
+                        {products.map(p => (
+                          <SelectItem key={p.id} value={p.id}>
+                            {p.sku ? `${p.sku} - ` : ''}{p.name?.slice(0, 25)}...
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  
+                  {/* Device Preview Toggle */}
                   <div className="flex bg-gray-100 rounded-lg p-1">
                     <button
                       onClick={() => setThemePreview('desktop')}
-                      className={`p-2 rounded ${themePreview === 'desktop' ? 'bg-white shadow-sm' : ''}`}
+                      className={`p-2 rounded transition-colors ${themePreview === 'desktop' ? 'bg-white shadow-sm' : 'hover:bg-gray-200'}`}
+                      title="Desktop Preview"
                     >
                       <Monitor className="w-4 h-4 text-gray-600" />
                     </button>
                     <button
+                      onClick={() => setThemePreview('tablet')}
+                      className={`p-2 rounded transition-colors ${themePreview === 'tablet' ? 'bg-white shadow-sm' : 'hover:bg-gray-200'}`}
+                      title="Tablet Preview"
+                    >
+                      <svg className="w-4 h-4 text-gray-600" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                        <rect x="4" y="2" width="16" height="20" rx="2" />
+                        <line x1="12" y1="18" x2="12" y2="18" />
+                      </svg>
+                    </button>
+                    <button
                       onClick={() => setThemePreview('mobile')}
-                      className={`p-2 rounded ${themePreview === 'mobile' ? 'bg-white shadow-sm' : ''}`}
+                      className={`p-2 rounded transition-colors ${themePreview === 'mobile' ? 'bg-white shadow-sm' : 'hover:bg-gray-200'}`}
+                      title="Mobile Preview"
                     >
                       <Smartphone className="w-4 h-4 text-gray-600" />
                     </button>
                   </div>
-                  <Button className="bg-yellow-500 hover:bg-yellow-600">
-                    <Save className="w-4 h-4 mr-2" />
+
+                  {/* Action Buttons */}
+                  <Button variant="outline" size="sm" className="gap-1">
+                    <Download className="w-4 h-4" />
+                    Export
+                  </Button>
+                  <Button variant="outline" size="sm" className="gap-1">
+                    <Upload className="w-4 h-4" />
+                    Import
+                  </Button>
+                  <Button className="bg-yellow-500 hover:bg-yellow-600 gap-1">
+                    <Save className="w-4 h-4" />
                     Save Theme
                   </Button>
                 </div>
               </div>
 
-              <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-                {/* Theme Settings Panel */}
-                <div className="lg:col-span-1 space-y-4">
-                  {/* Template Selection */}
-                  <div className="bg-white rounded-xl border border-gray-200 p-4">
-                    <h4 className="font-medium text-gray-900 mb-3 flex items-center gap-2">
-                      <Layout className="w-4 h-4 text-yellow-500" />
-                      Template
-                    </h4>
-                    <div className="space-y-2">
-                      {listingTemplates.map(template => (
-                        <label
-                          key={template.id}
-                          className={`flex items-start gap-3 p-3 rounded-lg border cursor-pointer transition-colors ${
-                            themeSettings.template === template.id
-                              ? 'border-yellow-500 bg-yellow-50'
-                              : 'border-gray-200 hover:border-gray-300'
+              {/* Main Editor Layout */}
+              <div className="grid grid-cols-1 xl:grid-cols-2 gap-4">
+                {/* Left Panel - Code Editor */}
+                <div className="space-y-4">
+                  {/* Editor Tabs */}
+                  <div className="bg-white rounded-xl border border-gray-200 overflow-hidden">
+                    <div className="flex border-b border-gray-200 bg-gray-50">
+                      {[
+                        { id: 'header', label: 'Header', icon: Layout },
+                        { id: 'description', label: 'Description', icon: FileText },
+                        { id: 'specs', label: 'Specifications', icon: List },
+                        { id: 'footer', label: 'Footer', icon: Type },
+                        { id: 'css', label: 'Custom CSS', icon: Code },
+                      ].map(tab => (
+                        <button
+                          key={tab.id}
+                          onClick={() => setActiveThemeTemplate(tab.id)}
+                          className={`flex items-center gap-1.5 px-4 py-2.5 text-sm font-medium transition-colors border-b-2 -mb-[2px] ${
+                            activeThemeTemplate === tab.id
+                              ? 'border-yellow-500 text-yellow-600 bg-white'
+                              : 'border-transparent text-gray-500 hover:text-gray-700'
                           }`}
                         >
-                          <input
-                            type="radio"
-                            name="template"
-                            value={template.id}
-                            checked={themeSettings.template === template.id}
-                            onChange={(e) => setThemeSettings(s => ({...s, template: e.target.value}))}
-                            className="mt-1"
-                          />
-                          <div>
-                            <p className="font-medium text-gray-900 text-sm">{template.name}</p>
-                            <p className="text-xs text-gray-500">{template.description}</p>
-                          </div>
-                        </label>
+                          <tab.icon className="w-3.5 h-3.5" />
+                          {tab.label}
+                        </button>
                       ))}
                     </div>
-                  </div>
 
-                  {/* Colors */}
-                  <div className="bg-white rounded-xl border border-gray-200 p-4">
-                    <h4 className="font-medium text-gray-900 mb-3 flex items-center gap-2">
-                      <Palette className="w-4 h-4 text-yellow-500" />
-                      Colors
-                    </h4>
-                    <div className="space-y-3">
-                      <div>
-                        <Label className="text-xs text-gray-500">Primary Color</Label>
-                        <div className="flex gap-2 mt-1">
-                          <input
-                            type="color"
-                            value={themeSettings.primaryColor}
-                            onChange={(e) => setThemeSettings(s => ({...s, primaryColor: e.target.value}))}
-                            className="w-10 h-10 rounded border border-gray-200 cursor-pointer"
-                          />
-                          <Input
-                            value={themeSettings.primaryColor}
-                            onChange={(e) => setThemeSettings(s => ({...s, primaryColor: e.target.value}))}
-                            className="flex-1 font-mono text-sm"
-                          />
-                        </div>
+                    {/* Template Tags Toolbar */}
+                    <div className="p-3 border-b border-gray-100 bg-gray-50/50">
+                      <div className="flex items-center gap-2 flex-wrap">
+                        <span className="text-xs font-medium text-gray-500 mr-2">Insert Tag:</span>
+                        {[
+                          { tag: '{{product_name}}', label: 'Name', color: 'blue' },
+                          { tag: '{{product_price}}', label: 'Price', color: 'green' },
+                          { tag: '{{product_sku}}', label: 'SKU', color: 'purple' },
+                          { tag: '{{product_description}}', label: 'Desc', color: 'orange' },
+                          { tag: '{{product_images}}', label: 'Images', color: 'pink' },
+                          { tag: '{{product_stock}}', label: 'Stock', color: 'cyan' },
+                          { tag: '{{store_name}}', label: 'Store', color: 'yellow' },
+                          { tag: '{{store_logo}}', label: 'Logo', color: 'indigo' },
+                        ].map(item => (
+                          <button
+                            key={item.tag}
+                            onClick={() => {
+                              const textarea = document.getElementById('theme-code-editor');
+                              if (textarea) {
+                                const start = textarea.selectionStart;
+                                const end = textarea.selectionEnd;
+                                const currentTemplate = activeThemeTemplate === 'header' ? themeSettings.headerHTML :
+                                  activeThemeTemplate === 'description' ? themeSettings.descriptionTemplate :
+                                  activeThemeTemplate === 'specs' ? (themeSettings.specsTemplate || '') :
+                                  activeThemeTemplate === 'footer' ? themeSettings.footerHTML :
+                                  themeSettings.customCSS;
+                                const newValue = currentTemplate.slice(0, start) + item.tag + currentTemplate.slice(end);
+                                
+                                if (activeThemeTemplate === 'header') {
+                                  setThemeSettings(s => ({...s, headerHTML: newValue}));
+                                } else if (activeThemeTemplate === 'description') {
+                                  setThemeSettings(s => ({...s, descriptionTemplate: newValue}));
+                                } else if (activeThemeTemplate === 'specs') {
+                                  setThemeSettings(s => ({...s, specsTemplate: newValue}));
+                                } else if (activeThemeTemplate === 'footer') {
+                                  setThemeSettings(s => ({...s, footerHTML: newValue}));
+                                } else {
+                                  setThemeSettings(s => ({...s, customCSS: newValue}));
+                                }
+                              }
+                            }}
+                            className={`px-2 py-1 text-xs rounded-md border transition-colors bg-${item.color}-50 border-${item.color}-200 text-${item.color}-700 hover:bg-${item.color}-100`}
+                            style={{
+                              backgroundColor: item.color === 'blue' ? '#eff6ff' : item.color === 'green' ? '#f0fdf4' : item.color === 'purple' ? '#faf5ff' : item.color === 'orange' ? '#fff7ed' : item.color === 'pink' ? '#fdf2f8' : item.color === 'cyan' ? '#ecfeff' : item.color === 'yellow' ? '#fefce8' : '#eef2ff',
+                              borderColor: item.color === 'blue' ? '#bfdbfe' : item.color === 'green' ? '#bbf7d0' : item.color === 'purple' ? '#e9d5ff' : item.color === 'orange' ? '#fed7aa' : item.color === 'pink' ? '#fbcfe8' : item.color === 'cyan' ? '#a5f3fc' : item.color === 'yellow' ? '#fef08a' : '#c7d2fe',
+                              color: item.color === 'blue' ? '#1d4ed8' : item.color === 'green' ? '#15803d' : item.color === 'purple' ? '#7e22ce' : item.color === 'orange' ? '#c2410c' : item.color === 'pink' ? '#be185d' : item.color === 'cyan' ? '#0891b2' : item.color === 'yellow' ? '#a16207' : '#4338ca',
+                            }}
+                          >
+                            {item.label}
+                          </button>
+                        ))}
                       </div>
-                      <div>
-                        <Label className="text-xs text-gray-500">Accent Color</Label>
-                        <div className="flex gap-2 mt-1">
-                          <input
-                            type="color"
-                            value={themeSettings.accentColor}
-                            onChange={(e) => setThemeSettings(s => ({...s, accentColor: e.target.value}))}
-                            className="w-10 h-10 rounded border border-gray-200 cursor-pointer"
-                          />
-                          <Input
-                            value={themeSettings.accentColor}
-                            onChange={(e) => setThemeSettings(s => ({...s, accentColor: e.target.value}))}
-                            className="flex-1 font-mono text-sm"
-                          />
+                      
+                      {/* More Tags - Expandable */}
+                      <details className="mt-2">
+                        <summary className="text-xs text-gray-500 cursor-pointer hover:text-gray-700">More tags...</summary>
+                        <div className="flex items-center gap-2 flex-wrap mt-2">
+                          {[
+                            { tag: '{{product_brand}}', label: 'Brand' },
+                            { tag: '{{product_category}}', label: 'Category' },
+                            { tag: '{{product_weight}}', label: 'Weight' },
+                            { tag: '{{product_dimensions}}', label: 'Dimensions' },
+                            { tag: '{{product_condition}}', label: 'Condition' },
+                            { tag: '{{product_upc}}', label: 'UPC' },
+                            { tag: '{{product_mpn}}', label: 'MPN' },
+                            { tag: '{{shipping_cost}}', label: 'Shipping' },
+                            { tag: '{{return_policy}}', label: 'Returns' },
+                            { tag: '{{store_email}}', label: 'Email' },
+                            { tag: '{{store_phone}}', label: 'Phone' },
+                            { tag: '{{current_date}}', label: 'Date' },
+                            { tag: '{{listing_id}}', label: 'Listing ID' },
+                          ].map(item => (
+                            <button
+                              key={item.tag}
+                              onClick={() => {
+                                const textarea = document.getElementById('theme-code-editor');
+                                if (textarea) {
+                                  const start = textarea.selectionStart;
+                                  const currentTemplate = activeThemeTemplate === 'header' ? themeSettings.headerHTML :
+                                    activeThemeTemplate === 'description' ? themeSettings.descriptionTemplate :
+                                    activeThemeTemplate === 'specs' ? (themeSettings.specsTemplate || '') :
+                                    activeThemeTemplate === 'footer' ? themeSettings.footerHTML :
+                                    themeSettings.customCSS;
+                                  const newValue = currentTemplate.slice(0, start) + item.tag + currentTemplate.slice(start);
+                                  
+                                  if (activeThemeTemplate === 'header') {
+                                    setThemeSettings(s => ({...s, headerHTML: newValue}));
+                                  } else if (activeThemeTemplate === 'description') {
+                                    setThemeSettings(s => ({...s, descriptionTemplate: newValue}));
+                                  } else if (activeThemeTemplate === 'specs') {
+                                    setThemeSettings(s => ({...s, specsTemplate: newValue}));
+                                  } else if (activeThemeTemplate === 'footer') {
+                                    setThemeSettings(s => ({...s, footerHTML: newValue}));
+                                  } else {
+                                    setThemeSettings(s => ({...s, customCSS: newValue}));
+                                  }
+                                }
+                              }}
+                              className="px-2 py-1 text-xs rounded-md border bg-gray-50 border-gray-200 text-gray-600 hover:bg-gray-100"
+                            >
+                              {item.label}
+                            </button>
+                          ))}
                         </div>
+                      </details>
+                    </div>
+
+                    {/* Formatting Toolbar */}
+                    {activeThemeTemplate !== 'css' && (
+                      <div className="p-2 border-b border-gray-100 flex items-center gap-1 bg-white">
+                        <button className="p-1.5 rounded hover:bg-gray-100" title="Bold">
+                          <Bold className="w-4 h-4 text-gray-600" />
+                        </button>
+                        <button className="p-1.5 rounded hover:bg-gray-100" title="Italic">
+                          <Italic className="w-4 h-4 text-gray-600" />
+                        </button>
+                        <button className="p-1.5 rounded hover:bg-gray-100" title="Underline">
+                          <Underline className="w-4 h-4 text-gray-600" />
+                        </button>
+                        <div className="w-px h-5 bg-gray-200 mx-1"></div>
+                        <button className="p-1.5 rounded hover:bg-gray-100" title="Align Left">
+                          <AlignLeft className="w-4 h-4 text-gray-600" />
+                        </button>
+                        <button className="p-1.5 rounded hover:bg-gray-100" title="Align Center">
+                          <AlignCenter className="w-4 h-4 text-gray-600" />
+                        </button>
+                        <button className="p-1.5 rounded hover:bg-gray-100" title="Align Right">
+                          <AlignRight className="w-4 h-4 text-gray-600" />
+                        </button>
+                        <div className="w-px h-5 bg-gray-200 mx-1"></div>
+                        <button className="p-1.5 rounded hover:bg-gray-100" title="Numbered List">
+                          <ListOrdered className="w-4 h-4 text-gray-600" />
+                        </button>
+                        <button className="p-1.5 rounded hover:bg-gray-100" title="Bullet List">
+                          <List className="w-4 h-4 text-gray-600" />
+                        </button>
+                        <button className="p-1.5 rounded hover:bg-gray-100" title="Insert Link">
+                          <Link2 className="w-4 h-4 text-gray-600" />
+                        </button>
+                        <button className="p-1.5 rounded hover:bg-gray-100" title="Insert Image">
+                          <ImageIcon className="w-4 h-4 text-gray-600" />
+                        </button>
+                        <div className="flex-1"></div>
+                        <span className="text-xs text-gray-400">HTML</span>
+                      </div>
+                    )}
+
+                    {/* Code Editor */}
+                    <div className="relative">
+                      <div className="absolute left-0 top-0 bottom-0 w-10 bg-gray-50 border-r border-gray-200 flex flex-col text-right pr-2 pt-3 text-xs text-gray-400 font-mono select-none overflow-hidden">
+                        {Array.from({ length: 30 }, (_, i) => (
+                          <div key={i} className="h-5 leading-5">{i + 1}</div>
+                        ))}
+                      </div>
+                      <textarea
+                        id="theme-code-editor"
+                        value={
+                          activeThemeTemplate === 'header' ? themeSettings.headerHTML :
+                          activeThemeTemplate === 'description' ? themeSettings.descriptionTemplate :
+                          activeThemeTemplate === 'specs' ? (themeSettings.specsTemplate || `<div class="product-specs">
+  <h3>Product Specifications</h3>
+  <table class="specs-table">
+    <tr><td>Brand</td><td>{{product_brand}}</td></tr>
+    <tr><td>SKU</td><td>{{product_sku}}</td></tr>
+    <tr><td>Condition</td><td>{{product_condition}}</td></tr>
+    <tr><td>Weight</td><td>{{product_weight}}</td></tr>
+  </table>
+</div>`) :
+                          activeThemeTemplate === 'footer' ? themeSettings.footerHTML :
+                          themeSettings.customCSS
+                        }
+                        onChange={(e) => {
+                          if (activeThemeTemplate === 'header') {
+                            setThemeSettings(s => ({...s, headerHTML: e.target.value}));
+                          } else if (activeThemeTemplate === 'description') {
+                            setThemeSettings(s => ({...s, descriptionTemplate: e.target.value}));
+                          } else if (activeThemeTemplate === 'specs') {
+                            setThemeSettings(s => ({...s, specsTemplate: e.target.value}));
+                          } else if (activeThemeTemplate === 'footer') {
+                            setThemeSettings(s => ({...s, footerHTML: e.target.value}));
+                          } else {
+                            setThemeSettings(s => ({...s, customCSS: e.target.value}));
+                          }
+                        }}
+                        className="w-full h-72 pl-12 pr-4 py-3 font-mono text-sm bg-gray-900 text-green-400 resize-none focus:outline-none"
+                        style={{ lineHeight: '1.25rem', tabSize: 2 }}
+                        spellCheck={false}
+                        placeholder={activeThemeTemplate === 'css' ? '/* Enter your custom CSS here */' : '<!-- Enter your HTML template here -->'}
+                      />
+                    </div>
+
+                    {/* Editor Footer */}
+                    <div className="p-2 border-t border-gray-200 bg-gray-50 flex items-center justify-between text-xs text-gray-500">
+                      <div className="flex items-center gap-4">
+                        <span>
+                          {activeThemeTemplate === 'css' ? 'CSS' : 'HTML'} • UTF-8
+                        </span>
+                        <span>
+                          {(activeThemeTemplate === 'header' ? themeSettings.headerHTML :
+                          activeThemeTemplate === 'description' ? themeSettings.descriptionTemplate :
+                          activeThemeTemplate === 'specs' ? (themeSettings.specsTemplate || '') :
+                          activeThemeTemplate === 'footer' ? themeSettings.footerHTML :
+                          themeSettings.customCSS).length} characters
+                        </span>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <button className="hover:text-gray-700" title="Format Code">
+                          <Sparkles className="w-4 h-4" />
+                        </button>
+                        <button className="hover:text-gray-700" title="Copy Code">
+                          <Copy className="w-4 h-4" />
+                        </button>
+                        <button className="hover:text-gray-700" title="Fullscreen">
+                          <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                            <path d="M8 3H5a2 2 0 00-2 2v3m18 0V5a2 2 0 00-2-2h-3m0 18h3a2 2 0 002-2v-3M3 16v3a2 2 0 002 2h3" />
+                          </svg>
+                        </button>
                       </div>
                     </div>
                   </div>
 
-                  {/* Layout Options */}
-                  <div className="bg-white rounded-xl border border-gray-200 p-4">
-                    <h4 className="font-medium text-gray-900 mb-3 flex items-center gap-2">
-                      <Layers className="w-4 h-4 text-yellow-500" />
-                      Layout Options
-                    </h4>
-                    <div className="space-y-3">
-                      <div>
-                        <Label className="text-xs text-gray-500">Gallery Layout</Label>
-                        <Select 
-                          value={themeSettings.galleryLayout}
-                          onValueChange={(v) => setThemeSettings(s => ({...s, galleryLayout: v}))}
-                        >
-                          <SelectTrigger className="mt-1">
-                            <SelectValue />
-                          </SelectTrigger>
-                          <SelectContent className="bg-white">
-                            <SelectItem value="main-thumb">Main + Thumbnails</SelectItem>
-                            <SelectItem value="grid">Grid Gallery</SelectItem>
-                            <SelectItem value="carousel">Carousel</SelectItem>
-                            <SelectItem value="single">Single Image</SelectItem>
-                          </SelectContent>
-                        </Select>
+                  {/* Quick Settings Panel */}
+                  <div className="grid grid-cols-2 gap-4">
+                    {/* Colors */}
+                    <div className="bg-white rounded-xl border border-gray-200 p-4">
+                      <h4 className="font-medium text-gray-900 mb-3 text-sm flex items-center gap-2">
+                        <Palette className="w-4 h-4 text-yellow-500" />
+                        Theme Colors
+                      </h4>
+                      <div className="space-y-3">
+                        <div className="flex items-center gap-2">
+                          <input
+                            type="color"
+                            value={themeSettings.primaryColor}
+                            onChange={(e) => setThemeSettings(s => ({...s, primaryColor: e.target.value}))}
+                            className="w-8 h-8 rounded border border-gray-200 cursor-pointer"
+                          />
+                          <div className="flex-1">
+                            <p className="text-xs text-gray-500">Primary</p>
+                            <p className="text-xs font-mono">{themeSettings.primaryColor}</p>
+                          </div>
+                        </div>
+                        <div className="flex items-center gap-2">
+                          <input
+                            type="color"
+                            value={themeSettings.accentColor}
+                            onChange={(e) => setThemeSettings(s => ({...s, accentColor: e.target.value}))}
+                            className="w-8 h-8 rounded border border-gray-200 cursor-pointer"
+                          />
+                          <div className="flex-1">
+                            <p className="text-xs text-gray-500">Accent</p>
+                            <p className="text-xs font-mono">{themeSettings.accentColor}</p>
+                          </div>
+                        </div>
+                        <div className="flex items-center gap-2">
+                          <input
+                            type="color"
+                            value={themeSettings.secondaryColor}
+                            onChange={(e) => setThemeSettings(s => ({...s, secondaryColor: e.target.value}))}
+                            className="w-8 h-8 rounded border border-gray-200 cursor-pointer"
+                          />
+                          <div className="flex-1">
+                            <p className="text-xs text-gray-500">Background</p>
+                            <p className="text-xs font-mono">{themeSettings.secondaryColor}</p>
+                          </div>
+                        </div>
                       </div>
-                      <div>
-                        <Label className="text-xs text-gray-500">Header Style</Label>
-                        <Select 
-                          value={themeSettings.headerStyle}
-                          onValueChange={(v) => setThemeSettings(s => ({...s, headerStyle: v}))}
-                        >
-                          <SelectTrigger className="mt-1">
-                            <SelectValue />
-                          </SelectTrigger>
-                          <SelectContent className="bg-white">
-                            <SelectItem value="banner">Full Banner</SelectItem>
-                            <SelectItem value="minimal">Minimal</SelectItem>
-                            <SelectItem value="logo-only">Logo Only</SelectItem>
-                            <SelectItem value="none">No Header</SelectItem>
-                          </SelectContent>
-                        </Select>
+                    </div>
+
+                    {/* Typography */}
+                    <div className="bg-white rounded-xl border border-gray-200 p-4">
+                      <h4 className="font-medium text-gray-900 mb-3 text-sm flex items-center gap-2">
+                        <Type className="w-4 h-4 text-yellow-500" />
+                        Typography
+                      </h4>
+                      <div className="space-y-3">
+                        <div>
+                          <Label className="text-xs text-gray-500">Font Family</Label>
+                          <Select 
+                            value={themeSettings.fontFamily}
+                            onValueChange={(v) => setThemeSettings(s => ({...s, fontFamily: v}))}
+                          >
+                            <SelectTrigger className="mt-1 h-8 text-sm">
+                              <SelectValue />
+                            </SelectTrigger>
+                            <SelectContent className="bg-white">
+                              <SelectItem value="Arial, sans-serif">Arial</SelectItem>
+                              <SelectItem value="'Helvetica Neue', sans-serif">Helvetica</SelectItem>
+                              <SelectItem value="Georgia, serif">Georgia</SelectItem>
+                              <SelectItem value="'Times New Roman', serif">Times New Roman</SelectItem>
+                              <SelectItem value="Verdana, sans-serif">Verdana</SelectItem>
+                              <SelectItem value="'Trebuchet MS', sans-serif">Trebuchet</SelectItem>
+                              <SelectItem value="'Segoe UI', sans-serif">Segoe UI</SelectItem>
+                              <SelectItem value="Roboto, sans-serif">Roboto</SelectItem>
+                            </SelectContent>
+                          </Select>
+                        </div>
+                        <div>
+                          <Label className="text-xs text-gray-500">Base Font Size</Label>
+                          <Select 
+                            value={themeSettings.fontSize || '14px'}
+                            onValueChange={(v) => setThemeSettings(s => ({...s, fontSize: v}))}
+                          >
+                            <SelectTrigger className="mt-1 h-8 text-sm">
+                              <SelectValue />
+                            </SelectTrigger>
+                            <SelectContent className="bg-white">
+                              <SelectItem value="12px">12px - Small</SelectItem>
+                              <SelectItem value="14px">14px - Default</SelectItem>
+                              <SelectItem value="16px">16px - Large</SelectItem>
+                              <SelectItem value="18px">18px - Extra Large</SelectItem>
+                            </SelectContent>
+                          </Select>
+                        </div>
                       </div>
                     </div>
                   </div>
 
                   {/* Display Options */}
                   <div className="bg-white rounded-xl border border-gray-200 p-4">
-                    <h4 className="font-medium text-gray-900 mb-3 flex items-center gap-2">
-                      <Eye className="w-4 h-4 text-yellow-500" />
-                      Display Options
+                    <h4 className="font-medium text-gray-900 mb-3 text-sm flex items-center gap-2">
+                      <Layers className="w-4 h-4 text-yellow-500" />
+                      Display Elements
                     </h4>
-                    <div className="space-y-3">
-                      <div className="flex items-center justify-between">
-                        <Label className="text-sm text-gray-700">Show Brand Logo</Label>
-                        <Switch
-                          checked={themeSettings.showBrandLogo}
-                          onCheckedChange={(c) => setThemeSettings(s => ({...s, showBrandLogo: c}))}
-                        />
-                      </div>
-                      <div className="flex items-center justify-between">
-                        <Label className="text-sm text-gray-700">Show Trust Badges</Label>
-                        <Switch
-                          checked={themeSettings.showTrustBadges}
-                          onCheckedChange={(c) => setThemeSettings(s => ({...s, showTrustBadges: c}))}
-                        />
-                      </div>
-                      <div className="flex items-center justify-between">
-                        <Label className="text-sm text-gray-700">Show Shipping Info</Label>
-                        <Switch
-                          checked={themeSettings.showShippingInfo}
-                          onCheckedChange={(c) => setThemeSettings(s => ({...s, showShippingInfo: c}))}
-                        />
-                      </div>
-                      <div className="flex items-center justify-between">
-                        <Label className="text-sm text-gray-700">Show Return Policy</Label>
-                        <Switch
-                          checked={themeSettings.showReturnPolicy}
-                          onCheckedChange={(c) => setThemeSettings(s => ({...s, showReturnPolicy: c}))}
-                        />
-                      </div>
+                    <div className="grid grid-cols-2 gap-x-6 gap-y-2">
+                      {[
+                        { key: 'showBrandLogo', label: 'Brand Logo' },
+                        { key: 'showTrustBadges', label: 'Trust Badges' },
+                        { key: 'showShippingInfo', label: 'Shipping Info' },
+                        { key: 'showReturnPolicy', label: 'Return Policy' },
+                        { key: 'showPaymentIcons', label: 'Payment Icons' },
+                        { key: 'showSocialLinks', label: 'Social Links' },
+                        { key: 'showProductSpecs', label: 'Product Specs' },
+                        { key: 'showStockLevel', label: 'Stock Level' },
+                      ].map(item => (
+                        <div key={item.key} className="flex items-center justify-between py-1">
+                          <Label className="text-sm text-gray-700">{item.label}</Label>
+                          <Switch
+                            checked={themeSettings[item.key] ?? true}
+                            onCheckedChange={(c) => setThemeSettings(s => ({...s, [item.key]: c}))}
+                          />
+                        </div>
+                      ))}
                     </div>
                   </div>
                 </div>
 
-                {/* Live Preview */}
-                <div className="lg:col-span-2">
+                {/* Right Panel - Live Preview */}
+                <div className="space-y-4">
+                  {/* Preview Header */}
                   <div className="bg-white rounded-xl border border-gray-200 overflow-hidden">
-                    <div className="p-4 border-b border-gray-200 bg-gray-50 flex items-center justify-between">
-                      <h4 className="font-medium text-gray-900">Live Preview</h4>
-                      <span className="text-xs text-gray-500">{themePreview === 'desktop' ? 'Desktop View' : 'Mobile View'}</span>
+                    <div className="p-3 border-b border-gray-200 bg-gray-50 flex items-center justify-between">
+                      <div className="flex items-center gap-2">
+                        <Eye className="w-4 h-4 text-gray-500" />
+                        <h4 className="font-medium text-gray-900 text-sm">Live Preview</h4>
+                      </div>
+                      <div className="flex items-center gap-2 text-xs text-gray-500">
+                        <span className={`w-2 h-2 rounded-full ${themePreview === 'desktop' ? 'bg-green-500' : 'bg-gray-300'}`}></span>
+                        <span>{themePreview === 'desktop' ? '1200px' : themePreview === 'tablet' ? '768px' : '375px'}</span>
+                      </div>
                     </div>
-                    <div className={`p-4 ${themePreview === 'mobile' ? 'max-w-sm mx-auto' : ''}`}>
-                      {/* Simulated eBay Listing Preview */}
-                      <div className="border border-gray-200 rounded-lg overflow-hidden" style={{fontFamily: themeSettings.fontFamily}}>
-                        {/* Header */}
-                        {themeSettings.headerStyle !== 'none' && (
-                          <div 
-                            className="p-4 text-white"
-                            style={{backgroundColor: themeSettings.primaryColor}}
-                          >
-                            <div className="flex items-center gap-3">
-                              {themeSettings.showBrandLogo && (
+                    
+                    {/* eBay Frame Simulation */}
+                    <div className="p-4 bg-gray-100">
+                      <div className={`mx-auto transition-all duration-300 ${
+                        themePreview === 'desktop' ? 'max-w-full' : 
+                        themePreview === 'tablet' ? 'max-w-md' : 'max-w-xs'
+                      }`}>
+                        {/* Simulated eBay Header */}
+                        <div className="bg-white border border-gray-200 rounded-t-lg p-2 flex items-center gap-2">
+                          <div className="flex gap-1.5">
+                            <div className="w-3 h-3 rounded-full bg-red-400"></div>
+                            <div className="w-3 h-3 rounded-full bg-yellow-400"></div>
+                            <div className="w-3 h-3 rounded-full bg-green-400"></div>
+                          </div>
+                          <div className="flex-1 bg-gray-100 rounded px-3 py-1 text-xs text-gray-500 flex items-center gap-2">
+                            <svg className="w-3 h-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                              <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+                              <path d="M7 11V7a5 5 0 0110 0v4"></path>
+                            </svg>
+                            ebay.com/itm/123456789
+                          </div>
+                        </div>
+                        
+                        {/* Listing Preview */}
+                        <div 
+                          className="bg-white border-x border-b border-gray-200 rounded-b-lg overflow-hidden"
+                          style={{fontFamily: themeSettings.fontFamily, fontSize: themeSettings.fontSize || '14px'}}
+                        >
+                          {/* Store Header */}
+                          {themeSettings.showBrandLogo && (
+                            <div 
+                              className="p-4 text-white"
+                              style={{backgroundColor: themeSettings.primaryColor}}
+                            >
+                              <div className="flex items-center gap-3">
                                 <div className="w-12 h-12 bg-white/20 rounded-lg flex items-center justify-center">
                                   <span className="text-xl">🏪</span>
                                 </div>
-                              )}
-                              <div>
-                                <h2 className="font-bold">Your Store Name</h2>
-                                <p className="text-sm opacity-80">Trusted Seller • 99.8% Positive</p>
+                                <div>
+                                  <h2 className="font-bold">{'{{store_name}}'}</h2>
+                                  <p className="text-sm opacity-80">Top Rated Seller • 99.8% Positive</p>
+                                </div>
                               </div>
                             </div>
-                          </div>
-                        )}
-                        
-                        {/* Product Content */}
-                        <div className="p-4">
-                          {/* Gallery */}
-                          <div className={`mb-4 ${themeSettings.galleryLayout === 'grid' ? 'grid grid-cols-2 gap-2' : ''}`}>
-                            {themeSettings.galleryLayout === 'main-thumb' && (
-                              <>
-                                <div className="aspect-square bg-gray-100 rounded-lg mb-2 flex items-center justify-center">
-                                  <ImageIcon className="w-16 h-16 text-gray-300" />
-                                </div>
-                                <div className="flex gap-2">
-                                  {[1,2,3,4].map(i => (
-                                    <div key={i} className="w-16 h-16 bg-gray-100 rounded flex items-center justify-center">
-                                      <ImageIcon className="w-6 h-6 text-gray-300" />
-                                    </div>
-                                  ))}
-                                </div>
-                              </>
-                            )}
-                            {themeSettings.galleryLayout === 'grid' && (
-                              <>
+                          )}
+                          
+                          {/* Product Content */}
+                          <div className="p-4">
+                            {/* Gallery */}
+                            <div className="mb-4">
+                              <div className="aspect-square bg-gray-100 rounded-lg mb-2 flex items-center justify-center relative overflow-hidden">
+                                <ImageIcon className="w-16 h-16 text-gray-300" />
+                                <span className="absolute bottom-2 right-2 bg-black/50 text-white text-xs px-2 py-1 rounded">
+                                  1/4
+                                </span>
+                              </div>
+                              <div className="flex gap-2">
                                 {[1,2,3,4].map(i => (
-                                  <div key={i} className="aspect-square bg-gray-100 rounded-lg flex items-center justify-center">
-                                    <ImageIcon className="w-8 h-8 text-gray-300" />
+                                  <div key={i} className={`w-16 h-16 bg-gray-100 rounded flex items-center justify-center border-2 ${i === 1 ? 'border-yellow-500' : 'border-transparent'}`}>
+                                    <ImageIcon className="w-6 h-6 text-gray-300" />
                                   </div>
                                 ))}
-                              </>
+                              </div>
+                            </div>
+
+                            {/* Title & Price */}
+                            <h3 className="font-bold text-lg text-gray-900 mb-2">
+                              {'{{product_name}}'}
+                            </h3>
+                            <div className="flex items-center gap-3 mb-4 flex-wrap">
+                              <span className="text-2xl font-bold" style={{color: themeSettings.accentColor}}>
+                                {'{{product_price}}'}
+                              </span>
+                              <span className="text-gray-400 line-through text-sm">$159.99</span>
+                              <span 
+                                className="px-2 py-1 text-xs rounded font-medium"
+                                style={{backgroundColor: themeSettings.accentColor, color: 'white'}}
+                              >
+                                SALE
+                              </span>
+                            </div>
+
+                            {/* SKU & Condition */}
+                            <div className="flex gap-4 mb-4 text-sm">
+                              <div>
+                                <span className="text-gray-500">SKU:</span>{' '}
+                                <span className="font-mono">{'{{product_sku}}'}</span>
+                              </div>
+                              <div>
+                                <span className="text-gray-500">Condition:</span>{' '}
+                                <span className="text-green-600 font-medium">New</span>
+                              </div>
+                            </div>
+
+                            {/* Trust Badges */}
+                            {themeSettings.showTrustBadges && (
+                              <div className="flex gap-3 mb-4 p-3 rounded-lg flex-wrap" style={{backgroundColor: themeSettings.secondaryColor}}>
+                                <div className="flex items-center gap-1 text-xs text-gray-600">
+                                  <Shield className="w-4 h-4 text-green-500" />
+                                  <span>Buyer Protection</span>
+                                </div>
+                                <div className="flex items-center gap-1 text-xs text-gray-600">
+                                  <Truck className="w-4 h-4 text-blue-500" />
+                                  <span>Fast Shipping</span>
+                                </div>
+                                <div className="flex items-center gap-1 text-xs text-gray-600">
+                                  <RotateCcw className="w-4 h-4 text-purple-500" />
+                                  <span>Easy Returns</span>
+                                </div>
+                              </div>
+                            )}
+
+                            {/* Stock Level */}
+                            {themeSettings.showStockLevel && (
+                              <div className="flex items-center gap-2 mb-4 text-sm">
+                                <span className="w-2 h-2 bg-green-500 rounded-full"></span>
+                                <span className="text-green-600">In Stock</span>
+                                <span className="text-gray-400">•</span>
+                                <span className="text-gray-500">{'{{product_stock}}'} available</span>
+                              </div>
+                            )}
+
+                            {/* Description */}
+                            <div className="prose prose-sm text-gray-600 mb-4 border-t border-gray-100 pt-4">
+                              <h4 className="font-semibold text-gray-900">Description</h4>
+                              <p>{'{{product_description}}'}</p>
+                            </div>
+
+                            {/* Specifications */}
+                            {themeSettings.showProductSpecs && (
+                              <div className="mb-4 border-t border-gray-100 pt-4">
+                                <h4 className="font-semibold text-gray-900 mb-2">Specifications</h4>
+                                <div className="grid grid-cols-2 gap-2 text-sm">
+                                  <div className="flex justify-between py-1 border-b border-gray-50">
+                                    <span className="text-gray-500">Brand</span>
+                                    <span>{'{{product_brand}}'}</span>
+                                  </div>
+                                  <div className="flex justify-between py-1 border-b border-gray-50">
+                                    <span className="text-gray-500">SKU</span>
+                                    <span className="font-mono">{'{{product_sku}}'}</span>
+                                  </div>
+                                  <div className="flex justify-between py-1 border-b border-gray-50">
+                                    <span className="text-gray-500">Weight</span>
+                                    <span>{'{{product_weight}}'}</span>
+                                  </div>
+                                  <div className="flex justify-between py-1 border-b border-gray-50">
+                                    <span className="text-gray-500">Dimensions</span>
+                                    <span>{'{{product_dimensions}}'}</span>
+                                  </div>
+                                </div>
+                              </div>
+                            )}
+
+                            {/* Shipping Info */}
+                            {themeSettings.showShippingInfo && (
+                              <div className="p-3 bg-blue-50 rounded-lg mb-4">
+                                <div className="flex items-center gap-2 text-sm text-blue-700">
+                                  <Truck className="w-4 h-4" />
+                                  <span><strong>Free Shipping</strong> - Est. delivery: 3-5 business days</span>
+                                </div>
+                              </div>
+                            )}
+
+                            {/* Return Policy */}
+                            {themeSettings.showReturnPolicy && (
+                              <div className="p-3 bg-gray-50 rounded-lg mb-4">
+                                <div className="flex items-center gap-2 text-sm text-gray-600">
+                                  <RotateCcw className="w-4 h-4" />
+                                  <span><strong>30 Day Returns</strong> - Buyer pays return shipping</span>
+                                </div>
+                              </div>
+                            )}
+
+                            {/* Payment Icons */}
+                            {themeSettings.showPaymentIcons && (
+                              <div className="flex items-center gap-3 mb-4 text-gray-400">
+                                <CreditCard className="w-8 h-8" />
+                                <span className="text-2xl font-bold text-blue-600">PayPal</span>
+                                <div className="w-10 h-6 bg-gradient-to-r from-red-500 via-yellow-500 to-red-500 rounded"></div>
+                                <div className="w-10 h-6 bg-blue-900 rounded flex items-center justify-center text-white text-xs font-bold">VISA</div>
+                              </div>
                             )}
                           </div>
 
-                          {/* Title & Price */}
-                          <h3 className="font-bold text-lg text-gray-900 mb-2">Sample Product Title - Premium Quality Item</h3>
-                          <div className="flex items-center gap-3 mb-4">
-                            <span className="text-2xl font-bold" style={{color: themeSettings.accentColor}}>$129.99</span>
-                            <span className="text-gray-400 line-through">$159.99</span>
-                            <span className="px-2 py-1 text-xs rounded" style={{backgroundColor: themeSettings.accentColor, color: 'white'}}>
-                              19% OFF
-                            </span>
+                          {/* Footer */}
+                          <div className="p-4 border-t border-gray-200 text-center text-sm text-gray-500" style={{backgroundColor: themeSettings.secondaryColor}}>
+                            <p>Thank you for shopping with {'{{store_name}}'}!</p>
+                            <p className="text-xs mt-1">Contact: {'{{store_email}}'}</p>
+                            {themeSettings.showSocialLinks && (
+                              <div className="flex justify-center gap-3 mt-2">
+                                <Globe className="w-4 h-4 text-gray-400" />
+                                <span className="w-4 h-4 text-blue-500">f</span>
+                                <span className="w-4 h-4 text-pink-500">📷</span>
+                              </div>
+                            )}
                           </div>
-
-                          {/* Trust Badges */}
-                          {themeSettings.showTrustBadges && (
-                            <div className="flex gap-4 mb-4 p-3 bg-gray-50 rounded-lg">
-                              <div className="flex items-center gap-1 text-xs text-gray-600">
-                                <Shield className="w-4 h-4 text-green-500" />
-                                <span>Buyer Protection</span>
-                              </div>
-                              <div className="flex items-center gap-1 text-xs text-gray-600">
-                                <Truck className="w-4 h-4 text-blue-500" />
-                                <span>Fast Shipping</span>
-                              </div>
-                              <div className="flex items-center gap-1 text-xs text-gray-600">
-                                <RotateCcw className="w-4 h-4 text-purple-500" />
-                                <span>Easy Returns</span>
-                              </div>
-                            </div>
-                          )}
-
-                          {/* Description */}
-                          <div className="prose prose-sm text-gray-600 mb-4">
-                            <p>This is where your product description will appear. You can customize the layout and styling using the theme editor on the left.</p>
-                          </div>
-
-                          {/* Shipping Info */}
-                          {themeSettings.showShippingInfo && (
-                            <div className="p-3 bg-blue-50 rounded-lg mb-4">
-                              <div className="flex items-center gap-2 text-sm text-blue-700">
-                                <Truck className="w-4 h-4" />
-                                <span><strong>Free Shipping</strong> - Estimated delivery: 3-5 business days</span>
-                              </div>
-                            </div>
-                          )}
-
-                          {/* Return Policy */}
-                          {themeSettings.showReturnPolicy && (
-                            <div className="p-3 bg-gray-50 rounded-lg">
-                              <div className="flex items-center gap-2 text-sm text-gray-600">
-                                <RotateCcw className="w-4 h-4" />
-                                <span><strong>30 Day Returns</strong> - Buyer pays return shipping</span>
-                              </div>
-                            </div>
-                          )}
-                        </div>
-
-                        {/* Footer */}
-                        <div className="p-4 bg-gray-50 border-t border-gray-200 text-center text-sm text-gray-500">
-                          Thank you for shopping with us! Contact: support@yourstore.com
                         </div>
                       </div>
                     </div>
                   </div>
 
-                  {/* Custom HTML/CSS Editor */}
-                  {themeSettings.template === 'custom' && (
-                    <div className="mt-4 bg-white rounded-xl border border-gray-200 p-4">
-                      <h4 className="font-medium text-gray-900 mb-3 flex items-center gap-2">
-                        <Code className="w-4 h-4 text-yellow-500" />
-                        Custom HTML Template
-                      </h4>
-                      <Textarea
-                        value={themeSettings.descriptionTemplate}
-                        onChange={(e) => setThemeSettings(s => ({...s, descriptionTemplate: e.target.value}))}
-                        className="font-mono text-sm h-48"
-                        placeholder="Enter your custom HTML..."
-                      />
-                      <p className="text-xs text-gray-500 mt-2">
-                        Available variables: {'{{product_name}}'}, {'{{product_description}}'}, {'{{product_price}}'}, {'{{product_specs}}'}, {'{{store_name}}'}, {'{{store_logo}}'}
-                      </p>
+                  {/* Template Presets */}
+                  <div className="bg-white rounded-xl border border-gray-200 p-4">
+                    <h4 className="font-medium text-gray-900 mb-3 text-sm flex items-center gap-2">
+                      <Sparkles className="w-4 h-4 text-yellow-500" />
+                      Quick Templates
+                    </h4>
+                    <div className="grid grid-cols-3 gap-2">
+                      {[
+                        { id: 'minimal', name: 'Minimal', preview: '🎯' },
+                        { id: 'professional', name: 'Professional', preview: '💼' },
+                        { id: 'modern', name: 'Modern', preview: '✨' },
+                        { id: 'classic', name: 'Classic', preview: '📜' },
+                        { id: 'bold', name: 'Bold', preview: '🔥' },
+                        { id: 'elegant', name: 'Elegant', preview: '👑' },
+                      ].map(preset => (
+                        <button
+                          key={preset.id}
+                          onClick={() => {
+                            // Apply preset theme settings
+                            if (preset.id === 'minimal') {
+                              setThemeSettings(s => ({
+                                ...s,
+                                primaryColor: '#1f2937',
+                                accentColor: '#3b82f6',
+                                secondaryColor: '#f9fafb',
+                                showBrandLogo: false,
+                                showTrustBadges: false,
+                                showSocialLinks: false
+                              }));
+                            } else if (preset.id === 'professional') {
+                              setThemeSettings(s => ({
+                                ...s,
+                                primaryColor: '#1e3a5f',
+                                accentColor: '#0ea5e9',
+                                secondaryColor: '#f0f9ff',
+                                showBrandLogo: true,
+                                showTrustBadges: true,
+                                showPaymentIcons: true
+                              }));
+                            } else if (preset.id === 'bold') {
+                              setThemeSettings(s => ({
+                                ...s,
+                                primaryColor: '#dc2626',
+                                accentColor: '#f97316',
+                                secondaryColor: '#fef2f2',
+                                showBrandLogo: true,
+                                showTrustBadges: true
+                              }));
+                            }
+                          }}
+                          className="p-3 border border-gray-200 rounded-lg hover:border-yellow-500 hover:bg-yellow-50 transition-colors text-center"
+                        >
+                          <span className="text-2xl mb-1 block">{preset.preview}</span>
+                          <span className="text-xs text-gray-600">{preset.name}</span>
+                        </button>
+                      ))}
                     </div>
-                  )}
+                  </div>
                 </div>
               </div>
             </div>
