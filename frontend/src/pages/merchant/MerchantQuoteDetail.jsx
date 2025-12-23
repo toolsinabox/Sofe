@@ -443,7 +443,7 @@ const MerchantQuoteDetail = () => {
                 <ChevronDown size={14} className="ml-2" />
               </Button>
             </DropdownMenuTrigger>
-            <DropdownMenuContent className="bg-[#1a1f2e] border-gray-200">
+            <DropdownMenuContent className="bg-white border-gray-200">
               <DropdownMenuItem onClick={printQuote} className="text-gray-700 hover:text-gray-900 hover:bg-gray-100/50 cursor-pointer">
                 <Printer size={14} className="mr-2" /> Print Quote
               </DropdownMenuItem>
@@ -459,7 +459,7 @@ const MerchantQuoteDetail = () => {
                 <ChevronDown size={16} />
               </Button>
             </DropdownMenuTrigger>
-            <DropdownMenuContent className="bg-[#1a1f2e] border-gray-200 w-56">
+            <DropdownMenuContent className="bg-white border-gray-200 w-56">
               <DropdownMenuItem onClick={() => setShowStatusModal(true)} className="text-gray-700 hover:text-gray-900 hover:bg-gray-100/50 cursor-pointer">
                 <RefreshCw size={14} className="mr-2" /> Update Status
               </DropdownMenuItem>
@@ -817,7 +817,7 @@ const MerchantQuoteDetail = () => {
               <SelectTrigger className="bg-white/50 border-gray-200 text-gray-900">
                 <SelectValue placeholder="Select status" />
               </SelectTrigger>
-              <SelectContent className="bg-[#1a1f2e] border-gray-200">
+              <SelectContent className="bg-white border-gray-200">
                 <SelectItem value="pending">Pending</SelectItem>
                 <SelectItem value="sent">Sent</SelectItem>
                 <SelectItem value="accepted">Accepted</SelectItem>
@@ -886,7 +886,7 @@ const MerchantQuoteDetail = () => {
                 <SelectTrigger className="bg-white/50 border-gray-200 text-gray-900">
                   <SelectValue />
                 </SelectTrigger>
-                <SelectContent className="bg-[#1a1f2e] border-gray-200">
+                <SelectContent className="bg-white border-gray-200">
                   <SelectItem value="7">7 days</SelectItem>
                   <SelectItem value="14">14 days</SelectItem>
                   <SelectItem value="30">30 days</SelectItem>

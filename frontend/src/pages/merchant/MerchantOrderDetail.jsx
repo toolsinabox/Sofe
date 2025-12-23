@@ -659,7 +659,7 @@ const MerchantOrderDetail = () => {
                 <ChevronDown size={14} className="ml-2" />
               </Button>
             </DropdownMenuTrigger>
-            <DropdownMenuContent className="bg-[#1a1f2e] border-gray-200">
+            <DropdownMenuContent className="bg-white border-gray-200">
               <DropdownMenuItem onClick={() => setShowInvoicePreview(true)} className="text-gray-700 hover:text-gray-900 hover:bg-gray-100/50 cursor-pointer">
                 <Eye size={14} className="mr-2" /> Preview Invoice
               </DropdownMenuItem>
@@ -685,7 +685,7 @@ const MerchantOrderDetail = () => {
                 <MoreVertical size={16} />
               </Button>
             </DropdownMenuTrigger>
-            <DropdownMenuContent align="end" className="bg-[#1a1f2e] border-gray-200 w-56">
+            <DropdownMenuContent align="end" className="bg-white border-gray-200 w-56">
               <DropdownMenuItem onClick={() => setShowTrackingModal(true)} className="text-gray-700 hover:text-gray-900 hover:bg-gray-100/50 cursor-pointer">
                 <Truck size={14} className="mr-2" /> {order.tracking_number ? 'Update' : 'Add'} Tracking
               </DropdownMenuItem>
@@ -1537,7 +1537,7 @@ const MerchantOrderDetail = () => {
                   <SelectTrigger className="bg-white border-gray-200 text-gray-900">
                     <SelectValue placeholder="Select carrier" />
                   </SelectTrigger>
-                  <SelectContent className="bg-[#1a1f2e] border-gray-200">
+                  <SelectContent className="bg-white border-gray-200">
                     {CARRIERS.map(carrier => (
                       <SelectItem key={carrier.id} value={carrier.id}>{carrier.name}</SelectItem>
                     ))}
@@ -1595,7 +1595,7 @@ const MerchantOrderDetail = () => {
                 <SelectTrigger className="bg-white border-gray-200 text-gray-900">
                   <SelectValue placeholder="Select carrier" />
                 </SelectTrigger>
-                <SelectContent className="bg-[#1a1f2e] border-gray-200">
+                <SelectContent className="bg-white border-gray-200">
                   {CARRIERS.map(carrier => (
                     <SelectItem key={carrier.id} value={carrier.id}>{carrier.name}</SelectItem>
                   ))}
@@ -1637,7 +1637,7 @@ const MerchantOrderDetail = () => {
                 <SelectTrigger className="bg-white border-gray-200 text-gray-900">
                   <SelectValue placeholder="Select template or custom" />
                 </SelectTrigger>
-                <SelectContent className="bg-[#1a1f2e] border-gray-200">
+                <SelectContent className="bg-white border-gray-200">
                   <SelectItem value="order_confirmation">Order Confirmation</SelectItem>
                   <SelectItem value="shipping_notification">Shipping Notification</SelectItem>
                   <SelectItem value="delivery_confirmation">Delivery Confirmation</SelectItem>
@@ -1691,7 +1691,7 @@ const MerchantOrderDetail = () => {
                 <SelectTrigger className="bg-white border-gray-200 text-gray-900">
                   <SelectValue />
                 </SelectTrigger>
-                <SelectContent className="bg-[#1a1f2e] border-gray-200">
+                <SelectContent className="bg-white border-gray-200">
                   <SelectItem value="internal">Internal (Staff Only)</SelectItem>
                   <SelectItem value="customer">Customer Visible</SelectItem>
                 </SelectContent>
@@ -1745,7 +1745,7 @@ const MerchantOrderDetail = () => {
                 <SelectTrigger className="bg-white border-gray-200 text-gray-900">
                   <SelectValue placeholder="Select reason" />
                 </SelectTrigger>
-                <SelectContent className="bg-[#1a1f2e] border-gray-200">
+                <SelectContent className="bg-white border-gray-200">
                   <SelectItem value="customer_request">Customer Request</SelectItem>
                   <SelectItem value="damaged">Damaged Product</SelectItem>
                   <SelectItem value="wrong_item">Wrong Item</SelectItem>

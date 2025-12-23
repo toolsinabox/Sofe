@@ -138,7 +138,7 @@ const TemplateTagsPanel = ({ isOpen, onClose }) => {
           <div key={key} className="mb-2">
             <button
               onClick={() => setExpandedSection(expandedSection === key ? '' : key)}
-              className="w-full flex items-center justify-between px-2 py-1.5 rounded bg-white hover:bg-gray-750 text-gray-700 text-xs font-medium"
+              className="w-full flex items-center justify-between px-2 py-1.5 rounded bg-white hover:bg-gray-100 text-gray-700 text-xs font-medium"
             >
               {section.title}
               {expandedSection === key ? <ChevronUp size={14} /> : <ChevronDown size={14} />}

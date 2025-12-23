@@ -327,7 +327,7 @@ const MerchantPages = () => {
           </thead>
           <tbody>
             {pages.map((page) => (
-              <tr key={page.id} className="border-t border-gray-200 hover:bg-gray-750">
+              <tr key={page.id} className="border-t border-gray-200 hover:bg-gray-100">
                 <td className="p-4 text-gray-500">
                   <GripVertical size={16} />
                 </td>

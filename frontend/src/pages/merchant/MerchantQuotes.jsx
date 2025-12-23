@@ -528,7 +528,7 @@ const MerchantQuotes = () => {
                                   <MoreVertical size={18} />
                                 </button>
                               </DropdownMenuTrigger>
-                              <DropdownMenuContent align="end" className="bg-[#1a1f2e] border-gray-200 w-56">
+                              <DropdownMenuContent align="end" className="bg-white border-gray-200 w-56">
                                 <DropdownMenuItem 
                                   className="text-gray-700 hover:text-gray-900 hover:bg-gray-100/50 cursor-pointer"
                                   onClick={() => navigate(`/merchant/quotes/${quote.id}`)}
@@ -638,7 +638,7 @@ const MerchantQuotes = () => {
                 <SelectTrigger className="bg-white/50 border-gray-200 text-gray-900">
                   <SelectValue placeholder="Select status" />
                 </SelectTrigger>
-                <SelectContent className="bg-[#1a1f2e] border-gray-200">
+                <SelectContent className="bg-white border-gray-200">
                   <SelectItem value="pending">Pending</SelectItem>
                   <SelectItem value="sent">Sent</SelectItem>
                   <SelectItem value="accepted">Accepted</SelectItem>

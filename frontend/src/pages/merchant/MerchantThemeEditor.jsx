@@ -585,7 +585,7 @@ const MerchantThemeEditor = () => {
                         <MoreVertical className="w-4 h-4 text-gray-500" />
                       </button>
                     </DropdownMenuTrigger>
-                    <DropdownMenuContent align="end" className="bg-[#1a1f2e] border-gray-200">
+                    <DropdownMenuContent align="end" className="bg-white border-gray-200">
                       {!theme.is_active && (
                         <DropdownMenuItem 
                           onClick={() => handleActivateTheme(theme.name)}

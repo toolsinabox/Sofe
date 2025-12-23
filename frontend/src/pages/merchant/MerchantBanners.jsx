@@ -436,7 +436,7 @@ const MerchantBanners = () => {
                   <div className="bg-gray-700/50 rounded-lg p-4">
                     <Label className="text-gray-700 mb-3 block font-medium">Display this banner on:</Label>
                     <div className="space-y-3">
-                      <label className="flex items-center justify-between p-3 bg-white rounded-lg cursor-pointer hover:bg-gray-750">
+                      <label className="flex items-center justify-between p-3 bg-white rounded-lg cursor-pointer hover:bg-gray-100">
                         <div className="flex items-center gap-3">
                           <Monitor className="w-5 h-5 text-blue-600" />
                           <div>
@@ -450,7 +450,7 @@ const MerchantBanners = () => {
                         />
                       </label>
                       
-                      <label className="flex items-center justify-between p-3 bg-white rounded-lg cursor-pointer hover:bg-gray-750">
+                      <label className="flex items-center justify-between p-3 bg-white rounded-lg cursor-pointer hover:bg-gray-100">
                         <div className="flex items-center gap-3">
                           <Tablet className="w-5 h-5 text-purple-600" />
                           <div>
@@ -464,7 +464,7 @@ const MerchantBanners = () => {
                         />
                       </label>
                       
-                      <label className="flex items-center justify-between p-3 bg-white rounded-lg cursor-pointer hover:bg-gray-750">
+                      <label className="flex items-center justify-between p-3 bg-white rounded-lg cursor-pointer hover:bg-gray-100">
                         <div className="flex items-center gap-3">
                           <Smartphone className="w-5 h-5 text-green-600" />
                           <div>

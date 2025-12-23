@@ -389,7 +389,7 @@ const MerchantEmails = () => {
 
       {/* Stats Cards */}
       <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-        <Card className="bg-[#1a1f2e] border-gray-200">
+        <Card className="bg-white border-gray-200">
           <CardContent className="p-4">
             <div className="flex items-center justify-between">
               <div>
@@ -404,7 +404,7 @@ const MerchantEmails = () => {
           </CardContent>
         </Card>
 
-        <Card className="bg-[#1a1f2e] border-gray-200">
+        <Card className="bg-white border-gray-200">
           <CardContent className="p-4">
             <div className="flex items-center justify-between">
               <div>
@@ -419,7 +419,7 @@ const MerchantEmails = () => {
           </CardContent>
         </Card>
 
-        <Card className="bg-[#1a1f2e] border-gray-200">
+        <Card className="bg-white border-gray-200">
           <CardContent className="p-4">
             <div className="flex items-center justify-between">
               <div>
@@ -434,7 +434,7 @@ const MerchantEmails = () => {
           </CardContent>
         </Card>
 
-        <Card className="bg-[#1a1f2e] border-gray-200">
+        <Card className="bg-white border-gray-200">
           <CardContent className="p-4">
             <div className="flex items-center justify-between">
               <div>
@@ -453,7 +453,7 @@ const MerchantEmails = () => {
       {/* Tabs */}
       <Tabs value={activeTab} onValueChange={setActiveTab}>
         <div className="flex items-center justify-between">
-          <TabsList className="bg-[#1a1f2e] border border-gray-200">
+          <TabsList className="bg-white border border-gray-200">
             <TabsTrigger value="history" className="data-[state=active]:bg-emerald-50 data-[state=active]:text-emerald-600">
               <Clock size={16} className="mr-2" />
               Email History
@@ -473,14 +473,14 @@ const MerchantEmails = () => {
                 placeholder="Search..."
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
-                className="pl-10 pr-4 py-2 bg-[#1a1f2e] border border-gray-200 rounded-lg text-gray-900 text-sm w-64 focus:outline-none focus:border-emerald-500"
+                className="pl-10 pr-4 py-2 bg-white border border-gray-200 rounded-lg text-gray-900 text-sm w-64 focus:outline-none focus:border-emerald-500"
               />
             </div>
             <Select value={categoryFilter} onValueChange={setCategoryFilter}>
-              <SelectTrigger className="w-40 bg-[#1a1f2e] border-gray-200 text-gray-900">
+              <SelectTrigger className="w-40 bg-white border-gray-200 text-gray-900">
                 <SelectValue placeholder="Category" />
               </SelectTrigger>
-              <SelectContent className="bg-[#1a1f2e] border-gray-200">
+              <SelectContent className="bg-white border-gray-200">
                 <SelectItem value="all" className="text-gray-900">All Categories</SelectItem>
                 <SelectItem value="order" className="text-gray-900">Order</SelectItem>
                 <SelectItem value="shipping" className="text-gray-900">Shipping</SelectItem>
@@ -493,7 +493,7 @@ const MerchantEmails = () => {
 
         {/* Email History Tab */}
         <TabsContent value="history" className="mt-4">
-          <Card className="bg-[#1a1f2e] border-gray-200">
+          <Card className="bg-white border-gray-200">
             <CardContent className="p-0">
               {filteredEmails.length === 0 ? (
                 <div className="flex flex-col items-center justify-center py-16 text-gray-500">
@@ -558,7 +558,7 @@ const MerchantEmails = () => {
             {filteredTemplates.map((template) => (
               <Card 
                 key={template.id} 
-                className="bg-[#1a1f2e] border-gray-200 hover:border-gray-200 transition-colors cursor-pointer"
+                className="bg-white border-gray-200 hover:border-gray-200 transition-colors cursor-pointer"
                 onClick={() => { setSelectedTemplate(template); setShowTemplateModal(true); }}
               >
                 <CardHeader className="pb-2">
@@ -614,7 +614,7 @@ const MerchantEmails = () => {
 
       {/* Compose Email Modal */}
       <Dialog open={showComposeModal} onOpenChange={setShowComposeModal}>
-        <DialogContent className="bg-[#1a1f2e] border-gray-200 max-w-2xl">
+        <DialogContent className="bg-white border-gray-200 max-w-2xl">
           <DialogHeader>
             <DialogTitle className="text-gray-900">Compose Email</DialogTitle>
             <DialogDescription className="text-gray-500">
@@ -713,7 +713,7 @@ const MerchantEmails = () => {
 
       {/* Email Detail Modal */}
       <Dialog open={showEmailDetail} onOpenChange={setShowEmailDetail}>
-        <DialogContent className="bg-[#1a1f2e] border-gray-200 max-w-2xl">
+        <DialogContent className="bg-white border-gray-200 max-w-2xl">
           <DialogHeader>
             <DialogTitle className="text-gray-900">Email Details</DialogTitle>
           </DialogHeader>
@@ -786,7 +786,7 @@ const MerchantEmails = () => {
 
       {/* Template Preview Modal */}
       <Dialog open={showTemplateModal} onOpenChange={setShowTemplateModal}>
-        <DialogContent className="bg-[#1a1f2e] border-gray-200 max-w-2xl">
+        <DialogContent className="bg-white border-gray-200 max-w-2xl">
           <DialogHeader>
             <DialogTitle className="text-gray-900">{selectedTemplate?.name}</DialogTitle>
             <DialogDescription className="text-gray-500">

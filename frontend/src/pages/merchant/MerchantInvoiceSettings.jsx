@@ -528,7 +528,7 @@ const MerchantInvoiceSettings = () => {
                       <SelectTrigger className="bg-white border-gray-200 text-gray-900">
                         <SelectValue />
                       </SelectTrigger>
-                      <SelectContent className="bg-[#1a1f2e] border-gray-200">
+                      <SelectContent className="bg-white border-gray-200">
                         <SelectItem value="Inter">Inter</SelectItem>
                         <SelectItem value="Arial">Arial</SelectItem>
                         <SelectItem value="Helvetica">Helvetica</SelectItem>
@@ -543,7 +543,7 @@ const MerchantInvoiceSettings = () => {
                       <SelectTrigger className="bg-white border-gray-200 text-gray-900">
                         <SelectValue />
                       </SelectTrigger>
-                      <SelectContent className="bg-[#1a1f2e] border-gray-200">
+                      <SelectContent className="bg-white border-gray-200">
                         <SelectItem value="12px">Small (12px)</SelectItem>
                         <SelectItem value="14px">Medium (14px)</SelectItem>
                         <SelectItem value="16px">Large (16px)</SelectItem>
