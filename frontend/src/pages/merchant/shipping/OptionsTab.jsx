@@ -181,11 +181,23 @@ const OptionRow = ({ option, services, zones, onUpdate, onDelete }) => {
             </div>
           </div>
           
-          {/* Status indicators */}
+          {/* Status indicators and Save button */}
           <div className="flex items-center gap-2">
             {saving && <Loader2 className="w-4 h-4 text-teal-400 animate-spin" />}
             {saveStatus === 'success' && <Check className="w-4 h-4 text-teal-400" />}
             {saveStatus === 'error' && <AlertCircle className="w-4 h-4 text-red-400" />}
+            
+            {/* Save Button - shows when dirty */}
+            {isDirty && !saving && (
+              <Button
+                onClick={saveOption}
+                size="sm"
+                className="bg-teal-600 hover:bg-teal-700 h-8 px-3"
+              >
+                <Save className="w-4 h-4 mr-1" />
+                Save
+              </Button>
+            )}
             
             <Switch
               checked={localOption.is_active}
