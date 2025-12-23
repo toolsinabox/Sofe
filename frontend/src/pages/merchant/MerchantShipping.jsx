@@ -2783,18 +2783,6 @@ const MerchantShipping = () => {
 
   // ============== PACKAGES TAB ==============
   const PackagesTab = () => {
-    const [packageForm, setPackageForm] = useState({
-      code: '',
-      name: '',
-      package_type: 'box',
-      length: 0,
-      width: 0,
-      height: 0,
-      max_weight: 0,
-      tare_weight: 0,
-      is_active: true
-    });
-
     const openPackageModal = (pkg = null) => {
       if (pkg) {
         setEditingItem(pkg);
