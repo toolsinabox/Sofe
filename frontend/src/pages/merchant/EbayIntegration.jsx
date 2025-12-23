@@ -253,6 +253,7 @@ const EbayIntegration = () => {
 
   // Store Settings State (for theme preview)
   const [storeSettings, setStoreSettings] = useState(null);
+  const [storeLogoBase64, setStoreLogoBase64] = useState(null);
 
   // Analytics State
   const [analyticsData, setAnalyticsData] = useState({
