@@ -65,7 +65,7 @@ const InlineInput = ({ value, onChange, type = 'text', prefix = '', suffix = '',
 };
 
 // Inline editable textarea
-const InlineTextarea = ({ value, onChange, onSave, className = '', placeholder, rows = 2 }) => {
+const InlineTextarea = ({ value, onChange, className = '', placeholder, rows = 2 }) => {
   const [localValue, setLocalValue] = useState(value);
   const [isFocused, setIsFocused] = useState(false);
   const textareaRef = useRef(null);
@@ -80,7 +80,6 @@ const InlineTextarea = ({ value, onChange, onSave, className = '', placeholder, 
     setIsFocused(false);
     if (localValue !== value) {
       onChange(localValue);
-      onSave?.();
     }
   };
 
