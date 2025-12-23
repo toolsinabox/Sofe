@@ -209,7 +209,7 @@ const OptionsTab = ({
 
       {/* Option Modal */}
       <Dialog open={showOptionModal} onOpenChange={setShowOptionModal}>
-        <DialogContent className="bg-gray-800 border-gray-700 text-white max-w-lg max-h-[90vh] overflow-y-auto">
+        <DialogContent key={`option-modal-${editingItem?.id || 'new'}-${showOptionModal}`} className="bg-gray-800 border-gray-700 text-white max-w-lg max-h-[90vh] overflow-y-auto">
           <DialogHeader>
             <DialogTitle>{editingItem ? 'Edit Shipping Option' : 'Create Shipping Option'}</DialogTitle>
             <DialogDescription className="text-gray-400">
