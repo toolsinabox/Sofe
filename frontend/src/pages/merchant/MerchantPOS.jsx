@@ -3420,6 +3420,178 @@ const MerchantPOS = () => {
           </DialogFooter>
         </DialogContent>
       </Dialog>
+
+      {/* Park Sale Modal */}
+      <Dialog open={showParkModal} onOpenChange={setShowParkModal}>
+        <DialogContent className="bg-white border-gray-200 text-gray-900 max-w-sm">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2">
+              <PauseCircle className="w-5 h-5 text-blue-600" />
+              Park Sale
+            </DialogTitle>
+            <DialogDescription className="text-gray-500">
+              Save this sale for later. You can retrieve it anytime.
+            </DialogDescription>
+          </DialogHeader>
+          
+          <div className="py-4 space-y-4">
+            <div className="p-3 bg-gray-50 rounded-lg">
+              <div className="flex justify-between text-sm">
+                <span className="text-gray-500">Items:</span>
+                <span className="text-gray-900 font-medium">{cart.length}</span>
+              </div>
+              <div className="flex justify-between text-sm mt-1">
+                <span className="text-gray-500">Total:</span>
+                <span className="text-gray-900 font-medium">${total.toFixed(2)}</span>
+              </div>
+              {customer && (
+                <div className="flex justify-between text-sm mt-1">
+                  <span className="text-gray-500">Customer:</span>
+                  <span className="text-gray-900">{customer.name}</span>
+                </div>
+              )}
+            </div>
+            
+            <div>
+              <label className="text-sm text-gray-700 block mb-1">Note (optional)</label>
+              <textarea
+                value={parkingNote}
+                onChange={(e) => setParkingNote(e.target.value)}
+                placeholder="Add a note to identify this sale..."
+                rows={2}
+                className="w-full px-3 py-2 bg-gray-50 border border-gray-200 rounded-lg text-gray-900 text-sm placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500"
+              />
+            </div>
+          </div>
+
+          <DialogFooter className="gap-2">
+            <Button variant="outline" onClick={() => setShowParkModal(false)} className="border-gray-200">
+              Cancel
+            </Button>
+            <Button onClick={parkSale} className="bg-blue-600 hover:bg-blue-700">
+              <PauseCircle className="w-4 h-4 mr-2" />
+              Park Sale
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* Void Confirmation Modal */}
+      <Dialog open={showVoidConfirm} onOpenChange={setShowVoidConfirm}>
+        <DialogContent className="bg-white border-gray-200 text-gray-900 max-w-sm">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2 text-rose-600">
+              <XCircle className="w-5 h-5" />
+              Void Sale
+            </DialogTitle>
+            <DialogDescription className="text-gray-500">
+              Are you sure you want to void this sale? All items will be removed from the cart.
+            </DialogDescription>
+          </DialogHeader>
+          
+          <div className="py-4">
+            <div className="p-3 bg-rose-50 border border-rose-100 rounded-lg">
+              <div className="flex justify-between text-sm">
+                <span className="text-rose-600">Items to void:</span>
+                <span className="text-rose-700 font-medium">{cart.length}</span>
+              </div>
+              <div className="flex justify-between text-sm mt-1">
+                <span className="text-rose-600">Total amount:</span>
+                <span className="text-rose-700 font-medium">${total.toFixed(2)}</span>
+              </div>
+            </div>
+          </div>
+
+          <DialogFooter className="gap-2">
+            <Button variant="outline" onClick={() => setShowVoidConfirm(false)} className="border-gray-200">
+              Cancel
+            </Button>
+            <Button onClick={voidSale} className="bg-rose-600 hover:bg-rose-700">
+              <XCircle className="w-4 h-4 mr-2" />
+              Void Sale
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* Parked Sales Modal */}
+      <Dialog open={showParkedSales} onOpenChange={setShowParkedSales}>
+        <DialogContent className="bg-white border-gray-200 text-gray-900 max-w-lg">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2">
+              <Clock className="w-5 h-5 text-blue-600" />
+              Parked Sales
+            </DialogTitle>
+            <DialogDescription className="text-gray-500">
+              {parkedSales.length} sale{parkedSales.length !== 1 ? 's' : ''} parked
+            </DialogDescription>
+          </DialogHeader>
+          
+          <div className="py-4 max-h-96 overflow-y-auto space-y-3">
+            {parkedSales.length === 0 ? (
+              <div className="text-center py-8 text-gray-500">
+                <PauseCircle className="w-12 h-12 mx-auto mb-2 opacity-50" />
+                <p>No parked sales</p>
+              </div>
+            ) : (
+              parkedSales.map(sale => (
+                <div 
+                  key={sale.id}
+                  className="p-3 bg-gray-50 rounded-lg border border-gray-200 hover:border-blue-300 transition-colors"
+                >
+                  <div className="flex items-start justify-between">
+                    <div className="flex-1">
+                      <div className="flex items-center gap-2">
+                        <span className="font-medium text-gray-900">${sale.totalAmount.toFixed(2)}</span>
+                        <span className="text-xs text-gray-500">
+                          ({sale.cart.length} item{sale.cart.length !== 1 ? 's' : ''})
+                        </span>
+                      </div>
+                      {sale.customer && (
+                        <p className="text-sm text-gray-600 mt-1">
+                          <User className="w-3 h-3 inline mr-1" />
+                          {sale.customer.name}
+                        </p>
+                      )}
+                      {sale.note && (
+                        <p className="text-sm text-gray-500 mt-1 italic">"{sale.note}"</p>
+                      )}
+                      <p className="text-xs text-gray-400 mt-1">
+                        Parked {new Date(sale.parkedAt).toLocaleTimeString()}
+                      </p>
+                    </div>
+                    <div className="flex gap-1">
+                      <Button
+                        size="sm"
+                        variant="ghost"
+                        onClick={() => retrieveParkedSale(sale)}
+                        className="h-8 px-2 text-blue-600 hover:bg-blue-50"
+                      >
+                        <RotateCcw className="w-4 h-4 mr-1" />
+                        Retrieve
+                      </Button>
+                      <Button
+                        size="sm"
+                        variant="ghost"
+                        onClick={() => deleteParkedSale(sale.id)}
+                        className="h-8 px-2 text-rose-500 hover:bg-rose-50"
+                      >
+                        <Trash2 className="w-4 h-4" />
+                      </Button>
+                    </div>
+                  </div>
+                </div>
+              ))
+            )}
+          </div>
+
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setShowParkedSales(false)} className="border-gray-200">
+              Close
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };
