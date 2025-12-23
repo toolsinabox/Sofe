@@ -47,12 +47,37 @@ import {
   List,
   Grid,
   Edit,
-  Plus
+  Plus,
+  Palette,
+  Layout,
+  Type,
+  Layers,
+  BarChart3,
+  TrendingUp,
+  Percent,
+  Box,
+  FolderTree,
+  ArrowLeftRight,
+  Sparkles,
+  Code,
+  Monitor,
+  Smartphone,
+  Save,
+  RotateCw,
+  Bold,
+  Italic,
+  Underline,
+  AlignLeft,
+  AlignCenter,
+  AlignRight,
+  ListOrdered,
+  Link2
 } from 'lucide-react';
 import { Button } from '../../components/ui/button';
 import { Input } from '../../components/ui/input';
 import { Label } from '../../components/ui/label';
 import { Switch } from '../../components/ui/switch';
+import { Textarea } from '../../components/ui/textarea';
 import {
   Dialog,
   DialogContent,
