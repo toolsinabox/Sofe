@@ -108,24 +108,24 @@ const OptionRow = ({ option, services, zones, onUpdate, onDelete }) => {
   const [saving, setSaving] = useState(false);
   const [saveStatus, setSaveStatus] = useState(null);
   const [localOption, setLocalOption] = useState(option);
+  const [isDirty, setIsDirty] = useState(false);
 
   useEffect(() => {
     setLocalOption(option);
+    setIsDirty(false);
   }, [option]);
 
-  const saveOption = async (updatedData) => {
+  const saveOption = async () => {
     setSaving(true);
     setSaveStatus(null);
     try {
-      await axios.put(`${API}/shipping/options/${option.id}`, updatedData);
+      await axios.put(`${API}/shipping/options/${option.id}`, localOption);
       setSaveStatus('success');
+      setIsDirty(false);
       setTimeout(() => setSaveStatus(null), 2000);
-      // Don't call onUpdate here to avoid re-fetching and overwriting local state
     } catch (error) {
       console.error('Error saving option:', error);
       setSaveStatus('error');
-      // Revert to original on error
-      setLocalOption(option);
       setTimeout(() => setSaveStatus(null), 3000);
     } finally {
       setSaving(false);
@@ -135,7 +135,7 @@ const OptionRow = ({ option, services, zones, onUpdate, onDelete }) => {
   const handleFieldChange = (field, value) => {
     const updated = { ...localOption, [field]: value };
     setLocalOption(updated);
-    saveOption(updated);
+    setIsDirty(true);
   };
 
   const toggleService = (serviceId) => {
