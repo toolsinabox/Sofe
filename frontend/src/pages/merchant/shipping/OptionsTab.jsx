@@ -85,6 +85,10 @@ const InlineTextarea = ({ value, onChange, onSave, className = '', placeholder, 
     }
   };
 
+  const handleClick = (e) => {
+    e.stopPropagation();
+  };
+
   return (
     <textarea
       ref={textareaRef}
@@ -92,9 +96,10 @@ const InlineTextarea = ({ value, onChange, onSave, className = '', placeholder, 
       onChange={(e) => setLocalValue(e.target.value)}
       onFocus={() => setIsFocused(true)}
       onBlur={handleBlur}
+      onClick={handleClick}
       placeholder={placeholder}
       rows={rows}
-      className={`bg-transparent border border-transparent hover:border-gray-600 focus:border-teal-500 focus:outline-none px-2 py-1 text-sm transition-colors w-full rounded resize-none ${className}`}
+      className={`bg-transparent border border-gray-600 hover:border-gray-500 focus:border-teal-500 focus:outline-none px-2 py-1 text-sm transition-colors w-full rounded resize-none ${className}`}
     />
   );
 };
