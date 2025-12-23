@@ -244,7 +244,8 @@ const ProductEditor = ({ product, categories, onSave, onClose, templateTags }) =
     barcode: '',
     mpn: '',
     // Categorization
-    category_id: '',
+    category_id: '', // Keep for backward compatibility
+    category_ids: [], // New: Multiple categories
     brand: '',
     manufacturer: '',
     tags: [],
