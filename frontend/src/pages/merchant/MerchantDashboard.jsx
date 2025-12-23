@@ -6,43 +6,40 @@ import {
   ShoppingCart,
   Users,
   Package,
-  TrendingUp,
   ArrowRight,
   ShoppingBag,
-  AlertTriangle
+  AlertTriangle,
+  TrendingUp,
+  TrendingDown
 } from 'lucide-react';
-import { Card, CardContent, CardHeader, CardTitle } from '../../components/ui/card';
 
 const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
 const API = `${BACKEND_URL}/api`;
 
-const StatCard = ({ title, value, subValue, icon: Icon, color, loading }) => {
-  const colors = {
-    emerald: 'from-emerald-500 to-teal-600',
-    blue: 'from-blue-500 to-cyan-600',
-    purple: 'from-purple-500 to-pink-600',
-    orange: 'from-orange-500 to-amber-600'
-  };
-
+const StatCard = ({ title, value, subValue, icon: Icon, trend, loading }) => {
   return (
-    <Card className="bg-[#151b28] border-gray-800 hover:border-gray-700 transition-all duration-300">
-      <CardContent className="p-3 sm:p-4 md:p-5">
-        <div className="flex items-start justify-between gap-2">
-          <div className="flex-1 min-w-0">
-            <p className="text-gray-400 text-[10px] sm:text-xs font-medium mb-0.5 sm:mb-1">{title}</p>
-            {loading ? (
-              <div className="h-5 sm:h-6 w-16 sm:w-20 bg-gray-700 rounded animate-pulse" />
-            ) : (
-              <p className="text-base sm:text-lg md:text-xl font-bold text-white truncate">{value}</p>
-            )}
-            {subValue && <p className="text-gray-500 text-[10px] sm:text-xs mt-0.5 truncate">{subValue}</p>}
-          </div>
-          <div className={`w-8 h-8 sm:w-9 sm:h-9 md:w-10 md:h-10 rounded-lg bg-gradient-to-br ${colors[color]} flex items-center justify-center flex-shrink-0`}>
-            <Icon className="w-4 h-4 sm:w-5 sm:h-5 text-white" />
-          </div>
+    <div className="bg-white rounded-xl border border-gray-200 p-4 hover:shadow-md transition-shadow">
+      <div className="flex items-start justify-between">
+        <div className="flex-1">
+          <p className="text-gray-500 text-sm font-medium">{title}</p>
+          {loading ? (
+            <div className="h-7 w-24 bg-gray-100 rounded animate-pulse mt-1" />
+          ) : (
+            <p className="text-2xl font-bold text-gray-900 mt-1">{value}</p>
+          )}
+          {subValue && (
+            <p className="text-gray-500 text-xs mt-1 flex items-center gap-1">
+              {trend === 'up' && <TrendingUp size={12} className="text-green-500" />}
+              {trend === 'down' && <TrendingDown size={12} className="text-red-500" />}
+              {subValue}
+            </p>
+          )}
         </div>
-      </CardContent>
-    </Card>
+        <div className="w-10 h-10 rounded-lg bg-blue-50 flex items-center justify-center">
+          <Icon className="w-5 h-5 text-blue-600" />
+        </div>
+      </div>
+    </div>
   );
 };
 
@@ -74,118 +71,115 @@ const MerchantDashboard = () => {
   };
 
   const formatCurrency = (value) => {
-    return new Intl.NumberFormat('en-US', {
+    return new Intl.NumberFormat('en-AU', {
       style: 'currency',
-      currency: 'USD',
+      currency: 'AUD',
       minimumFractionDigits: 2
     }).format(value);
   };
 
   const getStatusColor = (status) => {
     switch (status) {
-      case 'pending': return 'bg-yellow-500/20 text-yellow-400';
-      case 'processing': return 'bg-blue-500/20 text-blue-400';
-      case 'shipped': return 'bg-purple-500/20 text-purple-400';
-      case 'delivered': return 'bg-emerald-500/20 text-emerald-400';
-      case 'cancelled': return 'bg-red-500/20 text-red-400';
-      default: return 'bg-gray-500/20 text-gray-400';
+      case 'pending': return 'bg-yellow-100 text-yellow-700';
+      case 'processing': return 'bg-blue-100 text-blue-700';
+      case 'shipped': return 'bg-purple-100 text-purple-700';
+      case 'delivered': return 'bg-green-100 text-green-700';
+      case 'cancelled': return 'bg-red-100 text-red-700';
+      default: return 'bg-gray-100 text-gray-700';
     }
   };
 
   return (
-    <div className="space-y-4 sm:space-y-5 md:space-y-6">
-      {/* Stats Grid - 2 columns on mobile, 4 on larger screens */}
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4 md:gap-6">
+    <div className="space-y-6">
+      {/* Stats Grid */}
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
         <StatCard
           title="Total Revenue"
           value={stats ? formatCurrency(stats.total_revenue) : '$0.00'}
-          subValue={`${stats?.pending_orders || 0} pending`}
+          subValue={stats?.pending_orders ? `${stats.pending_orders} pending orders` : null}
           icon={DollarSign}
-          color="emerald"
           loading={loading}
         />
         <StatCard
           title="Total Orders"
           value={stats?.total_orders?.toLocaleString() || '0'}
           icon={ShoppingCart}
-          color="blue"
           loading={loading}
         />
         <StatCard
           title="Customers"
           value={stats?.total_customers?.toLocaleString() || '0'}
           icon={Users}
-          color="purple"
           loading={loading}
         />
         <StatCard
           title="Products"
           value={stats?.total_products?.toLocaleString() || '0'}
-          subValue={`${stats?.low_stock_products || 0} low stock`}
+          subValue={stats?.low_stock_products ? `${stats.low_stock_products} low stock` : null}
           icon={Package}
-          color="orange"
           loading={loading}
         />
       </div>
 
       {/* Alerts */}
       {stats && (stats.low_stock_products > 0 || stats.out_of_stock_products > 0) && (
-        <Card className="bg-yellow-500/10 border-yellow-500/30">
-          <CardContent className="p-2.5 sm:p-3">
-            <div className="flex items-center gap-2">
-              <AlertTriangle className="text-yellow-400 flex-shrink-0 w-4 h-4 sm:w-5 sm:h-5" />
-              <p className="text-yellow-400 text-xs sm:text-sm">
-                <span className="font-medium">Alert:</span> {stats.low_stock_products} low stock, {stats.out_of_stock_products} out of stock
+        <div className="bg-amber-50 border border-amber-200 rounded-xl p-4">
+          <div className="flex items-center gap-3">
+            <div className="w-10 h-10 rounded-lg bg-amber-100 flex items-center justify-center">
+              <AlertTriangle className="w-5 h-5 text-amber-600" />
+            </div>
+            <div>
+              <p className="font-medium text-amber-800">Inventory Alert</p>
+              <p className="text-amber-700 text-sm">
+                {stats.low_stock_products} products low in stock, {stats.out_of_stock_products} out of stock
               </p>
             </div>
-          </CardContent>
-        </Card>
+          </div>
+        </div>
       )}
 
-      {/* Recent Orders and Top Products - Stack on mobile */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-3 sm:gap-4 md:gap-5">
+      {/* Recent Orders and Top Products */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* Recent Orders */}
-        <Card className="bg-[#151b28] border-gray-800">
-          <CardHeader className="p-3 sm:p-4 pb-2">
-            <div className="flex items-center justify-between">
-              <CardTitle className="text-white text-sm sm:text-base font-semibold">Recent Orders</CardTitle>
-              <Link to="/merchant/orders" className="text-emerald-400 text-[10px] sm:text-xs hover:text-emerald-300 flex items-center gap-0.5">
-                View All <ArrowRight size={12} />
-              </Link>
-            </div>
-          </CardHeader>
-          <CardContent className="p-2 sm:p-3 pt-0">
+        <div className="bg-white rounded-xl border border-gray-200">
+          <div className="p-4 border-b border-gray-100 flex items-center justify-between">
+            <h2 className="font-semibold text-gray-900">Recent Orders</h2>
+            <Link to="/merchant/orders" className="text-blue-600 text-sm hover:text-blue-700 flex items-center gap-1">
+              View all <ArrowRight size={14} />
+            </Link>
+          </div>
+          <div className="p-4">
             {loading ? (
-              <div className="space-y-1.5 sm:space-y-2">
+              <div className="space-y-3">
                 {[...Array(5)].map((_, i) => (
-                  <div key={i} className="h-11 sm:h-14 bg-gray-800 rounded animate-pulse" />
+                  <div key={i} className="h-14 bg-gray-50 rounded-lg animate-pulse" />
                 ))}
               </div>
             ) : orders.length === 0 ? (
-              <div className="text-center py-4 sm:py-6 text-gray-500">
-                <ShoppingBag className="w-6 h-6 sm:w-8 sm:h-8 mx-auto mb-1.5 opacity-30" />
-                <p className="text-xs sm:text-sm">No orders yet</p>
+              <div className="text-center py-8 text-gray-400">
+                <ShoppingBag className="w-10 h-10 mx-auto mb-2 opacity-50" />
+                <p>No orders yet</p>
               </div>
             ) : (
-              <div className="space-y-1.5 sm:space-y-2">
+              <div className="space-y-2">
                 {orders.map((order) => (
                   <Link 
                     key={order.id} 
                     to={`/merchant/orders/${order.id}`}
-                    className="flex items-center justify-between p-2 sm:p-2.5 bg-gray-800/30 rounded-lg hover:bg-gray-800/50 transition-colors"
+                    className="flex items-center justify-between p-3 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors"
                   >
-                    <div className="flex items-center gap-2 min-w-0 flex-1">
-                      <div className="w-7 h-7 sm:w-8 sm:h-8 bg-gradient-to-br from-emerald-500/20 to-teal-600/20 rounded flex items-center justify-center flex-shrink-0">
-                        <ShoppingBag className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-emerald-400" />
+                    <div className="flex items-center gap-3">
+                      <div className="w-9 h-9 bg-blue-50 rounded-lg flex items-center justify-center">
+                        <ShoppingBag className="w-4 h-4 text-blue-600" />
                       </div>
-                      <div className="min-w-0 flex-1">
-                        <p className="text-white font-medium text-[11px] sm:text-xs truncate">{order.order_number}</p>
-                        <p className="text-gray-500 text-[10px] sm:text-xs truncate">{order.customer_name}</p>
+                      <div>
+                        <p className="font-medium text-gray-900 text-sm">{order.order_number}</p>
+                        <p className="text-gray-500 text-xs">{order.customer_name}</p>
                       </div>
                     </div>
-                    <div className="text-right flex-shrink-0 ml-1.5">
-                      <p className="text-white font-medium text-[11px] sm:text-xs">{formatCurrency(order.total)}</p>
-                      <span className={`text-[10px] px-1.5 py-0.5 rounded-full ${getStatusColor(order.status)}`}>
+                    <div className="text-right">
+                      <p className="font-semibold text-gray-900 text-sm">{formatCurrency(order.total)}</p>
+                      <span className={`text-xs px-2 py-0.5 rounded-full ${getStatusColor(order.status)}`}>
                         {order.status.charAt(0).toUpperCase() + order.status.slice(1)}
                       </span>
                     </div>
@@ -193,63 +187,64 @@ const MerchantDashboard = () => {
                 ))}
               </div>
             )}
-          </CardContent>
-        </Card>
+          </div>
+        </div>
 
         {/* Top Products */}
-        <Card className="bg-[#151b28] border-gray-800">
-          <CardHeader className="p-3 sm:p-4 pb-2">
-            <div className="flex items-center justify-between">
-              <CardTitle className="text-white text-sm sm:text-base font-semibold">Top Products</CardTitle>
-              <Link to="/merchant/products" className="text-emerald-400 text-[10px] sm:text-xs hover:text-emerald-300 flex items-center gap-0.5">
-                View All <ArrowRight size={12} />
-              </Link>
-            </div>
-          </CardHeader>
-          <CardContent className="p-2 sm:p-3 pt-0">
+        <div className="bg-white rounded-xl border border-gray-200">
+          <div className="p-4 border-b border-gray-100 flex items-center justify-between">
+            <h2 className="font-semibold text-gray-900">Top Products</h2>
+            <Link to="/merchant/products" className="text-blue-600 text-sm hover:text-blue-700 flex items-center gap-1">
+              View all <ArrowRight size={14} />
+            </Link>
+          </div>
+          <div className="p-4">
             {loading ? (
-              <div className="space-y-1.5 sm:space-y-2">
+              <div className="space-y-3">
                 {[...Array(5)].map((_, i) => (
-                  <div key={i} className="h-11 sm:h-14 bg-gray-800 rounded animate-pulse" />
+                  <div key={i} className="h-14 bg-gray-50 rounded-lg animate-pulse" />
                 ))}
               </div>
             ) : products.length === 0 ? (
-              <div className="text-center py-4 sm:py-6 text-gray-500">
-                <Package className="w-6 h-6 sm:w-8 sm:h-8 mx-auto mb-1.5 opacity-30" />
-                <p className="text-xs sm:text-sm">No products yet</p>
+              <div className="text-center py-8 text-gray-400">
+                <Package className="w-10 h-10 mx-auto mb-2 opacity-50" />
+                <p>No products yet</p>
               </div>
             ) : (
-              <div className="space-y-1.5 sm:space-y-2">
-                {products.map((product, index) => (
-                  <div key={product.id} className="flex items-center justify-between p-2 sm:p-2.5 bg-gray-800/30 rounded-lg hover:bg-gray-800/50 transition-colors">
-                    <div className="flex items-center gap-1.5 sm:gap-2 min-w-0 flex-1">
-                      <div className="w-5 h-5 sm:w-6 sm:h-6 bg-gray-700 rounded flex items-center justify-center text-white font-medium text-[10px] sm:text-xs flex-shrink-0">
-                        {index + 1}
-                      </div>
-                      <div className="flex items-center gap-1.5 sm:gap-2 min-w-0 flex-1">
-                        <img
-                          src={product.images?.[0] || 'https://via.placeholder.com/40'}
+              <div className="space-y-2">
+                {products.map((product) => (
+                  <Link 
+                    key={product.id} 
+                    to={`/merchant/products/${product.id}`}
+                    className="flex items-center justify-between p-3 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors"
+                  >
+                    <div className="flex items-center gap-3">
+                      {product.images?.[0] ? (
+                        <img 
+                          src={product.images[0]} 
                           alt={product.name}
-                          className="w-7 h-7 sm:w-9 sm:h-9 rounded object-cover flex-shrink-0"
+                          className="w-9 h-9 rounded-lg object-cover"
                         />
-                        <div className="min-w-0 flex-1">
-                          <p className="text-white font-medium text-[11px] sm:text-xs line-clamp-1">{product.name}</p>
-                          <p className="text-gray-500 text-[10px] sm:text-xs">{product.sales_count || 0} sales</p>
+                      ) : (
+                        <div className="w-9 h-9 bg-gray-200 rounded-lg flex items-center justify-center">
+                          <Package className="w-4 h-4 text-gray-400" />
                         </div>
+                      )}
+                      <div className="min-w-0">
+                        <p className="font-medium text-gray-900 text-sm truncate max-w-[180px]">{product.name}</p>
+                        <p className="text-gray-500 text-xs">{product.sku}</p>
                       </div>
                     </div>
-                    <div className="text-right flex-shrink-0 ml-1.5">
-                      <p className="text-white font-medium text-[11px] sm:text-xs">{formatCurrency(product.price)}</p>
-                      <span className={`text-[10px] sm:text-xs ${product.stock > 0 ? 'text-emerald-400' : 'text-red-400'}`}>
-                        {product.stock > 0 ? `${product.stock} stock` : 'No stock'}
-                      </span>
+                    <div className="text-right">
+                      <p className="font-semibold text-gray-900 text-sm">{formatCurrency(product.price)}</p>
+                      <p className="text-gray-500 text-xs">{product.stock_quantity} in stock</p>
                     </div>
-                  </div>
+                  </Link>
                 ))}
               </div>
             )}
-          </CardContent>
-        </Card>
+          </div>
+        </div>
       </div>
     </div>
   );
