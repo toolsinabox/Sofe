@@ -1500,10 +1500,18 @@ const MerchantShipping = () => {
     const handleSaveService = async () => {
       setSaving(true);
       try {
+        // Map frontend field names to backend field names
+        const dataToSave = {
+          ...serviceForm,
+          tracking_url_template: serviceForm.tracking_url || null
+        };
+        // Remove the frontend-only field name
+        delete dataToSave.tracking_url;
+        
         if (editingItem) {
-          await axios.put(`${API}/shipping/services/${editingItem.id}`, serviceForm);
+          await axios.put(`${API}/shipping/services/${editingItem.id}`, dataToSave);
         } else {
-          await axios.post(`${API}/shipping/services`, serviceForm);
+          await axios.post(`${API}/shipping/services`, dataToSave);
         }
         await fetchAllData();
         setShowServiceModal(false);
