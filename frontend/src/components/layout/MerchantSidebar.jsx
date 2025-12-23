@@ -114,6 +114,14 @@ const navGroups = [
       { path: '/merchant/settings', icon: Settings, label: 'General Settings' },
     ]
   },
+  {
+    id: 'integrations',
+    label: 'Integrations',
+    icon: Puzzle,
+    items: [
+      { path: '/merchant/addons', icon: Puzzle, label: 'Addons & Apps' },
+    ]
+  },
 ];
 
 const MerchantSidebar = ({ collapsed, setCollapsed, mobileOpen, setMobileOpen }) => {
