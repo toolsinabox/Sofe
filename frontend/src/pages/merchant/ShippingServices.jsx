@@ -222,7 +222,7 @@ const ShippingServices = () => {
           </div>
           <Button
             onClick={() => handleOpenModal()}
-            className="bg-gradient-to-r from-cyan-500 to-teal-500 hover:from-cyan-600 hover:to-teal-600 text-white"
+            className="bg-gradient-to-r from-cyan-500 to-teal-500 hover:from-cyan-600 hover:to-teal-600 text-gray-900"
           >
             <Plus className="w-4 h-4 mr-2" />
             Add Service
