@@ -1051,31 +1051,33 @@ async def calculate_shipping(request: ShippingCalculationRequest):
         # Get service's cubic weight modifier
         service_cubic_modifier = service.get("cubic_weight_modifier", 250)
         
-        # Recalculate cubic weight with service's modifier if different
-        if service_cubic_modifier != cubic_modifier:
-            service_cubic_weight = 0
-            for item in request.items:
-                qty = item.get("quantity", 1)
-                shipping_length = item.get("shipping_length") or item.get("length", 0)
-                shipping_width = item.get("shipping_width") or item.get("width", 0)
-                shipping_height = item.get("shipping_height") or item.get("height", 0)
-                
-                if shipping_length and shipping_width and shipping_height:
-                    # Dimensions are in mm, convert to m³
-                    volume_m3 = (shipping_length * shipping_width * shipping_height) / 1000000000
-                    service_cubic_weight += volume_m3 * service_cubic_modifier * qty
-                else:
-                    service_cubic_weight += item.get("weight", 0.5) * qty
-        else:
-            service_cubic_weight = total_cubic_weight
+        # ============================================================
+        # MAROPOST CALCULATION METHOD (CORRECTED):
+        # 
+        # PHASE 1-2: Per-Item Weight Calculation
+        #   - Calculate chargeable weight PER ITEM (max of cubic vs actual)
+        #
+        # PHASE 3: Per-Item Freight Pricing
+        #   - Per-kg charge per item
+        #   - First parcel charge per item  
+        #   - Min charge applied PER ITEM (per article)
+        #
+        # PHASE 4: Order-Level Fuel Levy
+        #   - Sum all item base freights
+        #   - Apply fuel levy % ONCE to the total
+        #   - Add flat fuel levy ONCE
+        #
+        # PHASE 5: Handling Fee (per item, AFTER fuel)
+        #   - Handling fee × number of items
+        #   - Added AFTER fuel (not fuelled)
+        #
+        # PHASE 6: Final Total
+        # PHASE 7: GST at the end
+        # ============================================================
         
-        # Use the GREATER of actual weight vs cubic weight (industry standard)
-        chargeable_weight = max(total_actual_weight, service_cubic_weight)
-        
-        # Calculate max item length in mm (shipping dimensions are already in mm)
+        # Calculate max item length in mm for service eligibility check
         max_item_length_mm = 0
         for item in request.items:
-            # Get the longest dimension (could be length, width, or height)
             item_length_mm = max(
                 item.get("shipping_length", 0) or 0,
                 item.get("shipping_width", 0) or 0,
@@ -1092,23 +1094,38 @@ async def calculate_shipping(request: ShippingCalculationRequest):
         service_max_length_mm = service.get("max_length")
         if service_max_length_mm and service_max_length_mm > 0:
             if max_item_length_mm > service_max_length_mm:
-                # Item exceeds service max length, skip this service entirely
                 continue
         
-        # Find rate by checking ALL matching zones (case-insensitive match)
+        # Find rate by checking ALL matching zones
         rate = None
         matched_zone = None
+        
+        # First, calculate a representative chargeable weight to find the right rate tier
+        total_chargeable_for_rate_lookup = 0
+        for item in request.items:
+            qty = item.get("quantity", 1)
+            item_actual = item.get("weight", 0.5)
+            shipping_length = item.get("shipping_length") or item.get("length", 0)
+            shipping_width = item.get("shipping_width") or item.get("width", 0)
+            shipping_height = item.get("shipping_height") or item.get("height", 0)
+            
+            if shipping_length and shipping_width and shipping_height:
+                volume_m3 = (shipping_length * shipping_width * shipping_height) / 1000000000
+                item_cubic = volume_m3 * service_cubic_modifier
+            else:
+                item_cubic = item_actual
+            
+            item_chargeable = max(item_actual, item_cubic)
+            total_chargeable_for_rate_lookup += item_chargeable * qty
+        
         for zone in matching_zones:
             zone_code = zone.get("code", "").upper()
             for r in service.get("rates", []):
                 rate_zone_code = r.get("zone_code", "").upper()
                 if rate_zone_code == zone_code:
-                    # Check weight range against chargeable weight
-                    if r.get("min_weight", 0) <= chargeable_weight <= r.get("max_weight", 999999):
-                        # Check max length constraint (if set)
+                    if r.get("min_weight", 0) <= total_chargeable_for_rate_lookup <= r.get("max_weight", 999999):
                         rate_max_length = r.get("max_length_mm", 0)
                         if rate_max_length > 0 and max_item_length_mm > rate_max_length:
-                            # Item exceeds max length for this rate, skip
                             continue
                         if r.get("is_active", True):
                             rate = r
@@ -1120,82 +1137,84 @@ async def calculate_shipping(request: ShippingCalculationRequest):
         if not rate:
             continue
         
-        # Count number of parcels (each unit is a separate parcel, based on total quantity)
-        num_parcels = sum(item.get("quantity", 1) for item in request.items)
-        
-        # Get rate values - use safe_float to ensure all numeric fields default to 0 if None
+        # Get rate values
         per_parcel_rate = safe_float(rate.get("per_parcel_rate")) or safe_float(rate.get("first_parcel")) or safe_float(rate.get("base_rate"))
         per_kg_rate = safe_float(rate.get("per_kg_rate"))
         rate_min_charge = safe_float(rate.get("min_charge"))
         
-        # Get fuel levy settings - ensure defaults to 0 if None
+        # Get service-level settings
         fuel_levy_percent = safe_float(service.get("fuel_levy_percent"))
         fuel_levy_amount = safe_float(service.get("fuel_levy_amount"))
-        
-        # ============================================================
-        # MAROPOST CALCULATION METHOD:
-        # 1. Combine cubic weights for all items
-        # 2. Apply per-kg rate to COMBINED weight
-        # 3. Add per-parcel fee × number of parcels
-        # 4. Apply minimum charge × number of parcels (min is per parcel)
-        # 5. Apply fuel levy percentage
-        # 6. Add flat fuel levy ONCE (only for multi-parcel orders)
-        # 7. GST added at the end
-        # ============================================================
-        
-        # Get handling fee (determines which calculation method to use) - default to 0 if None
         handling_fee = safe_float(service.get("handling_fee"))
         
-        if handling_fee > 0:
-            # STARTRACK-STYLE CALCULATION:
-            # 1. kg_charge with min_charge as floor for kg portion
-            # 2. Add parcel charge
-            # 3. Apply fuel levy % to freight
-            # 4. Add handling fee AFTER fuel (handling not fuel-levied)
-            # 5. GST at the end
-            
-            kg_charge = round(chargeable_weight * per_kg_rate, 2)
-            if rate_min_charge > 0:
-                kg_charge = max(kg_charge, round(rate_min_charge * num_parcels, 2))
-            
-            parcel_charge = round(per_parcel_rate * num_parcels, 2)
-            freight_subtotal = round(kg_charge + parcel_charge, 2)
-            
-            # Apply fuel levy % to freight only
-            if fuel_levy_percent > 0:
-                freight_subtotal = round(freight_subtotal * (1 + fuel_levy_percent / 100), 2)
-            
-            # Add flat fuel levy
-            if fuel_levy_amount > 0:
-                freight_subtotal = round(freight_subtotal + fuel_levy_amount, 2)
-            
-            # Add handling fee AFTER fuel levy
-            base_freight = round(freight_subtotal + (handling_fee * num_parcels), 2)
-        else:
-            # XFM-STYLE CALCULATION (Maropost default):
-            # 1. Combine kg_charge + parcel_charge
-            # 2. Apply min_charge as floor for total (per parcel)
-            # 3. Apply fuel levy %
-            # 4. Add flat fuel levy
-            # 5. GST at the end
-            
-            kg_charge = round(chargeable_weight * per_kg_rate, 2)
-            parcel_charge = round(per_parcel_rate * num_parcels, 2)
-            subtotal = round(kg_charge + parcel_charge, 2)
-            
-            # Apply min_charge as floor for total
-            min_total = round(rate_min_charge * num_parcels, 2) if rate_min_charge > 0 else 0
-            base_freight = max(subtotal, min_total)
-            
-            # Apply fuel levy %
-            if fuel_levy_percent > 0:
-                base_freight = round(base_freight * (1 + fuel_levy_percent / 100), 2)
-            
-            # Add flat fuel levy
-            if fuel_levy_amount > 0:
-                base_freight = round(base_freight + fuel_levy_amount, 2)
+        # ============================================================
+        # PHASE 3: PER-ITEM FREIGHT CALCULATION
+        # Each item is priced individually, with min charge per article
+        # ============================================================
+        total_item_base_freight = 0
+        num_items = 0
         
-        base_price = round(base_freight, 2)
+        for item in request.items:
+            qty = item.get("quantity", 1)
+            item_actual_weight = item.get("weight", 0.5)
+            
+            # Get item dimensions
+            shipping_length = item.get("shipping_length") or item.get("length", 0)
+            shipping_width = item.get("shipping_width") or item.get("width", 0)
+            shipping_height = item.get("shipping_height") or item.get("height", 0)
+            
+            # Calculate item cubic weight
+            if shipping_length and shipping_width and shipping_height:
+                volume_m3 = (shipping_length * shipping_width * shipping_height) / 1000000000
+                item_cubic_weight = volume_m3 * service_cubic_modifier
+            else:
+                item_cubic_weight = item_actual_weight
+            
+            # PHASE 2: Per-item chargeable weight (max of actual vs cubic)
+            item_chargeable_weight = max(item_actual_weight, item_cubic_weight)
+            
+            # Calculate freight for each unit of this item
+            for _ in range(qty):
+                num_items += 1
+                
+                # Per-kg charge for this item
+                kg_charge = round(item_chargeable_weight * per_kg_rate, 2)
+                
+                # Add first parcel charge
+                item_freight = round(kg_charge + per_parcel_rate, 2)
+                
+                # Apply minimum charge PER ARTICLE
+                if rate_min_charge > 0:
+                    item_freight = max(item_freight, rate_min_charge)
+                
+                total_item_base_freight += item_freight
+        
+        # ============================================================
+        # PHASE 4: ORDER-LEVEL FUEL LEVY
+        # Fuel is applied ONCE to the sum of all item base freights
+        # ============================================================
+        order_freight = round(total_item_base_freight, 2)
+        
+        # Apply fuel levy percentage to order total
+        if fuel_levy_percent > 0:
+            order_freight = round(order_freight * (1 + fuel_levy_percent / 100), 2)
+        
+        # Add flat fuel levy ONCE
+        if fuel_levy_amount > 0:
+            order_freight = round(order_freight + fuel_levy_amount, 2)
+        
+        # ============================================================
+        # PHASE 5: HANDLING FEE (per item, AFTER fuel)
+        # Handling is NOT fuelled - added after fuel calculation
+        # ============================================================
+        if handling_fee > 0:
+            total_handling = round(handling_fee * num_items, 2)
+            order_freight = round(order_freight + total_handling, 2)
+        
+        # ============================================================
+        # PHASE 6: FINAL ORDER SHIPPING TOTAL
+        # ============================================================
+        base_price = round(order_freight, 2)
         
         # Apply service-level min/max charge (overrides rate-level)
         service_min_charge = safe_float(service.get("min_charge"))
