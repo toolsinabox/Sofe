@@ -264,6 +264,14 @@ function App() {
               <Route path="pos/reports" element={<MerchantPOSReports />} />
               <Route path="addons" element={<MerchantAddons />} />
               <Route path="integrations/ebay" element={<EbayIntegration />} />
+              
+              {/* New Feature Routes */}
+              <Route path="coupons" element={<MerchantCoupons />} />
+              <Route path="loyalty" element={<MerchantLoyalty />} />
+              <Route path="gift-cards" element={<MerchantGiftCards />} />
+              <Route path="flash-sales" element={<MerchantFlashSales />} />
+              <Route path="advanced-analytics" element={<MerchantAdvancedAnalytics />} />
+              <Route path="suppliers" element={<MerchantSuppliers />} />
             </Route>
 
             {/* Live Theme Storefront - Main customer-facing store */}
