@@ -1517,8 +1517,15 @@ const EbayIntegration = () => {
     
     // Store info - use actual store settings if available
     const storeName = 'Your Store';
-    // Use a reliable logo placeholder that actually renders
-    const storeLogo = 'https://placehold.co/200x60/0066cc/ffffff?text=YOUR+STORE&font=montserrat';
+    // Use a proper logo placeholder - SVG data URI for better rendering
+    const storeLogo = 'data:image/svg+xml,' + encodeURIComponent(`
+      <svg xmlns="http://www.w3.org/2000/svg" width="180" height="50" viewBox="0 0 180 50">
+        <rect width="180" height="50" fill="#ffffff" rx="6"/>
+        <rect x="8" y="8" width="34" height="34" fill="#0066cc" rx="6"/>
+        <text x="25" y="32" fill="#ffffff" font-family="Arial, sans-serif" font-size="20" font-weight="bold" text-anchor="middle">S</text>
+        <text x="105" y="32" fill="#0066cc" font-family="Arial, sans-serif" font-size="16" font-weight="bold" text-anchor="middle">Your Store</text>
+      </svg>
+    `.trim());
     const storeEmail = 'contact@yourstore.com';
     
     // Product info from selected preview product
