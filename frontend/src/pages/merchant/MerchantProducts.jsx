@@ -292,6 +292,10 @@ const ProductEditor = ({ product, categories, onSave, onClose, templateTags }) =
   const [newSpecName, setNewSpecName] = useState('');
   const [newSpecValue, setNewSpecValue] = useState('');
   
+  // Description Editor State
+  const [descriptionEditorMode, setDescriptionEditorMode] = useState('wysiwyg'); // 'wysiwyg' or 'source'
+  const wysiwygRef = useRef(null);
+  
   useEffect(() => {
     if (product) {
       setFormData(prev => ({
