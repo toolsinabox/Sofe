@@ -662,7 +662,7 @@ async def import_service_rates_csv(
                 "base_rate": float(row.get("Minimum Charge", 0) or 0),  # Keep for backwards compatibility
                 "first_parcel": float(row.get("1st Parcel", 0) or 0),
                 "per_subsequent": float(row.get("Per Subsequent Parcel", 0) or 0) if row.get("Per Subsequent Parcel") else 0,
-                "per_kg_rate": float(row.get("Per Kg", 0) or 0),
+                "per_kg_rate": round(float(row.get("Per Kg", 0) or 0), 2),  # Round to 2 decimal places
                 "min_weight": float(row.get("Minimum", 0) or 0),
                 "max_weight": float(row.get("Maximum", 999) or 999) if row.get("Maximum") else 999,
                 "max_length_mm": float(row.get("Maximum Length", 0) or 0),  # Maximum length in MM
