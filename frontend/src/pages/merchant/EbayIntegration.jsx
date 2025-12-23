@@ -190,6 +190,79 @@ const EbayIntegration = () => {
   });
   const [creatingListing, setCreatingListing] = useState(false);
 
+  // Theme Editor State
+  const [themePreview, setThemePreview] = useState('desktop');
+  const [activeThemeTemplate, setActiveThemeTemplate] = useState('default');
+  const [themeSettings, setThemeSettings] = useState({
+    template: 'modern',
+    primaryColor: '#0066cc',
+    secondaryColor: '#f5f5f5',
+    accentColor: '#ff6600',
+    fontFamily: 'Arial, sans-serif',
+    headerStyle: 'banner',
+    galleryLayout: 'main-thumb',
+    showBrandLogo: true,
+    showTrustBadges: true,
+    showShippingInfo: true,
+    showReturnPolicy: true,
+    customCSS: '',
+    headerHTML: '<div class="ebay-header">\n  <img src="{{store_logo}}" alt="{{store_name}}" />\n  <h1>{{store_name}}</h1>\n</div>',
+    footerHTML: '<div class="ebay-footer">\n  <p>Thank you for shopping with us!</p>\n  <p>Contact: {{store_email}}</p>\n</div>',
+    descriptionTemplate: '<div class="product-description">\n  <h2>{{product_name}}</h2>\n  <div class="description-content">{{product_description}}</div>\n  <div class="specs">{{product_specs}}</div>\n</div>'
+  });
+
+  // Category Mapping State
+  const [categoryMappings, setCategoryMappings] = useState([]);
+  const [showCategoryModal, setShowCategoryModal] = useState(false);
+  const [localCategories, setLocalCategories] = useState([]);
+  const [ebayCategories, setEbayCategories] = useState([]);
+  const [newMapping, setNewMapping] = useState({ local_category: '', ebay_category: '', ebay_category_name: '' });
+
+  // Pricing Rules State
+  const [pricingRules, setPricingRules] = useState({
+    default_markup_type: 'percentage',
+    default_markup_value: 10,
+    round_to_nearest: 0.99,
+    minimum_price: 1.00,
+    apply_to_shipping: false,
+    rules: []
+  });
+  const [showPricingRuleModal, setShowPricingRuleModal] = useState(false);
+  const [newPricingRule, setNewPricingRule] = useState({
+    name: '',
+    condition: 'category',
+    condition_value: '',
+    markup_type: 'percentage',
+    markup_value: 0
+  });
+
+  // Inventory Rules State
+  const [inventoryRules, setInventoryRules] = useState({
+    buffer_stock: 0,
+    out_of_stock_action: 'set_zero',
+    low_stock_threshold: 5,
+    sync_direction: 'push',
+    sync_on_order: true,
+    sync_on_stock_change: true
+  });
+
+  // Bulk Operations State
+  const [selectedListings, setSelectedListings] = useState([]);
+  const [bulkAction, setBulkAction] = useState('');
+  const [showBulkModal, setShowBulkModal] = useState(false);
+
+  // Analytics State
+  const [analyticsData, setAnalyticsData] = useState({
+    totalSales: 0,
+    totalOrders: 0,
+    avgOrderValue: 0,
+    conversionRate: 0,
+    topProducts: [],
+    salesByDay: [],
+    salesByCategory: []
+  });
+  const [analyticsDateRange, setAnalyticsDateRange] = useState('30d');
+
   // Fetch status
   const fetchStatus = useCallback(async () => {
     try {
