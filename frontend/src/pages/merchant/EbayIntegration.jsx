@@ -653,7 +653,7 @@ const EbayIntegration = () => {
     <table width="100%" cellpadding="0" cellspacing="0">
       <tr>
         <td>
-          <img src="{{store_logo}}" alt="{{store_name}}" style="height: 50px; border-radius: 8px;" />
+          {{#if_store_logo}}<img src="{{store_logo}}" alt="{{store_name}}" style="height: 50px; border-radius: 8px;" />{{/if_store_logo}}
         </td>
         <td align="right" style="color: #fff;">
           <div style="font-size: 18px; font-weight: 600;">{{store_name}}</div>
@@ -666,21 +666,25 @@ const EbayIntegration = () => {
   <!-- Main Content -->
   <div style="background: #fff; padding: 30px; border: 1px solid #e0e0e0; border-top: none;">
     
-    <!-- Product Images Gallery -->
+    <!-- Product Images Gallery - Only shows if images exist -->
+    {{#if_has_images}}
     <div style="margin-bottom: 30px;">
       <div style="display: flex; gap: 15px; flex-wrap: wrap;">
         <!-- Main Image -->
+        {{#if_image_1}}
         <div style="flex: 0 0 400px; max-width: 100%;">
           <img src="{{product_image_1}}" alt="{{product_name}}" style="width: 100%; height: auto; border-radius: 12px; border: 1px solid #eee;" />
         </div>
+        {{/if_image_1}}
         <!-- Thumbnail Grid -->
         <div style="display: flex; flex-wrap: wrap; gap: 10px; flex: 1; min-width: 200px;">
-          <img src="{{product_image_2}}" alt="{{product_name}} - Image 2" style="width: 90px; height: 90px; object-fit: cover; border-radius: 8px; border: 2px solid #eee; cursor: pointer;" />
-          <img src="{{product_image_3}}" alt="{{product_name}} - Image 3" style="width: 90px; height: 90px; object-fit: cover; border-radius: 8px; border: 2px solid #eee; cursor: pointer;" />
-          <img src="{{product_image_4}}" alt="{{product_name}} - Image 4" style="width: 90px; height: 90px; object-fit: cover; border-radius: 8px; border: 2px solid #eee; cursor: pointer;" />
+          {{#if_image_2}}<img src="{{product_image_2}}" alt="{{product_name}} - Image 2" style="width: 90px; height: 90px; object-fit: cover; border-radius: 8px; border: 2px solid #eee; cursor: pointer;" />{{/if_image_2}}
+          {{#if_image_3}}<img src="{{product_image_3}}" alt="{{product_name}} - Image 3" style="width: 90px; height: 90px; object-fit: cover; border-radius: 8px; border: 2px solid #eee; cursor: pointer;" />{{/if_image_3}}
+          {{#if_image_4}}<img src="{{product_image_4}}" alt="{{product_name}} - Image 4" style="width: 90px; height: 90px; object-fit: cover; border-radius: 8px; border: 2px solid #eee; cursor: pointer;" />{{/if_image_4}}
         </div>
       </div>
     </div>
+    {{/if_has_images}}
 
     <!-- Product Title -->
     <h1 style="font-size: 24px; font-weight: 600; color: #1a1a2e; margin: 0 0 20px 0; padding-bottom: 15px; border-bottom: 2px solid {{primary_color}};">
