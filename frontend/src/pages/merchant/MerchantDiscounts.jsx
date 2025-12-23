@@ -121,9 +121,9 @@ const MerchantDiscounts = () => {
 
   const getTypeIcon = (type) => {
     switch (type) {
-      case 'percentage': return <Percent size={16} className="text-green-400" />;
-      case 'fixed': return <DollarSign size={16} className="text-blue-400" />;
-      case 'shipping': return <Tag size={16} className="text-purple-400" />;
+      case 'percentage': return <Percent size={16} className="text-green-600" />;
+      case 'fixed': return <DollarSign size={16} className="text-blue-600" />;
+      case 'shipping': return <Tag size={16} className="text-purple-600" />;
       default: return <Tag size={16} />;
     }
   };
@@ -141,8 +141,8 @@ const MerchantDiscounts = () => {
     <div className="p-6">
       <div className="flex justify-between items-center mb-6">
         <div>
-          <h1 className="text-2xl font-bold text-white">Discounts & Coupons</h1>
-          <p className="text-gray-400 text-sm mt-1">Create and manage discount codes for your store</p>
+          <h1 className="text-2xl font-bold text-gray-900">Discounts & Coupons</h1>
+          <p className="text-gray-500 text-sm mt-1">Create and manage discount codes for your store</p>
         </div>
         <Button onClick={() => openModal()} className="bg-blue-600 hover:bg-blue-700">
           <Plus size={16} className="mr-2" /> Create Discount
@@ -151,52 +151,52 @@ const MerchantDiscounts = () => {
 
       {/* Stats Cards */}
       <div className="grid grid-cols-4 gap-4 mb-6">
-        <div className="bg-gray-800 rounded-lg p-4">
-          <p className="text-gray-400 text-sm">Active Discounts</p>
-          <p className="text-2xl font-bold text-white">{discounts.filter(d => d.is_active).length}</p>
+        <div className="bg-white rounded-lg border border-gray-200 p-4">
+          <p className="text-gray-500 text-sm">Active Discounts</p>
+          <p className="text-2xl font-bold text-gray-900">{discounts.filter(d => d.is_active).length}</p>
         </div>
-        <div className="bg-gray-800 rounded-lg p-4">
-          <p className="text-gray-400 text-sm">Total Discounts</p>
-          <p className="text-2xl font-bold text-white">{discounts.length}</p>
+        <div className="bg-white rounded-lg border border-gray-200 p-4">
+          <p className="text-gray-500 text-sm">Total Discounts</p>
+          <p className="text-2xl font-bold text-gray-900">{discounts.length}</p>
         </div>
-        <div className="bg-gray-800 rounded-lg p-4">
-          <p className="text-gray-400 text-sm">Total Uses</p>
-          <p className="text-2xl font-bold text-white">{discounts.reduce((sum, d) => sum + d.used_count, 0)}</p>
+        <div className="bg-white rounded-lg border border-gray-200 p-4">
+          <p className="text-gray-500 text-sm">Total Uses</p>
+          <p className="text-2xl font-bold text-gray-900">{discounts.reduce((sum, d) => sum + d.used_count, 0)}</p>
         </div>
-        <div className="bg-gray-800 rounded-lg p-4">
-          <p className="text-gray-400 text-sm">Avg. Discount</p>
-          <p className="text-2xl font-bold text-white">
+        <div className="bg-white rounded-lg border border-gray-200 p-4">
+          <p className="text-gray-500 text-sm">Avg. Discount</p>
+          <p className="text-2xl font-bold text-gray-900">
             {Math.round(discounts.filter(d => d.type === 'percentage').reduce((sum, d) => sum + d.value, 0) / discounts.filter(d => d.type === 'percentage').length || 0)}%
           </p>
         </div>
       </div>
 
       {/* Discounts Table */}
-      <div className="bg-gray-800 rounded-lg overflow-hidden">
+      <div className="bg-white rounded-lg border border-gray-200 overflow-hidden">
         <table className="w-full">
           <thead>
-            <tr className="bg-gray-900">
-              <th className="text-left p-4 text-gray-400 font-medium">Code</th>
-              <th className="text-left p-4 text-gray-400 font-medium">Discount</th>
-              <th className="text-left p-4 text-gray-400 font-medium">Usage</th>
-              <th className="text-left p-4 text-gray-400 font-medium">Valid Period</th>
-              <th className="text-left p-4 text-gray-400 font-medium">Status</th>
-              <th className="text-right p-4 text-gray-400 font-medium">Actions</th>
+            <tr className="bg-gray-50 border-b border-gray-200">
+              <th className="text-left p-4 text-gray-600 font-medium">Code</th>
+              <th className="text-left p-4 text-gray-600 font-medium">Discount</th>
+              <th className="text-left p-4 text-gray-600 font-medium">Usage</th>
+              <th className="text-left p-4 text-gray-600 font-medium">Valid Period</th>
+              <th className="text-left p-4 text-gray-600 font-medium">Status</th>
+              <th className="text-right p-4 text-gray-600 font-medium">Actions</th>
             </tr>
           </thead>
           <tbody>
             {discounts.map(discount => (
-              <tr key={discount.id} className="border-t border-gray-700 hover:bg-gray-750">
+              <tr key={discount.id} className="border-b border-gray-100 hover:bg-gray-50">
                 <td className="p-4">
                   <div className="flex items-center gap-2">
-                    <code className="text-cyan-400 bg-gray-900 px-2 py-1 rounded font-mono text-sm">
+                    <code className="text-blue-600 bg-blue-50 px-2 py-1 rounded font-mono text-sm">
                       {discount.code}
                     </code>
                     <button
                       onClick={() => copyCode(discount.code)}
-                      className="text-gray-500 hover:text-white"
+                      className="text-gray-400 hover:text-gray-600"
                     >
-                      {copiedCode === discount.code ? <Check size={14} className="text-green-400" /> : <Copy size={14} />}
+                      {copiedCode === discount.code ? <Check size={14} className="text-green-600" /> : <Copy size={14} />}
                     </button>
                   </div>
                   <p className="text-xs text-gray-500 mt-1">{discount.description}</p>
@@ -204,7 +204,7 @@ const MerchantDiscounts = () => {
                 <td className="p-4">
                   <div className="flex items-center gap-2">
                     {getTypeIcon(discount.type)}
-                    <span className="text-white font-medium">{formatValue(discount)}</span>
+                    <span className="text-gray-900 font-medium">{formatValue(discount)}</span>
                   </div>
                   {discount.min_order > 0 && (
                     <p className="text-xs text-gray-500 mt-1">Min. order: ${discount.min_order}</p>
@@ -212,14 +212,14 @@ const MerchantDiscounts = () => {
                 </td>
                 <td className="p-4">
                   <div className="flex items-center gap-2">
-                    <Users size={14} className="text-gray-500" />
-                    <span className="text-white">{discount.used_count}</span>
+                    <Users size={14} className="text-gray-400" />
+                    <span className="text-gray-900">{discount.used_count}</span>
                     {discount.max_uses && (
                       <span className="text-gray-500">/ {discount.max_uses}</span>
                     )}
                   </div>
                   {discount.max_uses && (
-                    <div className="w-24 h-1.5 bg-gray-700 rounded-full mt-2">
+                    <div className="w-24 h-1.5 bg-gray-200 rounded-full mt-2">
                       <div
                         className="h-full bg-blue-500 rounded-full"
                         style={{ width: `${Math.min(100, (discount.used_count / discount.max_uses) * 100)}%` }}
@@ -228,14 +228,14 @@ const MerchantDiscounts = () => {
                   )}
                 </td>
                 <td className="p-4">
-                  <div className="flex items-center gap-2 text-gray-400 text-sm">
+                  <div className="flex items-center gap-2 text-gray-600 text-sm">
                     <Calendar size={14} />
                     <span>{discount.start_date} - {discount.end_date}</span>
                   </div>
                 </td>
                 <td className="p-4">
                   <span className={`px-2 py-1 rounded text-xs font-medium ${
-                    discount.is_active ? 'bg-green-500/20 text-green-400' : 'bg-gray-600/50 text-gray-400'
+                    discount.is_active ? 'bg-green-100 text-green-700' : 'bg-gray-100 text-gray-500'
                   }`}>
                     {discount.is_active ? 'Active' : 'Inactive'}
                   </span>
@@ -244,19 +244,19 @@ const MerchantDiscounts = () => {
                   <div className="flex items-center justify-end gap-2">
                     <button
                       onClick={() => toggleActive(discount.id)}
-                      className={`p-2 rounded hover:bg-gray-700 ${discount.is_active ? 'text-green-400' : 'text-gray-500'}`}
+                      className={`p-2 rounded hover:bg-gray-100 ${discount.is_active ? 'text-green-600' : 'text-gray-400'}`}
                     >
                       <Switch checked={discount.is_active} />
                     </button>
                     <button
                       onClick={() => openModal(discount)}
-                      className="p-2 rounded hover:bg-gray-700 text-gray-400 hover:text-white"
+                      className="p-2 rounded hover:bg-gray-100 text-gray-500 hover:text-gray-700"
                     >
                       <Edit size={16} />
                     </button>
                     <button
                       onClick={() => handleDelete(discount.id)}
-                      className="p-2 rounded hover:bg-gray-700 text-gray-400 hover:text-red-400"
+                      className="p-2 rounded hover:bg-gray-100 text-gray-500 hover:text-red-600"
                     >
                       <Trash2 size={16} />
                     </button>
@@ -271,34 +271,34 @@ const MerchantDiscounts = () => {
       {/* Modal */}
       {showModal && (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
-          <div className="bg-gray-800 rounded-lg w-full max-w-lg p-6">
+          <div className="bg-white rounded-lg w-full max-w-lg p-6 border border-gray-200 shadow-xl">
             <div className="flex justify-between items-center mb-6">
-              <h2 className="text-xl font-bold text-white">
+              <h2 className="text-xl font-bold text-gray-900">
                 {editingDiscount ? 'Edit Discount' : 'Create Discount'}
               </h2>
-              <button onClick={() => setShowModal(false)} className="text-gray-400 hover:text-white">
+              <button onClick={() => setShowModal(false)} className="text-gray-400 hover:text-gray-600">
                 <X size={20} />
               </button>
             </div>
             
             <div className="space-y-4">
               <div>
-                <Label className="text-gray-300">Discount Code</Label>
+                <Label className="text-gray-700">Discount Code</Label>
                 <Input
                   value={formData.code}
                   onChange={(e) => setFormData({ ...formData, code: e.target.value.toUpperCase() })}
                   placeholder="SUMMER20"
-                  className="bg-gray-700 border-gray-600 text-white mt-1 font-mono"
+                  className="bg-gray-50 border-gray-200 text-gray-900 mt-1 font-mono"
                 />
               </div>
               
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <Label className="text-gray-300">Discount Type</Label>
+                  <Label className="text-gray-700">Discount Type</Label>
                   <select
                     value={formData.type}
                     onChange={(e) => setFormData({ ...formData, type: e.target.value })}
-                    className="w-full h-10 px-3 bg-gray-700 border border-gray-600 rounded-md text-white mt-1"
+                    className="w-full h-10 px-3 bg-gray-50 border border-gray-200 rounded-md text-gray-900 mt-1"
                   >
                     <option value="percentage">Percentage Off</option>
                     <option value="fixed">Fixed Amount</option>
@@ -306,7 +306,7 @@ const MerchantDiscounts = () => {
                   </select>
                 </div>
                 <div>
-                  <Label className="text-gray-300">
+                  <Label className="text-gray-700">
                     {formData.type === 'percentage' ? 'Percentage' : formData.type === 'fixed' ? 'Amount ($)' : 'Value'}
                   </Label>
                   <Input
@@ -314,65 +314,65 @@ const MerchantDiscounts = () => {
                     value={formData.value}
                     onChange={(e) => setFormData({ ...formData, value: parseFloat(e.target.value) || 0 })}
                     disabled={formData.type === 'shipping'}
-                    className="bg-gray-700 border-gray-600 text-white mt-1"
+                    className="bg-gray-50 border-gray-200 text-gray-900 mt-1"
                   />
                 </div>
               </div>
               
               <div>
-                <Label className="text-gray-300">Description</Label>
+                <Label className="text-gray-700">Description</Label>
                 <Input
                   value={formData.description}
                   onChange={(e) => setFormData({ ...formData, description: e.target.value })}
                   placeholder="Description for internal use"
-                  className="bg-gray-700 border-gray-600 text-white mt-1"
+                  className="bg-gray-50 border-gray-200 text-gray-900 mt-1"
                 />
               </div>
               
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <Label className="text-gray-300">Minimum Order ($)</Label>
+                  <Label className="text-gray-700">Minimum Order ($)</Label>
                   <Input
                     type="number"
                     value={formData.min_order}
                     onChange={(e) => setFormData({ ...formData, min_order: parseFloat(e.target.value) || 0 })}
-                    className="bg-gray-700 border-gray-600 text-white mt-1"
+                    className="bg-gray-50 border-gray-200 text-gray-900 mt-1"
                   />
                 </div>
                 <div>
-                  <Label className="text-gray-300">Max Uses (blank = unlimited)</Label>
+                  <Label className="text-gray-700">Max Uses (blank = unlimited)</Label>
                   <Input
                     type="number"
                     value={formData.max_uses || ''}
                     onChange={(e) => setFormData({ ...formData, max_uses: e.target.value ? parseInt(e.target.value) : null })}
-                    className="bg-gray-700 border-gray-600 text-white mt-1"
+                    className="bg-gray-50 border-gray-200 text-gray-900 mt-1"
                   />
                 </div>
               </div>
               
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <Label className="text-gray-300">Start Date</Label>
+                  <Label className="text-gray-700">Start Date</Label>
                   <Input
                     type="date"
                     value={formData.start_date}
                     onChange={(e) => setFormData({ ...formData, start_date: e.target.value })}
-                    className="bg-gray-700 border-gray-600 text-white mt-1"
+                    className="bg-gray-50 border-gray-200 text-gray-900 mt-1"
                   />
                 </div>
                 <div>
-                  <Label className="text-gray-300">End Date</Label>
+                  <Label className="text-gray-700">End Date</Label>
                   <Input
                     type="date"
                     value={formData.end_date}
                     onChange={(e) => setFormData({ ...formData, end_date: e.target.value })}
-                    className="bg-gray-700 border-gray-600 text-white mt-1"
+                    className="bg-gray-50 border-gray-200 text-gray-900 mt-1"
                   />
                 </div>
               </div>
               
               <div className="flex items-center justify-between pt-2">
-                <span className="text-gray-300">Active</span>
+                <span className="text-gray-700">Active</span>
                 <Switch
                   checked={formData.is_active}
                   onCheckedChange={(checked) => setFormData({ ...formData, is_active: checked })}
@@ -381,7 +381,7 @@ const MerchantDiscounts = () => {
             </div>
             
             <div className="flex justify-end gap-3 mt-6">
-              <Button variant="outline" onClick={() => setShowModal(false)} className="border-gray-600">
+              <Button variant="outline" onClick={() => setShowModal(false)} className="border-gray-200 text-gray-700">
                 Cancel
               </Button>
               <Button onClick={handleSave} className="bg-blue-600 hover:bg-blue-700">

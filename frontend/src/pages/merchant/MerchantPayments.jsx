@@ -43,14 +43,13 @@ const MerchantPayments = () => {
   ];
 
   const handleSave = () => {
-    // Save payment settings
     console.log('Saving payment settings:', { gateways, paymentSettings });
   };
 
   return (
     <div className="p-6 max-w-5xl mx-auto">
       <div className="flex justify-between items-center mb-6">
-        <h1 className="text-2xl font-bold text-white">Payment Settings</h1>
+        <h1 className="text-2xl font-bold text-gray-900">Payment Settings</h1>
         <Button onClick={handleSave} className="bg-blue-600 hover:bg-blue-700">
           <Check size={16} className="mr-2" /> Save Changes
         </Button>
@@ -59,24 +58,24 @@ const MerchantPayments = () => {
       <div className="grid grid-cols-3 gap-6">
         {/* Payment Gateways List */}
         <div className="col-span-1 space-y-3">
-          <h2 className="text-lg font-semibold text-white mb-4">Payment Gateways</h2>
+          <h2 className="text-lg font-semibold text-gray-900 mb-4">Payment Gateways</h2>
           {paymentGateways.map(gateway => (
             <button
               key={gateway.id}
               onClick={() => setActiveGateway(gateway.id)}
               className={`w-full flex items-center gap-3 p-4 rounded-lg border transition-colors ${
                 activeGateway === gateway.id
-                  ? 'bg-blue-600/20 border-blue-500 text-white'
-                  : 'bg-gray-800 border-gray-700 text-gray-300 hover:bg-gray-750'
+                  ? 'bg-blue-50 border-blue-500 text-gray-900'
+                  : 'bg-white border-gray-200 text-gray-700 hover:bg-gray-50'
               }`}
             >
               <span className="text-2xl">{gateway.icon}</span>
               <div className="text-left flex-1">
                 <p className="font-medium">{gateway.name}</p>
-                <p className="text-xs text-gray-400">{gateway.description}</p>
+                <p className="text-xs text-gray-500">{gateway.description}</p>
               </div>
               {gateways[gateway.id]?.enabled && (
-                <span className="w-2 h-2 rounded-full bg-green-400"></span>
+                <span className="w-2 h-2 rounded-full bg-green-500"></span>
               )}
             </button>
           ))}
@@ -85,13 +84,13 @@ const MerchantPayments = () => {
         {/* Gateway Configuration */}
         <div className="col-span-2">
           {activeGateway === 'stripe' && (
-            <div className="bg-gray-800 rounded-lg p-6">
+            <div className="bg-white rounded-lg border border-gray-200 p-6">
               <div className="flex items-center justify-between mb-6">
                 <div className="flex items-center gap-3">
                   <span className="text-3xl">💳</span>
                   <div>
-                    <h3 className="text-lg font-semibold text-white">Stripe</h3>
-                    <p className="text-sm text-gray-400">Accept cards, digital wallets, and more</p>
+                    <h3 className="text-lg font-semibold text-gray-900">Stripe</h3>
+                    <p className="text-sm text-gray-500">Accept cards, digital wallets, and more</p>
                   </div>
                 </div>
                 <Switch
@@ -105,14 +104,14 @@ const MerchantPayments = () => {
               
               {gateways.stripe.enabled && (
                 <div className="space-y-4">
-                  <div className="flex items-center gap-4 p-3 rounded-lg bg-gray-900">
-                    <span className="text-gray-400">Mode:</span>
+                  <div className="flex items-center gap-4 p-3 rounded-lg bg-gray-50">
+                    <span className="text-gray-500">Mode:</span>
                     <button
                       onClick={() => setGateways({
                         ...gateways,
                         stripe: { ...gateways.stripe, live_mode: false }
                       })}
-                      className={`px-3 py-1 rounded ${!gateways.stripe.live_mode ? 'bg-yellow-500 text-black' : 'bg-gray-700 text-gray-400'}`}
+                      className={`px-3 py-1 rounded ${!gateways.stripe.live_mode ? 'bg-yellow-500 text-white' : 'bg-gray-200 text-gray-600'}`}
                     >
                       Test
                     </button>
@@ -121,14 +120,14 @@ const MerchantPayments = () => {
                         ...gateways,
                         stripe: { ...gateways.stripe, live_mode: true }
                       })}
-                      className={`px-3 py-1 rounded ${gateways.stripe.live_mode ? 'bg-green-500 text-black' : 'bg-gray-700 text-gray-400'}`}
+                      className={`px-3 py-1 rounded ${gateways.stripe.live_mode ? 'bg-green-500 text-white' : 'bg-gray-200 text-gray-600'}`}
                     >
                       Live
                     </button>
                   </div>
                   
                   <div>
-                    <Label className="text-gray-300">Publishable Key</Label>
+                    <Label className="text-gray-700">Publishable Key</Label>
                     <Input
                       value={gateways.stripe.publishable_key}
                       onChange={(e) => setGateways({
@@ -136,12 +135,12 @@ const MerchantPayments = () => {
                         stripe: { ...gateways.stripe, publishable_key: e.target.value }
                       })}
                       placeholder="pk_test_..."
-                      className="bg-gray-700 border-gray-600 text-white mt-1 font-mono text-sm"
+                      className="bg-gray-50 border-gray-200 text-gray-900 mt-1 font-mono text-sm"
                     />
                   </div>
                   
                   <div>
-                    <Label className="text-gray-300">Secret Key</Label>
+                    <Label className="text-gray-700">Secret Key</Label>
                     <Input
                       type="password"
                       value={gateways.stripe.secret_key}
@@ -150,7 +149,7 @@ const MerchantPayments = () => {
                         stripe: { ...gateways.stripe, secret_key: e.target.value }
                       })}
                       placeholder="sk_test_..."
-                      className="bg-gray-700 border-gray-600 text-white mt-1 font-mono text-sm"
+                      className="bg-gray-50 border-gray-200 text-gray-900 mt-1 font-mono text-sm"
                     />
                   </div>
                   
@@ -158,7 +157,7 @@ const MerchantPayments = () => {
                     href="https://dashboard.stripe.com/apikeys"
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="inline-flex items-center gap-1 text-sm text-blue-400 hover:text-blue-300"
+                    className="inline-flex items-center gap-1 text-sm text-blue-600 hover:text-blue-700"
                   >
                     Get your API keys from Stripe Dashboard <ExternalLink size={14} />
                   </a>
@@ -168,13 +167,13 @@ const MerchantPayments = () => {
           )}
 
           {activeGateway === 'paypal' && (
-            <div className="bg-gray-800 rounded-lg p-6">
+            <div className="bg-white rounded-lg border border-gray-200 p-6">
               <div className="flex items-center justify-between mb-6">
                 <div className="flex items-center gap-3">
                   <span className="text-3xl">🅿️</span>
                   <div>
-                    <h3 className="text-lg font-semibold text-white">PayPal</h3>
-                    <p className="text-sm text-gray-400">Accept PayPal payments</p>
+                    <h3 className="text-lg font-semibold text-gray-900">PayPal</h3>
+                    <p className="text-sm text-gray-500">Accept PayPal payments</p>
                   </div>
                 </div>
                 <Switch
@@ -189,7 +188,7 @@ const MerchantPayments = () => {
               {gateways.paypal.enabled && (
                 <div className="space-y-4">
                   <div>
-                    <Label className="text-gray-300">Client ID</Label>
+                    <Label className="text-gray-700">Client ID</Label>
                     <Input
                       value={gateways.paypal.client_id}
                       onChange={(e) => setGateways({
@@ -197,11 +196,11 @@ const MerchantPayments = () => {
                         paypal: { ...gateways.paypal, client_id: e.target.value }
                       })}
                       placeholder="Enter PayPal Client ID"
-                      className="bg-gray-700 border-gray-600 text-white mt-1"
+                      className="bg-gray-50 border-gray-200 text-gray-900 mt-1"
                     />
                   </div>
                   <div>
-                    <Label className="text-gray-300">Client Secret</Label>
+                    <Label className="text-gray-700">Client Secret</Label>
                     <Input
                       type="password"
                       value={gateways.paypal.client_secret}
@@ -210,7 +209,7 @@ const MerchantPayments = () => {
                         paypal: { ...gateways.paypal, client_secret: e.target.value }
                       })}
                       placeholder="Enter PayPal Client Secret"
-                      className="bg-gray-700 border-gray-600 text-white mt-1"
+                      className="bg-gray-50 border-gray-200 text-gray-900 mt-1"
                     />
                   </div>
                 </div>
@@ -219,13 +218,13 @@ const MerchantPayments = () => {
           )}
 
           {activeGateway === 'afterpay' && (
-            <div className="bg-gray-800 rounded-lg p-6">
+            <div className="bg-white rounded-lg border border-gray-200 p-6">
               <div className="flex items-center justify-between mb-6">
                 <div className="flex items-center gap-3">
                   <span className="text-3xl">🛒</span>
                   <div>
-                    <h3 className="text-lg font-semibold text-white">Afterpay</h3>
-                    <p className="text-sm text-gray-400">Buy now, pay later option</p>
+                    <h3 className="text-lg font-semibold text-gray-900">Afterpay</h3>
+                    <p className="text-sm text-gray-500">Buy now, pay later option</p>
                   </div>
                 </div>
                 <Switch
@@ -240,7 +239,7 @@ const MerchantPayments = () => {
               {gateways.afterpay.enabled && (
                 <div className="space-y-4">
                   <div>
-                    <Label className="text-gray-300">Merchant ID</Label>
+                    <Label className="text-gray-700">Merchant ID</Label>
                     <Input
                       value={gateways.afterpay.merchant_id}
                       onChange={(e) => setGateways({
@@ -248,11 +247,11 @@ const MerchantPayments = () => {
                         afterpay: { ...gateways.afterpay, merchant_id: e.target.value }
                       })}
                       placeholder="Enter Afterpay Merchant ID"
-                      className="bg-gray-700 border-gray-600 text-white mt-1"
+                      className="bg-gray-50 border-gray-200 text-gray-900 mt-1"
                     />
                   </div>
                   <div>
-                    <Label className="text-gray-300">Secret Key</Label>
+                    <Label className="text-gray-700">Secret Key</Label>
                     <Input
                       type="password"
                       value={gateways.afterpay.secret_key}
@@ -261,7 +260,7 @@ const MerchantPayments = () => {
                         afterpay: { ...gateways.afterpay, secret_key: e.target.value }
                       })}
                       placeholder="Enter Afterpay Secret Key"
-                      className="bg-gray-700 border-gray-600 text-white mt-1"
+                      className="bg-gray-50 border-gray-200 text-gray-900 mt-1"
                     />
                   </div>
                 </div>
@@ -270,17 +269,17 @@ const MerchantPayments = () => {
           )}
 
           {/* General Payment Settings */}
-          <div className="bg-gray-800 rounded-lg p-6 mt-6">
-            <h3 className="text-lg font-semibold text-white mb-4 flex items-center gap-2">
+          <div className="bg-white rounded-lg border border-gray-200 p-6 mt-6">
+            <h3 className="text-lg font-semibold text-gray-900 mb-4 flex items-center gap-2">
               <Settings size={20} /> General Settings
             </h3>
             <div className="grid grid-cols-2 gap-4">
               <div>
-                <Label className="text-gray-300">Currency</Label>
+                <Label className="text-gray-700">Currency</Label>
                 <select
                   value={paymentSettings.currency}
                   onChange={(e) => setPaymentSettings({ ...paymentSettings, currency: e.target.value })}
-                  className="w-full h-10 px-3 bg-gray-700 border border-gray-600 rounded-md text-white mt-1"
+                  className="w-full h-10 px-3 bg-gray-50 border border-gray-200 rounded-md text-gray-900 mt-1"
                 >
                   <option value="AUD">AUD - Australian Dollar</option>
                   <option value="USD">USD - US Dollar</option>
@@ -289,12 +288,12 @@ const MerchantPayments = () => {
                 </select>
               </div>
               <div>
-                <Label className="text-gray-300">Tax Rate (%)</Label>
+                <Label className="text-gray-700">Tax Rate (%)</Label>
                 <Input
                   type="number"
                   value={paymentSettings.tax_rate}
                   onChange={(e) => setPaymentSettings({ ...paymentSettings, tax_rate: e.target.value })}
-                  className="bg-gray-700 border-gray-600 text-white mt-1"
+                  className="bg-gray-50 border-gray-200 text-gray-900 mt-1"
                 />
               </div>
             </div>
@@ -302,8 +301,8 @@ const MerchantPayments = () => {
             <div className="mt-6 space-y-4">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-white">Tax Inclusive Pricing</p>
-                  <p className="text-sm text-gray-400">Display prices including tax</p>
+                  <p className="text-gray-900">Tax Inclusive Pricing</p>
+                  <p className="text-sm text-gray-500">Display prices including tax</p>
                 </div>
                 <Switch
                   checked={paymentSettings.tax_inclusive}
@@ -312,8 +311,8 @@ const MerchantPayments = () => {
               </div>
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-white">Require Billing Address</p>
-                  <p className="text-sm text-gray-400">Collect billing address at checkout</p>
+                  <p className="text-gray-900">Require Billing Address</p>
+                  <p className="text-sm text-gray-500">Collect billing address at checkout</p>
                 </div>
                 <Switch
                   checked={paymentSettings.require_billing}
@@ -322,8 +321,8 @@ const MerchantPayments = () => {
               </div>
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-white">Guest Checkout</p>
-                  <p className="text-sm text-gray-400">Allow checkout without account</p>
+                  <p className="text-gray-900">Guest Checkout</p>
+                  <p className="text-sm text-gray-500">Allow checkout without account</p>
                 </div>
                 <Switch
                   checked={paymentSettings.allow_guest_checkout}

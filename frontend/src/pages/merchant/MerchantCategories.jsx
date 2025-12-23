@@ -124,7 +124,7 @@ const MerchantCategories = () => {
   if (loading) {
     return (
       <div className="flex items-center justify-center h-64">
-        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-cyan-500"></div>
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-500"></div>
       </div>
     );
   }
@@ -133,10 +133,10 @@ const MerchantCategories = () => {
     <div className="p-6">
       <div className="flex items-center justify-between mb-6">
         <div>
-          <h1 className="text-2xl font-bold text-white">Categories</h1>
-          <p className="text-gray-400">Manage your product categories</p>
+          <h1 className="text-2xl font-bold text-gray-900">Categories</h1>
+          <p className="text-gray-500">Manage your product categories</p>
         </div>
-        <Button onClick={() => openModal()} className="bg-cyan-600 hover:bg-cyan-700">
+        <Button onClick={() => openModal()} className="bg-blue-600 hover:bg-blue-700">
           <Plus className="w-4 h-4 mr-2" />
           Add Category
         </Button>
@@ -147,9 +147,9 @@ const MerchantCategories = () => {
         {categories.map((category, index) => (
           <div
             key={category.id}
-            className="bg-gray-800 rounded-lg border border-gray-700 overflow-hidden hover:border-gray-600 transition-colors"
+            className="bg-white rounded-lg border border-gray-200 overflow-hidden hover:border-gray-300 hover:shadow-sm transition-all"
           >
-            <div className="aspect-video bg-gray-700 relative">
+            <div className="aspect-video bg-gray-100 relative">
               {category.image ? (
                 <img
                   src={category.image}
@@ -158,12 +158,12 @@ const MerchantCategories = () => {
                 />
               ) : (
                 <div className="w-full h-full flex items-center justify-center">
-                  <FolderOpen className="w-12 h-12 text-gray-500" />
+                  <FolderOpen className="w-12 h-12 text-gray-300" />
                 </div>
               )}
               <div className="absolute top-2 right-2 flex gap-1">
                 <span className={`px-2 py-1 rounded text-xs font-medium ${
-                  category.is_active ? 'bg-green-500/20 text-green-400' : 'bg-red-500/20 text-red-400'
+                  category.is_active ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'
                 }`}>
                   {category.is_active ? 'Active' : 'Inactive'}
                 </span>
@@ -172,8 +172,8 @@ const MerchantCategories = () => {
             <div className="p-4">
               <div className="flex items-start justify-between">
                 <div>
-                  <h3 className="font-semibold text-white">{category.name}</h3>
-                  <p className="text-sm text-gray-400 mt-1">
+                  <h3 className="font-semibold text-gray-900">{category.name}</h3>
+                  <p className="text-sm text-gray-500 mt-1">
                     {category.product_count} products
                   </p>
                 </div>
@@ -190,7 +190,7 @@ const MerchantCategories = () => {
                   variant="outline"
                   size="sm"
                   onClick={() => openModal(category)}
-                  className="flex-1 border-gray-600 text-gray-300 hover:bg-gray-700"
+                  className="flex-1 border-gray-200 text-gray-700 hover:bg-gray-50"
                 >
                   <Edit className="w-3 h-3 mr-1" /> Edit
                 </Button>
@@ -198,7 +198,7 @@ const MerchantCategories = () => {
                   variant="outline"
                   size="sm"
                   onClick={() => handleDelete(category.id)}
-                  className="border-red-600 text-red-400 hover:bg-red-600/20"
+                  className="border-red-200 text-red-600 hover:bg-red-50"
                 >
                   <Trash2 className="w-3 h-3" />
                 </Button>
@@ -209,11 +209,11 @@ const MerchantCategories = () => {
       </div>
 
       {categories.length === 0 && (
-        <div className="text-center py-12 bg-gray-800 rounded-lg border border-gray-700">
-          <FolderOpen className="w-12 h-12 mx-auto text-gray-500 mb-4" />
-          <h3 className="text-lg font-medium text-white mb-2">No categories yet</h3>
-          <p className="text-gray-400 mb-4">Create your first category to organize your products</p>
-          <Button onClick={() => openModal()} className="bg-cyan-600 hover:bg-cyan-700">
+        <div className="text-center py-12 bg-white rounded-lg border border-gray-200">
+          <FolderOpen className="w-12 h-12 mx-auto text-gray-300 mb-4" />
+          <h3 className="text-lg font-medium text-gray-900 mb-2">No categories yet</h3>
+          <p className="text-gray-500 mb-4">Create your first category to organize your products</p>
+          <Button onClick={() => openModal()} className="bg-blue-600 hover:bg-blue-700">
             <Plus className="w-4 h-4 mr-2" />
             Add Category
           </Button>
@@ -223,79 +223,79 @@ const MerchantCategories = () => {
       {/* Modal */}
       {showModal && (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
-          <div className="bg-gray-800 rounded-lg w-full max-w-md border border-gray-700">
-            <div className="flex items-center justify-between p-4 border-b border-gray-700">
-              <h2 className="text-lg font-semibold text-white">
+          <div className="bg-white rounded-lg w-full max-w-md border border-gray-200 shadow-xl">
+            <div className="flex items-center justify-between p-4 border-b border-gray-200">
+              <h2 className="text-lg font-semibold text-gray-900">
                 {editingCategory ? 'Edit Category' : 'Add Category'}
               </h2>
-              <button onClick={closeModal} className="text-gray-400 hover:text-white">
+              <button onClick={closeModal} className="text-gray-400 hover:text-gray-600">
                 <X className="w-5 h-5" />
               </button>
             </div>
             <form onSubmit={handleSubmit} className="p-4 space-y-4">
               <div>
-                <Label className="text-gray-300">Category Name</Label>
+                <Label className="text-gray-700">Category Name</Label>
                 <Input
                   value={formData.name}
                   onChange={(e) => setFormData(prev => ({ ...prev, name: e.target.value }))}
                   required
-                  className="bg-gray-700 border-gray-600 text-white"
+                  className="bg-gray-50 border-gray-200 text-gray-900"
                 />
               </div>
               <div>
-                <Label className="text-gray-300">Description</Label>
+                <Label className="text-gray-700">Description</Label>
                 <textarea
                   value={formData.description}
                   onChange={(e) => setFormData(prev => ({ ...prev, description: e.target.value }))}
                   rows={3}
-                  className="w-full bg-gray-700 border border-gray-600 text-white rounded-md p-2"
+                  className="w-full bg-gray-50 border border-gray-200 text-gray-900 rounded-md p-2"
                 />
               </div>
               <div>
-                <Label className="text-gray-300">Category Image</Label>
+                <Label className="text-gray-700">Category Image</Label>
                 <div
                   {...getRootProps()}
                   className={`border-2 border-dashed rounded-lg p-4 text-center cursor-pointer transition-colors ${
-                    isDragActive ? 'border-cyan-500 bg-cyan-500/10' : 'border-gray-600 hover:border-gray-500'
+                    isDragActive ? 'border-blue-500 bg-blue-50' : 'border-gray-200 hover:border-gray-300'
                   }`}
                 >
                   <input {...getInputProps()} />
                   {uploading ? (
-                    <p className="text-gray-400">Uploading...</p>
+                    <p className="text-gray-500">Uploading...</p>
                   ) : formData.image ? (
                     <div className="relative">
                       <img src={formData.image} alt="Preview" className="h-24 mx-auto rounded" />
-                      <p className="text-xs text-gray-400 mt-2">Click or drag to replace</p>
+                      <p className="text-xs text-gray-500 mt-2">Click or drag to replace</p>
                     </div>
                   ) : (
                     <>
                       <Upload className="w-6 h-6 mx-auto mb-2 text-gray-400" />
-                      <p className="text-gray-400 text-sm">Drop image or click to upload</p>
+                      <p className="text-gray-500 text-sm">Drop image or click to upload</p>
                     </>
                   )}
                 </div>
               </div>
               <div>
-                <Label className="text-gray-300">Sort Order</Label>
+                <Label className="text-gray-700">Sort Order</Label>
                 <Input
                   type="number"
                   value={formData.sort_order}
                   onChange={(e) => setFormData(prev => ({ ...prev, sort_order: parseInt(e.target.value) }))}
-                  className="bg-gray-700 border-gray-600 text-white"
+                  className="bg-gray-50 border-gray-200 text-gray-900"
                 />
               </div>
               <div className="flex items-center justify-between">
-                <Label className="text-gray-300">Active</Label>
+                <Label className="text-gray-700">Active</Label>
                 <Switch
                   checked={formData.is_active}
                   onCheckedChange={(checked) => setFormData(prev => ({ ...prev, is_active: checked }))}
                 />
               </div>
               <div className="flex gap-2 pt-4">
-                <Button type="button" variant="outline" onClick={closeModal} className="flex-1 border-gray-600 text-gray-300">
+                <Button type="button" variant="outline" onClick={closeModal} className="flex-1 border-gray-200 text-gray-700">
                   Cancel
                 </Button>
-                <Button type="submit" className="flex-1 bg-cyan-600 hover:bg-cyan-700">
+                <Button type="submit" className="flex-1 bg-blue-600 hover:bg-blue-700">
                   {editingCategory ? 'Update' : 'Create'}
                 </Button>
               </div>

@@ -41,7 +41,6 @@ const MerchantSettings = () => {
 
   const handleSave = async () => {
     setLoading(true);
-    // Simulate API call
     await new Promise(r => setTimeout(r, 800));
     setSaved(true);
     setLoading(false);
@@ -69,14 +68,14 @@ const MerchantSettings = () => {
   return (
     <div className="p-6 max-w-4xl mx-auto">
       <div className="flex justify-between items-center mb-6">
-        <h1 className="text-2xl font-bold text-white">Settings</h1>
+        <h1 className="text-2xl font-bold text-gray-900">Settings</h1>
         <Button onClick={handleSave} disabled={loading} className="bg-blue-600 hover:bg-blue-700">
           {loading ? 'Saving...' : saved ? <><Check size={16} className="mr-2" /> Saved</> : <><Save size={16} className="mr-2" /> Save Changes</>}
         </Button>
       </div>
 
       {/* Tabs */}
-      <div className="flex space-x-1 mb-6 bg-gray-800 p-1 rounded-lg">
+      <div className="flex space-x-1 mb-6 bg-gray-100 p-1 rounded-lg">
         {tabs.map(tab => {
           const Icon = tab.icon;
           return (
@@ -84,7 +83,7 @@ const MerchantSettings = () => {
               key={tab.id}
               onClick={() => setActiveTab(tab.id)}
               className={`flex items-center gap-2 px-4 py-2 rounded-md text-sm font-medium transition-colors ${
-                activeTab === tab.id ? 'bg-gray-700 text-white' : 'text-gray-400 hover:text-white'
+                activeTab === tab.id ? 'bg-white text-gray-900 shadow-sm' : 'text-gray-600 hover:text-gray-900'
               }`}
             >
               <Icon size={16} />
@@ -96,45 +95,45 @@ const MerchantSettings = () => {
 
       {/* Account Tab */}
       {activeTab === 'account' && (
-        <div className="bg-gray-800 rounded-lg p-6 space-y-6">
-          <h2 className="text-lg font-semibold text-white mb-4">Account Information</h2>
+        <div className="bg-white rounded-lg border border-gray-200 p-6 space-y-6">
+          <h2 className="text-lg font-semibold text-gray-900 mb-4">Account Information</h2>
           <div className="grid grid-cols-2 gap-6">
             <div>
-              <Label className="text-gray-300">Full Name</Label>
+              <Label className="text-gray-700">Full Name</Label>
               <Input
                 value={accountSettings.name}
                 onChange={(e) => setAccountSettings({ ...accountSettings, name: e.target.value })}
-                className="bg-gray-700 border-gray-600 text-white mt-1"
+                className="bg-gray-50 border-gray-200 text-gray-900 mt-1"
               />
             </div>
             <div>
-              <Label className="text-gray-300">Email Address</Label>
+              <Label className="text-gray-700">Email Address</Label>
               <Input
                 type="email"
                 value={accountSettings.email}
                 onChange={(e) => setAccountSettings({ ...accountSettings, email: e.target.value })}
-                className="bg-gray-700 border-gray-600 text-white mt-1"
+                className="bg-gray-50 border-gray-200 text-gray-900 mt-1"
               />
             </div>
             <div>
-              <Label className="text-gray-300">Phone Number</Label>
+              <Label className="text-gray-700">Phone Number</Label>
               <Input
                 value={accountSettings.phone}
                 onChange={(e) => setAccountSettings({ ...accountSettings, phone: e.target.value })}
-                className="bg-gray-700 border-gray-600 text-white mt-1"
+                className="bg-gray-50 border-gray-200 text-gray-900 mt-1"
               />
             </div>
             <div>
-              <Label className="text-gray-300">Timezone</Label>
+              <Label className="text-gray-700">Timezone</Label>
               <select
                 value={accountSettings.timezone}
                 onChange={(e) => setAccountSettings({ ...accountSettings, timezone: e.target.value })}
-                className="w-full h-10 px-3 bg-gray-700 border border-gray-600 rounded-md text-white mt-1"
+                className="w-full h-10 px-3 bg-gray-50 border border-gray-200 rounded-md text-gray-900 mt-1"
               >
-                <option value="Australia/Sydney">Australia/Sydney (AEST)</option>
-                <option value="Australia/Melbourne">Australia/Melbourne (AEST)</option>
-                <option value="Australia/Perth">Australia/Perth (AWST)</option>
-                <option value="UTC">UTC</option>
+                <option value="Australia/Sydney">Australia/Sydney</option>
+                <option value="Australia/Melbourne">Australia/Melbourne</option>
+                <option value="Australia/Brisbane">Australia/Brisbane</option>
+                <option value="Australia/Perth">Australia/Perth</option>
               </select>
             </div>
           </div>
@@ -143,19 +142,19 @@ const MerchantSettings = () => {
 
       {/* Notifications Tab */}
       {activeTab === 'notifications' && (
-        <div className="bg-gray-800 rounded-lg p-6">
-          <h2 className="text-lg font-semibold text-white mb-6">Email Notifications</h2>
+        <div className="bg-white rounded-lg border border-gray-200 p-6 space-y-6">
+          <h2 className="text-lg font-semibold text-gray-900 mb-4">Email Notifications</h2>
           <div className="space-y-4">
             {[
-              { key: 'email_orders', label: 'New Orders', desc: 'Get notified when you receive a new order' },
-              { key: 'email_customers', label: 'New Customers', desc: 'Get notified when a new customer signs up' },
-              { key: 'email_inventory', label: 'Low Inventory', desc: 'Get alerts when stock is running low' },
-              { key: 'email_marketing', label: 'Marketing Updates', desc: 'Receive tips and product updates' }
+              { key: 'email_orders', label: 'Order Notifications', desc: 'Receive emails for new orders' },
+              { key: 'email_customers', label: 'Customer Notifications', desc: 'New customer registrations' },
+              { key: 'email_inventory', label: 'Inventory Alerts', desc: 'Low stock warnings' },
+              { key: 'email_marketing', label: 'Marketing Updates', desc: 'Tips and product updates' }
             ].map(item => (
-              <div key={item.key} className="flex items-center justify-between py-3 border-b border-gray-700">
+              <div key={item.key} className="flex items-center justify-between py-3 border-b border-gray-100">
                 <div>
-                  <p className="text-white font-medium">{item.label}</p>
-                  <p className="text-sm text-gray-400">{item.desc}</p>
+                  <p className="text-gray-900 font-medium">{item.label}</p>
+                  <p className="text-sm text-gray-500">{item.desc}</p>
                 </div>
                 <Switch
                   checked={notifications[item.key]}
@@ -165,16 +164,16 @@ const MerchantSettings = () => {
             ))}
           </div>
           
-          <h2 className="text-lg font-semibold text-white mt-8 mb-6">Push Notifications</h2>
+          <h2 className="text-lg font-semibold text-gray-900 mt-8 mb-6">Push Notifications</h2>
           <div className="space-y-4">
             {[
               { key: 'push_orders', label: 'Order Alerts', desc: 'Browser notifications for new orders' },
               { key: 'push_inventory', label: 'Stock Alerts', desc: 'Browser notifications for low stock' }
             ].map(item => (
-              <div key={item.key} className="flex items-center justify-between py-3 border-b border-gray-700">
+              <div key={item.key} className="flex items-center justify-between py-3 border-b border-gray-100">
                 <div>
-                  <p className="text-white font-medium">{item.label}</p>
-                  <p className="text-sm text-gray-400">{item.desc}</p>
+                  <p className="text-gray-900 font-medium">{item.label}</p>
+                  <p className="text-sm text-gray-500">{item.desc}</p>
                 </div>
                 <Switch
                   checked={notifications[item.key]}
@@ -188,13 +187,13 @@ const MerchantSettings = () => {
 
       {/* Security Tab */}
       {activeTab === 'security' && (
-        <div className="bg-gray-800 rounded-lg p-6 space-y-6">
-          <h2 className="text-lg font-semibold text-white mb-4">Security Settings</h2>
+        <div className="bg-white rounded-lg border border-gray-200 p-6 space-y-6">
+          <h2 className="text-lg font-semibold text-gray-900 mb-4">Security Settings</h2>
           
-          <div className="flex items-center justify-between py-4 border-b border-gray-700">
+          <div className="flex items-center justify-between py-4 border-b border-gray-100">
             <div>
-              <p className="text-white font-medium">Two-Factor Authentication</p>
-              <p className="text-sm text-gray-400">Add an extra layer of security to your account</p>
+              <p className="text-gray-900 font-medium">Two-Factor Authentication</p>
+              <p className="text-sm text-gray-500">Add an extra layer of security to your account</p>
             </div>
             <Switch
               checked={security.two_factor}
@@ -203,11 +202,11 @@ const MerchantSettings = () => {
           </div>
           
           <div>
-            <Label className="text-gray-300">Session Timeout (minutes)</Label>
+            <Label className="text-gray-700">Session Timeout (minutes)</Label>
             <select
               value={security.session_timeout}
               onChange={(e) => setSecurity({ ...security, session_timeout: e.target.value })}
-              className="w-full h-10 px-3 bg-gray-700 border border-gray-600 rounded-md text-white mt-1"
+              className="w-full h-10 px-3 bg-gray-50 border border-gray-200 rounded-md text-gray-900 mt-1"
             >
               <option value="15">15 minutes</option>
               <option value="30">30 minutes</option>
@@ -217,7 +216,7 @@ const MerchantSettings = () => {
           </div>
           
           <div className="pt-4">
-            <Button variant="outline" className="border-red-500 text-red-500 hover:bg-red-500/10">
+            <Button variant="outline" className="border-red-200 text-red-600 hover:bg-red-50">
               Change Password
             </Button>
           </div>
@@ -226,24 +225,24 @@ const MerchantSettings = () => {
 
       {/* API Keys Tab */}
       {activeTab === 'api' && (
-        <div className="bg-gray-800 rounded-lg p-6 space-y-6">
-          <h2 className="text-lg font-semibold text-white mb-4">API Keys</h2>
-          <p className="text-gray-400 text-sm">Use these keys to integrate with third-party services or build custom integrations.</p>
+        <div className="bg-white rounded-lg border border-gray-200 p-6 space-y-6">
+          <h2 className="text-lg font-semibold text-gray-900 mb-4">API Keys</h2>
+          <p className="text-gray-500 text-sm">Use these keys to integrate with third-party services or build custom integrations.</p>
           
-          <div className="bg-gray-900 rounded-lg p-4">
-            <Label className="text-gray-300 mb-2 block">Live API Key</Label>
+          <div className="bg-gray-50 rounded-lg p-4 border border-gray-200">
+            <Label className="text-gray-700 mb-2 block">Live API Key</Label>
             <div className="flex gap-2">
               <Input
                 type={showApiKey ? 'text' : 'password'}
                 value={security.api_key}
                 readOnly
-                className="bg-gray-700 border-gray-600 text-white font-mono"
+                className="bg-white border-gray-200 text-gray-900 font-mono"
               />
               <Button
                 variant="outline"
                 size="icon"
                 onClick={() => setShowApiKey(!showApiKey)}
-                className="border-gray-600"
+                className="border-gray-200"
               >
                 {showApiKey ? <EyeOff size={16} /> : <Eye size={16} />}
               </Button>
@@ -251,22 +250,22 @@ const MerchantSettings = () => {
                 variant="outline"
                 size="icon"
                 onClick={copyApiKey}
-                className="border-gray-600"
+                className="border-gray-200"
               >
-                {copied ? <Check size={16} className="text-green-400" /> : <Copy size={16} />}
+                {copied ? <Check size={16} className="text-green-600" /> : <Copy size={16} />}
               </Button>
             </div>
           </div>
           
           <div className="flex gap-3">
-            <Button variant="outline" onClick={regenerateApiKey} className="border-gray-600">
+            <Button variant="outline" onClick={regenerateApiKey} className="border-gray-200">
               <RefreshCw size={16} className="mr-2" />
               Regenerate Key
             </Button>
           </div>
           
-          <div className="bg-yellow-500/10 border border-yellow-500/30 rounded-lg p-4">
-            <p className="text-yellow-400 text-sm">
+          <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4">
+            <p className="text-yellow-700 text-sm">
               <strong>Warning:</strong> Regenerating your API key will invalidate the current key. Any integrations using the old key will stop working.
             </p>
           </div>
