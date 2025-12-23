@@ -1195,26 +1195,71 @@ async def calculate_shipping(request: ShippingCalculationRequest):
             "description": f"{rate.get('delivery_days', 3)} business days" if not is_free else "Free shipping",
             "service_code": service["code"],
             "carrier": service.get("carrier", "custom"),
-            "routing_group": service.get("routing_group"),  # Include routing group for filtering
             "is_free": is_free
         })
     
     # ============================================================
-    # ROUTING GROUP LOGIC:
-    # If multiple services share the same routing_group, only show
-    # the cheapest option from that group to the customer.
-    # Services without a routing_group are shown individually.
+    # SHIPPING OPTIONS & ROUTING GROUP LOGIC:
+    # 1. Each ShippingOption can link to multiple services
+    # 2. For each option, use the cheapest available service price
+    # 3. If multiple options share the same routing_group, only show
+    #    the cheapest option from that group to the customer
+    # 4. Options without a routing_group are shown individually
     # ============================================================
     
+    # Build a map of service prices for quick lookup
+    service_prices = {opt["id"]: opt for opt in calculated_options if opt.get("service_code") != "pickup"}
+    
+    # Process ShippingOptions to create final display options
+    option_results = []
+    
+    for option in options:
+        if not option.get("is_active", True):
+            continue
+        
+        # Find the cheapest service linked to this option
+        linked_service_ids = option.get("service_ids", [])
+        cheapest_service = None
+        cheapest_price = float('inf')
+        
+        for service_id in linked_service_ids:
+            if service_id in service_prices:
+                service_data = service_prices[service_id]
+                if service_data["price"] < cheapest_price:
+                    cheapest_price = service_data["price"]
+                    cheapest_service = service_data
+        
+        if cheapest_service:
+            # Create option result using option name but service pricing
+            option_result = {
+                "id": option["id"],
+                "option_name": option["name"],  # The display name from ShippingOption
+                "name": cheapest_service["name"],  # The actual service name
+                "price": cheapest_service["price"],
+                "price_ex_gst": cheapest_service.get("price_ex_gst", 0),
+                "gst_amount": cheapest_service.get("gst_amount", 0),
+                "tax_inclusive": cheapest_service.get("tax_inclusive", False),
+                "tax_rate": cheapest_service.get("tax_rate", 10),
+                "delivery_days": cheapest_service.get("delivery_days", 3),
+                "description": option.get("description") or cheapest_service.get("description", ""),
+                "service_code": cheapest_service.get("service_code"),
+                "service_id": cheapest_service["id"],
+                "carrier": cheapest_service.get("carrier", "custom"),
+                "routing_group": option.get("routing_group"),
+                "is_free": cheapest_service.get("is_free", False),
+                "sort_order": option.get("sort_order", 0)
+            }
+            option_results.append(option_result)
+    
+    # Apply routing group filtering
     # Separate pickup option (always shown)
     pickup_options = [opt for opt in calculated_options if opt.get("service_code") == "pickup"]
-    shipping_options = [opt for opt in calculated_options if opt.get("service_code") != "pickup"]
     
-    # Group by routing_group
+    # Group options by routing_group
     grouped_options = {}
     ungrouped_options = []
     
-    for opt in shipping_options:
+    for opt in option_results:
         routing_group = opt.get("routing_group")
         if routing_group:
             if routing_group not in grouped_options:
@@ -1223,23 +1268,28 @@ async def calculate_shipping(request: ShippingCalculationRequest):
         else:
             ungrouped_options.append(opt)
     
-    # Select cheapest from each group
+    # Select cheapest from each routing group
     final_options = pickup_options.copy()
     
     for group_name, group_opts in grouped_options.items():
         # Sort by price and pick the cheapest
         group_opts.sort(key=lambda x: x["price"])
         cheapest = group_opts[0]
-        # Optionally add info about the group
+        # Add info about the group
         cheapest["_routing_group_cheapest"] = True
         cheapest["_routing_group_alternatives"] = len(group_opts) - 1
+        cheapest["_routing_group_name"] = group_name
         final_options.append(cheapest)
     
     # Add ungrouped options
     final_options.extend(ungrouped_options)
     
+    # If no options were created from ShippingOptions, fall back to showing all services directly
+    if not option_results:
+        final_options = pickup_options + [opt for opt in calculated_options if opt.get("service_code") != "pickup"]
+    
     # Sort final options by sort_order/price
-    final_options.sort(key=lambda x: (0 if x.get("service_code") == "pickup" else 1, x.get("price", 0)))
+    final_options.sort(key=lambda x: (0 if x.get("service_code") == "pickup" else 1, x.get("sort_order", 0), x.get("price", 0)))
     
     # Use the first matching zone for response (or None if no options)
     primary_zone = matching_zones[0] if matching_zones else None
