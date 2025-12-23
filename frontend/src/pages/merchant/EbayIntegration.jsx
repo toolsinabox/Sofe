@@ -437,6 +437,10 @@ const EbayIntegration = () => {
 
   // Wizard navigation
   const nextStep = async () => {
+    // Clear any previous errors when moving forward
+    setTestResult(null);
+    setConnectionError(null);
+    
     if (currentStep === 3) { // Connect step
       const success = await connectEbay();
       if (!success) return;
@@ -448,12 +452,19 @@ const EbayIntegration = () => {
   };
 
   const prevStep = () => {
+    // Clear errors when going back
+    setTestResult(null);
+    setConnectionError(null);
+    
     if (currentStep > 0) {
       setCurrentStep(prev => prev - 1);
     }
   };
 
   const completeWizard = () => {
+    // Clear all wizard state
+    setTestResult(null);
+    setConnectionError(null);
     setShowSetupWizard(false);
     setCurrentStep(0);
   };
