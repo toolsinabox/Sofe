@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback, useRef } from 'react';
 import axios from 'axios';
 import {
   Search,
@@ -28,7 +28,22 @@ import {
   Upload,
   Code,
   Layers,
-  Bookmark
+  Bookmark,
+  Bold,
+  Italic,
+  Underline,
+  AlignLeft,
+  AlignCenter,
+  AlignRight,
+  ListOrdered,
+  Link2,
+  Type,
+  Heading1,
+  Heading2,
+  Quote,
+  Minus,
+  Undo,
+  Redo
 } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '../../components/ui/card';
 import { Button } from '../../components/ui/button';
