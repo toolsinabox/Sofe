@@ -122,7 +122,6 @@ const MerchantShipping = () => {
   const [options, setOptions] = useState([]);
   
   // Modal states
-  const [showZoneModal, setShowZoneModal] = useState(false);
   const [showServiceModal, setShowServiceModal] = useState(false);
   const [showCategoryModal, setShowCategoryModal] = useState(false);
   const [showPackageModal, setShowPackageModal] = useState(false);
