@@ -101,28 +101,31 @@ const MerchantSEO = () => {
     <div className="p-6">
       <div className="flex justify-between items-center mb-6">
         <div>
-          <h1 className="text-2xl font-bold text-white">SEO Tools</h1>
-          <p className="text-gray-400 text-sm mt-1">Optimize your store for search engines</p>
+          <h1 className="text-2xl font-bold text-gray-900">SEO Manager</h1>
+          <p className="text-gray-500 text-sm mt-1">Optimize your store for search engines</p>
         </div>
-        <Button
+        <Button 
           onClick={activeTab === 'global' ? saveGlobalSettings : saveEntitySEO}
-          disabled={saving || (activeTab !== 'global' && !selectedEntity)}
+          disabled={saving}
           className="bg-blue-600 hover:bg-blue-700"
         >
-          {saving ? 'Saving...' : saved ? <><CheckCircle size={16} className="mr-2" /> Saved</> : <><Save size={16} className="mr-2" /> Save</>}
+          {saved ? <CheckCircle size={16} className="mr-2" /> : <Save size={16} className="mr-2" />}
+          {saving ? 'Saving...' : saved ? 'Saved!' : 'Save Changes'}
         </Button>
       </div>
 
       {/* Tabs */}
-      <div className="flex space-x-1 mb-6 bg-gray-800 p-1 rounded-lg">
+      <div className="flex gap-2 mb-6">
         {tabs.map(tab => {
           const Icon = tab.icon;
           return (
             <button
               key={tab.id}
-              onClick={() => { setActiveTab(tab.id); setSelectedEntity(null); }}
-              className={`flex items-center gap-2 px-4 py-2 rounded-md text-sm font-medium transition-colors ${
-                activeTab === tab.id ? 'bg-gray-700 text-white' : 'text-gray-400 hover:text-white'
+              onClick={() => setActiveTab(tab.id)}
+              className={`flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
+                activeTab === tab.id
+                  ? 'bg-blue-600 text-white'
+                  : 'bg-white border border-gray-200 text-gray-600 hover:bg-gray-50'
               }`}
             >
               <Icon size={16} />
@@ -132,84 +135,85 @@ const MerchantSEO = () => {
         })}
       </div>
 
-      {/* Global Settings */}
+      {/* Global Settings Tab */}
       {activeTab === 'global' && (
         <div className="space-y-6">
-          <div className="bg-gray-800 rounded-lg p-6">
-            <h2 className="text-lg font-semibold text-white mb-4">Site-Wide SEO</h2>
-            <div className="grid grid-cols-2 gap-6">
+          <div className="bg-white rounded-lg border border-gray-200 p-6">
+            <h3 className="text-lg font-semibold text-gray-900 mb-4">Site Metadata</h3>
+            <div className="space-y-4">
               <div>
-                <Label className="text-gray-300">Title Suffix</Label>
+                <Label className="text-gray-700">Site Title Suffix</Label>
                 <Input
                   value={globalSettings.site_title_suffix}
                   onChange={(e) => setGlobalSettings({ ...globalSettings, site_title_suffix: e.target.value })}
                   placeholder="| Your Store Name"
-                  className="bg-gray-700 border-gray-600 text-white mt-1"
+                  className="bg-gray-50 border-gray-200 text-gray-900"
                 />
                 <p className="text-xs text-gray-500 mt-1">Appended to all page titles</p>
               </div>
               <div>
-                <Label className="text-gray-300">Default Meta Description</Label>
+                <Label className="text-gray-700">Default Meta Description</Label>
                 <Textarea
                   value={globalSettings.default_meta_description}
                   onChange={(e) => setGlobalSettings({ ...globalSettings, default_meta_description: e.target.value })}
-                  placeholder="Your store description for search engines..."
-                  className="bg-gray-700 border-gray-600 text-white mt-1 h-20"
+                  rows={3}
+                  className="bg-gray-50 border-gray-200 text-gray-900"
+                  placeholder="Default description for pages without custom SEO"
                 />
               </div>
             </div>
           </div>
 
-          <div className="bg-gray-800 rounded-lg p-6">
-            <h2 className="text-lg font-semibold text-white mb-4">Tracking & Analytics</h2>
-            <div className="grid grid-cols-3 gap-6">
+          <div className="bg-white rounded-lg border border-gray-200 p-6">
+            <h3 className="text-lg font-semibold text-gray-900 mb-4">Tracking & Analytics</h3>
+            <div className="grid grid-cols-2 gap-4">
               <div>
-                <Label className="text-gray-300">Google Analytics ID</Label>
+                <Label className="text-gray-700">Google Analytics ID</Label>
                 <Input
-                  value={globalSettings.google_analytics_id || ''}
+                  value={globalSettings.google_analytics_id}
                   onChange={(e) => setGlobalSettings({ ...globalSettings, google_analytics_id: e.target.value })}
                   placeholder="G-XXXXXXXXXX"
-                  className="bg-gray-700 border-gray-600 text-white mt-1"
+                  className="bg-gray-50 border-gray-200 text-gray-900"
                 />
               </div>
               <div>
-                <Label className="text-gray-300">Search Console Verification</Label>
+                <Label className="text-gray-700">Google Search Console</Label>
                 <Input
-                  value={globalSettings.google_search_console || ''}
+                  value={globalSettings.google_search_console}
                   onChange={(e) => setGlobalSettings({ ...globalSettings, google_search_console: e.target.value })}
-                  placeholder="Verification meta tag"
-                  className="bg-gray-700 border-gray-600 text-white mt-1"
+                  placeholder="Verification code"
+                  className="bg-gray-50 border-gray-200 text-gray-900"
                 />
               </div>
               <div>
-                <Label className="text-gray-300">Facebook Pixel ID</Label>
+                <Label className="text-gray-700">Facebook Pixel ID</Label>
                 <Input
-                  value={globalSettings.facebook_pixel_id || ''}
+                  value={globalSettings.facebook_pixel_id}
                   onChange={(e) => setGlobalSettings({ ...globalSettings, facebook_pixel_id: e.target.value })}
-                  placeholder="XXXXXXXXXXXXXXXX"
-                  className="bg-gray-700 border-gray-600 text-white mt-1"
+                  placeholder="1234567890"
+                  className="bg-gray-50 border-gray-200 text-gray-900"
                 />
               </div>
             </div>
           </div>
 
-          <div className="bg-gray-800 rounded-lg p-6">
-            <h2 className="text-lg font-semibold text-white mb-4">Technical SEO</h2>
+          <div className="bg-white rounded-lg border border-gray-200 p-6">
+            <h3 className="text-lg font-semibold text-gray-900 mb-4">Advanced Settings</h3>
             <div className="space-y-4">
-              <div className="flex items-center justify-between">
+              <div className="flex items-center justify-between py-2">
                 <div>
-                  <p className="text-white">Sitemap Generation</p>
-                  <p className="text-sm text-gray-400">Auto-generate sitemap.xml</p>
+                  <p className="text-gray-900 font-medium">Enable Sitemap</p>
+                  <p className="text-sm text-gray-500">Auto-generate XML sitemap</p>
                 </div>
                 <Switch
                   checked={globalSettings.sitemap_enabled}
                   onCheckedChange={(checked) => setGlobalSettings({ ...globalSettings, sitemap_enabled: checked })}
                 />
               </div>
-              <div className="flex items-center justify-between">
+              <div className="flex items-center justify-between py-2">
                 <div>
-                  <p className="text-white">Structured Data (JSON-LD)</p>
-                  <p className="text-sm text-gray-400">Add schema.org markup</p>
+                  <p className="text-gray-900 font-medium">Structured Data</p>
+                  <p className="text-sm text-gray-500">Add JSON-LD schema markup</p>
                 </div>
                 <Switch
                   checked={globalSettings.structured_data_enabled}
@@ -217,11 +221,12 @@ const MerchantSEO = () => {
                 />
               </div>
               <div>
-                <Label className="text-gray-300">robots.txt Content</Label>
+                <Label className="text-gray-700">robots.txt</Label>
                 <Textarea
                   value={globalSettings.robots_txt}
                   onChange={(e) => setGlobalSettings({ ...globalSettings, robots_txt: e.target.value })}
-                  className="bg-gray-700 border-gray-600 text-white mt-1 h-32 font-mono text-sm"
+                  rows={6}
+                  className="bg-gray-50 border-gray-200 text-gray-900 font-mono text-sm"
                 />
               </div>
             </div>
@@ -229,30 +234,60 @@ const MerchantSEO = () => {
         </div>
       )}
 
-      {/* Product SEO */}
+      {/* Products Tab */}
       {activeTab === 'products' && (
         <div className="grid grid-cols-3 gap-6">
-          <div className="bg-gray-800 rounded-lg p-4 h-fit max-h-[600px] overflow-y-auto">
-            <h3 className="text-white font-medium mb-3">Select Product</h3>
-            <div className="space-y-1">
-              {products.map(p => (
+          <div className="bg-white rounded-lg border border-gray-200 p-4">
+            <h3 className="text-lg font-semibold text-gray-900 mb-4">Products</h3>
+            <div className="space-y-2 max-h-[500px] overflow-y-auto">
+              {products.map(product => (
                 <button
-                  key={p.id}
-                  onClick={() => loadEntitySEO('product', p.id, p.name)}
-                  className={`w-full text-left px-3 py-2 rounded text-sm transition-colors ${
-                    selectedEntity?.id === p.id ? 'bg-blue-600 text-white' : 'text-gray-400 hover:bg-gray-700 hover:text-white'
+                  key={product.id}
+                  onClick={() => loadEntitySEO('products', product.id, product.name)}
+                  className={`w-full text-left p-3 rounded-lg transition-colors ${
+                    selectedEntity?.id === product.id
+                      ? 'bg-blue-50 border border-blue-500'
+                      : 'hover:bg-gray-50 border border-gray-100'
                   }`}
                 >
-                  {p.name}
+                  <p className="text-gray-900 font-medium truncate">{product.name}</p>
+                  <p className="text-xs text-gray-500">{product.sku}</p>
                 </button>
               ))}
             </div>
           </div>
-          <div className="col-span-2">
+          <div className="col-span-2 bg-white rounded-lg border border-gray-200 p-6">
             {selectedEntity ? (
-              <SEOForm seo={entitySEO} setSEO={setEntitySEO} entityName={selectedEntity.name} />
+              <div className="space-y-4">
+                <h3 className="text-lg font-semibold text-gray-900">SEO for: {selectedEntity.name}</h3>
+                <div>
+                  <Label className="text-gray-700">Meta Title</Label>
+                  <Input
+                    value={entitySEO.meta_title || ''}
+                    onChange={(e) => setEntitySEO({ ...entitySEO, meta_title: e.target.value })}
+                    className="bg-gray-50 border-gray-200 text-gray-900"
+                  />
+                </div>
+                <div>
+                  <Label className="text-gray-700">Meta Description</Label>
+                  <Textarea
+                    value={entitySEO.meta_description || ''}
+                    onChange={(e) => setEntitySEO({ ...entitySEO, meta_description: e.target.value })}
+                    rows={3}
+                    className="bg-gray-50 border-gray-200 text-gray-900"
+                  />
+                </div>
+                <div>
+                  <Label className="text-gray-700">URL Slug</Label>
+                  <Input
+                    value={entitySEO.slug || ''}
+                    onChange={(e) => setEntitySEO({ ...entitySEO, slug: e.target.value })}
+                    className="bg-gray-50 border-gray-200 text-gray-900"
+                  />
+                </div>
+              </div>
             ) : (
-              <div className="bg-gray-800 rounded-lg p-8 text-center text-gray-500">
+              <div className="text-center py-12 text-gray-500">
                 Select a product to edit its SEO settings
               </div>
             )}
@@ -260,30 +295,59 @@ const MerchantSEO = () => {
         </div>
       )}
 
-      {/* Category SEO */}
+      {/* Categories Tab */}
       {activeTab === 'categories' && (
         <div className="grid grid-cols-3 gap-6">
-          <div className="bg-gray-800 rounded-lg p-4 h-fit">
-            <h3 className="text-white font-medium mb-3">Select Category</h3>
-            <div className="space-y-1">
-              {categories.map(c => (
+          <div className="bg-white rounded-lg border border-gray-200 p-4">
+            <h3 className="text-lg font-semibold text-gray-900 mb-4">Categories</h3>
+            <div className="space-y-2 max-h-[500px] overflow-y-auto">
+              {categories.map(category => (
                 <button
-                  key={c.id}
-                  onClick={() => loadEntitySEO('category', c.id, c.name)}
-                  className={`w-full text-left px-3 py-2 rounded text-sm transition-colors ${
-                    selectedEntity?.id === c.id ? 'bg-blue-600 text-white' : 'text-gray-400 hover:bg-gray-700 hover:text-white'
+                  key={category.id}
+                  onClick={() => loadEntitySEO('categories', category.id, category.name)}
+                  className={`w-full text-left p-3 rounded-lg transition-colors ${
+                    selectedEntity?.id === category.id
+                      ? 'bg-blue-50 border border-blue-500'
+                      : 'hover:bg-gray-50 border border-gray-100'
                   }`}
                 >
-                  {c.name}
+                  <p className="text-gray-900 font-medium">{category.name}</p>
                 </button>
               ))}
             </div>
           </div>
-          <div className="col-span-2">
+          <div className="col-span-2 bg-white rounded-lg border border-gray-200 p-6">
             {selectedEntity ? (
-              <SEOForm seo={entitySEO} setSEO={setEntitySEO} entityName={selectedEntity.name} />
+              <div className="space-y-4">
+                <h3 className="text-lg font-semibold text-gray-900">SEO for: {selectedEntity.name}</h3>
+                <div>
+                  <Label className="text-gray-700">Meta Title</Label>
+                  <Input
+                    value={entitySEO.meta_title || ''}
+                    onChange={(e) => setEntitySEO({ ...entitySEO, meta_title: e.target.value })}
+                    className="bg-gray-50 border-gray-200 text-gray-900"
+                  />
+                </div>
+                <div>
+                  <Label className="text-gray-700">Meta Description</Label>
+                  <Textarea
+                    value={entitySEO.meta_description || ''}
+                    onChange={(e) => setEntitySEO({ ...entitySEO, meta_description: e.target.value })}
+                    rows={3}
+                    className="bg-gray-50 border-gray-200 text-gray-900"
+                  />
+                </div>
+                <div>
+                  <Label className="text-gray-700">URL Slug</Label>
+                  <Input
+                    value={entitySEO.slug || ''}
+                    onChange={(e) => setEntitySEO({ ...entitySEO, slug: e.target.value })}
+                    className="bg-gray-50 border-gray-200 text-gray-900"
+                  />
+                </div>
+              </div>
             ) : (
-              <div className="bg-gray-800 rounded-lg p-8 text-center text-gray-500">
+              <div className="text-center py-12 text-gray-500">
                 Select a category to edit its SEO settings
               </div>
             )}
@@ -291,121 +355,32 @@ const MerchantSEO = () => {
         </div>
       )}
 
-      {/* Tools */}
+      {/* Tools Tab */}
       {activeTab === 'tools' && (
         <div className="grid grid-cols-2 gap-6">
-          <div className="bg-gray-800 rounded-lg p-6">
-            <h3 className="text-lg font-semibold text-white mb-4">Sitemap</h3>
-            <p className="text-gray-400 text-sm mb-4">Your sitemap is automatically generated and updated.</p>
-            <a
-              href={`${BACKEND_URL}/api/sitemap.xml`}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="inline-flex items-center gap-2 text-blue-400 hover:text-blue-300"
-            >
-              View Sitemap <ExternalLink size={14} />
-            </a>
+          <div className="bg-white rounded-lg border border-gray-200 p-6">
+            <h3 className="text-lg font-semibold text-gray-900 mb-4">Sitemap</h3>
+            <p className="text-gray-500 text-sm mb-4">View and regenerate your XML sitemap</p>
+            <div className="flex gap-3">
+              <Button variant="outline" className="border-gray-200">
+                <ExternalLink size={16} className="mr-2" /> View Sitemap
+              </Button>
+              <Button variant="outline" className="border-gray-200">
+                <RefreshCw size={16} className="mr-2" /> Regenerate
+              </Button>
+            </div>
           </div>
-          <div className="bg-gray-800 rounded-lg p-6">
-            <h3 className="text-lg font-semibold text-white mb-4">Robots.txt</h3>
-            <p className="text-gray-400 text-sm mb-4">Control how search engines crawl your site.</p>
-            <a
-              href={`${BACKEND_URL}/api/robots.txt`}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="inline-flex items-center gap-2 text-blue-400 hover:text-blue-300"
-            >
-              View robots.txt <ExternalLink size={14} />
-            </a>
+          <div className="bg-white rounded-lg border border-gray-200 p-6">
+            <h3 className="text-lg font-semibold text-gray-900 mb-4">SEO Audit</h3>
+            <p className="text-gray-500 text-sm mb-4">Check your store for SEO issues</p>
+            <Button variant="outline" className="border-gray-200">
+              <Search size={16} className="mr-2" /> Run Audit
+            </Button>
           </div>
         </div>
       )}
     </div>
   );
 };
-
-// SEO Form Component
-const SEOForm = ({ seo, setSEO, entityName }) => (
-  <div className="bg-gray-800 rounded-lg p-6 space-y-6">
-    <h3 className="text-lg font-semibold text-white">SEO for: {entityName}</h3>
-    
-    <div>
-      <Label className="text-gray-300">Meta Title</Label>
-      <Input
-        value={seo.meta_title || ''}
-        onChange={(e) => setSEO({ ...seo, meta_title: e.target.value })}
-        placeholder="Page title for search results"
-        className="bg-gray-700 border-gray-600 text-white mt-1"
-      />
-      <p className="text-xs text-gray-500 mt-1">{(seo.meta_title || '').length}/60 characters recommended</p>
-    </div>
-
-    <div>
-      <Label className="text-gray-300">Meta Description</Label>
-      <Textarea
-        value={seo.meta_description || ''}
-        onChange={(e) => setSEO({ ...seo, meta_description: e.target.value })}
-        placeholder="Description for search results"
-        className="bg-gray-700 border-gray-600 text-white mt-1 h-20"
-      />
-      <p className="text-xs text-gray-500 mt-1">{(seo.meta_description || '').length}/160 characters recommended</p>
-    </div>
-
-    <div>
-      <Label className="text-gray-300">URL Slug</Label>
-      <Input
-        value={seo.url_slug || ''}
-        onChange={(e) => setSEO({ ...seo, url_slug: e.target.value })}
-        placeholder="custom-url-slug"
-        className="bg-gray-700 border-gray-600 text-white mt-1"
-      />
-    </div>
-
-    <div>
-      <Label className="text-gray-300">Meta Keywords</Label>
-      <Input
-        value={seo.meta_keywords || ''}
-        onChange={(e) => setSEO({ ...seo, meta_keywords: e.target.value })}
-        placeholder="keyword1, keyword2, keyword3"
-        className="bg-gray-700 border-gray-600 text-white mt-1"
-      />
-    </div>
-
-    <div className="grid grid-cols-2 gap-4">
-      <div>
-        <Label className="text-gray-300">OG Title (Social)</Label>
-        <Input
-          value={seo.og_title || ''}
-          onChange={(e) => setSEO({ ...seo, og_title: e.target.value })}
-          placeholder="Title for social shares"
-          className="bg-gray-700 border-gray-600 text-white mt-1"
-        />
-      </div>
-      <div>
-        <Label className="text-gray-300">OG Image URL</Label>
-        <Input
-          value={seo.og_image || ''}
-          onChange={(e) => setSEO({ ...seo, og_image: e.target.value })}
-          placeholder="https://..."
-          className="bg-gray-700 border-gray-600 text-white mt-1"
-        />
-      </div>
-    </div>
-
-    <div>
-      <Label className="text-gray-300">Robots Directive</Label>
-      <select
-        value={seo.robots || 'index,follow'}
-        onChange={(e) => setSEO({ ...seo, robots: e.target.value })}
-        className="w-full h-10 px-3 bg-gray-700 border border-gray-600 rounded-md text-white mt-1"
-      >
-        <option value="index,follow">Index, Follow (Default)</option>
-        <option value="noindex,follow">No Index, Follow</option>
-        <option value="index,nofollow">Index, No Follow</option>
-        <option value="noindex,nofollow">No Index, No Follow</option>
-      </select>
-    </div>
-  </div>
-);
 
 export default MerchantSEO;

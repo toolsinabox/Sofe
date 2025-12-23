@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import { ShoppingCart, Mail, DollarSign, TrendingUp, Clock, Send, Check, Eye, RefreshCw } from 'lucide-react';
+import { ShoppingCart, Mail, DollarSign, TrendingUp, Clock, Send, Check, Eye, RefreshCw, X } from 'lucide-react';
 import { Button } from '../../components/ui/button';
 
 const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
@@ -10,7 +10,7 @@ const MerchantAbandonedCarts = () => {
   const [carts, setCarts] = useState([]);
   const [stats, setStats] = useState(null);
   const [loading, setLoading] = useState(true);
-  const [filter, setFilter] = useState('all'); // all, not-recovered, recovered
+  const [filter, setFilter] = useState('all');
   const [selectedCart, setSelectedCart] = useState(null);
   const [sendingEmail, setSendingEmail] = useState(null);
 
@@ -53,7 +53,7 @@ const MerchantAbandonedCarts = () => {
   const formatTimeAgo = (dateStr) => {
     const date = new Date(dateStr);
     const now = new Date();
-    const diff = Math.floor((now - date) / 1000 / 60); // minutes
+    const diff = Math.floor((now - date) / 1000 / 60);
     
     if (diff < 60) return `${diff}m ago`;
     if (diff < 1440) return `${Math.floor(diff / 60)}h ago`;
@@ -64,10 +64,10 @@ const MerchantAbandonedCarts = () => {
     <div className="p-6">
       <div className="flex justify-between items-center mb-6">
         <div>
-          <h1 className="text-2xl font-bold text-white">Abandoned Cart Recovery</h1>
-          <p className="text-gray-400 text-sm mt-1">Recover lost sales with targeted emails</p>
+          <h1 className="text-2xl font-bold text-gray-900">Abandoned Cart Recovery</h1>
+          <p className="text-gray-500 text-sm mt-1">Recover lost sales with targeted emails</p>
         </div>
-        <Button onClick={fetchData} variant="outline" className="border-gray-700">
+        <Button onClick={fetchData} variant="outline" className="border-gray-200">
           <RefreshCw size={16} className="mr-2" /> Refresh
         </Button>
       </div>
@@ -75,35 +75,35 @@ const MerchantAbandonedCarts = () => {
       {/* Stats */}
       {stats && (
         <div className="grid grid-cols-5 gap-4 mb-6">
-          <div className="bg-gray-800 rounded-lg p-4">
-            <div className="flex items-center gap-2 text-gray-400 text-sm mb-1">
+          <div className="bg-white rounded-lg border border-gray-200 p-4">
+            <div className="flex items-center gap-2 text-gray-500 text-sm mb-1">
               <ShoppingCart size={14} /> Abandoned Carts
             </div>
-            <p className="text-2xl font-bold text-white">{stats.total_carts}</p>
+            <p className="text-2xl font-bold text-gray-900">{stats.total_carts}</p>
           </div>
-          <div className="bg-gray-800 rounded-lg p-4">
-            <div className="flex items-center gap-2 text-gray-400 text-sm mb-1">
+          <div className="bg-white rounded-lg border border-gray-200 p-4">
+            <div className="flex items-center gap-2 text-gray-500 text-sm mb-1">
               <DollarSign size={14} /> Lost Revenue
             </div>
-            <p className="text-2xl font-bold text-red-400">${stats.total_abandoned_value?.toFixed(2)}</p>
+            <p className="text-2xl font-bold text-red-600">${stats.total_abandoned_value?.toFixed(2)}</p>
           </div>
-          <div className="bg-gray-800 rounded-lg p-4">
-            <div className="flex items-center gap-2 text-gray-400 text-sm mb-1">
+          <div className="bg-white rounded-lg border border-gray-200 p-4">
+            <div className="flex items-center gap-2 text-gray-500 text-sm mb-1">
               <Check size={14} /> Recovered
             </div>
-            <p className="text-2xl font-bold text-green-400">{stats.recovered_carts}</p>
+            <p className="text-2xl font-bold text-green-600">{stats.recovered_carts}</p>
           </div>
-          <div className="bg-gray-800 rounded-lg p-4">
-            <div className="flex items-center gap-2 text-gray-400 text-sm mb-1">
+          <div className="bg-white rounded-lg border border-gray-200 p-4">
+            <div className="flex items-center gap-2 text-gray-500 text-sm mb-1">
               <TrendingUp size={14} /> Recovery Rate
             </div>
-            <p className="text-2xl font-bold text-blue-400">{stats.recovery_rate}%</p>
+            <p className="text-2xl font-bold text-blue-600">{stats.recovery_rate}%</p>
           </div>
-          <div className="bg-gray-800 rounded-lg p-4">
-            <div className="flex items-center gap-2 text-gray-400 text-sm mb-1">
+          <div className="bg-white rounded-lg border border-gray-200 p-4">
+            <div className="flex items-center gap-2 text-gray-500 text-sm mb-1">
               <DollarSign size={14} /> Recovered Value
             </div>
-            <p className="text-2xl font-bold text-green-400">${stats.recovered_value?.toFixed(2)}</p>
+            <p className="text-2xl font-bold text-green-600">${stats.recovered_value?.toFixed(2)}</p>
           </div>
         </div>
       )}
@@ -117,7 +117,7 @@ const MerchantAbandonedCarts = () => {
             className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
               filter === f.key
                 ? 'bg-blue-600 text-white'
-                : 'bg-gray-800 text-gray-400 hover:text-white'
+                : 'bg-white border border-gray-200 text-gray-600 hover:bg-gray-50'
             }`}
           >
             {f.label}
@@ -126,17 +126,17 @@ const MerchantAbandonedCarts = () => {
       </div>
 
       {/* Carts List */}
-      <div className="bg-gray-800 rounded-lg overflow-hidden">
+      <div className="bg-white rounded-lg border border-gray-200 overflow-hidden">
         <table className="w-full">
           <thead>
-            <tr className="bg-gray-900">
-              <th className="text-left p-4 text-gray-400 font-medium">Customer</th>
-              <th className="text-left p-4 text-gray-400 font-medium">Cart Value</th>
-              <th className="text-left p-4 text-gray-400 font-medium">Items</th>
-              <th className="text-left p-4 text-gray-400 font-medium">Last Activity</th>
-              <th className="text-left p-4 text-gray-400 font-medium">Emails Sent</th>
-              <th className="text-left p-4 text-gray-400 font-medium">Status</th>
-              <th className="text-right p-4 text-gray-400 font-medium">Actions</th>
+            <tr className="bg-gray-50 border-b border-gray-200">
+              <th className="text-left p-4 text-gray-600 font-medium">Customer</th>
+              <th className="text-left p-4 text-gray-600 font-medium">Cart Value</th>
+              <th className="text-left p-4 text-gray-600 font-medium">Items</th>
+              <th className="text-left p-4 text-gray-600 font-medium">Last Activity</th>
+              <th className="text-left p-4 text-gray-600 font-medium">Emails Sent</th>
+              <th className="text-left p-4 text-gray-600 font-medium">Status</th>
+              <th className="text-right p-4 text-gray-600 font-medium">Actions</th>
             </tr>
           </thead>
           <tbody>
@@ -148,33 +148,33 @@ const MerchantAbandonedCarts = () => {
               </tr>
             ) : (
               carts.map((cart) => (
-                <tr key={cart.id} className="border-t border-gray-700 hover:bg-gray-750">
+                <tr key={cart.id} className="border-b border-gray-100 hover:bg-gray-50">
                   <td className="p-4">
-                    <p className="text-white font-medium">{cart.customer_name || 'Guest'}</p>
+                    <p className="text-gray-900 font-medium">{cart.customer_name || 'Guest'}</p>
                     <p className="text-sm text-gray-500">{cart.customer_email}</p>
                   </td>
                   <td className="p-4">
-                    <p className="text-white font-bold">${cart.subtotal?.toFixed(2)}</p>
+                    <p className="text-gray-900 font-bold">${cart.subtotal?.toFixed(2)}</p>
                   </td>
                   <td className="p-4">
-                    <p className="text-gray-300">{cart.items?.length || 0} {(cart.items?.length || 0) === 1 ? 'item' : 'items'}</p>
+                    <p className="text-gray-700">{cart.items?.length || 0} {(cart.items?.length || 0) === 1 ? 'item' : 'items'}</p>
                   </td>
                   <td className="p-4">
-                    <div className="flex items-center gap-2 text-gray-400">
+                    <div className="flex items-center gap-2 text-gray-500">
                       <Clock size={14} />
                       {formatTimeAgo(cart.last_activity)}
                     </div>
                   </td>
                   <td className="p-4">
-                    <span className="text-gray-300">{cart.recovery_emails_sent || 0}</span>
+                    <span className="text-gray-700">{cart.recovery_emails_sent || 0}</span>
                   </td>
                   <td className="p-4">
                     {cart.recovered ? (
-                      <span className="px-2 py-1 rounded text-xs font-medium bg-green-500/20 text-green-400">
+                      <span className="px-2 py-1 rounded text-xs font-medium bg-green-100 text-green-700">
                         Recovered
                       </span>
                     ) : (
-                      <span className="px-2 py-1 rounded text-xs font-medium bg-yellow-500/20 text-yellow-400">
+                      <span className="px-2 py-1 rounded text-xs font-medium bg-yellow-100 text-yellow-700">
                         Abandoned
                       </span>
                     )}
@@ -183,7 +183,7 @@ const MerchantAbandonedCarts = () => {
                     <div className="flex items-center justify-end gap-2">
                       <button
                         onClick={() => setSelectedCart(cart)}
-                        className="p-2 rounded hover:bg-gray-700 text-gray-400 hover:text-white"
+                        className="p-2 rounded hover:bg-gray-100 text-gray-500 hover:text-gray-900"
                         title="View Details"
                       >
                         <Eye size={16} />
@@ -214,33 +214,33 @@ const MerchantAbandonedCarts = () => {
       {/* Cart Detail Modal */}
       {selectedCart && (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
-          <div className="bg-gray-800 rounded-lg w-full max-w-lg mx-4 p-6">
+          <div className="bg-white rounded-lg w-full max-w-lg mx-4 p-6 border border-gray-200">
             <div className="flex justify-between items-center mb-4">
-              <h3 className="text-lg font-semibold text-white">Cart Details</h3>
-              <button onClick={() => setSelectedCart(null)} className="text-gray-400 hover:text-white">
-                ×
+              <h3 className="text-lg font-semibold text-gray-900">Cart Details</h3>
+              <button onClick={() => setSelectedCart(null)} className="text-gray-400 hover:text-gray-600">
+                <X size={20} />
               </button>
             </div>
             <div className="space-y-4">
               <div>
-                <p className="text-gray-400 text-sm">Customer</p>
-                <p className="text-white">{selectedCart.customer_name || 'Guest'}</p>
+                <p className="text-gray-500 text-sm">Customer</p>
+                <p className="text-gray-900">{selectedCart.customer_name || 'Guest'}</p>
                 <p className="text-gray-500 text-sm">{selectedCart.customer_email}</p>
               </div>
               <div>
-                <p className="text-gray-400 text-sm mb-2">Items</p>
+                <p className="text-gray-500 text-sm mb-2">Items</p>
                 <div className="space-y-2">
                   {selectedCart.items?.map((item, i) => (
-                    <div key={i} className="flex justify-between bg-gray-900 rounded p-2">
-                      <span className="text-white">{item.name} × {item.quantity}</span>
-                      <span className="text-gray-400">${(item.price * item.quantity).toFixed(2)}</span>
+                    <div key={i} className="flex justify-between bg-gray-50 rounded p-2">
+                      <span className="text-gray-900">{item.name} × {item.quantity}</span>
+                      <span className="text-gray-500">${(item.price * item.quantity).toFixed(2)}</span>
                     </div>
                   ))}
                 </div>
               </div>
-              <div className="flex justify-between pt-4 border-t border-gray-700">
-                <span className="text-gray-400">Total</span>
-                <span className="text-xl font-bold text-white">${selectedCart.subtotal?.toFixed(2)}</span>
+              <div className="flex justify-between pt-4 border-t border-gray-200">
+                <span className="text-gray-500">Total</span>
+                <span className="text-xl font-bold text-gray-900">${selectedCart.subtotal?.toFixed(2)}</span>
               </div>
             </div>
             <div className="mt-6 flex gap-3">
@@ -253,7 +253,7 @@ const MerchantAbandonedCarts = () => {
               <Button
                 onClick={() => sendRecoveryEmail(selectedCart.cart_id, 'discount')}
                 variant="outline"
-                className="flex-1 border-gray-600"
+                className="flex-1 border-gray-200"
               >
                 <DollarSign size={16} className="mr-2" /> Offer Discount
               </Button>
