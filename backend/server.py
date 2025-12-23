@@ -32,6 +32,10 @@ from routes.shipping import router as shipping_router
 from routes import addons as addons_module
 from routes import ebay as ebay_module
 from routes import import_export as import_export_module
+from routes import marketing as marketing_module
+from routes import analytics as analytics_module
+from routes import operations as operations_module
+from routes import customer_management as customer_management_module
 
 ROOT_DIR = Path(__file__).parent
 load_dotenv(ROOT_DIR / '.env')
