@@ -137,10 +137,16 @@ const MerchantCategories = () => {
           <h1 className="text-xl font-bold text-gray-900">Categories</h1>
           <p className="text-gray-500 text-sm">Manage your product categories</p>
         </div>
-        <Button onClick={() => openModal()} size="sm" className="bg-blue-600 hover:bg-blue-700">
-          <Plus className="w-3 h-3 mr-1" />
-          Add Category
-        </Button>
+        <div className="flex items-center gap-2">
+          <ImportExportButtons 
+            entityType="categories" 
+            onImportSuccess={fetchCategories}
+          />
+          <Button onClick={() => openModal()} size="sm" className="bg-blue-600 hover:bg-blue-700">
+            <Plus className="w-3 h-3 mr-1" />
+            Add Category
+          </Button>
+        </div>
       </div>
 
       {/* Categories Grid */}
