@@ -940,7 +940,7 @@ const MerchantShipping = () => {
 
         {/* Zone Modal */}
         <Dialog open={showZoneModal} onOpenChange={setShowZoneModal}>
-          <DialogContent className="bg-gray-800 border-gray-700 text-white max-w-lg">
+          <DialogContent key={editingItem?.id || 'new-zone'} className="bg-gray-800 border-gray-700 text-white max-w-lg">
             <DialogHeader>
               <DialogTitle>{editingItem ? 'Edit Shipping Zone' : 'Create Shipping Zone'}</DialogTitle>
               <DialogDescription className="text-gray-400">
@@ -951,18 +951,23 @@ const MerchantShipping = () => {
               <div className="grid grid-cols-2 gap-4">
                 <div>
                   <Label className="text-gray-300">Zone Code</Label>
-                  <Input
-                    value={zoneForm.code}
-                    onChange={(e) => setZoneForm({...zoneForm, code: e.target.value.toUpperCase()})}
+                  <StableInput
+                    key={`zone-code-${editingItem?.id || 'new'}`}
+                    name="code"
+                    defaultValue={zoneForm.code}
+                    onBlur={(e) => setZoneForm(prev => ({...prev, code: e.target.value.toUpperCase()}))}
                     placeholder="e.g., SYD_METRO"
                     className="bg-gray-700 border-gray-600 text-white mt-1"
+                    style={{textTransform: 'uppercase'}}
                   />
                 </div>
                 <div>
                   <Label className="text-gray-300">Zone Name</Label>
-                  <Input
-                    value={zoneForm.name}
-                    onChange={(e) => setZoneForm({...zoneForm, name: e.target.value})}
+                  <StableInput
+                    key={`zone-name-${editingItem?.id || 'new'}`}
+                    name="name"
+                    defaultValue={zoneForm.name}
+                    onBlur={(e) => setZoneForm(prev => ({...prev, name: e.target.value}))}
                     placeholder="e.g., Sydney Metro"
                     className="bg-gray-700 border-gray-600 text-white mt-1"
                   />
@@ -971,7 +976,7 @@ const MerchantShipping = () => {
               <div className="grid grid-cols-2 gap-4">
                 <div>
                   <Label className="text-gray-300">Country Code</Label>
-                  <Select value={zoneForm.country} onValueChange={(v) => setZoneForm({...zoneForm, country: v})}>
+                  <Select value={zoneForm.country} onValueChange={(v) => setZoneForm(prev => ({...prev, country: v}))}>
                     <SelectTrigger className="bg-gray-700 border-gray-600 text-white mt-1">
                       <SelectValue />
                     </SelectTrigger>
@@ -986,10 +991,12 @@ const MerchantShipping = () => {
                 </div>
                 <div>
                   <Label className="text-gray-300">Sort Order</Label>
-                  <Input
+                  <StableInput
+                    key={`zone-sort-${editingItem?.id || 'new'}`}
                     type="number"
-                    value={zoneForm.sort_order}
-                    onChange={(e) => setZoneForm({...zoneForm, sort_order: parseInt(e.target.value) || 0})}
+                    name="sort_order"
+                    defaultValue={zoneForm.sort_order}
+                    onBlur={(e) => setZoneForm(prev => ({...prev, sort_order: parseInt(e.target.value) || 0}))}
                     className="bg-gray-700 border-gray-600 text-white mt-1"
                   />
                 </div>
@@ -997,8 +1004,9 @@ const MerchantShipping = () => {
               <div>
                 <Label className="text-gray-300">Postcodes (comma-separated, ranges supported)</Label>
                 <textarea
-                  value={postcodesInput}
-                  onChange={(e) => setPostcodesInput(e.target.value)}
+                  key={`zone-postcodes-${editingItem?.id || 'new'}`}
+                  defaultValue={postcodesInput}
+                  onBlur={(e) => setPostcodesInput(e.target.value)}
                   placeholder="e.g., 2000-2234, 2555-2574, 2740-2786"
                   rows={3}
                   className="w-full mt-1 px-3 py-2 bg-gray-700 border border-gray-600 rounded-md text-white text-sm placeholder:text-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500"
@@ -1009,7 +1017,7 @@ const MerchantShipping = () => {
                 <Label className="text-gray-300">Zone Active</Label>
                 <Switch
                   checked={zoneForm.is_active}
-                  onCheckedChange={(checked) => setZoneForm({...zoneForm, is_active: checked})}
+                  onCheckedChange={(checked) => setZoneForm(prev => ({...prev, is_active: checked}))}
                 />
               </div>
             </div>
