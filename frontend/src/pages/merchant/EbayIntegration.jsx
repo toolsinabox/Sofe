@@ -398,18 +398,15 @@ const EbayIntegration = () => {
       const settings = response.data || null;
       setStoreSettings(settings);
       
-      // Convert logo to base64 for iframe preview (to avoid CORS issues)
+      // Fetch logo as base64 from backend proxy to avoid CORS issues in iframe preview
       if (settings?.store_logo) {
         try {
-          const logoResponse = await fetch(settings.store_logo);
-          const blob = await logoResponse.blob();
-          const reader = new FileReader();
-          reader.onloadend = () => {
-            setStoreLogoBase64(reader.result);
-          };
-          reader.readAsDataURL(blob);
+          const logoResponse = await axios.get(`${BACKEND_URL}/api/store/logo-base64`);
+          if (logoResponse.data?.data_url) {
+            setStoreLogoBase64(logoResponse.data.data_url);
+          }
         } catch (logoError) {
-          console.warn('Could not convert logo to base64 for preview:', logoError);
+          console.warn('Could not fetch logo as base64:', logoError);
           setStoreLogoBase64(null);
         }
       }
