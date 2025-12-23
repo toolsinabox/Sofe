@@ -672,7 +672,7 @@ const MerchantOrderDetail = () => {
               <DropdownMenuItem className="text-gray-700 hover:text-gray-700 hover:bg-gray-100/50 cursor-pointer">
                 <Barcode size={14} className="mr-2" /> Print Shipping Label
               </DropdownMenuItem>
-              <DropdownMenuSeparator className="bg-gray-700" />
+              <DropdownMenuSeparator className="bg-gray-200" />
               <DropdownMenuItem className="text-gray-700 hover:text-gray-700 hover:bg-gray-100/50 cursor-pointer">
                 <Download size={14} className="mr-2" /> Download PDF
               </DropdownMenuItem>
@@ -692,7 +692,7 @@ const MerchantOrderDetail = () => {
               <DropdownMenuItem onClick={() => setShowNoteModal(true)} className="text-gray-700 hover:text-gray-700 hover:bg-gray-100/50 cursor-pointer">
                 <MessageSquare size={14} className="mr-2" /> Add Note
               </DropdownMenuItem>
-              <DropdownMenuSeparator className="bg-gray-700" />
+              <DropdownMenuSeparator className="bg-gray-200" />
               {order.payment_status === 'paid' && order.status !== 'refunded' && (
                 <DropdownMenuItem onClick={() => setShowRefundModal(true)} className="text-orange-600 hover:text-orange-300 hover:bg-gray-100/50 cursor-pointer">
                   <Undo2 size={14} className="mr-2" /> Process Refund
@@ -742,7 +742,7 @@ const MerchantOrderDetail = () => {
                 <React.Fragment key={step.key}>
                   <div className="flex flex-col items-center">
                     <div className={`w-10 h-10 rounded-full flex items-center justify-center transition-all ${
-                      isCompleted ? 'bg-emerald-500' : isActive ? 'bg-blue-500 ring-4 ring-blue-500/30' : 'bg-gray-700'
+                      isCompleted ? 'bg-emerald-500' : isActive ? 'bg-blue-500 ring-4 ring-blue-500/30' : 'bg-gray-300'
                     }`}>
                       {isCompleted ? <Check className="text-gray-900" size={18} /> : <StepIcon className="text-gray-900" size={18} />}
                     </div>
@@ -751,7 +751,7 @@ const MerchantOrderDetail = () => {
                     </span>
                   </div>
                   {index < arr.length - 1 && (
-                    <div className={`flex-1 h-0.5 mx-2 ${isCompleted ? 'bg-emerald-500' : 'bg-gray-700'}`} />
+                    <div className={`flex-1 h-0.5 mx-2 ${isCompleted ? 'bg-emerald-500' : 'bg-gray-300'}`} />
                   )}
                 </React.Fragment>
               );
@@ -1447,7 +1447,7 @@ const MerchantOrderDetail = () => {
                 }`}>
                   {idx + 1}
                 </div>
-                {idx < 2 && <div className={`w-12 h-0.5 ${['pick', 'pack', 'dispatch'].indexOf(fulfillmentStep) > idx ? 'bg-emerald-500' : 'bg-gray-700'}`} />}
+                {idx < 2 && <div className={`w-12 h-0.5 ${['pick', 'pack', 'dispatch'].indexOf(fulfillmentStep) > idx ? 'bg-emerald-500' : 'bg-gray-300'}`} />}
               </React.Fragment>
             ))}
           </div>

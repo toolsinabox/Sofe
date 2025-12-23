@@ -791,7 +791,7 @@ const ProductEditor = ({ product, categories, onSave, onClose, templateTags }) =
                     <div className="grid grid-cols-4 md:grid-cols-6 gap-2 text-xs">
                       {Array(12).fill(null).map((_, i) => (
                         <div key={i} className="flex items-center gap-1">
-                          <span className={`font-mono px-1.5 py-0.5 rounded ${formData.images[i] ? 'bg-emerald-500/20 text-emerald-400' : 'bg-gray-700 text-gray-500'}`}>
+                          <span className={`font-mono px-1.5 py-0.5 rounded ${formData.images[i] ? 'bg-emerald-500/20 text-emerald-400' : 'bg-gray-100 text-gray-500'}`}>
                             [@image{i + 1}@]
                           </span>
                           {formData.images[i] && <Check size={12} className="text-emerald-400" />}

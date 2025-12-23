@@ -535,7 +535,7 @@ const MerchantQuotes = () => {
                                 >
                                   <Eye size={14} className="mr-2" /> View Details
                                 </DropdownMenuItem>
-                                <DropdownMenuSeparator className="bg-gray-700" />
+                                <DropdownMenuSeparator className="bg-gray-200" />
                                 {quote.status === 'pending' && (
                                   <DropdownMenuItem 
                                     className="text-gray-700 hover:text-gray-700 hover:bg-gray-100/50 cursor-pointer"
@@ -574,7 +574,7 @@ const MerchantQuotes = () => {
                                 >
                                   <Copy size={14} className="mr-2" /> Duplicate
                                 </DropdownMenuItem>
-                                <DropdownMenuSeparator className="bg-gray-700" />
+                                <DropdownMenuSeparator className="bg-gray-200" />
                                 <DropdownMenuItem 
                                   className="text-red-600 hover:text-red-300 hover:bg-gray-100/50 cursor-pointer"
                                   onClick={() => { setSelectedQuote(quote); setShowDeleteDialog(true); }}

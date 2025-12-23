@@ -275,7 +275,7 @@ const MerchantMegaMenu = () => {
                   <select
                     value={formData.category_id || ''}
                     onChange={(e) => setFormData({ ...formData, category_id: e.target.value })}
-                    className="w-full h-10 px-3 bg-gray-700 border border-gray-200 rounded-md text-gray-900 mt-1"
+                    className="w-full h-10 px-3 bg-gray-50 border border-gray-200 rounded-md text-gray-900 mt-1"
                   >
                     <option value="">None</option>
                     {categories.map(c => (

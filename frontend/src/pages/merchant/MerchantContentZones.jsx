@@ -685,7 +685,7 @@ const ZoneEditor = ({ zone, onSave, onClose }) => {
                 <button
                   key={type.id}
                   onClick={() => addBlock(type.id)}
-                  className="flex items-center gap-1 px-3 py-1.5 bg-gray-700 hover:bg-gray-100 rounded text-sm text-gray-700"
+                  className="flex items-center gap-1 px-3 py-1.5 bg-gray-100 hover:bg-gray-200 rounded text-sm text-gray-700"
                 >
                   <type.icon size={14} />
                   {type.label}

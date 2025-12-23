@@ -2877,7 +2877,7 @@ const MerchantPOS = () => {
               />
               <Button
                 onClick={searchReturnTransaction}
-                className="bg-gray-700 hover:bg-gray-100"
+                className="bg-gray-100 hover:bg-gray-200"
               >
                 <Search className="w-4 h-4" />
               </Button>

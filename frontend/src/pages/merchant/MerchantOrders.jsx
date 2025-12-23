@@ -455,7 +455,7 @@ const MerchantOrders = () => {
                 <DropdownMenuItem onClick={() => bulkUpdateStatus('delivered')} className="text-gray-700 hover:text-gray-900 hover:bg-gray-100/50 cursor-pointer">
                   <CheckCircle size={14} className="mr-2" /> Mark as Delivered
                 </DropdownMenuItem>
-                <DropdownMenuSeparator className="bg-gray-700" />
+                <DropdownMenuSeparator className="bg-gray-200" />
                 <DropdownMenuItem className="text-gray-700 hover:text-gray-900 hover:bg-gray-100/50 cursor-pointer">
                   <Printer size={14} className="mr-2" /> Print Packing Slips
                 </DropdownMenuItem>
@@ -518,7 +518,7 @@ const MerchantOrders = () => {
                           type="checkbox"
                           checked={selectedOrders.length === filteredOrders.length && filteredOrders.length > 0}
                           onChange={toggleAllOrders}
-                          className="rounded bg-gray-700 border-gray-300 text-emerald-500 focus:ring-emerald-500 focus:ring-offset-0"
+                          className="rounded bg-white border-gray-300 text-emerald-500 focus:ring-emerald-500 focus:ring-offset-0"
                         />
                       </th>
                       <th className="text-left py-4 px-4 text-gray-500 font-medium text-sm">Order</th>
@@ -550,7 +550,7 @@ const MerchantOrders = () => {
                               type="checkbox"
                               checked={selectedOrders.includes(order.id)}
                               onChange={() => toggleOrderSelection(order.id)}
-                              className="rounded bg-gray-700 border-gray-300 text-emerald-500 focus:ring-emerald-500 focus:ring-offset-0"
+                              className="rounded bg-white border-gray-300 text-emerald-500 focus:ring-emerald-500 focus:ring-offset-0"
                             />
                           </td>
                           <td className="py-4 px-4">
@@ -616,7 +616,7 @@ const MerchantOrders = () => {
                                 >
                                   <Eye size={14} className="mr-2" /> View Details
                                 </DropdownMenuItem>
-                                <DropdownMenuSeparator className="bg-gray-700" />
+                                <DropdownMenuSeparator className="bg-gray-200" />
                                 <DropdownMenuItem 
                                   className="text-gray-700 hover:text-gray-900 hover:bg-gray-100/50 cursor-pointer"
                                   onClick={() => { setSelectedOrder(order); setNewStatus(order.status); setShowStatusModal(true); }}
@@ -635,7 +635,7 @@ const MerchantOrders = () => {
                                 >
                                   <FileText size={14} className="mr-2" /> Add Note
                                 </DropdownMenuItem>
-                                <DropdownMenuSeparator className="bg-gray-700" />
+                                <DropdownMenuSeparator className="bg-gray-200" />
                                 <DropdownMenuItem className="text-gray-700 hover:text-gray-900 hover:bg-gray-100/50 cursor-pointer">
                                   <Mail size={14} className="mr-2" /> Email Customer
                                 </DropdownMenuItem>
@@ -647,7 +647,7 @@ const MerchantOrders = () => {
                                 </DropdownMenuItem>
                                 {order.status === 'cancelled' && (
                                   <>
-                                    <DropdownMenuSeparator className="bg-gray-700" />
+                                    <DropdownMenuSeparator className="bg-gray-200" />
                                     <DropdownMenuItem 
                                       className="text-red-400 hover:text-red-300 hover:bg-red-500/10 cursor-pointer"
                                       onClick={() => { setSelectedOrder(order); setShowDeleteModal(true); }}

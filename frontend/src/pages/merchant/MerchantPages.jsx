@@ -45,7 +45,7 @@ const EditorToolbar = ({ onFormat }) => {
     <div className="flex flex-wrap gap-1 p-2 bg-gray-50 border border-gray-200 rounded-t-lg">
       {tools.map((tool, i) => 
         tool.divider ? (
-          <div key={i} className="w-px h-6 bg-gray-700 mx-1" />
+          <div key={i} className="w-px h-6 bg-gray-300 mx-1" />
         ) : (
           <button
             key={i}
@@ -501,7 +501,7 @@ const MerchantPages = () => {
                       <select
                         value={formData.template}
                         onChange={(e) => setFormData({ ...formData, template: e.target.value })}
-                        className="w-full h-10 px-3 bg-gray-700 border border-gray-200 rounded-md text-gray-900 mt-1"
+                        className="w-full h-10 px-3 bg-gray-50 border border-gray-200 rounded-md text-gray-900 mt-1"
                       >
                         <option value="default">Default</option>
                         <option value="full-width">Full Width</option>

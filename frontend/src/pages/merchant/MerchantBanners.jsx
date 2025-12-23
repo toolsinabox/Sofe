@@ -559,7 +559,7 @@ const MerchantBanners = () => {
                         <select
                           value={formData.button_style}
                           onChange={(e) => setFormData(prev => ({ ...prev, button_style: e.target.value }))}
-                          className="w-full bg-gray-700 border border-gray-200 text-gray-900 rounded-md p-2"
+                          className="w-full bg-gray-50 border border-gray-200 text-gray-900 rounded-md p-2"
                         >
                           <option value="primary">Primary (Red)</option>
                           <option value="secondary">Secondary (White)</option>

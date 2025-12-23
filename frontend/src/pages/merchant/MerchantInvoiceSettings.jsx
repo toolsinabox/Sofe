@@ -377,7 +377,7 @@ const MerchantInvoiceSettings = () => {
                           updated[idx].width = e.target.value;
                           setTemplate({...template, tableColumns: updated});
                         }}
-                        className="w-20 bg-gray-700 border border-gray-200 rounded px-2 py-1 text-gray-900 text-sm text-center"
+                        className="w-20 bg-gray-50 border border-gray-200 rounded px-2 py-1 text-gray-900 text-sm text-center"
                       />
                     </div>
                   ))}

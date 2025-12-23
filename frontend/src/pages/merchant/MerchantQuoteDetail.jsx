@@ -471,7 +471,7 @@ const MerchantQuoteDetail = () => {
               <DropdownMenuItem className="text-gray-700 hover:text-gray-700 hover:bg-gray-100/50 cursor-pointer">
                 <Copy size={14} className="mr-2" /> Duplicate Quote
               </DropdownMenuItem>
-              <DropdownMenuSeparator className="bg-gray-700" />
+              <DropdownMenuSeparator className="bg-gray-200" />
               <DropdownMenuItem 
                 onClick={() => setShowDeleteDialog(true)} 
                 className="text-red-600 hover:text-red-300 hover:bg-gray-100/50 cursor-pointer"
