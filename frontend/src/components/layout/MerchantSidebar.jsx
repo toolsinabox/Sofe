@@ -331,7 +331,7 @@ const MerchantSidebar = ({ collapsed, setCollapsed, mobileOpen, setMobileOpen })
         {/* Close button for mobile */}
         <button
           onClick={() => setMobileOpen(false)}
-          className="absolute right-3 top-4 p-1 rounded-lg hover:bg-gray-100 text-gray-500"
+          className="absolute right-3 top-4 p-1 rounded-lg hover:bg-slate-700 text-slate-400"
         >
           <X size={20} />
         </button>
