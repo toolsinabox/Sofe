@@ -547,6 +547,9 @@ async def update_shipping_service(service_id: str, service: ShippingService):
     service_data["id"] = service_id
     # Preserve created_at from existing
     service_data["created_at"] = existing.get("created_at", service_data.get("created_at"))
+    # Sanitize rates to ensure min_charge = base_rate when not set
+    if service_data.get("rates"):
+        service_data["rates"] = sanitize_shipping_rates(service_data["rates"])
     
     await db.shipping_services.update_one({"id": service_id}, {"$set": service_data})
     
