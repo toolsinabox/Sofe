@@ -237,7 +237,7 @@ const MerchantBanners = () => {
           >
             <div className="flex">
               {/* Preview */}
-              <div className="w-72 h-40 bg-gray-700 relative flex-shrink-0">
+              <div className="w-72 h-40 bg-gray-100 relative flex-shrink-0">
                 {(banner.image || banner.image_desktop) ? (
                   <img
                     src={banner.image || banner.image_desktop}
@@ -290,10 +290,10 @@ const MerchantBanners = () => {
 
                     {/* Content indicators */}
                     <div className="flex items-center gap-2 text-xs text-gray-500">
-                      {banner.title && <span className="bg-gray-700 px-2 py-1 rounded">Has Title</span>}
-                      {banner.subtitle && <span className="bg-gray-700 px-2 py-1 rounded">Has Subtitle</span>}
-                      {banner.button_text && <span className="bg-gray-700 px-2 py-1 rounded">Has Button</span>}
-                      {banner.link && <span className="bg-gray-700 px-2 py-1 rounded">Has Link</span>}
+                      {banner.title && <span className="bg-gray-100 px-2 py-1 rounded">Has Title</span>}
+                      {banner.subtitle && <span className="bg-gray-100 px-2 py-1 rounded">Has Subtitle</span>}
+                      {banner.button_text && <span className="bg-gray-100 px-2 py-1 rounded">Has Button</span>}
+                      {banner.link && <span className="bg-gray-100 px-2 py-1 rounded">Has Link</span>}
                     </div>
                   </div>
                   <div className="flex items-center gap-2 text-gray-500">
@@ -371,7 +371,7 @@ const MerchantBanners = () => {
                   value={formData.name}
                   onChange={(e) => setFormData(prev => ({ ...prev, name: e.target.value }))}
                   placeholder="e.g., Summer Sale, Homepage Hero"
-                  className="bg-gray-700 border-gray-200 text-gray-900"
+                  className="bg-gray-50 border-gray-200 text-gray-900"
                 />
                 <p className="text-xs text-gray-500 mt-1">Internal name for identification</p>
               </div>
@@ -433,7 +433,7 @@ const MerchantBanners = () => {
                   </div>
 
                   {/* Device Visibility Toggles */}
-                  <div className="bg-gray-700/50 rounded-lg p-4">
+                  <div className="bg-gray-100 rounded-lg p-4">
                     <Label className="text-gray-700 mb-3 block font-medium">Display this banner on:</Label>
                     <div className="space-y-3">
                       <label className="flex items-center justify-between p-3 bg-white rounded-lg cursor-pointer hover:bg-gray-100">
@@ -492,7 +492,7 @@ const MerchantBanners = () => {
               {activeSection === 'content' && (
                 <div className="space-y-4">
                   {/* Title */}
-                  <div className="bg-gray-700/30 rounded-lg p-4">
+                  <div className="bg-gray-50 rounded-lg p-4">
                     <div className="flex items-center justify-between mb-2">
                       <Label className="text-gray-700">Title (Optional)</Label>
                       <label className="flex items-center gap-2 text-sm">
@@ -507,13 +507,13 @@ const MerchantBanners = () => {
                       value={formData.title}
                       onChange={(e) => setFormData(prev => ({ ...prev, title: e.target.value }))}
                       placeholder="e.g., Summer Collection 2025"
-                      className={`bg-gray-700 border-gray-200 text-gray-900 ${!formData.show_title ? 'opacity-50' : ''}`}
+                      className={`bg-gray-50 border-gray-200 text-gray-900 ${!formData.show_title ? 'opacity-50' : ''}`}
                     />
                     <p className="text-xs text-gray-500 mt-1">Leave empty for image-only banner</p>
                   </div>
 
                   {/* Subtitle */}
-                  <div className="bg-gray-700/30 rounded-lg p-4">
+                  <div className="bg-gray-50 rounded-lg p-4">
                     <div className="flex items-center justify-between mb-2">
                       <Label className="text-gray-700">Subtitle (Optional)</Label>
                       <label className="flex items-center gap-2 text-sm">
@@ -528,12 +528,12 @@ const MerchantBanners = () => {
                       value={formData.subtitle}
                       onChange={(e) => setFormData(prev => ({ ...prev, subtitle: e.target.value }))}
                       placeholder="e.g., Up to 50% off selected items"
-                      className={`bg-gray-700 border-gray-200 text-gray-900 ${!formData.show_subtitle ? 'opacity-50' : ''}`}
+                      className={`bg-gray-50 border-gray-200 text-gray-900 ${!formData.show_subtitle ? 'opacity-50' : ''}`}
                     />
                   </div>
 
                   {/* Button */}
-                  <div className="bg-gray-700/30 rounded-lg p-4">
+                  <div className="bg-gray-50 rounded-lg p-4">
                     <div className="flex items-center justify-between mb-2">
                       <Label className="text-gray-700">Button</Label>
                       <label className="flex items-center gap-2 text-sm">
@@ -551,7 +551,7 @@ const MerchantBanners = () => {
                           value={formData.button_text}
                           onChange={(e) => setFormData(prev => ({ ...prev, button_text: e.target.value }))}
                           placeholder="Shop Now"
-                          className="bg-gray-700 border-gray-200 text-gray-900"
+                          className="bg-gray-50 border-gray-200 text-gray-900"
                         />
                       </div>
                       <div>
@@ -576,7 +576,7 @@ const MerchantBanners = () => {
                       value={formData.link}
                       onChange={(e) => setFormData(prev => ({ ...prev, link: e.target.value }))}
                       placeholder="/store/products or https://..."
-                      className="bg-gray-700 border-gray-200 text-gray-900"
+                      className="bg-gray-50 border-gray-200 text-gray-900"
                     />
                     <p className="text-xs text-gray-500 mt-1">Where clicking the banner navigates to</p>
                   </div>
@@ -602,7 +602,7 @@ const MerchantBanners = () => {
                           className={`flex items-center gap-2 px-4 py-2 rounded-lg transition-colors ${
                             formData.text_position === pos.value
                               ? 'bg-blue-600 text-gray-900'
-                              : 'bg-gray-700 text-gray-700 hover:bg-gray-100'
+                              : 'bg-gray-100 text-gray-600 hover:bg-gray-100'
                           }`}
                         >
                           <pos.icon className="w-4 h-4" />
@@ -620,18 +620,18 @@ const MerchantBanners = () => {
                         type="color"
                         value={formData.text_color}
                         onChange={(e) => setFormData(prev => ({ ...prev, text_color: e.target.value }))}
-                        className="w-12 h-10 p-1 bg-gray-700 border-gray-200"
+                        className="w-12 h-10 p-1 bg-gray-50 border-gray-200"
                       />
                       <Input
                         value={formData.text_color}
                         onChange={(e) => setFormData(prev => ({ ...prev, text_color: e.target.value }))}
-                        className="bg-gray-700 border-gray-200 text-gray-900 flex-1"
+                        className="bg-gray-50 border-gray-200 text-gray-900 flex-1"
                       />
                     </div>
                   </div>
 
                   {/* Overlay */}
-                  <div className="bg-gray-700/30 rounded-lg p-4">
+                  <div className="bg-gray-50 rounded-lg p-4">
                     <div className="flex items-center justify-between mb-3">
                       <Label className="text-gray-700">Text Overlay</Label>
                       <label className="flex items-center gap-2 text-sm">
@@ -648,7 +648,7 @@ const MerchantBanners = () => {
                         value={formData.overlay_color}
                         onChange={(e) => setFormData(prev => ({ ...prev, overlay_color: e.target.value }))}
                         placeholder="rgba(0,0,0,0.3)"
-                        className="bg-gray-700 border-gray-200 text-gray-900"
+                        className="bg-gray-50 border-gray-200 text-gray-900"
                       />
                       <p className="text-xs text-gray-500 mt-1">Use rgba() for transparency, e.g., rgba(0,0,0,0.5)</p>
                     </div>
@@ -661,13 +661,13 @@ const MerchantBanners = () => {
                       type="number"
                       value={formData.sort_order}
                       onChange={(e) => setFormData(prev => ({ ...prev, sort_order: parseInt(e.target.value) || 0 }))}
-                      className="bg-gray-700 border-gray-200 text-gray-900"
+                      className="bg-gray-50 border-gray-200 text-gray-900"
                     />
                     <p className="text-xs text-gray-500 mt-1">Lower numbers appear first in carousel</p>
                   </div>
 
                   {/* Active Toggle */}
-                  <div className="flex items-center justify-between bg-gray-700/30 rounded-lg p-4">
+                  <div className="flex items-center justify-between bg-gray-50 rounded-lg p-4">
                     <div>
                       <Label className="text-gray-700">Banner Active</Label>
                       <p className="text-xs text-gray-500">Inactive banners won't show on the storefront</p>

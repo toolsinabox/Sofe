@@ -111,7 +111,7 @@ const ImageUploader = ({ label, value, onChange, uploading, onUpload }) => {
             value={value}
             onChange={(e) => onChange(e.target.value)}
             placeholder="Image URL"
-            className="bg-gray-700 border-gray-200 text-gray-900 text-sm"
+            className="bg-gray-50 border-gray-200 text-gray-900 text-sm"
           />
           <Button
             type="button"
@@ -472,7 +472,7 @@ const MerchantPages = () => {
                         });
                       }}
                       placeholder="e.g., About Us, Contact, FAQ"
-                      className="bg-gray-700 border-gray-200 text-gray-900 mt-1"
+                      className="bg-gray-50 border-gray-200 text-gray-900 mt-1"
                     />
                   </div>
                   
@@ -487,7 +487,7 @@ const MerchantPages = () => {
                         onChange={(e) => setFormData({ ...formData, slug: e.target.value })}
                         placeholder="about-us"
                         disabled={editingPage?.is_system}
-                        className="bg-gray-700 border-gray-200 text-gray-900 rounded-l-none"
+                        className="bg-gray-50 border-gray-200 text-gray-900 rounded-l-none"
                       />
                     </div>
                     {editingPage?.is_system && (
@@ -515,7 +515,7 @@ const MerchantPages = () => {
                         type="number"
                         value={formData.sort_order}
                         onChange={(e) => setFormData({ ...formData, sort_order: parseInt(e.target.value) || 0 })}
-                        className="bg-gray-700 border-gray-200 text-gray-900 mt-1"
+                        className="bg-gray-50 border-gray-200 text-gray-900 mt-1"
                       />
                     </div>
                   </div>
@@ -544,7 +544,7 @@ const MerchantPages = () => {
                       value={formData.content}
                       onChange={(e) => setFormData({ ...formData, content: e.target.value })}
                       placeholder="<div class='container mx-auto py-8'>&#10;  <h1 class='text-3xl font-bold mb-4'>Page Title</h1>&#10;  <p class='text-gray-600'>Your content here...</p>&#10;</div>"
-                      className="bg-gray-700 border-gray-200 text-gray-900 h-80 font-mono text-sm rounded-t-none border-t-0"
+                      className="bg-gray-50 border-gray-200 text-gray-900 h-80 font-mono text-sm rounded-t-none border-t-0"
                     />
                     <div className="bg-gray-50 border border-t-0 border-gray-200 rounded-b-lg p-3">
                       <p className="text-xs text-gray-500">
@@ -622,7 +622,7 @@ const MerchantPages = () => {
                       value={formData.seo_title}
                       onChange={(e) => setFormData({ ...formData, seo_title: e.target.value })}
                       placeholder="Title that appears in browser tab and search results"
-                      className="bg-gray-700 border-gray-200 text-gray-900 mt-1"
+                      className="bg-gray-50 border-gray-200 text-gray-900 mt-1"
                     />
                     <p className="text-xs text-gray-500 mt-1">{formData.seo_title.length}/60 characters</p>
                   </div>
@@ -633,7 +633,7 @@ const MerchantPages = () => {
                       value={formData.seo_keywords}
                       onChange={(e) => setFormData({ ...formData, seo_keywords: e.target.value })}
                       placeholder="keyword1, keyword2, keyword3"
-                      className="bg-gray-700 border-gray-200 text-gray-900 mt-1"
+                      className="bg-gray-50 border-gray-200 text-gray-900 mt-1"
                     />
                   </div>
 
@@ -643,7 +643,7 @@ const MerchantPages = () => {
                       value={formData.seo_description}
                       onChange={(e) => setFormData({ ...formData, seo_description: e.target.value })}
                       placeholder="A brief description of this page for search engines"
-                      className="bg-gray-700 border-gray-200 text-gray-900 mt-1 h-24"
+                      className="bg-gray-50 border-gray-200 text-gray-900 mt-1 h-24"
                     />
                     <p className="text-xs text-gray-500 mt-1">{formData.seo_description.length}/160 characters</p>
                   </div>
@@ -654,7 +654,7 @@ const MerchantPages = () => {
                       value={formData.seo_heading}
                       onChange={(e) => setFormData({ ...formData, seo_heading: e.target.value })}
                       placeholder="Main heading that appears on the page"
-                      className="bg-gray-700 border-gray-200 text-gray-900 mt-1"
+                      className="bg-gray-50 border-gray-200 text-gray-900 mt-1"
                     />
                   </div>
 
@@ -664,7 +664,7 @@ const MerchantPages = () => {
                       value={formData.canonical_url}
                       onChange={(e) => setFormData({ ...formData, canonical_url: e.target.value })}
                       placeholder="https://yoursite.com/page (leave empty for default)"
-                      className="bg-gray-700 border-gray-200 text-gray-900 mt-1"
+                      className="bg-gray-50 border-gray-200 text-gray-900 mt-1"
                     />
                     <p className="text-xs text-gray-500 mt-1">Only set if this page has duplicate content elsewhere</p>
                   </div>

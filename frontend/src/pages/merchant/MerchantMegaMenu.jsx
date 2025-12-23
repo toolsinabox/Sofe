@@ -267,7 +267,7 @@ const MerchantMegaMenu = () => {
                     value={formData.title}
                     onChange={(e) => setFormData({ ...formData, title: e.target.value })}
                     placeholder="e.g., Shop by Category"
-                    className="bg-gray-700 border-gray-200 text-gray-900 mt-1"
+                    className="bg-gray-50 border-gray-200 text-gray-900 mt-1"
                   />
                 </div>
                 <div>
@@ -301,7 +301,7 @@ const MerchantMegaMenu = () => {
                           value={col.title || ''}
                           onChange={(e) => updateColumn(colIndex, 'title', e.target.value)}
                           placeholder="Column Title"
-                          className="bg-gray-700 border-gray-200 text-gray-900 flex-1"
+                          className="bg-gray-50 border-gray-200 text-gray-900 flex-1"
                         />
                         <Button
                           variant="outline"
@@ -325,13 +325,13 @@ const MerchantMegaMenu = () => {
                               value={item.title}
                               onChange={(e) => updateColumnItem(colIndex, itemIndex, 'title', e.target.value)}
                               placeholder="Link text"
-                              className="bg-gray-700 border-gray-200 text-gray-900 text-sm flex-1"
+                              className="bg-gray-50 border-gray-200 text-gray-900 text-sm flex-1"
                             />
                             <Input
                               value={item.url}
                               onChange={(e) => updateColumnItem(colIndex, itemIndex, 'url', e.target.value)}
                               placeholder="URL"
-                              className="bg-gray-700 border-gray-200 text-gray-900 text-sm flex-1"
+                              className="bg-gray-50 border-gray-200 text-gray-900 text-sm flex-1"
                             />
                             <button
                               onClick={() => removeColumnItem(colIndex, itemIndex)}
@@ -356,7 +356,7 @@ const MerchantMegaMenu = () => {
                       value={formData.featured_title || ''}
                       onChange={(e) => setFormData({ ...formData, featured_title: e.target.value })}
                       placeholder="Featured Title"
-                      className="bg-gray-700 border-gray-200 text-gray-900"
+                      className="bg-gray-50 border-gray-200 text-gray-900"
                     />
                   </div>
                   <div>
@@ -364,7 +364,7 @@ const MerchantMegaMenu = () => {
                       value={formData.featured_image || ''}
                       onChange={(e) => setFormData({ ...formData, featured_image: e.target.value })}
                       placeholder="Image URL"
-                      className="bg-gray-700 border-gray-200 text-gray-900"
+                      className="bg-gray-50 border-gray-200 text-gray-900"
                     />
                   </div>
                   <div>
@@ -372,7 +372,7 @@ const MerchantMegaMenu = () => {
                       value={formData.featured_link || ''}
                       onChange={(e) => setFormData({ ...formData, featured_link: e.target.value })}
                       placeholder="Link URL"
-                      className="bg-gray-700 border-gray-200 text-gray-900"
+                      className="bg-gray-50 border-gray-200 text-gray-900"
                     />
                   </div>
                 </div>

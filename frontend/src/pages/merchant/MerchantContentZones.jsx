@@ -204,7 +204,7 @@ const BlockEditor = ({ block, onUpdate, onDelete, onMoveUp, onMoveDown, isFirst,
           </button>
         </div>
         
-        <div className="p-2 bg-gray-700 rounded">
+        <div className="p-2 bg-gray-100 rounded">
           <Icon size={16} className="text-blue-600" />
         </div>
         
@@ -257,7 +257,7 @@ const BlockEditor = ({ block, onUpdate, onDelete, onMoveUp, onMoveDown, isFirst,
                   className={`flex items-center gap-1.5 px-2 py-1 text-xs rounded transition-colors ${
                     showTagsPanel 
                       ? 'bg-blue-600/20 text-blue-600 border border-cyan-600/40' 
-                      : 'bg-gray-700 text-gray-500 hover:text-gray-700 hover:bg-gray-100'
+                      : 'bg-gray-100 text-gray-500 hover:text-gray-700 hover:bg-gray-100'
                   }`}
                 >
                   <Tag size={12} />
@@ -269,7 +269,7 @@ const BlockEditor = ({ block, onUpdate, onDelete, onMoveUp, onMoveDown, isFirst,
                   value={block.content || ''}
                   onChange={(e) => onUpdate({ ...block, content: e.target.value })}
                   placeholder="<div>Your HTML here...</div>&#10;&#10;Use template tags like [@store_name@] or [%thumb_list%] for dynamic content."
-                  className={`bg-gray-700 border-gray-200 text-gray-900 font-mono text-sm min-h-48 ${showTagsPanel ? 'pr-72' : ''}`}
+                  className={`bg-gray-50 border-gray-200 text-gray-900 font-mono text-sm min-h-48 ${showTagsPanel ? 'pr-72' : ''}`}
                 />
                 <TemplateTagsPanel isOpen={showTagsPanel} onClose={() => setShowTagsPanel(false)} />
               </div>
@@ -287,7 +287,7 @@ const BlockEditor = ({ block, onUpdate, onDelete, onMoveUp, onMoveDown, isFirst,
                 value={block.content || ''}
                 onChange={(e) => onUpdate({ ...block, content: e.target.value })}
                 placeholder="Enter your text content..."
-                className="bg-gray-700 border-gray-200 text-gray-900 min-h-24"
+                className="bg-gray-50 border-gray-200 text-gray-900 min-h-24"
               />
             </div>
           )}
@@ -301,7 +301,7 @@ const BlockEditor = ({ block, onUpdate, onDelete, onMoveUp, onMoveDown, isFirst,
                   value={block.settings?.src || ''}
                   onChange={(e) => updateSetting('src', e.target.value)}
                   placeholder="https://..."
-                  className="bg-gray-700 border-gray-200 text-gray-900"
+                  className="bg-gray-50 border-gray-200 text-gray-900"
                 />
               </div>
               <div className="grid grid-cols-2 gap-3">
@@ -311,7 +311,7 @@ const BlockEditor = ({ block, onUpdate, onDelete, onMoveUp, onMoveDown, isFirst,
                     value={block.settings?.alt || ''}
                     onChange={(e) => updateSetting('alt', e.target.value)}
                     placeholder="Image description"
-                    className="bg-gray-700 border-gray-200 text-gray-900"
+                    className="bg-gray-50 border-gray-200 text-gray-900"
                   />
                 </div>
                 <div>
@@ -320,7 +320,7 @@ const BlockEditor = ({ block, onUpdate, onDelete, onMoveUp, onMoveDown, isFirst,
                     value={block.settings?.link || ''}
                     onChange={(e) => updateSetting('link', e.target.value)}
                     placeholder="/page or https://..."
-                    className="bg-gray-700 border-gray-200 text-gray-900"
+                    className="bg-gray-50 border-gray-200 text-gray-900"
                   />
                 </div>
               </div>
@@ -331,13 +331,13 @@ const BlockEditor = ({ block, onUpdate, onDelete, onMoveUp, onMoveDown, isFirst,
                     value={block.settings?.width || '100%'}
                     onChange={(e) => updateSetting('width', e.target.value)}
                     placeholder="100% or 500px"
-                    className="bg-gray-700 border-gray-200 text-gray-900"
+                    className="bg-gray-50 border-gray-200 text-gray-900"
                   />
                 </div>
                 <div>
                   <Label className="text-gray-700 mb-1 block">Alignment</Label>
                   <Select value={block.settings?.alignment || 'center'} onValueChange={(v) => updateSetting('alignment', v)}>
-                    <SelectTrigger className="bg-gray-700 border-gray-200 text-gray-900">
+                    <SelectTrigger className="bg-gray-50 border-gray-200 text-gray-900">
                       <SelectValue />
                     </SelectTrigger>
                     <SelectContent className="bg-white border-gray-200">
@@ -364,7 +364,7 @@ const BlockEditor = ({ block, onUpdate, onDelete, onMoveUp, onMoveDown, isFirst,
                 value={block.settings?.src || ''}
                 onChange={(e) => updateSetting('src', e.target.value)}
                 placeholder="YouTube URL or embed URL"
-                className="bg-gray-700 border-gray-200 text-gray-900"
+                className="bg-gray-50 border-gray-200 text-gray-900"
               />
               <p className="text-xs text-gray-500 mt-1">Supports YouTube links (youtube.com/watch?v=... or youtu.be/...)</p>
             </div>
@@ -379,13 +379,13 @@ const BlockEditor = ({ block, onUpdate, onDelete, onMoveUp, onMoveDown, isFirst,
                   type="number"
                   value={block.settings?.limit || 4}
                   onChange={(e) => updateSetting('limit', parseInt(e.target.value) || 4)}
-                  className="bg-gray-700 border-gray-200 text-gray-900"
+                  className="bg-gray-50 border-gray-200 text-gray-900"
                 />
               </div>
               <div>
                 <Label className="text-gray-700 mb-1 block">Columns</Label>
                 <Select value={String(block.settings?.columns || 4)} onValueChange={(v) => updateSetting('columns', parseInt(v))}>
-                  <SelectTrigger className="bg-gray-700 border-gray-200 text-gray-900">
+                  <SelectTrigger className="bg-gray-50 border-gray-200 text-gray-900">
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent className="bg-white border-gray-200">
@@ -416,13 +416,13 @@ const BlockEditor = ({ block, onUpdate, onDelete, onMoveUp, onMoveDown, isFirst,
                   type="number"
                   value={block.settings?.limit || 6}
                   onChange={(e) => updateSetting('limit', parseInt(e.target.value) || 6)}
-                  className="bg-gray-700 border-gray-200 text-gray-900"
+                  className="bg-gray-50 border-gray-200 text-gray-900"
                 />
               </div>
               <div>
                 <Label className="text-gray-700 mb-1 block">Columns</Label>
                 <Select value={String(block.settings?.columns || 3)} onValueChange={(v) => updateSetting('columns', parseInt(v))}>
-                  <SelectTrigger className="bg-gray-700 border-gray-200 text-gray-900">
+                  <SelectTrigger className="bg-gray-50 border-gray-200 text-gray-900">
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent className="bg-white border-gray-200">
@@ -444,7 +444,7 @@ const BlockEditor = ({ block, onUpdate, onDelete, onMoveUp, onMoveDown, isFirst,
                 value={block.settings?.height || '50px'}
                 onChange={(e) => updateSetting('height', e.target.value)}
                 placeholder="50px or 2rem"
-                className="bg-gray-700 border-gray-200 text-gray-900"
+                className="bg-gray-50 border-gray-200 text-gray-900"
               />
             </div>
           )}
@@ -455,7 +455,7 @@ const BlockEditor = ({ block, onUpdate, onDelete, onMoveUp, onMoveDown, isFirst,
               <div>
                 <Label className="text-gray-700 mb-1 block">Style</Label>
                 <Select value={block.settings?.style || 'solid'} onValueChange={(v) => updateSetting('style', v)}>
-                  <SelectTrigger className="bg-gray-700 border-gray-200 text-gray-900">
+                  <SelectTrigger className="bg-gray-50 border-gray-200 text-gray-900">
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent className="bg-white border-gray-200">
@@ -471,7 +471,7 @@ const BlockEditor = ({ block, onUpdate, onDelete, onMoveUp, onMoveDown, isFirst,
                   type="color"
                   value={block.settings?.color || '#e5e7eb'}
                   onChange={(e) => updateSetting('color', e.target.value)}
-                  className="bg-gray-700 border-gray-200 h-10"
+                  className="bg-gray-50 border-gray-200 h-10"
                 />
               </div>
               <div>
@@ -480,7 +480,7 @@ const BlockEditor = ({ block, onUpdate, onDelete, onMoveUp, onMoveDown, isFirst,
                   value={block.settings?.width || '100%'}
                   onChange={(e) => updateSetting('width', e.target.value)}
                   placeholder="100% or 50%"
-                  className="bg-gray-700 border-gray-200 text-gray-900"
+                  className="bg-gray-50 border-gray-200 text-gray-900"
                 />
               </div>
             </div>
@@ -871,7 +871,7 @@ const MerchantContentZones = () => {
                     <span className={`px-2 py-0.5 rounded text-xs ${zone.is_active ? 'bg-green-50 text-green-600' : 'bg-gray-500/20 text-gray-500'}`}>
                       {zone.is_active ? 'Active' : 'Inactive'}
                     </span>
-                    <span className="px-2 py-0.5 bg-gray-700 rounded text-xs text-gray-500">
+                    <span className="px-2 py-0.5 bg-gray-100 rounded text-xs text-gray-500">
                       {zone.page}
                     </span>
                   </div>
@@ -879,7 +879,7 @@ const MerchantContentZones = () => {
                   <div className="flex items-center gap-2 mb-2">
                     <button
                       onClick={() => copyTag(zone.name)}
-                      className="flex items-center gap-1 px-2 py-1 bg-gray-700 rounded text-xs text-blue-600 hover:bg-gray-100"
+                      className="flex items-center gap-1 px-2 py-1 bg-gray-100 rounded text-xs text-blue-600 hover:bg-gray-100"
                     >
                       <Copy size={12} />
                       <code>[%content_zone name:'{zone.name}'%]</code>

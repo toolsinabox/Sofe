@@ -102,7 +102,7 @@ const ServiceFormInput = React.memo(({ label, name, value, onChange, placeholder
         value={value}
         onChange={onChange}
         placeholder={placeholder}
-        className={`bg-gray-700 border-gray-200 text-gray-900 ${className}`}
+        className={`bg-gray-50 border-gray-200 text-gray-900 ${className}`}
       />
       {suffix && <span className="text-gray-500 text-sm whitespace-nowrap">{suffix}</span>}
     </div>
@@ -489,7 +489,7 @@ const MerchantShipping = () => {
               </div>
               <p className="text-gray-500 text-sm">{zone.postcodes?.slice(0, 3).join(', ')}{zone.postcodes?.length > 3 ? '...' : ''}</p>
               <div className="flex items-center gap-2 mt-2">
-                <span className={`px-2 py-0.5 rounded text-xs ${zone.is_active ? 'bg-emerald-50 text-emerald-600' : 'bg-gray-700 text-gray-500'}`}>
+                <span className={`px-2 py-0.5 rounded text-xs ${zone.is_active ? 'bg-emerald-50 text-emerald-600' : 'bg-gray-100 text-gray-500'}`}>
                   {zone.is_active ? 'Active' : 'Inactive'}
                 </span>
                 <span className="text-gray-600 text-xs">{zone.code}</span>
@@ -521,7 +521,7 @@ const MerchantShipping = () => {
               placeholder="e.g., 2000"
               value={calcPostcode}
               onChange={(e) => setCalcPostcode(e.target.value)}
-              className="bg-gray-700 border-gray-200 text-gray-900 mt-1"
+              className="bg-gray-50 border-gray-200 text-gray-900 mt-1"
             />
           </div>
           <div>
@@ -534,7 +534,7 @@ const MerchantShipping = () => {
               onValueChange={setCalcSuburb}
               disabled={calcSuburbs.length === 0}
             >
-              <SelectTrigger className="bg-gray-700 border-gray-200 text-gray-900 mt-1">
+              <SelectTrigger className="bg-gray-50 border-gray-200 text-gray-900 mt-1">
                 <SelectValue placeholder={calcSuburbs.length === 0 ? "Enter postcode first" : "Select suburb"} />
               </SelectTrigger>
               <SelectContent className="bg-white border-gray-200 max-h-60">
@@ -556,7 +556,7 @@ const MerchantShipping = () => {
               placeholder="1"
               value={calcWeight}
               onChange={(e) => setCalcWeight(e.target.value)}
-              className="bg-gray-700 border-gray-200 text-gray-900 mt-1"
+              className="bg-gray-50 border-gray-200 text-gray-900 mt-1"
             />
           </div>
           <div>
@@ -566,7 +566,7 @@ const MerchantShipping = () => {
               placeholder="100"
               value={calcTotal}
               onChange={(e) => setCalcTotal(e.target.value)}
-              className="bg-gray-700 border-gray-200 text-gray-900 mt-1"
+              className="bg-gray-50 border-gray-200 text-gray-900 mt-1"
             />
           </div>
         </div>
@@ -580,7 +580,7 @@ const MerchantShipping = () => {
               placeholder="0"
               value={calcLength}
               onChange={(e) => setCalcLength(e.target.value)}
-              className="bg-gray-700 border-gray-200 text-gray-900 mt-1"
+              className="bg-gray-50 border-gray-200 text-gray-900 mt-1"
             />
           </div>
           <div>
@@ -590,7 +590,7 @@ const MerchantShipping = () => {
               placeholder="0"
               value={calcWidth}
               onChange={(e) => setCalcWidth(e.target.value)}
-              className="bg-gray-700 border-gray-200 text-gray-900 mt-1"
+              className="bg-gray-50 border-gray-200 text-gray-900 mt-1"
             />
           </div>
           <div>
@@ -600,7 +600,7 @@ const MerchantShipping = () => {
               placeholder="0"
               value={calcHeight}
               onChange={(e) => setCalcHeight(e.target.value)}
-              className="bg-gray-700 border-gray-200 text-gray-900 mt-1"
+              className="bg-gray-50 border-gray-200 text-gray-900 mt-1"
             />
           </div>
           <div className="flex items-end">
@@ -924,9 +924,9 @@ const MerchantShipping = () => {
                     <div className="flex items-center gap-3 mb-2">
                       <MapPin className="w-5 h-5 text-blue-600" />
                       <h3 className="text-lg font-semibold text-gray-900">{zone.name}</h3>
-                      <span className="px-2 py-0.5 bg-gray-700 text-gray-700 text-xs rounded font-mono">{zone.code}</span>
+                      <span className="px-2 py-0.5 bg-gray-100 text-gray-600 text-xs rounded font-mono">{zone.code}</span>
                       {!zone.is_active && (
-                        <span className="px-2 py-0.5 bg-gray-700 text-gray-500 text-xs rounded">Inactive</span>
+                        <span className="px-2 py-0.5 bg-gray-100 text-gray-500 text-xs rounded">Inactive</span>
                       )}
                     </div>
                     <div className="flex flex-wrap gap-2 mb-2">
@@ -986,7 +986,7 @@ const MerchantShipping = () => {
                     defaultValue={zoneForm.code}
                     onBlur={(e) => setZoneForm(prev => ({...prev, code: e.target.value.toUpperCase()}))}
                     placeholder="e.g., SYD_METRO"
-                    className="bg-gray-700 border-gray-200 text-gray-900 mt-1"
+                    className="bg-gray-50 border-gray-200 text-gray-900 mt-1"
                     style={{textTransform: 'uppercase'}}
                   />
                 </div>
@@ -998,7 +998,7 @@ const MerchantShipping = () => {
                     defaultValue={zoneForm.name}
                     onBlur={(e) => setZoneForm(prev => ({...prev, name: e.target.value}))}
                     placeholder="e.g., Sydney Metro"
-                    className="bg-gray-700 border-gray-200 text-gray-900 mt-1"
+                    className="bg-gray-50 border-gray-200 text-gray-900 mt-1"
                   />
                 </div>
               </div>
@@ -1006,7 +1006,7 @@ const MerchantShipping = () => {
                 <div>
                   <Label className="text-gray-700">Country Code</Label>
                   <Select value={zoneForm.country} onValueChange={(v) => setZoneForm(prev => ({...prev, country: v}))}>
-                    <SelectTrigger className="bg-gray-700 border-gray-200 text-gray-900 mt-1">
+                    <SelectTrigger className="bg-gray-50 border-gray-200 text-gray-900 mt-1">
                       <SelectValue />
                     </SelectTrigger>
                     <SelectContent className="bg-white border-gray-200">
@@ -1026,7 +1026,7 @@ const MerchantShipping = () => {
                     name="sort_order"
                     defaultValue={zoneForm.sort_order}
                     onBlur={(e) => setZoneForm(prev => ({...prev, sort_order: parseInt(e.target.value) || 0}))}
-                    className="bg-gray-700 border-gray-200 text-gray-900 mt-1"
+                    className="bg-gray-50 border-gray-200 text-gray-900 mt-1"
                   />
                 </div>
               </div>
@@ -1085,7 +1085,7 @@ const MerchantShipping = () => {
                       <p className="text-gray-900 font-medium">Uploading & Processing...</p>
                     </div>
                   </div>
-                  <div className="w-full bg-gray-700 rounded-full h-2">
+                  <div className="w-full bg-gray-100 rounded-full h-2">
                     <div 
                       className="bg-blue-500 h-2 rounded-full transition-all duration-300"
                       style={{ width: `${zoneUploadProgress}%` }}

@@ -2698,7 +2698,7 @@ const MerchantPOS = () => {
                   }}
                   className="w-full flex items-center gap-3 p-3 bg-white/50 rounded-lg hover:bg-white transition-colors text-left"
                 >
-                  <div className="w-10 h-10 bg-gray-700 rounded-full flex items-center justify-center">
+                  <div className="w-10 h-10 bg-gray-100 rounded-full flex items-center justify-center">
                     <User className="w-5 h-5 text-gray-500" />
                   </div>
                   <div>
@@ -2938,14 +2938,14 @@ const MerchantPOS = () => {
                               <div className="flex items-center gap-2" onClick={(e) => e.stopPropagation()}>
                                 <button
                                   onClick={() => updateReturnQty(item.product_id, (selectedItem?.return_qty || 1) - 1)}
-                                  className="w-6 h-6 bg-gray-700 rounded flex items-center justify-center"
+                                  className="w-6 h-6 bg-gray-100 rounded flex items-center justify-center"
                                 >
                                   <Minus className="w-3 h-3" />
                                 </button>
                                 <span className="w-8 text-center text-gray-900">{selectedItem?.return_qty || 1}</span>
                                 <button
                                   onClick={() => updateReturnQty(item.product_id, (selectedItem?.return_qty || 1) + 1)}
-                                  className="w-6 h-6 bg-gray-700 rounded flex items-center justify-center"
+                                  className="w-6 h-6 bg-gray-100 rounded flex items-center justify-center"
                                 >
                                   <Plus className="w-3 h-3" />
                                 </button>

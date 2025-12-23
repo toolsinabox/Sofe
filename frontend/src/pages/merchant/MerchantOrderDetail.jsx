@@ -1443,7 +1443,7 @@ const MerchantOrderDetail = () => {
               <React.Fragment key={step}>
                 <div className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-medium ${
                   fulfillmentStep === step ? 'bg-emerald-500 text-gray-900' : 
-                  ['pick', 'pack', 'dispatch'].indexOf(fulfillmentStep) > idx ? 'bg-emerald-500/50 text-gray-900' : 'bg-gray-700 text-gray-500'
+                  ['pick', 'pack', 'dispatch'].indexOf(fulfillmentStep) > idx ? 'bg-emerald-500/50 text-gray-900' : 'bg-gray-100 text-gray-500'
                 }`}>
                   {idx + 1}
                 </div>
