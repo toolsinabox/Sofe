@@ -1556,76 +1556,75 @@ const MerchantProducts = () => {
 
       {/* Products Grid */}
       {loading ? (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-          {[...Array(8)].map((_, i) => (
+        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-4">
+          {[...Array(12)].map((_, i) => (
             <div key={i} className="bg-white border-gray-200 rounded-lg animate-pulse">
               <div className="aspect-square bg-gray-100" />
-              <div className="p-4">
-                <div className="h-4 bg-gray-100 rounded mb-2" />
-                <div className="h-6 bg-gray-100 rounded w-1/2" />
+              <div className="p-3">
+                <div className="h-3 bg-gray-100 rounded mb-2" />
+                <div className="h-4 bg-gray-100 rounded w-1/2" />
               </div>
             </div>
           ))}
         </div>
       ) : viewMode === 'grid' ? (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-4">
           {filteredProducts.map((product) => (
-            <Card key={product.id} className="bg-white border-gray-200 hover:border-gray-200 transition-all duration-300 group overflow-hidden">
+            <Card key={product.id} className="bg-white border-gray-200 hover:border-gray-300 hover:shadow-sm transition-all duration-200 group overflow-hidden">
               <div className="relative aspect-square bg-gray-50">
                 <img
                   src={product.images?.[0] || 'https://via.placeholder.com/400'}
                   alt={product.name}
                   className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
                 />
-                <div className="absolute top-3 right-3">
+                <div className="absolute top-2 right-2">
                   <DropdownMenu>
                     <DropdownMenuTrigger asChild>
-                      <button className="p-2 rounded-lg bg-gray-100 text-gray-900 opacity-0 group-hover:opacity-100 transition-opacity hover:bg-gray-100">
-                        <MoreVertical size={16} />
+                      <button className="p-1.5 rounded-md bg-white/90 text-gray-700 opacity-0 group-hover:opacity-100 transition-opacity hover:bg-white shadow-sm">
+                        <MoreVertical size={14} />
                       </button>
                     </DropdownMenuTrigger>
                     <DropdownMenuContent align="end" className="bg-white border-gray-200">
                       <DropdownMenuItem 
-                        className="text-gray-700 hover:text-gray-900 hover:bg-gray-100/50 cursor-pointer"
+                        className="text-gray-700 hover:text-gray-900 hover:bg-gray-100/50 cursor-pointer text-sm"
                         onClick={() => handleEditProduct(product)}
                       >
-                        <Edit size={16} className="mr-2" /> Edit
+                        <Edit size={14} className="mr-2" /> Edit
                       </DropdownMenuItem>
                       <DropdownMenuItem 
-                        className="text-red-400 hover:text-red-300 hover:bg-red-500/10 cursor-pointer"
+                        className="text-red-500 hover:text-red-600 hover:bg-red-50 cursor-pointer text-sm"
                         onClick={() => handleDeleteProduct(product.id)}
                       >
-                        <Trash2 size={16} className="mr-2" /> Delete
+                        <Trash2 size={14} className="mr-2" /> Delete
                       </DropdownMenuItem>
                     </DropdownMenuContent>
                   </DropdownMenu>
                 </div>
                 {product.compare_price && product.compare_price > product.price && (
-                  <span className="absolute top-3 left-3 px-2 py-1 bg-red-500 text-gray-900 text-xs font-medium rounded">
+                  <span className="absolute top-2 left-2 px-1.5 py-0.5 bg-red-500 text-white text-xs font-medium rounded">
                     Sale
                   </span>
                 )}
                 {product.is_featured && (
-                  <span className="absolute top-3 left-3 px-2 py-1 bg-yellow-500 text-black text-xs font-medium rounded flex items-center gap-1">
-                    <Star size={12} /> Featured
+                  <span className="absolute top-2 left-2 px-1.5 py-0.5 bg-yellow-500 text-black text-xs font-medium rounded flex items-center gap-1">
+                    <Star size={10} /> Featured
                   </span>
                 )}
               </div>
-              <CardContent className="p-4">
-                <p className="text-gray-500 text-xs mb-1">{product.sku}</p>
-                <h3 className="text-gray-900 font-medium text-sm line-clamp-2 mb-2">{product.name}</h3>
-                {product.brand && <p className="text-gray-500 text-xs mb-2">{product.brand}</p>}
-                <div className="flex items-center gap-2 mb-3">
-                  <span className="text-emerald-400 font-bold">{formatCurrency(product.price)}</span>
+              <CardContent className="p-3">
+                <p className="text-gray-400 text-xs mb-0.5 font-mono">{product.sku}</p>
+                <h3 className="text-gray-900 font-medium text-sm line-clamp-1 mb-1">{product.name}</h3>
+                <div className="flex items-center gap-1.5 mb-2">
+                  <span className="text-emerald-600 font-semibold text-sm">{formatCurrency(product.price)}</span>
                   {product.compare_price && product.compare_price > product.price && (
-                    <span className="text-gray-500 text-sm line-through">{formatCurrency(product.compare_price)}</span>
+                    <span className="text-gray-400 text-xs line-through">{formatCurrency(product.compare_price)}</span>
                   )}
                 </div>
                 <div className="flex items-center justify-between">
-                  <span className={`px-2 py-0.5 rounded text-xs font-medium ${getStatusColor(product)}`}>
-                    {product.stock > 0 ? `${product.stock} in stock` : 'Out of stock'}
+                  <span className={`px-1.5 py-0.5 rounded text-xs font-medium ${getStatusColor(product)}`}>
+                    {product.stock > 0 ? `${product.stock}` : 'Out'}
                   </span>
-                  <span className="text-gray-500 text-xs">{product.sales_count || 0} sold</span>
+                  <span className="text-gray-400 text-xs">{product.sales_count || 0} sold</span>
                 </div>
               </CardContent>
             </Card>
