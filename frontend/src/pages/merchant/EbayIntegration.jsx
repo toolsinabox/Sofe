@@ -1137,27 +1137,43 @@ const EbayIntegration = () => {
               Back
             </Button>
             
-            {currentStep < SETUP_STEPS.length - 1 ? (
-              <Button
-                onClick={nextStep}
-                disabled={connecting || (currentStep === 3 && (!wizardData.client_id || !wizardData.client_secret))}
-                className="bg-yellow-500 hover:bg-yellow-600"
-              >
-                {connecting ? (
-                  <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                ) : null}
-                {currentStep === 3 ? 'Connect & Continue' : 'Continue'}
-                <ChevronRight className="w-4 h-4 ml-2" />
-              </Button>
-            ) : (
-              <Button
-                onClick={completeWizard}
-                className="bg-emerald-600 hover:bg-emerald-700"
-              >
-                <Check className="w-4 h-4 mr-2" />
-                Go to Dashboard
-              </Button>
-            )}
+            <div className="flex items-center gap-3">
+              {/* Skip for Now button - only show on Connect step */}
+              {currentStep === 3 && (
+                <Button
+                  variant="ghost"
+                  onClick={() => {
+                    setShowSetupWizard(false);
+                    setCurrentStep(0);
+                  }}
+                  className="text-gray-500 hover:text-gray-700"
+                >
+                  Skip for Now
+                </Button>
+              )}
+              
+              {currentStep < SETUP_STEPS.length - 1 ? (
+                <Button
+                  onClick={nextStep}
+                  disabled={connecting || (currentStep === 3 && (!wizardData.client_id || !wizardData.client_secret))}
+                  className="bg-yellow-500 hover:bg-yellow-600"
+                >
+                  {connecting ? (
+                    <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                  ) : null}
+                  {currentStep === 3 ? 'Connect & Continue' : 'Continue'}
+                  <ChevronRight className="w-4 h-4 ml-2" />
+                </Button>
+              ) : (
+                <Button
+                  onClick={completeWizard}
+                  className="bg-emerald-600 hover:bg-emerald-700"
+                >
+                  <Check className="w-4 h-4 mr-2" />
+                  Go to Dashboard
+                </Button>
+              )}
+            </div>
           </div>
         </div>
       </div>
