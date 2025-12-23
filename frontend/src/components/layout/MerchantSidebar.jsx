@@ -270,11 +270,11 @@ const MerchantSidebar = ({ collapsed, setCollapsed, mobileOpen, setMobileOpen })
 
       {/* View Store Button */}
       {!collapsed && (
-        <div className="px-3 py-2 border-t border-gray-200">
+        <div className="px-3 py-2 border-t border-slate-700">
           <NavLink
             to="/live"
             target="_blank"
-            className="flex items-center justify-center gap-2 w-full px-4 py-2 bg-blue-600 rounded-lg text-white font-medium text-sm hover:bg-blue-700 transition-colors"
+            className="flex items-center justify-center gap-2 w-full px-4 py-2 bg-blue-500 rounded-lg text-white font-medium text-sm hover:bg-blue-600 transition-colors"
           >
             <ExternalLink size={16} />
             View Store
@@ -283,18 +283,18 @@ const MerchantSidebar = ({ collapsed, setCollapsed, mobileOpen, setMobileOpen })
       )}
 
       {/* Bottom Section */}
-      <div className="px-3 py-2 border-t border-gray-200 space-y-1">
+      <div className="px-3 py-2 border-t border-slate-700 space-y-1">
         <NavLink
           to="/merchant/help"
           onClick={handleNavClick}
-          className="flex items-center gap-3 px-3 py-2 rounded-lg text-gray-600 hover:text-gray-900 hover:bg-gray-100 transition-colors"
+          className="flex items-center gap-3 px-3 py-2 rounded-lg text-slate-300 hover:text-white hover:bg-slate-700 transition-colors"
         >
           <HelpCircle size={18} />
           {!collapsed && <span className="text-sm">Help & Support</span>}
         </NavLink>
         <button
           onClick={handleLogout}
-          className="w-full flex items-center gap-3 px-3 py-2 rounded-lg text-gray-600 hover:text-red-600 hover:bg-red-50 transition-colors"
+          className="w-full flex items-center gap-3 px-3 py-2 rounded-lg text-slate-300 hover:text-red-400 hover:bg-slate-700 transition-colors"
         >
           <LogOut size={18} />
           {!collapsed && <span className="text-sm">Log Out</span>}
