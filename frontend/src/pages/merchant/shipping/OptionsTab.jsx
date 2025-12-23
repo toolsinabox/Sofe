@@ -10,7 +10,7 @@ import { Switch } from '../../../components/ui/switch';
 const API = `${process.env.REACT_APP_BACKEND_URL}/api`;
 
 // Inline editable input component
-const InlineInput = ({ value, onChange, onSave, type = 'text', prefix = '', suffix = '', className = '', placeholder, min, step }) => {
+const InlineInput = ({ value, onChange, type = 'text', prefix = '', suffix = '', className = '', placeholder, min, step }) => {
   const [localValue, setLocalValue] = useState(value);
   const [isFocused, setIsFocused] = useState(false);
   const inputRef = useRef(null);
@@ -25,7 +25,6 @@ const InlineInput = ({ value, onChange, onSave, type = 'text', prefix = '', suff
     setIsFocused(false);
     if (localValue !== value) {
       onChange(localValue);
-      onSave?.();
     }
   };
 
