@@ -95,12 +95,115 @@ const ProductDetail = () => {
         const relatedRes = await axios.get(`${API}/products?category_id=${response.data.category_id}&limit=4`);
         setRelatedProducts(relatedRes.data.filter(p => p.id !== id));
       }
+      
+      // Fetch reviews
+      fetchReviews();
     } catch (error) {
       console.error('Error fetching product:', error);
     } finally {
       setLoading(false);
     }
   };
+
+  const fetchReviews = async () => {
+    try {
+      const response = await axios.get(`${API}/reviews/product/${id}`);
+      setReviewsData(response.data);
+    } catch (error) {
+      console.error('Error fetching reviews:', error);
+    }
+  };
+
+  // Review image upload
+  const onDropReviewImages = useCallback(async (acceptedFiles) => {
+    setUploadingImages(true);
+    const newImages = [];
+    
+    for (const file of acceptedFiles) {
+      try {
+        const formData = new FormData();
+        formData.append('file', file);
+        const response = await axios.post(`${API}/reviews/upload-image`, formData, {
+          headers: { 'Content-Type': 'multipart/form-data' }
+        });
+        newImages.push(response.data.url);
+      } catch (error) {
+        console.error('Error uploading image:', error);
+      }
+    }
+    
+    setReviewForm(prev => ({ ...prev, images: [...prev.images, ...newImages] }));
+    setUploadingImages(false);
+  }, []);
+
+  const { getRootProps: getReviewDropProps, getInputProps: getReviewInputProps, isDragActive: isReviewDragActive } = useDropzone({
+    onDrop: onDropReviewImages,
+    accept: { 'image/*': ['.png', '.jpg', '.jpeg', '.webp'] },
+    maxFiles: 5
+  });
+
+  const removeReviewImage = (index) => {
+    setReviewForm(prev => ({
+      ...prev,
+      images: prev.images.filter((_, i) => i !== index)
+    }));
+  };
+
+  const handleSubmitReview = async (e) => {
+    e.preventDefault();
+    setSubmittingReview(true);
+    
+    try {
+      await axios.post(`${API}/reviews`, {
+        product_id: id,
+        ...reviewForm,
+        status: 'pending'
+      });
+      setReviewSubmitted(true);
+      setShowReviewForm(false);
+      setReviewForm({
+        customer_name: '',
+        customer_email: '',
+        rating: 5,
+        title: '',
+        content: '',
+        images: []
+      });
+      fetchReviews();
+    } catch (error) {
+      console.error('Error submitting review:', error);
+      alert('Failed to submit review. Please try again.');
+    } finally {
+      setSubmittingReview(false);
+    }
+  };
+
+  const markReviewHelpful = async (reviewId) => {
+    try {
+      await axios.post(`${API}/reviews/${reviewId}/helpful`);
+      fetchReviews();
+    } catch (error) {
+      console.error('Error marking helpful:', error);
+    }
+  };
+
+  const renderStars = (rating, size = 16, interactive = false, onChange = null) => (
+    <div className="flex gap-0.5">
+      {[1, 2, 3, 4, 5].map((star) => (
+        <Star
+          key={star}
+          size={size}
+          className={`${star <= rating ? 'fill-yellow-400 text-yellow-400' : 'text-gray-300'} ${interactive ? 'cursor-pointer hover:scale-110 transition-transform' : ''}`}
+          onClick={interactive && onChange ? () => onChange(star) : undefined}
+        />
+      ))}
+    </div>
+  );
+
+  const filteredReviews = reviewsData.reviews.filter(r => {
+    if (reviewFilter === 'all') return true;
+    return r.rating === parseInt(reviewFilter);
+  });
 
   const calculateShipping = async () => {
     if (!shippingPostcode || !product) return;
