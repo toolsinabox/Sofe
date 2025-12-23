@@ -1245,3 +1245,33 @@ Updated all XFM-RES rates (175 total) to set `min_charge = base_rate`. This ensu
 - UI tested via screenshot showing correct $352.70 for Adelaide
 
 ### Status: COMPLETE ✓
+
+---
+
+## Fix - Round per_kg_rate to 2 Decimal Places - 2025-01-XX
+
+### Issue
+User requested that all `per_kg_rate` values be rounded to 2 decimal places (e.g., 0.4182 → 0.42) both for existing data and during CSV imports.
+
+### Solution
+
+**Part 1: Database Update**
+- Wrote a Python script to iterate through all `shipping_services` in MongoDB
+- For each service's `rates` sub-array, rounded the `per_kg_rate` field to 2 decimal places
+- Updated 9 services, rounded 951 rate values
+
+**Part 2: CSV Import Logic**
+- Modified `/app/backend/routes/shipping.py` at line 665
+- Changed: `"per_kg_rate": float(row.get("Per Kg", 0) or 0)`
+- To: `"per_kg_rate": round(float(row.get("Per Kg", 0) or 0), 2)`
+
+### Testing
+1. **Database verification:** Confirmed 0 rates remain with more than 2 decimal places
+2. **CSV import test:** Uploaded test CSV with values 0.4182 and 1.23456789
+   - Verified they were stored as 0.42 and 1.23 respectively
+3. **Shipping calculation test:** Confirmed API still returns correct shipping prices
+
+### Files Modified
+- `/app/backend/routes/shipping.py` (line 665)
+
+### Status: COMPLETE ✓
