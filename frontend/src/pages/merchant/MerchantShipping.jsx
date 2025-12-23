@@ -3224,6 +3224,20 @@ const MerchantShipping = () => {
                   className="w-full mt-1 px-3 py-2 bg-gray-700 border border-gray-600 rounded-md text-white text-sm placeholder:text-gray-500 focus:outline-none focus:ring-2 focus:ring-teal-500"
                 />
               </div>
+
+              {/* Routing Group */}
+              <div>
+                <Label className="text-gray-300">
+                  Routing Group
+                  <span className="text-gray-500 text-xs ml-2">(Options in same group show only cheapest to customer)</span>
+                </Label>
+                <Input
+                  value={optionForm.routing_group}
+                  onChange={(e) => setOptionForm({...optionForm, routing_group: e.target.value})}
+                  placeholder="e.g., standard, express (leave empty to always show)"
+                  className="bg-gray-700 border-gray-600 text-white mt-1"
+                />
+              </div>
               
               {/* Linked Services */}
               <div>
