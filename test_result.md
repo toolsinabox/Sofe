@@ -1462,3 +1462,64 @@ File: `/app/frontend/src/pages/merchant/MerchantAddons.jsx`
 - Screenshot verified config modal with saved data ✓
 
 ### Status: COMPLETE ✓
+
+---
+
+## Task - ZonesTab Extraction - 2025-01-XX
+
+### Summary
+Extracted the ZonesTab component from MerchantShipping.jsx into its own file to resolve recurring technical debt.
+
+### Changes Made
+1. **Created:** `/app/frontend/src/pages/merchant/shipping/ZonesTab.jsx` (639 lines)
+   - Self-contained component with all zone management functionality
+   - Receives `zones` and `fetchAllData` as props
+   - Manages its own modal states, form states, and import logic
+
+2. **Modified:** `/app/frontend/src/pages/merchant/MerchantShipping.jsx`
+   - Reduced from 1339 lines to 763 lines (~576 lines removed)
+   - Removed zone-related state variables (now in ZonesTab)
+   - Updated render to pass props to extracted ZonesTab
+
+### Benefits
+- Better code organization and maintainability
+- Resolved UI instability caused by inline component
+- Easier testing and debugging
+- Follows the pattern of other extracted tabs (ServicesTab, OptionsTab, etc.)
+
+### Status: COMPLETE ✓
+
+---
+
+## Task - POS Park Sale & Void Sale - 2025-01-XX
+
+### Summary
+Implemented "Park Sale" and "Void Sale" functionality in the POS system.
+
+### Park Sale Feature
+- **State Added:** `parkedSales`, `showParkedSales`, `parkingNote`, `showParkModal`
+- **Functions:**
+  - `parkSale()` - Saves current cart state to parked sales with optional note
+  - `retrieveParkedSale()` - Restores a parked sale to the active cart
+  - `deleteParkedSale()` - Removes a parked sale
+- **UI:**
+  - Park button shows badge with count of parked sales
+  - Park modal allows adding optional note
+  - Parked Sales modal lists all parked sales with retrieve/delete options
+
+### Void Sale Feature
+- **State Added:** `showVoidConfirm`
+- **Function:** `voidSale()` - Clears cart after confirmation
+- **UI:**
+  - Void button triggers confirmation modal
+  - Shows items count and total amount being voided
+  - Requires explicit confirmation to prevent accidents
+
+### File Modified
+- `/app/frontend/src/pages/merchant/MerchantPOS.jsx`
+  - Added state variables for parked sales and void confirmation
+  - Added park/void functions
+  - Added three new Dialog modals (Park, Void Confirm, Parked Sales)
+  - Updated Park and Void buttons with proper onClick handlers
+
+### Status: COMPLETE ✓ (Build passes, UI verified)
