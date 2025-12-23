@@ -1079,7 +1079,7 @@ async def calculate_shipping(request: ShippingCalculationRequest):
         # 1. Combine cubic weights for all items
         # 2. Apply per-kg rate to COMBINED weight
         # 3. Add per-parcel fee × number of parcels
-        # 4. Apply minimum charge (per order, not per parcel)
+        # 4. Apply minimum charge × number of parcels (min is per parcel)
         # 5. Apply fuel levy percentage
         # 6. Add flat fuel levy ONCE (only for multi-parcel orders)
         # 7. GST added at the end
@@ -1091,12 +1091,13 @@ async def calculate_shipping(request: ShippingCalculationRequest):
         # Step 3: Add per-parcel fee for each parcel
         parcel_charge = per_parcel_rate * num_parcels
         
-        # Combined base freight
-        base_freight = kg_charge + parcel_charge
+        # Subtotal before min charge
+        subtotal = kg_charge + parcel_charge
         
-        # Step 4: Apply minimum charge (to the whole order)
-        if rate_min_charge > 0:
-            base_freight = max(base_freight, rate_min_charge)
+        # Step 4: Apply minimum charge PER PARCEL
+        # Min charge is multiplied by number of parcels
+        min_total = rate_min_charge * num_parcels if rate_min_charge > 0 else 0
+        base_freight = max(subtotal, min_total)
         
         # Step 5: Apply fuel levy percentage
         if fuel_levy_percent > 0:
