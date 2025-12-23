@@ -1225,6 +1225,7 @@ const MerchantShipping = () => {
           charge_type: 'weight',
           min_charge: 0,
           max_charge: null,
+          max_length: null,
           handling_fee: 0,
           fuel_levy_percent: 0,
           fuel_levy_amount: 0,
@@ -1234,7 +1235,15 @@ const MerchantShipping = () => {
           categories: ['default'],
           is_active: true,
           sort_order: services.length,
-          rates: []
+          rates: [],
+          // Additional fields
+          tracking_url: '',
+          internal_description: '',
+          packaging_allowance_kg: 0,
+          packaging_allowance_percent: 0,
+          round_up_weight: false,
+          ignore_physical_weight: false,
+          ship_to_po_box: false
         });
       }
       setShowServiceModal(true);
