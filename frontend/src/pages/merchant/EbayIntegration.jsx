@@ -1302,29 +1302,52 @@ const EbayIntegration = () => {
         </div>
       )}
 
-      {/* Tabs */}
-      {status?.connected && (
-        <div className="flex gap-1 mb-6 border-b border-gray-200">
-          {tabs.map(tab => (
-            <button
-              key={tab.id}
-              onClick={() => setActiveTab(tab.id)}
-              className={`flex items-center gap-2 px-4 py-2 text-sm font-medium border-b-2 -mb-[2px] transition-colors ${
-                activeTab === tab.id
-                  ? 'border-yellow-500 text-yellow-600'
-                  : 'border-transparent text-gray-500 hover:text-gray-700'
-              }`}
-            >
-              <tab.icon className="w-4 h-4" />
-              {tab.label}
-            </button>
-          ))}
+      {/* Tabs - Show even when not connected */}
+      <div className="flex gap-1 mb-6 border-b border-gray-200">
+        {tabs.map(tab => (
+          <button
+            key={tab.id}
+            onClick={() => setActiveTab(tab.id)}
+            className={`flex items-center gap-2 px-4 py-2 text-sm font-medium border-b-2 -mb-[2px] transition-colors ${
+              activeTab === tab.id
+                ? 'border-yellow-500 text-yellow-600'
+                : 'border-transparent text-gray-500 hover:text-gray-700'
+            }`}
+          >
+            <tab.icon className="w-4 h-4" />
+            {tab.label}
+          </button>
+        ))}
+      </div>
+
+      {/* Not Connected Banner */}
+      {!status?.connected && (
+        <div className="mb-6 p-6 bg-amber-50 border border-amber-200 rounded-xl">
+          <div className="flex items-start gap-4">
+            <div className="w-12 h-12 bg-amber-100 rounded-xl flex items-center justify-center flex-shrink-0">
+              <AlertCircle className="w-6 h-6 text-amber-600" />
+            </div>
+            <div className="flex-1">
+              <h3 className="font-semibold text-amber-800 mb-1">eBay Not Connected</h3>
+              <p className="text-amber-700 text-sm mb-3">
+                Connect your eBay account to start syncing products, managing listings, and importing orders.
+                You can explore the dashboard features below while setting up.
+              </p>
+              <Button 
+                onClick={() => setShowSetupWizard(true)}
+                className="bg-yellow-500 hover:bg-yellow-600"
+                size="sm"
+              >
+                <Link className="w-4 h-4 mr-2" />
+                Start Setup Wizard
+              </Button>
+            </div>
+          </div>
         </div>
       )}
 
-      {/* Tab Content */}
-      {status?.connected ? (
-        <div>
+      {/* Tab Content - Show for both connected and not connected */}
+      <div>
           {/* Overview Tab */}
           {activeTab === 'overview' && (
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
