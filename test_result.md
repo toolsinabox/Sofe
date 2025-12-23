@@ -1706,3 +1706,60 @@ Added to Step 4 (Connect Account) of the wizard:
   - Username: `edwardenayah@live.com.au`
   - Password: `qazxsw12`
 
+
+---
+
+## eBay Theme Editor Live Preview & Save Functionality - 2025-12-23
+
+### Issue Fixed
+User reported:
+1. The live preview wasn't rendering the actual HTML from the code editor
+2. There was no "Save Theme" functionality
+
+### Changes Made
+
+#### 1. Frontend - Live Preview with Dynamic HTML Rendering
+File: `/app/frontend/src/pages/merchant/EbayIntegration.jsx`
+
+**Added Functions:**
+- `processTemplateForPreview(html)`: Substitutes template tags (e.g., `{{product_name}}`, `{{product_price}}`) with actual product data from the selected preview product
+- `getPreviewHtml()`: Wraps the processed HTML in a complete HTML document for iframe rendering
+
+**Modified UI:**
+- Replaced the static React-based preview with an iframe that renders the actual HTML from the code editor using `srcDoc` attribute
+- Preview now shows real-time updates as the HTML is edited
+- Template tags are dynamically substituted with product data
+
+#### 2. Frontend - Save Theme Functionality
+File: `/app/frontend/src/pages/merchant/EbayIntegration.jsx`
+
+**Added:**
+- `savingTheme` and `themeSaveMessage` state variables
+- `handleSaveTheme()` function that sends theme data to backend
+- Updated "Save Theme" button with loading state and success/error message display
+
+#### 3. Backend - Theme Persistence Endpoints
+File: `/app/backend/routes/ebay.py`
+
+**Added Pydantic Models:**
+- `EbayThemeSettings`: Stores all theme customization settings (colors, fonts, display options)
+- `EbayTheme`: Main theme model containing template_id, template_html, and settings
+
+**Added Endpoints:**
+- `PUT /api/ebay/theme`: Save eBay listing theme template and settings (upsert operation)
+- `GET /api/ebay/theme`: Retrieve saved theme (returns defaults if none saved)
+
+### Testing Results
+- ✅ Backend GET /api/ebay/theme: Returns default theme settings
+- ✅ Backend PUT /api/ebay/theme: Saves theme successfully to MongoDB
+- ✅ Frontend Live Preview: Renders selected template HTML with substituted product data
+- ✅ Frontend Save Theme: Shows loading state, saves to backend, displays success message
+- ✅ Template Selection: Clicking templates (Modern Clean, Luxury Boutique, etc.) loads full HTML into editor and preview
+
+### Screenshots Verified
+- Theme Editor tab accessible ✓
+- Live Preview renders HTML templates correctly ✓
+- Template tags ({{product_name}}, {{product_price}}, etc.) substituted with data ✓
+- Save Theme shows "Theme saved successfully!" ✓
+
+### Status: COMPLETE ✓
