@@ -180,8 +180,8 @@ const MerchantSidebar = ({ collapsed, setCollapsed, mobileOpen, setMobileOpen })
           isSubItem ? 'ml-4 text-sm' : ''
         } ${
           isActive
-            ? 'bg-blue-50 text-blue-700 font-medium'
-            : 'text-gray-600 hover:text-gray-900 hover:bg-gray-100'
+            ? 'bg-blue-600 text-white font-medium'
+            : 'text-slate-300 hover:text-white hover:bg-slate-700'
         }`
       }
     >
