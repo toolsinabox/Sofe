@@ -3026,6 +3026,7 @@ const MerchantShipping = () => {
     const [optionForm, setOptionForm] = useState({
       name: '',
       description: '',
+      routing_group: '',  // Group options - only cheapest in group shown to customer
       service_ids: [],
       countries: ['AU'],
       free_shipping_threshold: null,
@@ -3040,6 +3041,7 @@ const MerchantShipping = () => {
         setOptionForm({
           name: option.name || '',
           description: option.description || '',
+          routing_group: option.routing_group || '',
           service_ids: option.service_ids || [],
           countries: option.countries || ['AU'],
           free_shipping_threshold: option.free_shipping_threshold || null,
@@ -3052,6 +3054,7 @@ const MerchantShipping = () => {
         setOptionForm({
           name: '',
           description: '',
+          routing_group: '',
           service_ids: [],
           countries: ['AU'],
           free_shipping_threshold: null,
