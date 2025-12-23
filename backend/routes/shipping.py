@@ -1062,53 +1062,56 @@ async def calculate_shipping(request: ShippingCalculationRequest):
         if not rate:
             continue
         
-        # Calculate total quantity across all items
-        total_qty = sum(item.get("quantity", 1) for item in request.items)
+        # Count number of parcels (each item is a separate parcel)
+        num_parcels = len(request.items)
         
-        # Calculate base price for a SINGLE PARCEL
-        # Maropost calculates the full price per parcel, then multiplies by quantity
-        first_parcel = rate.get("first_parcel", rate.get("base_rate", 0))
-        per_kg = rate.get("per_kg_rate", 0)
+        # Get rate values
+        per_parcel_rate = rate.get("per_parcel_rate", rate.get("first_parcel", rate.get("base_rate", 0)))
+        per_kg_rate = rate.get("per_kg_rate", 0)
+        rate_min_charge = rate.get("min_charge", 0)
         
-        # Calculate per-parcel chargeable weight (divide total by quantity)
-        per_parcel_weight = chargeable_weight / total_qty if total_qty > 0 else chargeable_weight
-        
-        # Base price for ONE parcel
-        single_parcel_price = first_parcel
-        if per_parcel_weight > 0 and per_kg > 0:
-            single_parcel_price += per_parcel_weight * per_kg
-        
-        # Apply fuel levy (Maropost method)
-        # Fuel levy percentage applies to base rate only
-        # Flat fuel levy amount is added after percentage
+        # Get fuel levy settings
         fuel_levy_percent = service.get("fuel_levy_percent", 0)
         fuel_levy_amount = service.get("fuel_levy_amount", 0)
         
-        # Apply percentage fuel levy to base
-        if fuel_levy_percent > 0:
-            single_parcel_price += single_parcel_price * (fuel_levy_percent / 100)
+        # ============================================================
+        # MAROPOST CALCULATION METHOD:
+        # 1. Combine cubic weights for all items
+        # 2. Apply per-kg rate to COMBINED weight
+        # 3. Add per-parcel fee × number of parcels
+        # 4. Apply minimum charge (per order, not per parcel)
+        # 5. Apply fuel levy percentage
+        # 6. Add flat fuel levy ONCE (per order)
+        # 7. GST added at the end
+        # ============================================================
         
-        # Add flat fuel levy amount if any
-        if fuel_levy_amount > 0:
-            single_parcel_price += fuel_levy_amount
+        # Step 1-2: Calculate per-kg charge on COMBINED chargeable weight
+        kg_charge = chargeable_weight * per_kg_rate
         
-        # Add handling fee AFTER fuel levy (handling is not subject to fuel levy)
-        single_parcel_price += service.get("handling_fee", 0)
+        # Step 3: Add per-parcel fee for each parcel
+        parcel_charge = per_parcel_rate * num_parcels
         
-        # Multiply by total quantity to get total price for all parcels
-        base_price = single_parcel_price * total_qty
+        # Combined base freight
+        base_freight = kg_charge + parcel_charge
         
-        # Apply rate-level min_charge (zone-specific minimum)
-        # This is applied to the price BEFORE GST, as it's the minimum rate ex-GST
-        rate_min_charge = rate.get("min_charge", 0)
+        # Step 4: Apply minimum charge (to the whole order)
         if rate_min_charge > 0:
-            # The min_charge is ex-GST, apply fuel levy to it as well for comparison
-            min_with_fuel = rate_min_charge
-            if fuel_levy_percent > 0:
-                min_with_fuel = rate_min_charge * (1 + fuel_levy_percent / 100)
-            if fuel_levy_amount > 0:
-                min_with_fuel += fuel_levy_amount
-            base_price = max(base_price, min_with_fuel)
+            base_freight = max(base_freight, rate_min_charge)
+        
+        # Step 5: Apply fuel levy percentage
+        if fuel_levy_percent > 0:
+            base_freight = base_freight * (1 + fuel_levy_percent / 100)
+        
+        # Step 6: Add flat fuel levy ONCE (per order, not per parcel)
+        if fuel_levy_amount > 0:
+            base_freight += fuel_levy_amount
+        
+        # Add handling fee (per item)
+        handling_fee = service.get("handling_fee", 0)
+        if handling_fee > 0:
+            base_freight += handling_fee * num_parcels
+        
+        base_price = base_freight
         
         # Apply service-level min/max charge (overrides rate-level)
         if service.get("min_charge", 0) > 0:
