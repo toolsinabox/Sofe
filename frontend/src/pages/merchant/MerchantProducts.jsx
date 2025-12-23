@@ -272,6 +272,8 @@ const ProductEditor = ({ product, categories, onSave, onClose, templateTags }) =
   const [newImageUrl, setNewImageUrl] = useState('');
   const [newTag, setNewTag] = useState('');
   const [showTagsPanel, setShowTagsPanel] = useState(false);
+  const [newSpecName, setNewSpecName] = useState('');
+  const [newSpecValue, setNewSpecValue] = useState('');
   
   useEffect(() => {
     if (product) {
