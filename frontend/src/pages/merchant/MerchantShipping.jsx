@@ -1196,6 +1196,7 @@ const MerchantShipping = () => {
           charge_type: service.charge_type || 'weight',
           min_charge: service.min_charge || 0,
           max_charge: service.max_charge || null,
+          max_length: service.max_length || null,
           handling_fee: service.handling_fee || 0,
           fuel_levy_percent: service.fuel_levy_percent || 0,
           fuel_levy_amount: service.fuel_levy_amount || 0,
