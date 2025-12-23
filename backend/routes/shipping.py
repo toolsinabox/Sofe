@@ -1124,23 +1124,23 @@ async def calculate_shipping(request: ShippingCalculationRequest):
             # 4. Add handling fee AFTER fuel (handling not fuel-levied)
             # 5. GST at the end
             
-            kg_charge = chargeable_weight * per_kg_rate
+            kg_charge = round(chargeable_weight * per_kg_rate, 2)
             if rate_min_charge > 0:
-                kg_charge = max(kg_charge, rate_min_charge * num_parcels)
+                kg_charge = max(kg_charge, round(rate_min_charge * num_parcels, 2))
             
-            parcel_charge = per_parcel_rate * num_parcels
-            freight_subtotal = kg_charge + parcel_charge
+            parcel_charge = round(per_parcel_rate * num_parcels, 2)
+            freight_subtotal = round(kg_charge + parcel_charge, 2)
             
             # Apply fuel levy % to freight only
             if fuel_levy_percent > 0:
-                freight_subtotal = freight_subtotal * (1 + fuel_levy_percent / 100)
+                freight_subtotal = round(freight_subtotal * (1 + fuel_levy_percent / 100), 2)
             
             # Add flat fuel levy
             if fuel_levy_amount > 0:
-                freight_subtotal += fuel_levy_amount
+                freight_subtotal = round(freight_subtotal + fuel_levy_amount, 2)
             
             # Add handling fee AFTER fuel levy
-            base_freight = freight_subtotal + (handling_fee * num_parcels)
+            base_freight = round(freight_subtotal + (handling_fee * num_parcels), 2)
         else:
             # XFM-STYLE CALCULATION (Maropost default):
             # 1. Combine kg_charge + parcel_charge
@@ -1149,23 +1149,23 @@ async def calculate_shipping(request: ShippingCalculationRequest):
             # 4. Add flat fuel levy
             # 5. GST at the end
             
-            kg_charge = chargeable_weight * per_kg_rate
-            parcel_charge = per_parcel_rate * num_parcels
-            subtotal = kg_charge + parcel_charge
+            kg_charge = round(chargeable_weight * per_kg_rate, 2)
+            parcel_charge = round(per_parcel_rate * num_parcels, 2)
+            subtotal = round(kg_charge + parcel_charge, 2)
             
             # Apply min_charge as floor for total
-            min_total = rate_min_charge * num_parcels if rate_min_charge > 0 else 0
+            min_total = round(rate_min_charge * num_parcels, 2) if rate_min_charge > 0 else 0
             base_freight = max(subtotal, min_total)
             
             # Apply fuel levy %
             if fuel_levy_percent > 0:
-                base_freight = base_freight * (1 + fuel_levy_percent / 100)
+                base_freight = round(base_freight * (1 + fuel_levy_percent / 100), 2)
             
             # Add flat fuel levy
             if fuel_levy_amount > 0:
-                base_freight += fuel_levy_amount
+                base_freight = round(base_freight + fuel_levy_amount, 2)
         
-        base_price = base_freight
+        base_price = round(base_freight, 2)
         
         # Apply service-level min/max charge (overrides rate-level)
         service_min_charge = safe_float(service.get("min_charge"))
