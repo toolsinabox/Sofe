@@ -1081,7 +1081,7 @@ async def calculate_shipping(request: ShippingCalculationRequest):
         # 3. Add per-parcel fee × number of parcels
         # 4. Apply minimum charge (per order, not per parcel)
         # 5. Apply fuel levy percentage
-        # 6. Add flat fuel levy ONCE (per order)
+        # 6. Add flat fuel levy ONCE (only for multi-parcel orders)
         # 7. GST added at the end
         # ============================================================
         
@@ -1102,8 +1102,9 @@ async def calculate_shipping(request: ShippingCalculationRequest):
         if fuel_levy_percent > 0:
             base_freight = base_freight * (1 + fuel_levy_percent / 100)
         
-        # Step 6: Add flat fuel levy ONCE (per order, not per parcel)
-        if fuel_levy_amount > 0:
+        # Step 6: Add flat fuel levy ONCE (only for multi-parcel orders)
+        # Maropost only applies flat fuel levy when there are 2+ parcels
+        if fuel_levy_amount > 0 and num_parcels >= 2:
             base_freight += fuel_levy_amount
         
         # Add handling fee (per item)
