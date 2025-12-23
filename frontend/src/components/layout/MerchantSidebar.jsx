@@ -33,7 +33,8 @@ import {
   Monitor,
   Palette,
   Globe,
-  Receipt
+  Receipt,
+  Puzzle
 } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
 
