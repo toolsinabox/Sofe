@@ -34,7 +34,17 @@ import {
   Palette,
   Globe,
   Receipt,
-  Puzzle
+  Puzzle,
+  Ticket,
+  Crown,
+  Gift,
+  Zap,
+  TrendingUp,
+  Building2,
+  Warehouse,
+  Bell,
+  Heart,
+  Users2
 } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
 
