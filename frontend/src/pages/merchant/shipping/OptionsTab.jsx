@@ -174,8 +174,7 @@ const OptionRow = ({ option, services, zones, onUpdate, onDelete }) => {
             <div className="flex-1 min-w-0" onClick={(e) => e.stopPropagation()}>
               <InlineInput
                 value={localOption.name}
-                onChange={(v) => updateField('name', v)}
-                onSave={() => saveOption(localOption)}
+                onChange={(v) => handleFieldChange('name', v)}
                 placeholder="Option Name"
                 className="font-semibold text-white text-lg"
               />
