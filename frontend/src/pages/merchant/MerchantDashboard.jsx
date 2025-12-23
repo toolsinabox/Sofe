@@ -123,14 +123,14 @@ const MerchantDashboard = () => {
 
       {/* Alerts */}
       {stats && (stats.low_stock_products > 0 || stats.out_of_stock_products > 0) && (
-        <div className="bg-amber-50 border border-amber-200 rounded-xl p-4">
-          <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-lg bg-amber-100 flex items-center justify-center">
-              <AlertTriangle className="w-5 h-5 text-amber-600" />
+        <div className="bg-amber-50 border border-amber-200 rounded-lg p-3">
+          <div className="flex items-center gap-2">
+            <div className="w-8 h-8 rounded-lg bg-amber-100 flex items-center justify-center">
+              <AlertTriangle className="w-4 h-4 text-amber-600" />
             </div>
             <div>
-              <p className="font-medium text-amber-800">Inventory Alert</p>
-              <p className="text-amber-700 text-sm">
+              <p className="font-medium text-amber-800 text-sm">Inventory Alert</p>
+              <p className="text-amber-700 text-xs">
                 {stats.low_stock_products} products low in stock, {stats.out_of_stock_products} out of stock
               </p>
             </div>
@@ -139,47 +139,47 @@ const MerchantDashboard = () => {
       )}
 
       {/* Recent Orders and Top Products */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
         {/* Recent Orders */}
-        <div className="bg-white rounded-xl border border-gray-200">
-          <div className="p-4 border-b border-gray-100 flex items-center justify-between">
-            <h2 className="font-semibold text-gray-900">Recent Orders</h2>
-            <Link to="/merchant/orders" className="text-blue-600 text-sm hover:text-blue-700 flex items-center gap-1">
-              View all <ArrowRight size={14} />
+        <div className="bg-white rounded-lg border border-gray-200">
+          <div className="px-4 py-3 border-b border-gray-100 flex items-center justify-between">
+            <h2 className="font-semibold text-gray-900 text-sm">Recent Orders</h2>
+            <Link to="/merchant/orders" className="text-blue-600 text-xs hover:text-blue-700 flex items-center gap-1">
+              View all <ArrowRight size={12} />
             </Link>
           </div>
-          <div className="p-4">
+          <div className="p-3">
             {loading ? (
-              <div className="space-y-3">
+              <div className="space-y-2">
                 {[...Array(5)].map((_, i) => (
-                  <div key={i} className="h-14 bg-gray-50 rounded-lg animate-pulse" />
+                  <div key={i} className="h-12 bg-gray-50 rounded-lg animate-pulse" />
                 ))}
               </div>
             ) : orders.length === 0 ? (
-              <div className="text-center py-8 text-gray-400">
-                <ShoppingBag className="w-10 h-10 mx-auto mb-2 opacity-50" />
-                <p>No orders yet</p>
+              <div className="text-center py-6 text-gray-400">
+                <ShoppingBag className="w-8 h-8 mx-auto mb-2 opacity-50" />
+                <p className="text-sm">No orders yet</p>
               </div>
             ) : (
-              <div className="space-y-2">
+              <div className="space-y-1.5">
                 {orders.map((order) => (
                   <Link 
                     key={order.id} 
                     to={`/merchant/orders/${order.id}`}
-                    className="flex items-center justify-between p-3 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors"
+                    className="flex items-center justify-between p-2 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors"
                   >
-                    <div className="flex items-center gap-3">
-                      <div className="w-9 h-9 bg-blue-50 rounded-lg flex items-center justify-center">
-                        <ShoppingBag className="w-4 h-4 text-blue-600" />
+                    <div className="flex items-center gap-2">
+                      <div className="w-8 h-8 bg-blue-50 rounded-lg flex items-center justify-center">
+                        <ShoppingBag className="w-3.5 h-3.5 text-blue-600" />
                       </div>
                       <div>
-                        <p className="font-medium text-gray-900 text-sm">{order.order_number}</p>
+                        <p className="font-medium text-gray-900 text-xs">{order.order_number}</p>
                         <p className="text-gray-500 text-xs">{order.customer_name}</p>
                       </div>
                     </div>
                     <div className="text-right">
-                      <p className="font-semibold text-gray-900 text-sm">{formatCurrency(order.total)}</p>
-                      <span className={`text-xs px-2 py-0.5 rounded-full ${getStatusColor(order.status)}`}>
+                      <p className="font-semibold text-gray-900 text-xs">{formatCurrency(order.total)}</p>
+                      <span className={`text-xs px-1.5 py-0.5 rounded-full ${getStatusColor(order.status)}`}>
                         {order.status.charAt(0).toUpperCase() + order.status.slice(1)}
                       </span>
                     </div>
@@ -191,53 +191,53 @@ const MerchantDashboard = () => {
         </div>
 
         {/* Top Products */}
-        <div className="bg-white rounded-xl border border-gray-200">
-          <div className="p-4 border-b border-gray-100 flex items-center justify-between">
-            <h2 className="font-semibold text-gray-900">Top Products</h2>
-            <Link to="/merchant/products" className="text-blue-600 text-sm hover:text-blue-700 flex items-center gap-1">
-              View all <ArrowRight size={14} />
+        <div className="bg-white rounded-lg border border-gray-200">
+          <div className="px-4 py-3 border-b border-gray-100 flex items-center justify-between">
+            <h2 className="font-semibold text-gray-900 text-sm">Top Products</h2>
+            <Link to="/merchant/products" className="text-blue-600 text-xs hover:text-blue-700 flex items-center gap-1">
+              View all <ArrowRight size={12} />
             </Link>
           </div>
-          <div className="p-4">
+          <div className="p-3">
             {loading ? (
-              <div className="space-y-3">
+              <div className="space-y-2">
                 {[...Array(5)].map((_, i) => (
-                  <div key={i} className="h-14 bg-gray-50 rounded-lg animate-pulse" />
+                  <div key={i} className="h-12 bg-gray-50 rounded-lg animate-pulse" />
                 ))}
               </div>
             ) : products.length === 0 ? (
-              <div className="text-center py-8 text-gray-400">
-                <Package className="w-10 h-10 mx-auto mb-2 opacity-50" />
-                <p>No products yet</p>
+              <div className="text-center py-6 text-gray-400">
+                <Package className="w-8 h-8 mx-auto mb-2 opacity-50" />
+                <p className="text-sm">No products yet</p>
               </div>
             ) : (
-              <div className="space-y-2">
+              <div className="space-y-1.5">
                 {products.map((product) => (
                   <Link 
                     key={product.id} 
                     to={`/merchant/products/${product.id}`}
-                    className="flex items-center justify-between p-3 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors"
+                    className="flex items-center justify-between p-2 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors"
                   >
-                    <div className="flex items-center gap-3">
+                    <div className="flex items-center gap-2">
                       {product.images?.[0] ? (
                         <img 
                           src={product.images[0]} 
                           alt={product.name}
-                          className="w-9 h-9 rounded-lg object-cover"
+                          className="w-8 h-8 rounded-lg object-cover"
                         />
                       ) : (
-                        <div className="w-9 h-9 bg-gray-200 rounded-lg flex items-center justify-center">
-                          <Package className="w-4 h-4 text-gray-400" />
+                        <div className="w-8 h-8 bg-gray-200 rounded-lg flex items-center justify-center">
+                          <Package className="w-3.5 h-3.5 text-gray-400" />
                         </div>
                       )}
                       <div className="min-w-0">
-                        <p className="font-medium text-gray-900 text-sm truncate max-w-[180px]">{product.name}</p>
-                        <p className="text-gray-500 text-xs">{product.sku}</p>
+                        <p className="font-medium text-gray-900 text-xs truncate max-w-[160px]">{product.name}</p>
+                        <p className="text-gray-400 text-xs">{product.sku}</p>
                       </div>
                     </div>
                     <div className="text-right">
-                      <p className="font-semibold text-gray-900 text-sm">{formatCurrency(product.price)}</p>
-                      <p className="text-gray-500 text-xs">{product.stock_quantity} in stock</p>
+                      <p className="font-semibold text-gray-900 text-xs">{formatCurrency(product.price)}</p>
+                      <p className="text-gray-400 text-xs">{product.stock_quantity} in stock</p>
                     </div>
                   </Link>
                 ))}
