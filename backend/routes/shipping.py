@@ -1062,8 +1062,8 @@ async def calculate_shipping(request: ShippingCalculationRequest):
         if not rate:
             continue
         
-        # Count number of parcels (each item is a separate parcel)
-        num_parcels = len(request.items)
+        # Count number of parcels (each unit is a separate parcel, based on total quantity)
+        num_parcels = sum(item.get("quantity", 1) for item in request.items)
         
         # Get rate values
         per_parcel_rate = rate.get("per_parcel_rate", rate.get("first_parcel", rate.get("base_rate", 0)))
