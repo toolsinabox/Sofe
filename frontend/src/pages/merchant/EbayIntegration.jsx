@@ -1001,6 +1001,17 @@ const EbayIntegration = () => {
   <!-- Main Content -->
   <div style="padding: 50px 40px; background: #fafafa;">
     
+    <!-- Luxury Image Gallery -->
+    <div style="margin-bottom: 50px; text-align: center;">
+      <img src="{{product_image_1}}" alt="{{product_name}}" style="max-width: 100%; width: 500px; border: 8px solid #fff; box-shadow: 0 10px 40px rgba(0,0,0,0.1);" />
+      <div style="display: flex; justify-content: center; gap: 15px; margin-top: 20px; flex-wrap: wrap;">
+        <img src="{{product_image_2}}" alt="{{product_name}}" style="width: 100px; height: 100px; object-fit: cover; border: 3px solid #fff; box-shadow: 0 3px 10px rgba(0,0,0,0.1); cursor: pointer;" />
+        <img src="{{product_image_3}}" alt="{{product_name}}" style="width: 100px; height: 100px; object-fit: cover; border: 3px solid #fff; box-shadow: 0 3px 10px rgba(0,0,0,0.1); cursor: pointer;" />
+        <img src="{{product_image_4}}" alt="{{product_name}}" style="width: 100px; height: 100px; object-fit: cover; border: 3px solid #fff; box-shadow: 0 3px 10px rgba(0,0,0,0.1); cursor: pointer;" />
+        <img src="{{product_image_5}}" alt="{{product_name}}" style="width: 100px; height: 100px; object-fit: cover; border: 3px solid #fff; box-shadow: 0 3px 10px rgba(0,0,0,0.1); cursor: pointer;" />
+      </div>
+    </div>
+
     <!-- Product Title -->
     <div style="text-align: center; margin-bottom: 40px;">
       <div style="font-size: 12px; color: {{accent_color}}; letter-spacing: 2px; text-transform: uppercase; margin-bottom: 10px;">
