@@ -1587,3 +1587,63 @@ File: `/app/frontend/src/pages/merchant/EbayIntegration.jsx`
 - Build passes successfully
 
 ### Status: COMPLETE ✓
+
+---
+
+## Enhancement - eBay Integration Setup Wizard (Maropost-Style) - 2025-01-XX
+
+### Summary
+Completely redesigned the eBay integration with a comprehensive 7-step setup wizard, just like Maropost's eBay connection flow.
+
+### Setup Wizard Steps
+1. **Welcome** - Overview of features, estimated setup time (5-10 min)
+2. **Prerequisites** - Checklist with links:
+   - eBay Seller Account (Create seller account link)
+   - eBay Developer Account (developer.ebay.com link)
+   - Business Policies setup (eBay help link)
+   - Sandbox mode recommendation
+3. **Create eBay App** - Step-by-step instructions:
+   - Button: "Open eBay Developer Portal" → developer.ebay.com/my/keys
+   - Instructions for creating app (Production vs Sandbox)
+   - Visual example of Client ID and Client Secret format
+4. **Connect Account** - Enter credentials:
+   - Client ID (App ID) with placeholder example
+   - Client Secret (Cert ID) password field
+   - RuName (Optional) for OAuth
+   - Sandbox Mode toggle with warning
+5. **Business Policies** - Configure eBay policies:
+   - Fulfillment Policy ID (with link to eBay shipping settings)
+   - Payment Policy ID (with link to eBay payment settings)
+   - Return Policy ID (with link to eBay return settings)
+6. **Sync Settings** - Configure automation:
+   - Auto-sync Inventory toggle
+   - Sync Interval dropdown (5/15/30/60 min)
+   - Import Orders toggle
+   - Push Tracking toggle
+   - Auto-relist When In Stock toggle
+7. **Complete** - Success screen with next steps
+
+### Direct Links Included
+- developer.ebay.com (Developer Portal)
+- developer.ebay.com/my/keys (Create App)
+- developer.ebay.com/tools/sandbox (Sandbox)
+- ebay.com.au/sh/ovw (Seller Hub)
+- ebay.com.au/ship/prf/list (Fulfillment Policies)
+- ebay.com.au/sh/settings/payment (Payment Policies)
+- ebay.com.au/sh/settings/returns (Return Policies)
+
+### New Help Tab
+- Quick Start Guide (4 steps)
+- Useful Links section (Developer Portal, Seller Hub, Business Policies, API Docs)
+- Troubleshooting tips
+
+### Files Modified
+- `/app/frontend/src/pages/merchant/EbayIntegration.jsx` - Complete rewrite with wizard
+
+### Screenshots Verified
+- Step 1: Welcome screen ✓
+- Step 2: Prerequisites with links ✓
+- Step 3: Create eBay App instructions ✓
+- Step 4: Connect account form ✓
+
+### Status: COMPLETE ✓
