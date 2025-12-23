@@ -765,6 +765,7 @@ async def create_service_with_zones(
                     "zone_code": zone["code"],
                     "zone_name": zone["name"],
                     "base_rate": 0,
+                    "min_charge": 0,  # Will be set to base_rate when user enters a value
                     "first_parcel": 0,
                     "per_subsequent": 0,
                     "per_kg_rate": 0,
