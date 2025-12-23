@@ -1421,6 +1421,124 @@ const EbayIntegration = () => {
     preview: template.preview
   }));
 
+  // Theme save state
+  const [savingTheme, setSavingTheme] = useState(false);
+  const [themeSaveMessage, setThemeSaveMessage] = useState(null);
+
+  // Process HTML template with actual product data for preview
+  const processTemplateForPreview = (html) => {
+    if (!html) return '';
+    
+    // Store info
+    const storeName = 'Your Store';
+    const storeLogo = '/placeholder-logo.png';
+    const storeEmail = 'contact@yourstore.com';
+    
+    // Product info from selected preview product
+    const product = previewProduct;
+    
+    let processedHtml = html
+      // Store variables
+      .replace(/\{\{store_name\}\}/g, storeName)
+      .replace(/\{\{store_logo\}\}/g, storeLogo)
+      .replace(/\{\{store_email\}\}/g, storeEmail)
+      // Product variables
+      .replace(/\{\{product_name\}\}/g, product.name || 'Sample Product')
+      .replace(/\{\{product_price\}\}/g, `$${(product.price || 0).toFixed(2)}`)
+      .replace(/\{\{product_sku\}\}/g, product.sku || 'N/A')
+      .replace(/\{\{product_description\}\}/g, product.description || 'No description available.')
+      .replace(/\{\{product_brand\}\}/g, product.brand || 'Unbranded')
+      .replace(/\{\{product_stock\}\}/g, String(product.stock || 0))
+      .replace(/\{\{product_condition\}\}/g, product.condition || 'New')
+      .replace(/\{\{product_weight\}\}/g, product.weight || 'N/A')
+      .replace(/\{\{product_dimensions\}\}/g, product.dimensions || 'N/A')
+      .replace(/\{\{product_upc\}\}/g, product.upc || 'N/A')
+      .replace(/\{\{product_mpn\}\}/g, product.mpn || 'N/A')
+      // Color variables
+      .replace(/\{\{primary_color\}\}/g, themeSettings.primaryColor)
+      .replace(/\{\{accent_color\}\}/g, themeSettings.accentColor)
+      .replace(/\{\{secondary_color\}\}/g, themeSettings.secondaryColor)
+      // Shipping & Policy placeholders
+      .replace(/\{\{shipping_cost\}\}/g, 'Free Shipping')
+      .replace(/\{\{return_policy\}\}/g, '30-day money back guarantee. Buyer pays return shipping.');
+    
+    return processedHtml;
+  };
+
+  // Get the HTML for the live preview iframe
+  const getPreviewHtml = () => {
+    const templateHtml = themeSettings.descriptionTemplate || getFullTemplateHTML(themeSettings.template || 'modern');
+    const processedHtml = processTemplateForPreview(templateHtml);
+    
+    // Wrap in a complete HTML document for the iframe
+    return `
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { 
+      font-family: Arial, sans-serif; 
+      padding: 10px; 
+      background: #fff;
+      color: #333;
+      line-height: 1.5;
+    }
+    img { max-width: 100%; height: auto; }
+    table { border-collapse: collapse; }
+    ${themeSettings.customCSS || ''}
+  </style>
+</head>
+<body>
+  ${processedHtml}
+</body>
+</html>`;
+  };
+
+  // Save theme to backend
+  const handleSaveTheme = async () => {
+    setSavingTheme(true);
+    setThemeSaveMessage(null);
+    
+    try {
+      const themeData = {
+        template_id: themeSettings.template || 'custom',
+        template_html: themeSettings.descriptionTemplate || getFullTemplateHTML(themeSettings.template || 'modern'),
+        settings: {
+          primaryColor: themeSettings.primaryColor,
+          accentColor: themeSettings.accentColor,
+          secondaryColor: themeSettings.secondaryColor,
+          fontFamily: themeSettings.fontFamily,
+          customCSS: themeSettings.customCSS,
+          showBrandLogo: themeSettings.showBrandLogo,
+          showTrustBadges: themeSettings.showTrustBadges,
+          showShippingInfo: themeSettings.showShippingInfo,
+          showReturnPolicy: themeSettings.showReturnPolicy,
+          showStockLevel: themeSettings.showStockLevel,
+          showProductSpecs: themeSettings.showProductSpecs,
+          showPaymentIcons: themeSettings.showPaymentIcons,
+          showSocialLinks: themeSettings.showSocialLinks
+        }
+      };
+      
+      await axios.put(`${BACKEND_URL}/api/ebay/theme`, themeData);
+      setThemeSaveMessage({ type: 'success', text: 'Theme saved successfully!' });
+      
+      // Clear message after 3 seconds
+      setTimeout(() => setThemeSaveMessage(null), 3000);
+    } catch (error) {
+      console.error('Failed to save theme:', error);
+      setThemeSaveMessage({ 
+        type: 'error', 
+        text: error.response?.data?.detail || 'Failed to save theme. Please try again.' 
+      });
+    } finally {
+      setSavingTheme(false);
+    }
+  };
+
   // Sample eBay categories for demo
   const sampleEbayCategories = [
     { id: '11450', name: 'Clothing, Shoes & Accessories' },
