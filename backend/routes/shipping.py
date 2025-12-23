@@ -1959,29 +1959,35 @@ async def get_suburbs_by_postcode(postcode: str = Query(..., description="Postco
     """
     Get all suburbs for a given postcode.
     Returns a list of suburbs with their state.
+    Uses comprehensive Australian postcode database (18,500+ suburbs).
     """
     postcode = postcode.strip()
     
-    # First check the static data
+    # First check the database (comprehensive data - 18,500+ suburbs)
+    db_suburbs = await db.postcode_suburbs.find(
+        {"postcode": postcode},
+        {"_id": 0, "suburb": 1, "state": 1}
+    ).to_list(100)
+    
+    if db_suburbs:
+        # Format suburb names to title case for better display
+        formatted_suburbs = [
+            {"suburb": s["suburb"].title(), "state": s["state"]}
+            for s in db_suburbs
+        ]
+        return {
+            "postcode": postcode,
+            "suburbs": formatted_suburbs,
+            "count": len(formatted_suburbs)
+        }
+    
+    # Fallback to static data if database is empty
     if postcode in AUSTRALIAN_SUBURBS:
         suburbs = AUSTRALIAN_SUBURBS[postcode]
         return {
             "postcode": postcode,
             "suburbs": suburbs,
             "count": len(suburbs)
-        }
-    
-    # Check the database for custom suburb data
-    db_suburbs = await db.postcode_suburbs.find(
-        {"postcode": postcode},
-        {"_id": 0}
-    ).to_list(100)
-    
-    if db_suburbs:
-        return {
-            "postcode": postcode,
-            "suburbs": db_suburbs,
-            "count": len(db_suburbs)
         }
     
     # No suburbs found for this postcode
