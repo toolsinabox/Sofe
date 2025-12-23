@@ -405,16 +405,17 @@ const EbayIntegration = () => {
   }, [fetchStatus]);
 
   useEffect(() => {
-    // Fetch products when theme tab is active (for preview selector)
+    // Fetch products and store settings when theme tab is active (for preview selector and logo)
     if (activeTab === 'theme') {
       fetchProducts();
+      fetchStoreSettings();
     }
     if (status?.connected) {
       fetchSettings();
       if (activeTab === 'listings') fetchListings();
       if (activeTab === 'orders') fetchOrders();
     }
-  }, [status?.connected, activeTab, fetchSettings, fetchListings, fetchOrders, fetchProducts]);
+  }, [status?.connected, activeTab, fetchSettings, fetchListings, fetchOrders, fetchProducts, fetchStoreSettings]);
 
   // Connection error state
   const [connectionError, setConnectionError] = useState(null);
