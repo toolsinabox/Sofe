@@ -1763,3 +1763,54 @@ File: `/app/backend/routes/ebay.py`
 - Save Theme shows "Theme saved successfully!" ✓
 
 ### Status: COMPLETE ✓
+
+---
+
+## Multi-Category Filter Fix & eBay Theme Images - 2025-12-23
+
+### Issues Fixed
+
+#### 1. Multi-Category Filter Fix
+**Problem:** Products assigned to multiple categories via `category_ids` array were not showing up when filtering by those categories. The filter only checked the single `category_id` field.
+
+**Solution:** Updated backend query in `/app/backend/server.py` to use MongoDB `$or` operator:
+```python
+if category_id:
+    query["$or"] = [
+        {"category_id": category_id},
+        {"category_ids": category_id}
+    ]
+```
+
+**Verified via curl:**
+- Filtering by "Black Series" category returns products that have it in `category_ids` array
+
+#### 2. eBay Theme Product Images
+**Problem:** eBay templates didn't include product image tags.
+
+**Solution:** 
+- Added image template tags in `processTemplateForPreview()`:
+  - `{{product_image}}` - Main image
+  - `{{product_image_1}}` through `{{product_image_6}}` - Numbered images
+  - `{{product_image_count}}` - Total image count
+
+- Added image gallery sections to all 5 templates:
+  - **Modern Clean**: Main image with thumbnail grid
+  - **Professional Business**: 2-column layout with 4 thumbnails
+  - **Luxury Boutique**: Centered gallery with shadow effects
+  - **Tech Store**: Dark theme gallery with grid layout
+  - **Minimalist**: Clean centered images
+
+- Updated tag inserter to include: Image, Img 1, Img 2, Img 3, Img 4
+
+### Files Modified
+- `/app/backend/server.py` - Category filter query fix
+- `/app/frontend/src/pages/merchant/EbayIntegration.jsx` - Image tags and templates
+
+### Testing Results
+- ✅ Backend category filter works with `category_ids` array
+- ✅ Image template tags render placeholder images in preview
+- ✅ All 5 templates include image galleries
+- ✅ Tag inserter shows image options
+
+### Status: COMPLETE ✓
