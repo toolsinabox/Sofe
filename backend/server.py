@@ -30,6 +30,7 @@ from utils.pdf import PDFGenerator
 from routes.auth import router as auth_router
 from routes.shipping import router as shipping_router
 from routes import addons as addons_module
+from routes import ebay as ebay_module
 
 ROOT_DIR = Path(__file__).parent
 load_dotenv(ROOT_DIR / '.env')
