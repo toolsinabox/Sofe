@@ -452,6 +452,7 @@ const ProductEditor = ({ product, categories, onSave, onClose, templateTags }) =
     { id: 'pricing', label: 'Pricing', icon: DollarSign },
     { id: 'identification', label: 'SKU & Codes', icon: Barcode },
     { id: 'categorization', label: 'Categories', icon: Tag },
+    { id: 'specifics', label: 'Specifics', icon: Layers },
     { id: 'images', label: 'Images', icon: ImageIcon },
     { id: 'inventory', label: 'Inventory', icon: Box },
     { id: 'shipping', label: 'Shipping', icon: Truck },
