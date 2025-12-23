@@ -120,7 +120,8 @@ class ProductBase(BaseModel):
     mpn: Optional[str] = None  # [@product_mpn@] Manufacturer Part Number
     
     # === CATEGORIZATION ===
-    category_id: Optional[str] = None  # [@product_category@]
+    category_id: Optional[str] = None  # [@product_category@] - Primary category (backward compatibility)
+    category_ids: List[str] = []  # Multiple categories support
     brand: Optional[str] = None  # [@product_brand@]
     manufacturer: Optional[str] = None  # [@product_manufacturer@]
     tags: List[str] = []  # [@product_tags@]
