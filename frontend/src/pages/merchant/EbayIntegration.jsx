@@ -1551,10 +1551,10 @@ const EbayIntegration = () => {
     const storeName = storeSettings?.store_name || 'Your Store';
     const storeEmail = storeSettings?.store_email || 'contact@yourstore.com';
     
-    // Use actual store logo if available, otherwise use a placeholder SVG
-    let storeLogo = storeSettings?.store_logo || '';
+    // Use base64 logo for preview (to avoid CORS issues in iframe), or fallback to placeholder
+    let storeLogo = storeLogoBase64 || '';
     if (!storeLogo || storeLogo.trim() === '') {
-      // Fallback to SVG placeholder only if no logo is uploaded
+      // Fallback to SVG placeholder only if no logo is uploaded or conversion failed
       storeLogo = 'data:image/svg+xml,' + encodeURIComponent(`
         <svg xmlns="http://www.w3.org/2000/svg" width="180" height="50" viewBox="0 0 180 50">
           <rect width="180" height="50" fill="#ffffff" rx="6"/>
