@@ -204,7 +204,7 @@ const MerchantMegaMenu = () => {
                   />
                   <button
                     onClick={() => openModal(menu)}
-                    className="p-2 rounded hover:bg-gray-100 text-gray-500 hover:text-gray-900"
+                    className="p-2 rounded hover:bg-gray-100 text-gray-500 hover:text-gray-700"
                   >
                     <Edit size={16} />
                   </button>
@@ -253,7 +253,7 @@ const MerchantMegaMenu = () => {
               <h2 className="text-xl font-bold text-gray-900">
                 {editingMenu ? 'Edit Mega Menu' : 'Create Mega Menu'}
               </h2>
-              <button onClick={() => setShowModal(false)} className="text-gray-500 hover:text-gray-900">
+              <button onClick={() => setShowModal(false)} className="text-gray-500 hover:text-gray-700">
                 <X size={20} />
               </button>
             </div>

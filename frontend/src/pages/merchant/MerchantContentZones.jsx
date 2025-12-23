@@ -104,7 +104,7 @@ const CopyableTag = ({ tag, desc }) => {
       onClick={copyTag}
       className="flex items-start gap-2 p-1.5 rounded hover:bg-gray-100 cursor-pointer group"
     >
-      <code className="text-xs text-cyan-400 bg-gray-50 px-1.5 py-0.5 rounded flex-shrink-0 max-w-[160px] truncate">
+      <code className="text-xs text-blue-600 bg-gray-50 px-1.5 py-0.5 rounded flex-shrink-0 max-w-[160px] truncate">
         {tag}
       </code>
       <span className="text-xs text-gray-500 flex-1">{desc}</span>
@@ -123,10 +123,10 @@ const TemplateTagsPanel = ({ isOpen, onClose }) => {
     <div className="absolute right-0 top-0 w-72 h-full bg-gray-50 border-l border-gray-200 overflow-y-auto z-10">
       <div className="sticky top-0 bg-gray-50 p-3 border-b border-gray-200 flex items-center justify-between">
         <h4 className="text-sm font-medium text-gray-900 flex items-center gap-2">
-          <Tag size={14} className="text-cyan-400" />
+          <Tag size={14} className="text-blue-600" />
           Template Tags
         </h4>
-        <button onClick={onClose} className="text-gray-500 hover:text-gray-900">
+        <button onClick={onClose} className="text-gray-500 hover:text-gray-700">
           <X size={16} />
         </button>
       </div>
@@ -191,21 +191,21 @@ const BlockEditor = ({ block, onUpdate, onDelete, onMoveUp, onMoveDown, isFirst,
           <button
             onClick={onMoveUp}
             disabled={isFirst}
-            className="p-0.5 text-gray-500 hover:text-gray-900 disabled:opacity-30"
+            className="p-0.5 text-gray-500 hover:text-gray-700 disabled:opacity-30"
           >
             <ChevronUp size={14} />
           </button>
           <button
             onClick={onMoveDown}
             disabled={isLast}
-            className="p-0.5 text-gray-500 hover:text-gray-900 disabled:opacity-30"
+            className="p-0.5 text-gray-500 hover:text-gray-700 disabled:opacity-30"
           >
             <ChevronDown size={14} />
           </button>
         </div>
         
         <div className="p-2 bg-gray-700 rounded">
-          <Icon size={16} className="text-cyan-400" />
+          <Icon size={16} className="text-blue-600" />
         </div>
         
         <div className="flex-1">
@@ -230,7 +230,7 @@ const BlockEditor = ({ block, onUpdate, onDelete, onMoveUp, onMoveDown, isFirst,
           
           <button
             onClick={() => setIsExpanded(!isExpanded)}
-            className="p-2 text-gray-500 hover:text-gray-900"
+            className="p-2 text-gray-500 hover:text-gray-700"
           >
             {isExpanded ? <ChevronUp size={16} /> : <ChevronDown size={16} />}
           </button>
@@ -256,8 +256,8 @@ const BlockEditor = ({ block, onUpdate, onDelete, onMoveUp, onMoveDown, isFirst,
                   onClick={() => setShowTagsPanel(!showTagsPanel)}
                   className={`flex items-center gap-1.5 px-2 py-1 text-xs rounded transition-colors ${
                     showTagsPanel 
-                      ? 'bg-cyan-600/20 text-cyan-400 border border-cyan-600/40' 
-                      : 'bg-gray-700 text-gray-500 hover:text-gray-900 hover:bg-gray-100'
+                      ? 'bg-blue-600/20 text-blue-600 border border-cyan-600/40' 
+                      : 'bg-gray-700 text-gray-500 hover:text-gray-700 hover:bg-gray-100'
                   }`}
                 >
                   <Tag size={12} />
@@ -577,14 +577,14 @@ const ZoneEditor = ({ zone, onSave, onClose }) => {
             {formData.name && (
               <button
                 onClick={copyTemplateTag}
-                className="flex items-center gap-1 mt-1 text-xs text-cyan-400 hover:text-cyan-300"
+                className="flex items-center gap-1 mt-1 text-xs text-blue-600 hover:text-cyan-300"
               >
                 <Copy size={12} />
                 <code>[%content_zone name:'{formData.name}'%]</code>
               </button>
             )}
           </div>
-          <button onClick={onClose} className="text-gray-500 hover:text-gray-900">
+          <button onClick={onClose} className="text-gray-500 hover:text-gray-700">
             <X size={20} />
           </button>
         </div>
@@ -731,7 +731,7 @@ const ZoneEditor = ({ zone, onSave, onClose }) => {
             <Button variant="outline" onClick={onClose} className="border-gray-200 text-gray-700">
               Cancel
             </Button>
-            <Button onClick={handleSave} disabled={saving} className="bg-cyan-600 hover:bg-cyan-700">
+            <Button onClick={handleSave} disabled={saving} className="bg-blue-600 hover:bg-blue-700">
               <Save size={16} className="mr-2" />
               {saving ? 'Saving...' : 'Save Zone'}
             </Button>
@@ -810,7 +810,7 @@ const MerchantContentZones = () => {
   if (loading) {
     return (
       <div className="flex items-center justify-center h-64">
-        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-cyan-500"></div>
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-500"></div>
       </div>
     );
   }
@@ -822,7 +822,7 @@ const MerchantContentZones = () => {
           <h1 className="text-2xl font-bold text-gray-900">Content Zones</h1>
           <p className="text-gray-500">Manage customizable content areas for your pages</p>
         </div>
-        <Button onClick={() => { setEditingZone(null); setShowEditor(true); }} className="bg-cyan-600 hover:bg-cyan-700">
+        <Button onClick={() => { setEditingZone(null); setShowEditor(true); }} className="bg-blue-600 hover:bg-blue-700">
           <Plus size={18} className="mr-2" />
           Create Zone
         </Button>
@@ -853,7 +853,7 @@ const MerchantContentZones = () => {
             <Layout className="w-12 h-12 mx-auto text-gray-500 mb-4" />
             <h3 className="text-lg font-medium text-gray-900 mb-2">No Content Zones</h3>
             <p className="text-gray-500 mb-4">Create your first content zone to add customizable content areas</p>
-            <Button onClick={() => { setEditingZone(null); setShowEditor(true); }} className="bg-cyan-600 hover:bg-cyan-700">
+            <Button onClick={() => { setEditingZone(null); setShowEditor(true); }} className="bg-blue-600 hover:bg-blue-700">
               <Plus size={18} className="mr-2" />
               Create Zone
             </Button>
@@ -879,7 +879,7 @@ const MerchantContentZones = () => {
                   <div className="flex items-center gap-2 mb-2">
                     <button
                       onClick={() => copyTag(zone.name)}
-                      className="flex items-center gap-1 px-2 py-1 bg-gray-700 rounded text-xs text-cyan-400 hover:bg-gray-100"
+                      className="flex items-center gap-1 px-2 py-1 bg-gray-700 rounded text-xs text-blue-600 hover:bg-gray-100"
                     >
                       <Copy size={12} />
                       <code>[%content_zone name:'{zone.name}'%]</code>

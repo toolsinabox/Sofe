@@ -376,7 +376,7 @@ const MerchantQuotes = () => {
               className={`px-4 py-2.5 rounded-lg text-sm font-medium whitespace-nowrap transition-all flex items-center gap-2 ${
                 statusFilter === status
                   ? 'bg-amber-500/20 text-amber-400 border border-amber-500/30'
-                  : 'bg-white/50 text-gray-500 border border-gray-200 hover:text-gray-900 hover:border-gray-200'
+                  : 'bg-white/50 text-gray-500 border border-gray-200 hover:text-gray-700 hover:border-gray-200'
               }`}
             >
               {config && <config.icon size={14} />}
@@ -524,13 +524,13 @@ const MerchantQuotes = () => {
                           <td className="py-4 px-6 text-right" onClick={(e) => e.stopPropagation()}>
                             <DropdownMenu>
                               <DropdownMenuTrigger asChild>
-                                <button className="p-2 rounded hover:bg-white text-gray-500 hover:text-gray-900 transition-colors">
+                                <button className="p-2 rounded hover:bg-white text-gray-500 hover:text-gray-700 transition-colors">
                                   <MoreVertical size={18} />
                                 </button>
                               </DropdownMenuTrigger>
                               <DropdownMenuContent align="end" className="bg-white border-gray-200 w-56">
                                 <DropdownMenuItem 
-                                  className="text-gray-700 hover:text-gray-900 hover:bg-gray-100/50 cursor-pointer"
+                                  className="text-gray-700 hover:text-gray-700 hover:bg-gray-100/50 cursor-pointer"
                                   onClick={() => navigate(`/merchant/quotes/${quote.id}`)}
                                 >
                                   <Eye size={14} className="mr-2" /> View Details
@@ -538,7 +538,7 @@ const MerchantQuotes = () => {
                                 <DropdownMenuSeparator className="bg-gray-700" />
                                 {quote.status === 'pending' && (
                                   <DropdownMenuItem 
-                                    className="text-gray-700 hover:text-gray-900 hover:bg-gray-100/50 cursor-pointer"
+                                    className="text-gray-700 hover:text-gray-700 hover:bg-gray-100/50 cursor-pointer"
                                     onClick={() => {
                                       setSelectedQuote(quote);
                                       setEmailSubject(`Quote ${quote.quote_number} from Tools in a Box`);
@@ -557,19 +557,19 @@ const MerchantQuotes = () => {
                                   </DropdownMenuItem>
                                 )}
                                 <DropdownMenuItem 
-                                  className="text-gray-700 hover:text-gray-900 hover:bg-gray-100/50 cursor-pointer"
+                                  className="text-gray-700 hover:text-gray-700 hover:bg-gray-100/50 cursor-pointer"
                                   onClick={() => { setSelectedQuote(quote); setNewStatus(quote.status); setShowStatusModal(true); }}
                                 >
                                   <RefreshCw size={14} className="mr-2" /> Update Status
                                 </DropdownMenuItem>
                                 <DropdownMenuItem 
-                                  className="text-gray-700 hover:text-gray-900 hover:bg-gray-100/50 cursor-pointer"
+                                  className="text-gray-700 hover:text-gray-700 hover:bg-gray-100/50 cursor-pointer"
                                   onClick={() => { setSelectedQuote(quote); setMerchantNote(quote.merchant_notes || ''); setShowNoteModal(true); }}
                                 >
                                   <FileText size={14} className="mr-2" /> Add Note
                                 </DropdownMenuItem>
                                 <DropdownMenuItem 
-                                  className="text-gray-700 hover:text-gray-900 hover:bg-gray-100/50 cursor-pointer"
+                                  className="text-gray-700 hover:text-gray-700 hover:bg-gray-100/50 cursor-pointer"
                                   onClick={() => duplicateQuote(quote)}
                                 >
                                   <Copy size={14} className="mr-2" /> Duplicate

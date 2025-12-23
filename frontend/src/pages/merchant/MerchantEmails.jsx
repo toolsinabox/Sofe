@@ -583,7 +583,7 @@ const MerchantEmails = () => {
                     <Button 
                       variant="ghost" 
                       size="sm" 
-                      className="text-gray-500 hover:text-gray-900"
+                      className="text-gray-500 hover:text-gray-700"
                       onClick={(e) => { 
                         e.stopPropagation(); 
                         setSelectedTemplate(template); 

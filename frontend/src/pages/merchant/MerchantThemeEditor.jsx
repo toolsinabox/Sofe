@@ -93,7 +93,7 @@ const TreeNode = ({ name, node, path, selectedFile, onSelect, onDelete, expanded
       <div
         className={`flex items-center gap-2 py-1 px-2 rounded cursor-pointer group hover:bg-white ${
           selectedFile?.path === node._file.path && selectedFile?.theme === node._file.theme 
-            ? 'bg-cyan-600/20 text-cyan-400' : 'text-gray-500'
+            ? 'bg-blue-600/20 text-blue-600' : 'text-gray-500'
         }`}
         style={{ paddingLeft: `${depth * 12 + 8}px` }}
         onClick={() => onSelect(node._file)}
@@ -475,7 +475,7 @@ const MerchantThemeEditor = () => {
   if (loading) {
     return (
       <div className="flex items-center justify-center h-screen bg-gray-50">
-        <RefreshCw className="w-8 h-8 animate-spin text-cyan-500" />
+        <RefreshCw className="w-8 h-8 animate-spin text-blue-600" />
       </div>
     );
   }
@@ -486,13 +486,13 @@ const MerchantThemeEditor = () => {
       <div className="flex items-center justify-between p-3 border-b border-gray-200 bg-white">
         <div className="flex items-center gap-4">
           <h1 className="text-lg font-bold text-gray-900 flex items-center gap-2">
-            <Palette className="w-5 h-5 text-cyan-500" />
+            <Palette className="w-5 h-5 text-blue-600" />
             Theme Editor
           </h1>
           {selectedFile && (
             <div className="flex items-center gap-2">
               <span className="text-gray-500">/</span>
-              <span className="text-cyan-400 text-sm">{selectedTheme}/{selectedFile.path}</span>
+              <span className="text-blue-600 text-sm">{selectedTheme}/{selectedFile.path}</span>
               {hasUnsavedChanges && (
                 <span className="text-xs bg-yellow-50 text-yellow-600 px-2 py-0.5 rounded">Unsaved</span>
               )}
@@ -504,14 +504,14 @@ const MerchantThemeEditor = () => {
             variant="outline"
             size="sm"
             onClick={() => setShowTagsPanel(!showTagsPanel)}
-            className={`border-gray-200 ${showTagsPanel ? 'bg-cyan-600 text-gray-900' : 'text-gray-700'}`}
+            className={`border-gray-200 ${showTagsPanel ? 'bg-blue-600 text-gray-900' : 'text-gray-700'}`}
           >
             <Book className="w-4 h-4 mr-1" /> Tags
           </Button>
           <Button
             onClick={handleSave}
             disabled={!selectedFile || saving || !hasUnsavedChanges}
-            className="bg-cyan-600 hover:bg-cyan-700 disabled:opacity-50"
+            className="bg-blue-600 hover:bg-blue-700 disabled:opacity-50"
           >
             <Save className="w-4 h-4 mr-1" />
             {saving ? 'Saving...' : 'Save'}
@@ -537,7 +537,7 @@ const MerchantThemeEditor = () => {
                 onClick={() => setShowNewThemeModal(true)}
                 size="sm"
                 variant="ghost"
-                className="h-6 px-2 text-cyan-400 hover:text-cyan-300 hover:bg-white"
+                className="h-6 px-2 text-blue-600 hover:text-cyan-300 hover:bg-white"
               >
                 <Plus className="w-3 h-3 mr-1" /> New
               </Button>
@@ -562,7 +562,7 @@ const MerchantThemeEditor = () => {
                 <div className="flex items-center group">
                   <div
                     className={`flex-1 flex items-center gap-1 py-1.5 px-2 cursor-pointer hover:bg-white ${
-                      selectedTheme === theme.name ? 'text-cyan-400' : 'text-gray-700'
+                      selectedTheme === theme.name ? 'text-blue-600' : 'text-gray-700'
                     }`}
                     onClick={() => toggleThemeExpand(theme.name)}
                   >
@@ -722,7 +722,7 @@ const MerchantThemeEditor = () => {
             <div className="p-2 border-b border-gray-200">
               <div className="flex items-center justify-between mb-2">
                 <h3 className="text-sm font-semibold text-gray-900">Maropost Tags</h3>
-                <button onClick={() => setShowTagsPanel(false)} className="text-gray-500 hover:text-gray-900">
+                <button onClick={() => setShowTagsPanel(false)} className="text-gray-500 hover:text-gray-700">
                   <X className="w-4 h-4" />
                 </button>
               </div>
@@ -739,7 +739,7 @@ const MerchantThemeEditor = () => {
             
             <div className="flex-1 overflow-y-auto p-2 space-y-3">
               <div>
-                <h4 className="text-xs font-semibold text-cyan-400 uppercase mb-1">Data Tags [@tag@]</h4>
+                <h4 className="text-xs font-semibold text-blue-600 uppercase mb-1">Data Tags [@tag@]</h4>
                 {Object.entries(filteredTags()?.data_tags || {}).map(([category, tags]) => (
                   <div key={category} className="mb-2">
                     <h5 className="text-xs text-gray-500 capitalize mb-1">{category}</h5>
@@ -812,7 +812,7 @@ const MerchantThemeEditor = () => {
               <Button variant="ghost" onClick={() => setShowNewThemeModal(false)} className="flex-1 text-gray-500">
                 Cancel
               </Button>
-              <Button onClick={handleCreateTheme} className="flex-1 bg-cyan-600 hover:bg-cyan-700">
+              <Button onClick={handleCreateTheme} className="flex-1 bg-blue-600 hover:bg-blue-700">
                 Create
               </Button>
             </div>
@@ -851,7 +851,7 @@ const MerchantThemeEditor = () => {
               <Button type="button" variant="ghost" onClick={() => setShowNewFileModal(false)} className="flex-1 text-gray-500">
                 Cancel
               </Button>
-              <Button type="submit" className="flex-1 bg-cyan-600 hover:bg-cyan-700">
+              <Button type="submit" className="flex-1 bg-blue-600 hover:bg-blue-700">
                 Create
               </Button>
             </div>

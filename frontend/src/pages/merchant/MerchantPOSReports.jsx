@@ -342,7 +342,7 @@ const MerchantPOSReports = () => {
                 variant="ghost"
                 size="sm"
                 onClick={() => handleDateChange(-1)}
-                className="text-gray-500 hover:text-gray-900"
+                className="text-gray-500 hover:text-gray-700"
               >
                 <ChevronLeft className="w-4 h-4" />
               </Button>
@@ -359,7 +359,7 @@ const MerchantPOSReports = () => {
                 variant="ghost"
                 size="sm"
                 onClick={() => handleDateChange(1)}
-                className="text-gray-500 hover:text-gray-900"
+                className="text-gray-500 hover:text-gray-700"
                 disabled={selectedDate >= new Date().toISOString().split('T')[0]}
               >
                 <ChevronRight className="w-4 h-4" />

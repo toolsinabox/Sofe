@@ -51,7 +51,7 @@ const EditorToolbar = ({ onFormat }) => {
             key={i}
             type="button"
             onClick={() => onFormat(tool.tag)}
-            className="p-1.5 rounded hover:bg-gray-100 text-gray-500 hover:text-gray-900"
+            className="p-1.5 rounded hover:bg-gray-100 text-gray-500 hover:text-gray-700"
             title={tool.title}
           >
             <tool.icon size={16} />
@@ -352,7 +352,7 @@ const MerchantPages = () => {
                   </div>
                 </td>
                 <td className="p-4">
-                  <code className="text-cyan-400 bg-gray-50 px-2 py-1 rounded text-sm">
+                  <code className="text-blue-600 bg-gray-50 px-2 py-1 rounded text-sm">
                     /{page.slug}
                   </code>
                 </td>
@@ -396,7 +396,7 @@ const MerchantPages = () => {
                   <div className="flex items-center justify-end gap-2">
                     <button
                       onClick={() => openModal(page)}
-                      className="p-2 rounded hover:bg-gray-100 text-gray-500 hover:text-gray-900"
+                      className="p-2 rounded hover:bg-gray-100 text-gray-500 hover:text-gray-700"
                       title="Edit"
                     >
                       <Edit size={16} />
@@ -433,7 +433,7 @@ const MerchantPages = () => {
               <h2 className="text-xl font-bold text-gray-900">
                 {editingPage ? `Edit: ${editingPage.name}` : 'Create New Page'}
               </h2>
-              <button onClick={() => setShowModal(false)} className="text-gray-500 hover:text-gray-900">
+              <button onClick={() => setShowModal(false)} className="text-gray-500 hover:text-gray-700">
                 <X size={20} />
               </button>
             </div>
@@ -447,7 +447,7 @@ const MerchantPages = () => {
                   className={`px-4 py-3 text-sm font-medium capitalize border-b-2 transition-colors ${
                     activeTab === tab
                       ? 'text-blue-600 border-blue-400'
-                      : 'text-gray-500 border-transparent hover:text-gray-900'
+                      : 'text-gray-500 border-transparent hover:text-gray-700'
                   }`}
                 >
                   {tab === 'seo' ? 'SEO Settings' : tab}
@@ -548,7 +548,7 @@ const MerchantPages = () => {
                     />
                     <div className="bg-gray-50 border border-t-0 border-gray-200 rounded-b-lg p-3">
                       <p className="text-xs text-gray-500">
-                        <strong>Template Tags:</strong> You can use tags like <code className="text-cyan-400">[@store_name@]</code>, <code className="text-cyan-400">[@store_email@]</code>, <code className="text-cyan-400">[@page_title@]</code>
+                        <strong>Template Tags:</strong> You can use tags like <code className="text-blue-600">[@store_name@]</code>, <code className="text-blue-600">[@store_email@]</code>, <code className="text-blue-600">[@page_title@]</code>
                       </p>
                     </div>
                   </div>
@@ -590,8 +590,8 @@ const MerchantPages = () => {
                       <strong>Tip:</strong> Use images to represent your page visually. The main image can be displayed as a hero banner or featured image on the page. Images are accessible via template tags:
                     </p>
                     <ul className="mt-2 space-y-1 text-sm text-gray-500">
-                      <li><code className="text-cyan-400">[@page_image@]</code> - Main image URL</li>
-                      <li><code className="text-cyan-400">[@page_alt_image@]</code> - Alternative image URL</li>
+                      <li><code className="text-blue-600">[@page_image@]</code> - Main image URL</li>
+                      <li><code className="text-blue-600">[@page_alt_image@]</code> - Alternative image URL</li>
                     </ul>
                   </div>
                 </div>

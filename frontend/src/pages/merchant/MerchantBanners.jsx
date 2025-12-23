@@ -208,7 +208,7 @@ const MerchantBanners = () => {
   if (loading) {
     return (
       <div className="flex items-center justify-center h-64">
-        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-cyan-500"></div>
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-500"></div>
       </div>
     );
   }
@@ -220,7 +220,7 @@ const MerchantBanners = () => {
           <h1 className="text-2xl font-bold text-gray-900">Hero Banners</h1>
           <p className="text-gray-500">Manage your homepage carousel banners</p>
         </div>
-        <Button onClick={() => openModal()} className="bg-cyan-600 hover:bg-cyan-700">
+        <Button onClick={() => openModal()} className="bg-blue-600 hover:bg-blue-700">
           <Plus className="w-4 h-4 mr-2" />
           Add Banner
         </Button>
@@ -343,7 +343,7 @@ const MerchantBanners = () => {
           <Image className="w-12 h-12 mx-auto text-gray-500 mb-4" />
           <h3 className="text-lg font-medium text-gray-900 mb-2">No banners yet</h3>
           <p className="text-gray-500 mb-4">Create your first hero banner</p>
-          <Button onClick={() => openModal()} className="bg-cyan-600 hover:bg-cyan-700">
+          <Button onClick={() => openModal()} className="bg-blue-600 hover:bg-blue-700">
             <Plus className="w-4 h-4 mr-2" />
             Add Banner
           </Button>
@@ -358,7 +358,7 @@ const MerchantBanners = () => {
               <h2 className="text-lg font-semibold text-gray-900">
                 {editingBanner ? 'Edit Banner' : 'Add Banner'}
               </h2>
-              <button onClick={closeModal} className="text-gray-500 hover:text-gray-900">
+              <button onClick={closeModal} className="text-gray-500 hover:text-gray-700">
                 <X className="w-5 h-5" />
               </button>
             </div>
@@ -389,7 +389,7 @@ const MerchantBanners = () => {
                     onClick={() => setActiveSection(section.id)}
                     className={`flex items-center gap-2 px-4 py-2 text-sm font-medium transition-colors ${
                       activeSection === section.id
-                        ? 'text-cyan-400 border-b-2 border-cyan-400'
+                        ? 'text-blue-600 border-b-2 border-cyan-400'
                         : 'text-gray-500 hover:text-gray-700'
                     }`}
                   >
@@ -408,13 +408,13 @@ const MerchantBanners = () => {
                     <div
                       {...dropzone.getRootProps()}
                       className={`border-2 border-dashed rounded-lg p-6 text-center cursor-pointer transition-colors ${
-                        dropzone.isDragActive ? 'border-cyan-500 bg-cyan-500/10' : 'border-gray-200 hover:border-gray-500'
+                        dropzone.isDragActive ? 'border-blue-500 bg-blue-500/10' : 'border-gray-200 hover:border-gray-500'
                       }`}
                     >
                       <input {...dropzone.getInputProps()} />
                       {uploading ? (
                         <div className="py-4">
-                          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-cyan-500 mx-auto mb-2"></div>
+                          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-500 mx-auto mb-2"></div>
                           <p className="text-gray-500">Uploading...</p>
                         </div>
                       ) : formData.image ? (
@@ -440,7 +440,7 @@ const MerchantBanners = () => {
                         <div className="flex items-center gap-3">
                           <Monitor className="w-5 h-5 text-blue-600" />
                           <div>
-                            <span className="text-gray-200 font-medium">Desktop</span>
+                            <span className="text-gray-600 font-medium">Desktop</span>
                             <p className="text-xs text-gray-500">Screens 1024px and larger</p>
                           </div>
                         </div>
@@ -454,7 +454,7 @@ const MerchantBanners = () => {
                         <div className="flex items-center gap-3">
                           <Tablet className="w-5 h-5 text-purple-600" />
                           <div>
-                            <span className="text-gray-200 font-medium">Tablet</span>
+                            <span className="text-gray-600 font-medium">Tablet</span>
                             <p className="text-xs text-gray-500">Screens 768px to 1023px</p>
                           </div>
                         </div>
@@ -468,7 +468,7 @@ const MerchantBanners = () => {
                         <div className="flex items-center gap-3">
                           <Smartphone className="w-5 h-5 text-green-600" />
                           <div>
-                            <span className="text-gray-200 font-medium">Mobile</span>
+                            <span className="text-gray-600 font-medium">Mobile</span>
                             <p className="text-xs text-gray-500">Screens smaller than 768px</p>
                           </div>
                         </div>
@@ -601,7 +601,7 @@ const MerchantBanners = () => {
                           onClick={() => setFormData(prev => ({ ...prev, text_position: pos.value }))}
                           className={`flex items-center gap-2 px-4 py-2 rounded-lg transition-colors ${
                             formData.text_position === pos.value
-                              ? 'bg-cyan-600 text-gray-900'
+                              ? 'bg-blue-600 text-gray-900'
                               : 'bg-gray-700 text-gray-700 hover:bg-gray-100'
                           }`}
                         >
@@ -687,7 +687,7 @@ const MerchantBanners = () => {
                 </Button>
                 <Button 
                   type="submit" 
-                  className="flex-1 bg-cyan-600 hover:bg-cyan-700"
+                  className="flex-1 bg-blue-600 hover:bg-blue-700"
                   disabled={!formData.image}
                 >
                   {editingBanner ? 'Update' : 'Create'} Banner

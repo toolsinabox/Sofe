@@ -1166,7 +1166,7 @@ const MerchantPOS = () => {
           <DialogContent className="bg-white border-slate-200 text-slate-800 max-w-sm">
             <DialogHeader>
               <DialogTitle className="flex items-center gap-2 text-slate-800">
-                <PlayCircle className="w-5 h-5 text-cyan-500" />
+                <PlayCircle className="w-5 h-5 text-blue-600" />
                 Open Shift
               </DialogTitle>
               <DialogDescription className="text-slate-500">
@@ -1362,7 +1362,7 @@ const MerchantPOS = () => {
               placeholder="Search products by name, SKU, or scan barcode..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="pl-12 pr-12 py-3 bg-white border-slate-200 text-slate-800 rounded-xl shadow-sm focus:border-cyan-500 focus:ring-cyan-500/20 text-base"
+              className="pl-12 pr-12 py-3 bg-white border-slate-200 text-slate-800 rounded-xl shadow-sm focus:border-blue-500 focus:ring-cyan-500/20 text-base"
               autoFocus
             />
             {searchQuery && (
@@ -1378,7 +1378,7 @@ const MerchantPOS = () => {
           {/* Products Header */}
           <div className="flex items-center justify-between mb-3">
             <h2 className="text-slate-700 font-semibold flex items-center gap-2">
-              <Package className="w-5 h-5 text-cyan-500" />
+              <Package className="w-5 h-5 text-blue-600" />
               Products
               <span className="text-slate-400 font-normal text-sm">({filteredProducts.length})</span>
             </h2>
@@ -1388,7 +1388,7 @@ const MerchantPOS = () => {
           <div className="flex-1 overflow-y-auto">
             {loadingProducts ? (
               <div className="flex items-center justify-center py-16">
-                <Loader2 className="w-8 h-8 animate-spin text-cyan-500" />
+                <Loader2 className="w-8 h-8 animate-spin text-blue-600" />
               </div>
             ) : filteredProducts.length === 0 ? (
               <div className="flex flex-col items-center justify-center py-16 text-slate-400">
@@ -1405,7 +1405,7 @@ const MerchantPOS = () => {
                     disabled={product.stock <= 0}
                     className={`group bg-white rounded-2xl p-3 text-left transition-all border-2 ${
                       product.stock > 0 
-                        ? 'border-transparent hover:border-cyan-500 hover:shadow-lg hover:shadow-cyan-500/10 cursor-pointer hover:-translate-y-0.5' 
+                        ? 'border-transparent hover:border-blue-500 hover:shadow-lg hover:shadow-cyan-500/10 cursor-pointer hover:-translate-y-0.5' 
                         : 'opacity-50 cursor-not-allowed border-transparent'
                     }`}
                   >
@@ -1463,7 +1463,7 @@ const MerchantPOS = () => {
             ) : (
               <button
                 onClick={() => setShowCustomerSearch(true)}
-                className="w-full flex items-center justify-center gap-2 py-3 border-2 border-dashed border-slate-300 rounded-xl text-slate-500 hover:border-cyan-500 hover:text-cyan-600 hover:bg-cyan-50/50 transition-all"
+                className="w-full flex items-center justify-center gap-2 py-3 border-2 border-dashed border-slate-300 rounded-xl text-slate-500 hover:border-blue-500 hover:text-cyan-600 hover:bg-cyan-50/50 transition-all"
               >
                 <UserPlus className="w-5 h-5" />
                 <span className="font-medium">Add customer to sale</span>
@@ -2488,7 +2488,7 @@ const MerchantPOS = () => {
                   <Button
                     variant="ghost"
                     onClick={() => setShowSaleNote(true)}
-                    className="text-gray-500 hover:text-gray-900 hover:bg-white w-full justify-start"
+                    className="text-gray-500 hover:text-gray-700 hover:bg-white w-full justify-start"
                   >
                     <StickyNote className="w-4 h-4 mr-2" />
                     Add Note +

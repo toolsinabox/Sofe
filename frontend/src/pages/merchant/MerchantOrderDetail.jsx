@@ -587,13 +587,13 @@ const MerchantOrderDetail = () => {
       {/* Header */}
       <div className="flex flex-col lg:flex-row lg:items-start lg:justify-between gap-4">
         <div className="flex items-start gap-4">
-          <Button variant="ghost" size="sm" onClick={() => navigate('/merchant/orders')} className="text-gray-500 hover:text-gray-900 hover:bg-white mt-1">
+          <Button variant="ghost" size="sm" onClick={() => navigate('/merchant/orders')} className="text-gray-500 hover:text-gray-700 hover:bg-white mt-1">
             <ArrowLeft size={18} />
           </Button>
           <div>
             <div className="flex items-center gap-3 flex-wrap">
               <h1 className="text-2xl font-bold text-gray-900">{order.order_number}</h1>
-              <button onClick={() => copyToClipboard(order.order_number)} className="text-gray-500 hover:text-gray-900">
+              <button onClick={() => copyToClipboard(order.order_number)} className="text-gray-500 hover:text-gray-700">
                 <Copy size={16} />
               </button>
               <span className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-sm font-medium border ${statusConfig.color}`}>
@@ -660,20 +660,20 @@ const MerchantOrderDetail = () => {
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent className="bg-white border-gray-200">
-              <DropdownMenuItem onClick={() => setShowInvoicePreview(true)} className="text-gray-700 hover:text-gray-900 hover:bg-gray-100/50 cursor-pointer">
+              <DropdownMenuItem onClick={() => setShowInvoicePreview(true)} className="text-gray-700 hover:text-gray-700 hover:bg-gray-100/50 cursor-pointer">
                 <Eye size={14} className="mr-2" /> Preview Invoice
               </DropdownMenuItem>
-              <DropdownMenuItem className="text-gray-700 hover:text-gray-900 hover:bg-gray-100/50 cursor-pointer">
+              <DropdownMenuItem className="text-gray-700 hover:text-gray-700 hover:bg-gray-100/50 cursor-pointer">
                 <Receipt size={14} className="mr-2" /> Print Invoice
               </DropdownMenuItem>
-              <DropdownMenuItem className="text-gray-700 hover:text-gray-900 hover:bg-gray-100/50 cursor-pointer">
+              <DropdownMenuItem className="text-gray-700 hover:text-gray-700 hover:bg-gray-100/50 cursor-pointer">
                 <Package size={14} className="mr-2" /> Print Packing Slip
               </DropdownMenuItem>
-              <DropdownMenuItem className="text-gray-700 hover:text-gray-900 hover:bg-gray-100/50 cursor-pointer">
+              <DropdownMenuItem className="text-gray-700 hover:text-gray-700 hover:bg-gray-100/50 cursor-pointer">
                 <Barcode size={14} className="mr-2" /> Print Shipping Label
               </DropdownMenuItem>
               <DropdownMenuSeparator className="bg-gray-700" />
-              <DropdownMenuItem className="text-gray-700 hover:text-gray-900 hover:bg-gray-100/50 cursor-pointer">
+              <DropdownMenuItem className="text-gray-700 hover:text-gray-700 hover:bg-gray-100/50 cursor-pointer">
                 <Download size={14} className="mr-2" /> Download PDF
               </DropdownMenuItem>
             </DropdownMenuContent>
@@ -686,10 +686,10 @@ const MerchantOrderDetail = () => {
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end" className="bg-white border-gray-200 w-56">
-              <DropdownMenuItem onClick={() => setShowTrackingModal(true)} className="text-gray-700 hover:text-gray-900 hover:bg-gray-100/50 cursor-pointer">
+              <DropdownMenuItem onClick={() => setShowTrackingModal(true)} className="text-gray-700 hover:text-gray-700 hover:bg-gray-100/50 cursor-pointer">
                 <Truck size={14} className="mr-2" /> {order.tracking_number ? 'Update' : 'Add'} Tracking
               </DropdownMenuItem>
-              <DropdownMenuItem onClick={() => setShowNoteModal(true)} className="text-gray-700 hover:text-gray-900 hover:bg-gray-100/50 cursor-pointer">
+              <DropdownMenuItem onClick={() => setShowNoteModal(true)} className="text-gray-700 hover:text-gray-700 hover:bg-gray-100/50 cursor-pointer">
                 <MessageSquare size={14} className="mr-2" /> Add Note
               </DropdownMenuItem>
               <DropdownMenuSeparator className="bg-gray-700" />
@@ -858,7 +858,7 @@ const MerchantOrderDetail = () => {
                           <p className="text-gray-900 font-medium">{CARRIERS.find(c => c.id === order.tracking_carrier)?.name || order.tracking_carrier}</p>
                           <div className="flex items-center gap-2 mt-1">
                             <code className="text-emerald-600 bg-emerald-500/10 px-2 py-0.5 rounded text-sm">{order.tracking_number}</code>
-                            <button onClick={() => copyToClipboard(order.tracking_number)} className="text-gray-500 hover:text-gray-900">
+                            <button onClick={() => copyToClipboard(order.tracking_number)} className="text-gray-500 hover:text-gray-700">
                               <Copy size={14} />
                             </button>
                           </div>
@@ -883,7 +883,7 @@ const MerchantOrderDetail = () => {
                     <User size={18} />
                     Customer
                   </CardTitle>
-                  <button onClick={() => setIsEditingCustomer(!isEditingCustomer)} className="text-gray-500 hover:text-gray-900">
+                  <button onClick={() => setIsEditingCustomer(!isEditingCustomer)} className="text-gray-500 hover:text-gray-700">
                     <Edit3 size={16} />
                   </button>
                 </CardHeader>
@@ -963,7 +963,7 @@ const MerchantOrderDetail = () => {
                     <MapPin size={18} />
                     Shipping Address
                   </CardTitle>
-                  <button onClick={() => setIsEditingShipping(!isEditingShipping)} className="text-gray-500 hover:text-gray-900">
+                  <button onClick={() => setIsEditingShipping(!isEditingShipping)} className="text-gray-500 hover:text-gray-700">
                     <Edit3 size={16} />
                   </button>
                 </CardHeader>
@@ -1230,7 +1230,7 @@ const MerchantOrderDetail = () => {
                         <p className="text-gray-500 text-sm mb-1">Tracking Number</p>
                         <div className="flex items-center gap-2">
                           <code className="text-emerald-600 bg-emerald-500/10 px-2 py-1 rounded">{order.tracking_number}</code>
-                          <button onClick={() => copyToClipboard(order.tracking_number)} className="text-gray-500 hover:text-gray-900">
+                          <button onClick={() => copyToClipboard(order.tracking_number)} className="text-gray-500 hover:text-gray-700">
                             <Copy size={14} />
                           </button>
                         </div>

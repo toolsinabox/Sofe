@@ -341,7 +341,7 @@ const MerchantQuoteDetail = () => {
             variant="ghost" 
             size="sm" 
             onClick={() => navigate('/merchant/quotes')}
-            className="text-gray-500 hover:text-gray-900 hover:bg-white"
+            className="text-gray-500 hover:text-gray-700 hover:bg-white"
           >
             <ArrowLeft size={18} className="mr-1" />
             Back
@@ -349,7 +349,7 @@ const MerchantQuoteDetail = () => {
           <div>
             <div className="flex items-center gap-3">
               <h1 className="text-2xl font-bold text-gray-900">{quote.quote_number}</h1>
-              <button onClick={copyQuoteNumber} className="text-gray-500 hover:text-gray-900">
+              <button onClick={copyQuoteNumber} className="text-gray-500 hover:text-gray-700">
                 <Copy size={16} />
               </button>
               <span className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-sm font-medium border ${
@@ -444,10 +444,10 @@ const MerchantQuoteDetail = () => {
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent className="bg-white border-gray-200">
-              <DropdownMenuItem onClick={printQuote} className="text-gray-700 hover:text-gray-900 hover:bg-gray-100/50 cursor-pointer">
+              <DropdownMenuItem onClick={printQuote} className="text-gray-700 hover:text-gray-700 hover:bg-gray-100/50 cursor-pointer">
                 <Printer size={14} className="mr-2" /> Print Quote
               </DropdownMenuItem>
-              <DropdownMenuItem onClick={downloadQuotePDF} className="text-gray-700 hover:text-gray-900 hover:bg-gray-100/50 cursor-pointer">
+              <DropdownMenuItem onClick={downloadQuotePDF} className="text-gray-700 hover:text-gray-700 hover:bg-gray-100/50 cursor-pointer">
                 <Download size={14} className="mr-2" /> Download PDF
               </DropdownMenuItem>
             </DropdownMenuContent>
@@ -460,15 +460,15 @@ const MerchantQuoteDetail = () => {
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent className="bg-white border-gray-200 w-56">
-              <DropdownMenuItem onClick={() => setShowStatusModal(true)} className="text-gray-700 hover:text-gray-900 hover:bg-gray-100/50 cursor-pointer">
+              <DropdownMenuItem onClick={() => setShowStatusModal(true)} className="text-gray-700 hover:text-gray-700 hover:bg-gray-100/50 cursor-pointer">
                 <RefreshCw size={14} className="mr-2" /> Update Status
               </DropdownMenuItem>
               {(expired || (daysLeft !== null && daysLeft < 7)) && quote.status !== 'converted' && (
-                <DropdownMenuItem onClick={() => setShowExtendModal(true)} className="text-gray-700 hover:text-gray-900 hover:bg-gray-100/50 cursor-pointer">
+                <DropdownMenuItem onClick={() => setShowExtendModal(true)} className="text-gray-700 hover:text-gray-700 hover:bg-gray-100/50 cursor-pointer">
                   <Calendar size={14} className="mr-2" /> Extend Validity
                 </DropdownMenuItem>
               )}
-              <DropdownMenuItem className="text-gray-700 hover:text-gray-900 hover:bg-gray-100/50 cursor-pointer">
+              <DropdownMenuItem className="text-gray-700 hover:text-gray-700 hover:bg-gray-100/50 cursor-pointer">
                 <Copy size={14} className="mr-2" /> Duplicate Quote
               </DropdownMenuItem>
               <DropdownMenuSeparator className="bg-gray-700" />
