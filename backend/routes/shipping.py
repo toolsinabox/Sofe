@@ -1001,7 +1001,8 @@ async def calculate_shipping(request: ShippingCalculationRequest):
                 shipping_height = item.get("shipping_height") or item.get("height", 0)
                 
                 if shipping_length and shipping_width and shipping_height:
-                    volume_m3 = (shipping_length * shipping_width * shipping_height) / 1000000
+                    # Dimensions are in mm, convert to m³
+                    volume_m3 = (shipping_length * shipping_width * shipping_height) / 1000000000
                     service_cubic_weight += volume_m3 * service_cubic_modifier * qty
                 else:
                     service_cubic_weight += item.get("weight", 0.5) * qty
