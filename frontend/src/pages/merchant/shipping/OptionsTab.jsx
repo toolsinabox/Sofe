@@ -2,7 +2,7 @@ import React, { useState, useCallback, useRef, useEffect } from 'react';
 import axios from 'axios';
 import { 
   Plus, Trash2, Settings, DollarSign, Layers, Loader2, Check, 
-  AlertCircle, ChevronDown, ChevronUp, Truck
+  AlertCircle, ChevronDown, ChevronUp, Truck, Save
 } from 'lucide-react';
 import { Button } from '../../../components/ui/button';
 import { Switch } from '../../../components/ui/switch';
