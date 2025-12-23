@@ -1240,7 +1240,7 @@ const MerchantShipping = () => {
     );
   };
 
-  // ============== SERVICES TAB ==============
+  // ============== RENDER ==============
   const ServicesTab = () => {
     // Using parent-level state - removed local state declarations
 
