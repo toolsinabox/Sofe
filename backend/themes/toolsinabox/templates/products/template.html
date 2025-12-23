@@ -2179,29 +2179,97 @@
             const avgRatingEl = document.getElementById('avg-rating');
             const avgStarsEl = document.getElementById('avg-stars');
             const reviewCountEl = document.getElementById('review-count');
+            const ratingDistEl = document.getElementById('rating-distribution');
             
             try {
                 const response = await fetch(`${window.location.origin}/api/reviews/product/${PRODUCT_ID}`);
                 const data = await response.json();
                 
                 if (data.reviews && data.reviews.length > 0) {
-                    // Update summary
-                    avgRatingEl.textContent = data.avg_rating.toFixed(1);
-                    avgStarsEl.innerHTML = renderStars(Math.round(data.avg_rating));
+                    // Update summary - use average_rating (correct field name)
+                    const avgRating = data.average_rating || 0;
+                    avgRatingEl.textContent = avgRating.toFixed(1);
+                    avgStarsEl.innerHTML = renderStars(Math.round(avgRating));
                     reviewCountEl.textContent = `${data.count} review${data.count !== 1 ? 's' : ''}`;
                     
-                    // Render reviews
-                    reviewsList.innerHTML = data.reviews.map(review => `
-                        <div class="review-item">
-                            <div class="review-item-header">
-                                <span class="review-author">${escapeHtml(review.customer_name)}</span>
-                                <span class="review-date">${formatDate(review.created_at)}</span>
+                    // Render rating distribution
+                    if (data.rating_distribution && ratingDistEl) {
+                        let distHtml = '<div class="rating-bars">';
+                        for (let i = 5; i >= 1; i--) {
+                            const count = data.rating_distribution[i] || 0;
+                            const percentage = data.count > 0 ? (count / data.count) * 100 : 0;
+                            distHtml += `
+                                <div class="rating-bar-row">
+                                    <span class="rating-label">${i} ★</span>
+                                    <div class="rating-bar-track">
+                                        <div class="rating-bar-fill" style="width: ${percentage}%"></div>
+                                    </div>
+                                    <span class="rating-bar-count">${count}</span>
+                                </div>
+                            `;
+                        }
+                        distHtml += '</div>';
+                        ratingDistEl.innerHTML = distHtml;
+                    }
+                    
+                    // Render reviews with images support
+                    reviewsList.innerHTML = data.reviews.map(review => {
+                        // Build images HTML if images exist
+                        let imagesHtml = '';
+                        if (review.images && review.images.length > 0) {
+                            imagesHtml = `
+                                <div class="review-images">
+                                    ${review.images.map(img => `
+                                        <a href="${escapeHtml(img)}" target="_blank" class="review-image-thumb">
+                                            <img src="${escapeHtml(img)}" alt="Review photo" loading="lazy">
+                                        </a>
+                                    `).join('')}
+                                </div>
+                            `;
+                        }
+                        
+                        // Build verified badge
+                        const verifiedBadge = review.verified_purchase ? 
+                            '<span class="verified-badge">✓ Verified Purchase</span>' : '';
+                        
+                        // Build admin reply
+                        let adminReplyHtml = '';
+                        if (review.admin_reply) {
+                            adminReplyHtml = `
+                                <div class="admin-reply">
+                                    <div class="admin-reply-header">
+                                        <strong>Store Response</strong>
+                                    </div>
+                                    <p>${escapeHtml(review.admin_reply)}</p>
+                                </div>
+                            `;
+                        }
+                        
+                        return `
+                            <div class="review-item">
+                                <div class="review-item-header">
+                                    <div class="review-author-info">
+                                        <span class="review-author">${escapeHtml(review.customer_name)}</span>
+                                        ${verifiedBadge}
+                                    </div>
+                                    <span class="review-date">${formatDate(review.created_at)}</span>
+                                </div>
+                                <div class="review-stars">${renderStars(review.rating)}</div>
+                                <div class="review-title">${escapeHtml(review.title)}</div>
+                                <div class="review-content">${escapeHtml(review.content)}</div>
+                                ${imagesHtml}
+                                ${adminReplyHtml}
+                                <div class="review-footer">
+                                    <button class="helpful-btn" onclick="markHelpful('${review.id}', this)">
+                                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16">
+                                            <path d="M14 9V5a3 3 0 0 0-3-3l-4 9v11h11.28a2 2 0 0 0 2-1.7l1.38-9a2 2 0 0 0-2-2.3zM7 22H4a2 2 0 0 1-2-2v-7a2 2 0 0 1 2-2h3"></path>
+                                        </svg>
+                                        Helpful (${review.helpful_votes || 0})
+                                    </button>
+                                </div>
                             </div>
-                            <div class="review-stars">${renderStars(review.rating)}</div>
-                            <div class="review-title">${escapeHtml(review.title)}</div>
-                            <div class="review-content">${escapeHtml(review.content)}</div>
-                        </div>
-                    `).join('');
+                        `;
+                    }).join('');
                 } else {
                     reviewsList.innerHTML = `
                         <div class="reviews-empty">
@@ -2210,10 +2278,25 @@
                             <p>Be the first to share your experience!</p>
                         </div>
                     `;
+                    if (ratingDistEl) ratingDistEl.innerHTML = '';
                 }
             } catch (error) {
                 console.error('Error loading reviews:', error);
                 reviewsList.innerHTML = '<p class="text-center text-gray-500">Unable to load reviews</p>';
+            }
+        }
+        
+        async function markHelpful(reviewId, btn) {
+            try {
+                await fetch(`${window.location.origin}/api/reviews/${reviewId}/helpful`, { method: 'POST' });
+                btn.disabled = true;
+                btn.innerHTML = btn.innerHTML.replace(/Helpful \(\d+\)/, (match) => {
+                    const num = parseInt(match.match(/\d+/)[0]) + 1;
+                    return `Helpful (${num})`;
+                });
+                btn.classList.add('voted');
+            } catch (error) {
+                console.error('Error marking helpful:', error);
             }
         }
         
