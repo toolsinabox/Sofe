@@ -557,6 +557,76 @@ const MerchantPOS = () => {
     setShowShippingOptions(false);
   };
 
+  // Park Sale - Save current sale for later
+  const parkSale = () => {
+    if (cart.length === 0) return;
+    
+    const parkedSale = {
+      id: Date.now().toString(),
+      cart: [...cart],
+      customer: customer,
+      cartDiscount: { ...cartDiscount },
+      paymentTerm,
+      initialPaymentType,
+      initialPaymentAmount,
+      laybyDueDate,
+      laybyDuePeriod,
+      shipToCustomer,
+      selectedShipping,
+      signatureRequired,
+      deliveryInstructions,
+      note: parkingNote,
+      parkedAt: new Date().toISOString(),
+      totalAmount: total
+    };
+    
+    setParkedSales(prev => [...prev, parkedSale]);
+    clearCart();
+    setShowParkModal(false);
+    setParkingNote('');
+  };
+
+  // Retrieve Parked Sale
+  const retrieveParkedSale = (parkedSale) => {
+    // If current cart has items, ask to park it first
+    if (cart.length > 0) {
+      if (!window.confirm('Current cart has items. They will be replaced. Continue?')) {
+        return;
+      }
+    }
+    
+    // Restore the parked sale
+    setCart(parkedSale.cart);
+    setCustomer(parkedSale.customer);
+    setCartDiscount(parkedSale.cartDiscount);
+    setPaymentTerm(parkedSale.paymentTerm);
+    setInitialPaymentType(parkedSale.initialPaymentType);
+    setInitialPaymentAmount(parkedSale.initialPaymentAmount);
+    setLaybyDueDate(parkedSale.laybyDueDate);
+    setLaybyDuePeriod(parkedSale.laybyDuePeriod);
+    setShipToCustomer(parkedSale.shipToCustomer);
+    setSelectedShipping(parkedSale.selectedShipping);
+    setSignatureRequired(parkedSale.signatureRequired);
+    setDeliveryInstructions(parkedSale.deliveryInstructions);
+    
+    // Remove from parked sales
+    setParkedSales(prev => prev.filter(s => s.id !== parkedSale.id));
+    setShowParkedSales(false);
+  };
+
+  // Delete Parked Sale
+  const deleteParkedSale = (parkedSaleId) => {
+    if (window.confirm('Are you sure you want to delete this parked sale?')) {
+      setParkedSales(prev => prev.filter(s => s.id !== parkedSaleId));
+    }
+  };
+
+  // Void Sale - Clear cart with confirmation
+  const voidSale = () => {
+    clearCart();
+    setShowVoidConfirm(false);
+  };
+
   // Calculate totals
   const calculateTotals = () => {
     const subtotal = cart.reduce((sum, item) => sum + item.subtotal, 0);
