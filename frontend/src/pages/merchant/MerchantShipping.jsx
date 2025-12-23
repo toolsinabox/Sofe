@@ -3393,9 +3393,50 @@ const MerchantShipping = () => {
         {activeTab === 'overview' && overviewContent}
         {activeTab === 'zones' && <ZonesTab />}
         {activeTab === 'services' && <ServicesTab />}
-        {activeTab === 'categories' && <CategoriesTab />}
-        {activeTab === 'packages' && <PackagesTab />}
-        {activeTab === 'options' && <OptionsTab />}
+        {activeTab === 'categories' && (
+          <CategoriesTab
+            categories={categories}
+            categoryForm={categoryForm}
+            setCategoryForm={setCategoryForm}
+            editingItem={editingItem}
+            setEditingItem={setEditingItem}
+            showCategoryModal={showCategoryModal}
+            setShowCategoryModal={setShowCategoryModal}
+            saving={saving}
+            setSaving={setSaving}
+            fetchAllData={fetchAllData}
+          />
+        )}
+        {activeTab === 'packages' && (
+          <PackagesTab
+            packages={packages}
+            packageForm={packageForm}
+            setPackageForm={setPackageForm}
+            editingItem={editingItem}
+            setEditingItem={setEditingItem}
+            showPackageModal={showPackageModal}
+            setShowPackageModal={setShowPackageModal}
+            saving={saving}
+            setSaving={setSaving}
+            fetchAllData={fetchAllData}
+          />
+        )}
+        {activeTab === 'options' && (
+          <OptionsTab
+            options={options}
+            services={services}
+            zones={zones}
+            optionForm={optionForm}
+            setOptionForm={setOptionForm}
+            editingItem={editingItem}
+            setEditingItem={setEditingItem}
+            showOptionModal={showOptionModal}
+            setShowOptionModal={setShowOptionModal}
+            saving={saving}
+            setSaving={setSaving}
+            fetchAllData={fetchAllData}
+          />
+        )}
       </div>
     </div>
   );
