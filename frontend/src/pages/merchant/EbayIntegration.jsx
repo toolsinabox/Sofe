@@ -1437,6 +1437,10 @@ const EbayIntegration = () => {
     // Product info from selected preview product
     const product = previewProduct;
     
+    // Get product images with fallbacks
+    const images = product.images || [];
+    const placeholderImg = 'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="400" height="400" viewBox="0 0 400 400"%3E%3Crect fill="%23f0f0f0" width="400" height="400"/%3E%3Ctext fill="%23999" font-family="Arial" font-size="24" x="50%25" y="50%25" text-anchor="middle" dy=".3em"%3ENo Image%3C/text%3E%3C/svg%3E';
+    
     let processedHtml = html
       // Store variables
       .replace(/\{\{store_name\}\}/g, storeName)
@@ -1454,6 +1458,15 @@ const EbayIntegration = () => {
       .replace(/\{\{product_dimensions\}\}/g, product.dimensions || 'N/A')
       .replace(/\{\{product_upc\}\}/g, product.upc || 'N/A')
       .replace(/\{\{product_mpn\}\}/g, product.mpn || 'N/A')
+      // Product images - main and numbered images
+      .replace(/\{\{product_image\}\}/g, images[0] || placeholderImg)
+      .replace(/\{\{product_image_1\}\}/g, images[0] || placeholderImg)
+      .replace(/\{\{product_image_2\}\}/g, images[1] || placeholderImg)
+      .replace(/\{\{product_image_3\}\}/g, images[2] || placeholderImg)
+      .replace(/\{\{product_image_4\}\}/g, images[3] || placeholderImg)
+      .replace(/\{\{product_image_5\}\}/g, images[4] || placeholderImg)
+      .replace(/\{\{product_image_6\}\}/g, images[5] || placeholderImg)
+      .replace(/\{\{product_image_count\}\}/g, String(images.length || 0))
       // Color variables
       .replace(/\{\{primary_color\}\}/g, themeSettings.primaryColor)
       .replace(/\{\{accent_color\}\}/g, themeSettings.accentColor)
