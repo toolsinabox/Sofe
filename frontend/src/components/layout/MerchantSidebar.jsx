@@ -15,6 +15,7 @@ import {
   LogOut,
   ChevronLeft,
   ChevronRight,
+  ChevronDown,
   ExternalLink,
   FolderOpen,
   Image,
@@ -29,15 +30,95 @@ import {
   FileText,
   Mail,
   X,
-  Monitor
+  Monitor,
+  Palette,
+  Globe,
+  Receipt
 } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
 
 const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
 
+// Grouped navigation structure
+const navGroups = [
+  {
+    id: 'main',
+    items: [
+      { path: '/merchant', icon: LayoutDashboard, label: 'Dashboard', exact: true },
+      { path: '/merchant/pos', icon: Monitor, label: 'Point of Sale' },
+    ]
+  },
+  {
+    id: 'sales',
+    label: 'Sales',
+    icon: ShoppingCart,
+    items: [
+      { path: '/merchant/orders', icon: ShoppingCart, label: 'Orders' },
+      { path: '/merchant/quotes', icon: FileText, label: 'Quotes' },
+      { path: '/merchant/pos/reports', icon: BarChart3, label: 'POS Reports' },
+      { path: '/merchant/abandoned-carts', icon: ShoppingBag, label: 'Abandoned Carts' },
+    ]
+  },
+  {
+    id: 'catalog',
+    label: 'Catalog',
+    icon: Package,
+    items: [
+      { path: '/merchant/products', icon: Package, label: 'Products' },
+      { path: '/merchant/categories', icon: FolderOpen, label: 'Categories' },
+      { path: '/merchant/inventory', icon: Boxes, label: 'Inventory' },
+      { path: '/merchant/reviews', icon: Star, label: 'Reviews' },
+    ]
+  },
+  {
+    id: 'customers',
+    label: 'Customers',
+    icon: Users,
+    items: [
+      { path: '/merchant/customers', icon: Users, label: 'All Customers' },
+      { path: '/merchant/emails', icon: Mail, label: 'Email Campaigns' },
+    ]
+  },
+  {
+    id: 'content',
+    label: 'Content',
+    icon: FileText,
+    items: [
+      { path: '/merchant/pages', icon: FileText, label: 'Pages' },
+      { path: '/merchant/banners', icon: Image, label: 'Banners' },
+      { path: '/merchant/content-zones', icon: LayoutGrid, label: 'Content Zones' },
+      { path: '/merchant/mega-menu', icon: Menu, label: 'Mega Menu' },
+    ]
+  },
+  {
+    id: 'marketing',
+    label: 'Marketing',
+    icon: Tag,
+    items: [
+      { path: '/merchant/discounts', icon: Tag, label: 'Discounts' },
+      { path: '/merchant/seo', icon: Search, label: 'SEO Tools' },
+      { path: '/merchant/analytics', icon: BarChart3, label: 'Analytics' },
+    ]
+  },
+  {
+    id: 'settings',
+    label: 'Settings',
+    icon: Settings,
+    items: [
+      { path: '/merchant/store-settings', icon: Store, label: 'Store Settings' },
+      { path: '/merchant/shipping', icon: Truck, label: 'Shipping' },
+      { path: '/merchant/payments', icon: CreditCard, label: 'Payments' },
+      { path: '/merchant/invoice-settings', icon: Receipt, label: 'Invoice Settings' },
+      { path: '/merchant/theme-editor', icon: Palette, label: 'Theme Editor' },
+      { path: '/merchant/settings', icon: Settings, label: 'General Settings' },
+    ]
+  },
+];
+
 const MerchantSidebar = ({ collapsed, setCollapsed, mobileOpen, setMobileOpen }) => {
   const { logout } = useAuth();
   const navigate = useNavigate();
+  const [expandedGroups, setExpandedGroups] = useState(['sales', 'catalog']);
   const [storeSettings, setStoreSettings] = useState({
     store_name: 'My Store',
     store_logo: ''
@@ -60,7 +141,6 @@ const MerchantSidebar = ({ collapsed, setCollapsed, mobileOpen, setMobileOpen })
     fetchStoreSettings();
   }, []);
 
-  // Generate initials from store name
   const getInitials = (name) => {
     if (!name) return 'MS';
     const words = name.split(' ').filter(w => w.length > 0);
@@ -75,219 +155,187 @@ const MerchantSidebar = ({ collapsed, setCollapsed, mobileOpen, setMobileOpen })
     navigate('/merchant/login');
   };
 
-  const navItems = [
-    { path: '/merchant', icon: LayoutDashboard, label: 'Dashboard', exact: true },
-    { path: '/merchant/pos', icon: Monitor, label: 'POS', highlight: true },
-    { path: '/merchant/pos/reports', icon: BarChart3, label: 'POS Reports' },
-    { path: '/merchant/orders', icon: ShoppingCart, label: 'Orders' },
-    { path: '/merchant/quotes', icon: FileText, label: 'Quotes' },
-    { path: '/merchant/emails', icon: Mail, label: 'Emails' },
-    { path: '/merchant/products', icon: Package, label: 'Products' },
-    { path: '/merchant/categories', icon: FolderOpen, label: 'Categories' },
-    { path: '/merchant/inventory', icon: Boxes, label: 'Inventory' },
-    { path: '/merchant/customers', icon: Users, label: 'Customers' },
-    { path: '/merchant/reviews', icon: Star, label: 'Reviews' },
-    { path: '/merchant/pages', icon: FileText, label: 'Pages' },
-    { path: '/merchant/banners', icon: Image, label: 'Banners' },
-    { path: '/merchant/content-zones', icon: LayoutGrid, label: 'Content Zones' },
-    { path: '/merchant/mega-menu', icon: Menu, label: 'Mega Menu' },
-    { path: '/merchant/theme-editor', icon: Code, label: 'Theme Editor' },
-    { path: '/merchant/invoice-settings', icon: FileText, label: 'Invoice Settings' },
-    { path: '/merchant/store-settings', icon: Store, label: 'Store Settings' },
-    { path: '/merchant/shipping', icon: Truck, label: 'Shipping' },
-    { path: '/merchant/discounts', icon: Tag, label: 'Discounts' },
-    { path: '/merchant/abandoned-carts', icon: ShoppingBag, label: 'Abandoned Carts' },
-    { path: '/merchant/seo', icon: Search, label: 'SEO Tools' },
-    { path: '/merchant/analytics', icon: BarChart3, label: 'Analytics' },
-    { path: '/merchant/payments', icon: CreditCard, label: 'Payments' },
-    { path: '/merchant/settings', icon: Settings, label: 'Settings' },
-  ];
+  const toggleGroup = (groupId) => {
+    setExpandedGroups(prev => 
+      prev.includes(groupId) 
+        ? prev.filter(id => id !== groupId)
+        : [...prev, groupId]
+    );
+  };
 
   const handleNavClick = () => {
-    // Close mobile menu when a nav item is clicked
     if (setMobileOpen) {
       setMobileOpen(false);
     }
   };
 
-  // Determine if sidebar should be shown (desktop always, mobile only when mobileOpen)
-  const isVisible = mobileOpen;
+  const renderNavItem = (item, isSubItem = false) => (
+    <NavLink
+      key={item.path}
+      to={item.path}
+      end={item.exact}
+      onClick={handleNavClick}
+      className={({ isActive }) =>
+        `flex items-center gap-3 px-3 py-2 rounded-lg transition-all duration-150 ${
+          isSubItem ? 'ml-4 text-sm' : ''
+        } ${
+          isActive
+            ? 'bg-blue-50 text-blue-700 font-medium'
+            : 'text-gray-600 hover:text-gray-900 hover:bg-gray-100'
+        }`
+      }
+    >
+      <item.icon size={isSubItem ? 16 : 18} className="flex-shrink-0" />
+      {!collapsed && <span>{item.label}</span>}
+    </NavLink>
+  );
 
-  return (
-    <>
-      {/* Desktop Sidebar - Hidden on mobile */}
-      <aside
-        className={`hidden lg:flex fixed left-0 top-0 h-screen bg-[#0d1117] border-r border-gray-800 transition-all duration-300 z-50 flex-col ${
-          collapsed ? 'w-[70px]' : 'w-[260px]'
-        }`}
-      >
-        {/* Logo */}
-        <div className="h-16 flex items-center justify-between px-4 border-b border-gray-800">
-          {!collapsed && (
-            <div className="flex items-center gap-2">
-              {storeSettings.store_logo ? (
-                <img 
-                  src={storeSettings.store_logo} 
-                  alt={storeSettings.store_name}
-                  className="w-8 h-8 rounded-lg object-cover"
-                  onError={(e) => {
-                    e.target.style.display = 'none';
-                    e.target.nextSibling.style.display = 'flex';
-                  }}
-                />
-              ) : null}
-              <div 
-                className={`w-8 h-8 bg-gradient-to-br from-emerald-500 to-teal-600 rounded-lg items-center justify-center ${storeSettings.store_logo ? 'hidden' : 'flex'}`}
-              >
-                <span className="text-white font-bold text-sm">{getInitials(storeSettings.store_name)}</span>
-              </div>
-              <span className="text-white font-semibold text-lg truncate max-w-[160px]">{storeSettings.store_name}</span>
-            </div>
-          )}
-          {collapsed && (
-            <div className="w-8 h-8 bg-gradient-to-br from-emerald-500 to-teal-600 rounded-lg flex items-center justify-center mx-auto">
-              <span className="text-white font-bold text-sm">{getInitials(storeSettings.store_name)}</span>
-            </div>
-          )}
-          <button
-            onClick={() => setCollapsed(!collapsed)}
-            className="p-1.5 rounded-lg hover:bg-gray-800 text-gray-400 hover:text-white transition-colors absolute right-2"
-          >
-            {collapsed ? <ChevronRight size={18} /> : <ChevronLeft size={18} />}
-          </button>
+  const renderNavGroup = (group) => {
+    if (!group.label) {
+      // No label means it's a top-level group (Dashboard, POS)
+      return (
+        <div key={group.id} className="space-y-1">
+          {group.items.map(item => renderNavItem(item))}
         </div>
+      );
+    }
 
-        {/* Navigation */}
-        <nav className="flex-1 py-4 px-3 space-y-1 overflow-y-auto scrollbar-thin scrollbar-thumb-gray-700 scrollbar-track-transparent">
-          {navItems.map((item) => (
-            <NavLink
-              key={item.path}
-              to={item.path}
-              end={item.exact}
-              className={({ isActive }) =>
-                `flex items-center gap-3 px-3 py-2 rounded-lg transition-all duration-200 group ${
-                  isActive
-                    ? 'bg-gradient-to-r from-emerald-500/20 to-teal-600/20 text-emerald-400 border border-emerald-500/30'
-                    : 'text-gray-400 hover:text-white hover:bg-gray-800/50'
-                }`
-              }
-            >
-              <item.icon size={18} className="flex-shrink-0" />
-              {!collapsed && (
-                <span className="font-medium text-sm">{item.label}</span>
-              )}
-            </NavLink>
-          ))}
-        </nav>
+    const isExpanded = expandedGroups.includes(group.id);
+    const GroupIcon = group.icon;
 
-        {/* View Store Button */}
-        {!collapsed && (
-          <div className="px-3 py-2 border-t border-gray-800">
-            <NavLink
-              to="/live"
-              target="_blank"
-              className="flex items-center justify-center gap-2 w-full px-4 py-2 bg-gradient-to-r from-emerald-500 to-teal-600 rounded-lg text-white font-medium text-sm hover:from-emerald-600 hover:to-teal-700 transition-all"
-            >
-              <ExternalLink size={16} />
-              View Store
-            </NavLink>
+    return (
+      <div key={group.id} className="space-y-1">
+        <button
+          onClick={() => !collapsed && toggleGroup(group.id)}
+          className={`w-full flex items-center gap-3 px-3 py-2 rounded-lg transition-all duration-150 text-gray-600 hover:text-gray-900 hover:bg-gray-100 ${
+            collapsed ? 'justify-center' : 'justify-between'
+          }`}
+        >
+          <div className="flex items-center gap-3">
+            <GroupIcon size={18} className="flex-shrink-0" />
+            {!collapsed && <span className="font-medium text-sm">{group.label}</span>}
+          </div>
+          {!collapsed && (
+            <ChevronDown 
+              size={16} 
+              className={`transition-transform duration-200 ${isExpanded ? 'rotate-180' : ''}`}
+            />
+          )}
+        </button>
+        {!collapsed && isExpanded && (
+          <div className="space-y-0.5 mt-1">
+            {group.items.map(item => renderNavItem(item, true))}
           </div>
         )}
+      </div>
+    );
+  };
 
-        {/* Bottom Section */}
-        <div className="px-3 py-2 border-t border-gray-800 space-y-1">
-          <NavLink
-            to="/merchant/help"
-            className="flex items-center gap-3 px-3 py-2 rounded-lg text-gray-400 hover:text-white hover:bg-gray-800/50 transition-all"
-          >
-            <HelpCircle size={18} />
-            {!collapsed && <span className="font-medium text-sm">Help & Support</span>}
-          </NavLink>
-          <button 
-            onClick={handleLogout}
-            className="w-full flex items-center gap-3 px-3 py-2 rounded-lg text-gray-400 hover:text-red-400 hover:bg-red-500/10 transition-all"
-          >
-            <LogOut size={18} />
-            {!collapsed && <span className="font-medium text-sm">Logout</span>}
-          </button>
-        </div>
-      </aside>
-
-      {/* Mobile Sidebar - Slide in from left */}
-      <aside
-        className={`lg:hidden fixed left-0 top-0 h-screen bg-[#0d1117] border-r border-gray-800 z-50 flex flex-col w-[280px] transform transition-transform duration-300 ease-in-out ${
-          isVisible ? 'translate-x-0' : '-translate-x-full'
-        }`}
-      >
-        {/* Mobile Header */}
-        <div className="h-14 flex items-center justify-between px-4 border-b border-gray-800">
+  const sidebarContent = (
+    <>
+      {/* Logo */}
+      <div className="h-14 flex items-center justify-between px-4 border-b border-gray-200">
+        {!collapsed && (
           <div className="flex items-center gap-2">
-            <div className="w-8 h-8 bg-gradient-to-br from-emerald-500 to-teal-600 rounded-lg flex items-center justify-center">
+            {storeSettings.store_logo ? (
+              <img 
+                src={storeSettings.store_logo} 
+                alt={storeSettings.store_name}
+                className="w-8 h-8 rounded-lg object-cover"
+                onError={(e) => {
+                  e.target.style.display = 'none';
+                  e.target.nextSibling.style.display = 'flex';
+                }}
+              />
+            ) : null}
+            <div 
+              className={`w-8 h-8 bg-blue-600 rounded-lg items-center justify-center ${storeSettings.store_logo ? 'hidden' : 'flex'}`}
+            >
               <span className="text-white font-bold text-sm">{getInitials(storeSettings.store_name)}</span>
             </div>
-            <span className="text-white font-semibold truncate max-w-[180px]">{storeSettings.store_name}</span>
+            <span className="text-gray-900 font-semibold truncate max-w-[140px]">{storeSettings.store_name}</span>
           </div>
-          <button
-            onClick={() => setMobileOpen(false)}
-            className="p-2 rounded-lg hover:bg-gray-800 text-gray-400 hover:text-white transition-colors"
-          >
-            <X size={20} />
-          </button>
-        </div>
+        )}
+        {collapsed && (
+          <div className="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center mx-auto">
+            <span className="text-white font-bold text-sm">{getInitials(storeSettings.store_name)}</span>
+          </div>
+        )}
+      </div>
 
-        {/* Mobile Navigation */}
-        <nav className="flex-1 py-4 px-3 space-y-1 overflow-y-auto">
-          {navItems.map((item) => (
-            <NavLink
-              key={item.path}
-              to={item.path}
-              end={item.exact}
-              onClick={handleNavClick}
-              className={({ isActive }) =>
-                `flex items-center gap-3 px-3 py-2.5 rounded-lg transition-all duration-200 ${
-                  isActive
-                    ? 'bg-gradient-to-r from-emerald-500/20 to-teal-600/20 text-emerald-400 border border-emerald-500/30'
-                    : 'text-gray-400 hover:text-white hover:bg-gray-800/50'
-                }`
-              }
-            >
-              <item.icon size={20} className="flex-shrink-0" />
-              <span className="font-medium">{item.label}</span>
-            </NavLink>
-          ))}
-        </nav>
+      {/* Navigation */}
+      <nav className="flex-1 py-3 px-3 space-y-2 overflow-y-auto">
+        {navGroups.map(renderNavGroup)}
+      </nav>
 
-        {/* Mobile View Store Button */}
-        <div className="px-3 py-2 border-t border-gray-800">
+      {/* View Store Button */}
+      {!collapsed && (
+        <div className="px-3 py-2 border-t border-gray-200">
           <NavLink
             to="/live"
             target="_blank"
-            onClick={handleNavClick}
-            className="flex items-center justify-center gap-2 w-full px-4 py-2.5 bg-gradient-to-r from-emerald-500 to-teal-600 rounded-lg text-white font-medium hover:from-emerald-600 hover:to-teal-700 transition-all"
+            className="flex items-center justify-center gap-2 w-full px-4 py-2 bg-blue-600 rounded-lg text-white font-medium text-sm hover:bg-blue-700 transition-colors"
           >
-            <ExternalLink size={18} />
+            <ExternalLink size={16} />
             View Store
           </NavLink>
         </div>
+      )}
 
-        {/* Mobile Bottom Section */}
-        <div className="px-3 py-2 border-t border-gray-800 space-y-1">
-          <NavLink
-            to="/merchant/help"
-            onClick={handleNavClick}
-            className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-gray-400 hover:text-white hover:bg-gray-800/50 transition-all"
-          >
-            <HelpCircle size={20} />
-            <span className="font-medium">Help & Support</span>
-          </NavLink>
-          <button 
-            onClick={handleLogout}
-            className="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-gray-400 hover:text-red-400 hover:bg-red-500/10 transition-all"
-          >
-            <LogOut size={20} />
-            <span className="font-medium">Logout</span>
-          </button>
-        </div>
+      {/* Bottom Section */}
+      <div className="px-3 py-2 border-t border-gray-200 space-y-1">
+        <NavLink
+          to="/merchant/help"
+          onClick={handleNavClick}
+          className="flex items-center gap-3 px-3 py-2 rounded-lg text-gray-600 hover:text-gray-900 hover:bg-gray-100 transition-colors"
+        >
+          <HelpCircle size={18} />
+          {!collapsed && <span className="text-sm">Help & Support</span>}
+        </NavLink>
+        <button
+          onClick={handleLogout}
+          className="w-full flex items-center gap-3 px-3 py-2 rounded-lg text-gray-600 hover:text-red-600 hover:bg-red-50 transition-colors"
+        >
+          <LogOut size={18} />
+          {!collapsed && <span className="text-sm">Log Out</span>}
+        </button>
+      </div>
+    </>
+  );
+
+  return (
+    <>
+      {/* Desktop Sidebar */}
+      <aside
+        className={`hidden lg:flex fixed left-0 top-0 h-screen bg-white border-r border-gray-200 transition-all duration-300 z-50 flex-col ${
+          collapsed ? 'w-[60px]' : 'w-[240px]'
+        }`}
+      >
+        {sidebarContent}
+        
+        {/* Collapse Button */}
+        <button
+          onClick={() => setCollapsed(!collapsed)}
+          className="absolute -right-3 top-20 w-6 h-6 bg-white border border-gray-200 rounded-full flex items-center justify-center text-gray-400 hover:text-gray-600 hover:bg-gray-50 shadow-sm"
+        >
+          {collapsed ? <ChevronRight size={14} /> : <ChevronLeft size={14} />}
+        </button>
+      </aside>
+
+      {/* Mobile Sidebar */}
+      <aside
+        className={`lg:hidden fixed left-0 top-0 h-screen bg-white border-r border-gray-200 transition-transform duration-300 z-50 flex flex-col w-[280px] ${
+          mobileOpen ? 'translate-x-0' : '-translate-x-full'
+        }`}
+      >
+        {/* Close button for mobile */}
+        <button
+          onClick={() => setMobileOpen(false)}
+          className="absolute right-3 top-4 p-1 rounded-lg hover:bg-gray-100 text-gray-500"
+        >
+          <X size={20} />
+        </button>
+        {sidebarContent}
       </aside>
     </>
   );
