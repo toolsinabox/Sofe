@@ -1973,3 +1973,58 @@ if category_id:
 The storefront ProductDetail.jsx reviews section is ready but the live store uses backend-rendered templates (Maropost-style). The reviews will need to be integrated into the theme template system for customer-facing display.
 
 ### Status: COMPLETE ✓
+
+---
+
+## eBay Theme Conditional Tags & Logo Fix - 2025-12-23
+
+### Issues Fixed
+
+#### 1. Conditional Image Tags Now Working
+- Fixed regex patterns to properly match `{{#if_image_X}}...{{/if_image_X}}` syntax
+- Fixed `{{#if_has_images}}...{{/if_has_images}}` to correctly detect when images exist
+- Fixed `{{#if_no_images}}...{{/if_no_images}}` to show fallback when no images
+- Fixed `{{#if_store_logo}}...{{/if_store_logo}}` for conditional logo display
+
+#### 2. Logo Now Displaying
+- Changed from external placeholder URL to inline SVG data URI
+- Logo shows: Blue "S" icon with "Your Store" text in a white rounded box
+- Works reliably without external dependencies
+
+#### 3. Sample Product Images Added
+- Default sample product now includes 4 placeholder images:
+  - `Product Image 1` through `Product Image 4`
+- Uses placehold.co service for reliable image placeholders
+- Images filtered to remove empty strings before processing
+
+### How Conditional Tags Work
+```html
+<!-- Only shows if product has any images -->
+{{#if_has_images}}
+  <div class="image-gallery">...</div>
+{{/if_has_images}}
+
+<!-- Only shows if specific image exists -->
+{{#if_image_1}}
+  <img src="{{product_image_1}}" />
+{{/if_image_1}}
+
+<!-- Only shows if store logo is set -->
+{{#if_store_logo}}
+  <img src="{{store_logo}}" />
+{{/if_store_logo}}
+
+<!-- Shows when NO images exist -->
+{{#if_no_images}}
+  <div>No images available</div>
+{{/if_no_images}}
+```
+
+### Testing Results
+- ✅ Logo displays as SVG in the header
+- ✅ Product images 1-4 display in gallery
+- ✅ Conditional tags correctly show/hide content
+- ✅ Regex patterns match template syntax
+- ✅ Empty image arrays handled correctly
+
+### Status: COMPLETE ✓
