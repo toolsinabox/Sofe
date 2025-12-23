@@ -32,27 +32,27 @@ const API = `${BACKEND_URL}/api`;
 const getFileInfo = (filename) => {
   const ext = filename.split('.').pop().toLowerCase();
   const mappings = {
-    html: { icon: FileCode, color: 'text-orange-400', language: 'html' },
-    htm: { icon: FileCode, color: 'text-orange-400', language: 'html' },
-    css: { icon: FileText, color: 'text-blue-400', language: 'css' },
+    html: { icon: FileCode, color: 'text-orange-600', language: 'html' },
+    htm: { icon: FileCode, color: 'text-orange-600', language: 'html' },
+    css: { icon: FileText, color: 'text-blue-600', language: 'css' },
     scss: { icon: FileText, color: 'text-pink-400', language: 'scss' },
     sass: { icon: FileText, color: 'text-pink-400', language: 'scss' },
-    js: { icon: FileCog, color: 'text-yellow-400', language: 'javascript' },
-    json: { icon: FileJson, color: 'text-green-400', language: 'json' },
-    txt: { icon: FileText, color: 'text-gray-400', language: 'plaintext' },
-    md: { icon: FileText, color: 'text-gray-400', language: 'markdown' },
-    png: { icon: Image, color: 'text-purple-400', language: null, isImage: true },
-    jpg: { icon: Image, color: 'text-purple-400', language: null, isImage: true },
-    jpeg: { icon: Image, color: 'text-purple-400', language: null, isImage: true },
-    gif: { icon: Image, color: 'text-purple-400', language: null, isImage: true },
-    webp: { icon: Image, color: 'text-purple-400', language: null, isImage: true },
-    svg: { icon: Image, color: 'text-purple-400', language: 'xml', isImage: true },
+    js: { icon: FileCog, color: 'text-yellow-600', language: 'javascript' },
+    json: { icon: FileJson, color: 'text-green-600', language: 'json' },
+    txt: { icon: FileText, color: 'text-gray-500', language: 'plaintext' },
+    md: { icon: FileText, color: 'text-gray-500', language: 'markdown' },
+    png: { icon: Image, color: 'text-purple-600', language: null, isImage: true },
+    jpg: { icon: Image, color: 'text-purple-600', language: null, isImage: true },
+    jpeg: { icon: Image, color: 'text-purple-600', language: null, isImage: true },
+    gif: { icon: Image, color: 'text-purple-600', language: null, isImage: true },
+    webp: { icon: Image, color: 'text-purple-600', language: null, isImage: true },
+    svg: { icon: Image, color: 'text-purple-600', language: 'xml', isImage: true },
     woff: { icon: File, color: 'text-gray-500', language: null, isBinary: true },
     woff2: { icon: File, color: 'text-gray-500', language: null, isBinary: true },
     ttf: { icon: File, color: 'text-gray-500', language: null, isBinary: true },
     eot: { icon: File, color: 'text-gray-500', language: null, isBinary: true },
   };
-  return mappings[ext] || { icon: File, color: 'text-gray-400', language: 'plaintext' };
+  return mappings[ext] || { icon: File, color: 'text-gray-500', language: 'plaintext' };
 };
 
 // Build tree structure from flat file list
@@ -91,9 +91,9 @@ const TreeNode = ({ name, node, path, selectedFile, onSelect, onDelete, expanded
   if (isFile) {
     return (
       <div
-        className={`flex items-center gap-2 py-1 px-2 rounded cursor-pointer group hover:bg-gray-800 ${
+        className={`flex items-center gap-2 py-1 px-2 rounded cursor-pointer group hover:bg-white ${
           selectedFile?.path === node._file.path && selectedFile?.theme === node._file.theme 
-            ? 'bg-cyan-600/20 text-cyan-400' : 'text-gray-400'
+            ? 'bg-cyan-600/20 text-cyan-400' : 'text-gray-500'
         }`}
         style={{ paddingLeft: `${depth * 12 + 8}px` }}
         onClick={() => onSelect(node._file)}
@@ -102,7 +102,7 @@ const TreeNode = ({ name, node, path, selectedFile, onSelect, onDelete, expanded
         <span className="text-xs flex-1 truncate">{name}</span>
         <button
           onClick={(e) => { e.stopPropagation(); onDelete(node._file); }}
-          className="opacity-0 group-hover:opacity-100 text-red-400 hover:text-red-300 p-0.5"
+          className="opacity-0 group-hover:opacity-100 text-red-600 hover:text-red-300 p-0.5"
         >
           <Trash2 className="w-3 h-3" />
         </button>
@@ -122,7 +122,7 @@ const TreeNode = ({ name, node, path, selectedFile, onSelect, onDelete, expanded
   return (
     <div>
       <div
-        className="flex items-center gap-1 py-1 px-2 rounded cursor-pointer hover:bg-gray-800 text-gray-300"
+        className="flex items-center gap-1 py-1 px-2 rounded cursor-pointer hover:bg-white text-gray-700"
         style={{ paddingLeft: `${depth * 12 + 8}px` }}
         onClick={() => toggleExpand(path)}
       >
@@ -474,18 +474,18 @@ const MerchantThemeEditor = () => {
 
   if (loading) {
     return (
-      <div className="flex items-center justify-center h-screen bg-gray-900">
+      <div className="flex items-center justify-center h-screen bg-gray-50">
         <RefreshCw className="w-8 h-8 animate-spin text-cyan-500" />
       </div>
     );
   }
 
   return (
-    <div className="h-[calc(100vh-64px)] flex flex-col bg-gray-900">
+    <div className="h-[calc(100vh-64px)] flex flex-col bg-gray-50">
       {/* Header */}
-      <div className="flex items-center justify-between p-3 border-b border-gray-700 bg-gray-800">
+      <div className="flex items-center justify-between p-3 border-b border-gray-200 bg-white">
         <div className="flex items-center gap-4">
-          <h1 className="text-lg font-bold text-white flex items-center gap-2">
+          <h1 className="text-lg font-bold text-gray-900 flex items-center gap-2">
             <Palette className="w-5 h-5 text-cyan-500" />
             Theme Editor
           </h1>
@@ -494,7 +494,7 @@ const MerchantThemeEditor = () => {
               <span className="text-gray-500">/</span>
               <span className="text-cyan-400 text-sm">{selectedTheme}/{selectedFile.path}</span>
               {hasUnsavedChanges && (
-                <span className="text-xs bg-yellow-500/20 text-yellow-400 px-2 py-0.5 rounded">Unsaved</span>
+                <span className="text-xs bg-yellow-50 text-yellow-600 px-2 py-0.5 rounded">Unsaved</span>
               )}
             </div>
           )}
@@ -504,7 +504,7 @@ const MerchantThemeEditor = () => {
             variant="outline"
             size="sm"
             onClick={() => setShowTagsPanel(!showTagsPanel)}
-            className={`border-gray-600 ${showTagsPanel ? 'bg-cyan-600 text-white' : 'text-gray-300'}`}
+            className={`border-gray-200 ${showTagsPanel ? 'bg-cyan-600 text-gray-900' : 'text-gray-700'}`}
           >
             <Book className="w-4 h-4 mr-1" /> Tags
           </Button>
@@ -520,7 +520,7 @@ const MerchantThemeEditor = () => {
       </div>
 
       {error && (
-        <div className="mx-4 mt-2 p-3 bg-red-500/10 border border-red-500/50 rounded-lg flex items-center gap-2 text-red-400 text-sm">
+        <div className="mx-4 mt-2 p-3 bg-red-500/10 border border-red-500/50 rounded-lg flex items-center gap-2 text-red-600 text-sm">
           <AlertCircle className="w-4 h-4" />
           {error}
           <button onClick={() => setError(null)} className="ml-auto"><X className="w-4 h-4" /></button>
@@ -529,15 +529,15 @@ const MerchantThemeEditor = () => {
 
       <div className="flex-1 flex overflow-hidden">
         {/* Sidebar - Web Themes */}
-        <div className="w-72 bg-gray-900 border-r border-gray-700 flex flex-col">
-          <div className="p-2 border-b border-gray-700">
+        <div className="w-72 bg-gray-50 border-r border-gray-200 flex flex-col">
+          <div className="p-2 border-b border-gray-200">
             <div className="flex items-center justify-between mb-2">
-              <span className="text-xs font-semibold text-gray-400 uppercase">Web Themes</span>
+              <span className="text-xs font-semibold text-gray-500 uppercase">Web Themes</span>
               <Button
                 onClick={() => setShowNewThemeModal(true)}
                 size="sm"
                 variant="ghost"
-                className="h-6 px-2 text-cyan-400 hover:text-cyan-300 hover:bg-gray-800"
+                className="h-6 px-2 text-cyan-400 hover:text-cyan-300 hover:bg-white"
               >
                 <Plus className="w-3 h-3 mr-1" /> New
               </Button>
@@ -549,7 +549,7 @@ const MerchantThemeEditor = () => {
                   value={searchFile}
                   onChange={(e) => setSearchFile(e.target.value)}
                   placeholder="Search files..."
-                  className="pl-7 bg-gray-800 border-gray-700 text-white text-xs h-7"
+                  className="pl-7 bg-white border-gray-200 text-gray-900 text-xs h-7"
                 />
               </div>
             )}
@@ -561,8 +561,8 @@ const MerchantThemeEditor = () => {
                 {/* Theme header */}
                 <div className="flex items-center group">
                   <div
-                    className={`flex-1 flex items-center gap-1 py-1.5 px-2 cursor-pointer hover:bg-gray-800 ${
-                      selectedTheme === theme.name ? 'text-cyan-400' : 'text-gray-300'
+                    className={`flex-1 flex items-center gap-1 py-1.5 px-2 cursor-pointer hover:bg-white ${
+                      selectedTheme === theme.name ? 'text-cyan-400' : 'text-gray-700'
                     }`}
                     onClick={() => toggleThemeExpand(theme.name)}
                   >
@@ -571,7 +571,7 @@ const MerchantThemeEditor = () => {
                     ) : (
                       <ChevronRight className="w-3 h-3" />
                     )}
-                    <Globe className={`w-4 h-4 ${theme.is_active ? 'text-green-400' : 'text-gray-500'}`} />
+                    <Globe className={`w-4 h-4 ${theme.is_active ? 'text-green-600' : 'text-gray-500'}`} />
                     <span className="text-sm font-medium flex-1">{theme.name}</span>
                     {theme.is_active && (
                       <Star className="w-3 h-3 text-yellow-500 fill-yellow-500" />
@@ -581,22 +581,22 @@ const MerchantThemeEditor = () => {
                   
                   <DropdownMenu>
                     <DropdownMenuTrigger asChild>
-                      <button className="p-1 opacity-0 group-hover:opacity-100 hover:bg-gray-700 rounded">
-                        <MoreVertical className="w-4 h-4 text-gray-400" />
+                      <button className="p-1 opacity-0 group-hover:opacity-100 hover:bg-gray-100 rounded">
+                        <MoreVertical className="w-4 h-4 text-gray-500" />
                       </button>
                     </DropdownMenuTrigger>
-                    <DropdownMenuContent align="end" className="bg-[#1a1f2e] border-gray-700">
+                    <DropdownMenuContent align="end" className="bg-[#1a1f2e] border-gray-200">
                       {!theme.is_active && (
                         <DropdownMenuItem 
                           onClick={() => handleActivateTheme(theme.name)}
-                          className="text-gray-300 hover:bg-gray-700"
+                          className="text-gray-700 hover:bg-gray-100"
                         >
                           <Star className="w-4 h-4 mr-2" /> Set as Active
                         </DropdownMenuItem>
                       )}
                       <DropdownMenuItem 
                         onClick={() => handleDownloadTheme(theme.name)}
-                        className="text-gray-300 hover:bg-gray-700"
+                        className="text-gray-700 hover:bg-gray-100"
                       >
                         <Download className="w-4 h-4 mr-2" /> Download ZIP
                       </DropdownMenuItem>
@@ -605,7 +605,7 @@ const MerchantThemeEditor = () => {
                           setSelectedTheme(theme.name);
                           fileInputRef.current?.click();
                         }}
-                        className="text-gray-300 hover:bg-gray-700"
+                        className="text-gray-700 hover:bg-gray-100"
                       >
                         <Upload className="w-4 h-4 mr-2" /> Upload ZIP
                       </DropdownMenuItem>
@@ -614,14 +614,14 @@ const MerchantThemeEditor = () => {
                           setSelectedTheme(theme.name);
                           setShowNewFileModal(true);
                         }}
-                        className="text-gray-300 hover:bg-gray-700"
+                        className="text-gray-700 hover:bg-gray-100"
                       >
                         <Plus className="w-4 h-4 mr-2" /> New File
                       </DropdownMenuItem>
                       {!theme.is_active && (
                         <DropdownMenuItem 
                           onClick={() => handleDeleteTheme(theme.name)}
-                          className="text-red-400 hover:bg-red-500/10"
+                          className="text-red-600 hover:bg-red-500/10"
                         >
                           <Trash2 className="w-4 h-4 mr-2" /> Delete
                         </DropdownMenuItem>
@@ -676,14 +676,14 @@ const MerchantThemeEditor = () => {
                     alt={selectedFile.path}
                     className="max-w-full max-h-[60vh] object-contain rounded-lg shadow-lg"
                   />
-                  <p className="text-gray-400 mt-4 text-sm">{selectedFile.path}</p>
+                  <p className="text-gray-500 mt-4 text-sm">{selectedFile.path}</p>
                 </div>
               </div>
             ) : fileInfo?.isBinary ? (
               <div className="flex-1 flex items-center justify-center bg-gray-950">
                 <div className="text-center">
                   <File className="w-16 h-16 mx-auto text-gray-600 mb-4" />
-                  <h3 className="text-lg font-medium text-gray-400">Binary File</h3>
+                  <h3 className="text-lg font-medium text-gray-500">Binary File</h3>
                   <p className="text-gray-500 mt-2 text-sm">Cannot be edited</p>
                 </div>
               </div>
@@ -709,7 +709,7 @@ const MerchantThemeEditor = () => {
             <div className="flex-1 flex items-center justify-center bg-gray-950">
               <div className="text-center">
                 <FileCode className="w-16 h-16 mx-auto text-gray-600 mb-4" />
-                <h3 className="text-lg font-medium text-gray-400">No file selected</h3>
+                <h3 className="text-lg font-medium text-gray-500">No file selected</h3>
                 <p className="text-gray-500 mt-2 text-sm">Select a theme and file from the sidebar</p>
               </div>
             </div>
@@ -718,21 +718,21 @@ const MerchantThemeEditor = () => {
 
         {/* Tags Panel */}
         {showTagsPanel && (
-          <div className="w-72 bg-gray-900 border-l border-gray-700 flex flex-col">
-            <div className="p-2 border-b border-gray-700">
+          <div className="w-72 bg-gray-50 border-l border-gray-200 flex flex-col">
+            <div className="p-2 border-b border-gray-200">
               <div className="flex items-center justify-between mb-2">
-                <h3 className="text-sm font-semibold text-white">Maropost Tags</h3>
-                <button onClick={() => setShowTagsPanel(false)} className="text-gray-400 hover:text-white">
+                <h3 className="text-sm font-semibold text-gray-900">Maropost Tags</h3>
+                <button onClick={() => setShowTagsPanel(false)} className="text-gray-500 hover:text-gray-900">
                   <X className="w-4 h-4" />
                 </button>
               </div>
               <div className="relative">
-                <Search className="absolute left-2 top-1/2 -translate-y-1/2 w-3 h-3 text-gray-400" />
+                <Search className="absolute left-2 top-1/2 -translate-y-1/2 w-3 h-3 text-gray-500" />
                 <Input
                   value={searchTag}
                   onChange={(e) => setSearchTag(e.target.value)}
                   placeholder="Search tags..."
-                  className="pl-7 bg-gray-800 border-gray-600 text-white text-xs h-7"
+                  className="pl-7 bg-white border-gray-200 text-gray-900 text-xs h-7"
                 />
               </div>
             </div>
@@ -746,12 +746,12 @@ const MerchantThemeEditor = () => {
                     {tags.slice(0, 8).map((tag, idx) => (
                       <div
                         key={idx}
-                        className="flex items-center justify-between p-1 bg-gray-800 rounded text-xs group hover:bg-gray-700 cursor-pointer mb-0.5"
+                        className="flex items-center justify-between p-1 bg-white rounded text-xs group hover:bg-gray-100 cursor-pointer mb-0.5"
                         onClick={() => insertTag(tag.tag)}
                       >
                         <code className="text-cyan-300 truncate">{tag.tag}</code>
                         <button onClick={(e) => { e.stopPropagation(); copyTag(tag.tag); }} className="opacity-0 group-hover:opacity-100">
-                          {copiedTag === tag.tag ? <Check className="w-3 h-3 text-green-400" /> : <Copy className="w-3 h-3 text-gray-400" />}
+                          {copiedTag === tag.tag ? <Check className="w-3 h-3 text-green-600" /> : <Copy className="w-3 h-3 text-gray-500" />}
                         </button>
                       </div>
                     ))}
@@ -760,14 +760,14 @@ const MerchantThemeEditor = () => {
               </div>
 
               <div>
-                <h4 className="text-xs font-semibold text-purple-400 uppercase mb-1">Function Tags [%tag%]</h4>
+                <h4 className="text-xs font-semibold text-purple-600 uppercase mb-1">Function Tags [%tag%]</h4>
                 {Object.entries(filteredTags()?.function_tags || {}).map(([category, tags]) => (
                   <div key={category} className="mb-2">
                     <h5 className="text-xs text-gray-500 capitalize mb-1">{category}</h5>
                     {tags.map((tag, idx) => (
                       <div
                         key={idx}
-                        className="p-1 bg-gray-800 rounded text-xs group hover:bg-gray-700 cursor-pointer mb-0.5"
+                        className="p-1 bg-white rounded text-xs group hover:bg-gray-100 cursor-pointer mb-0.5"
                         onClick={() => insertTag(tag.tag)}
                       >
                         <code className="text-purple-300 text-xs block truncate">{tag.tag.substring(0, 35)}...</code>
@@ -793,23 +793,23 @@ const MerchantThemeEditor = () => {
 
       {/* New Theme Modal */}
       <Dialog open={showNewThemeModal} onOpenChange={setShowNewThemeModal}>
-        <DialogContent className="bg-[#151b28] border-gray-800 text-white max-w-sm">
+        <DialogContent className="bg-white border-gray-200 text-gray-900 max-w-sm">
           <DialogHeader>
             <DialogTitle>Create New Theme</DialogTitle>
           </DialogHeader>
           <div className="space-y-4 mt-4">
             <div>
-              <Label className="text-gray-300">Theme Name</Label>
+              <Label className="text-gray-700">Theme Name</Label>
               <Input
                 value={newThemeName}
                 onChange={(e) => setNewThemeName(e.target.value)}
                 placeholder="e.g., mytheme"
-                className="bg-gray-800 border-gray-700 text-white"
+                className="bg-white border-gray-200 text-gray-900"
               />
               <p className="text-xs text-gray-500 mt-1">Lowercase, no spaces</p>
             </div>
             <div className="flex gap-2">
-              <Button variant="ghost" onClick={() => setShowNewThemeModal(false)} className="flex-1 text-gray-400">
+              <Button variant="ghost" onClick={() => setShowNewThemeModal(false)} className="flex-1 text-gray-500">
                 Cancel
               </Button>
               <Button onClick={handleCreateTheme} className="flex-1 bg-cyan-600 hover:bg-cyan-700">
@@ -822,33 +822,33 @@ const MerchantThemeEditor = () => {
 
       {/* New File Modal */}
       <Dialog open={showNewFileModal} onOpenChange={setShowNewFileModal}>
-        <DialogContent className="bg-[#151b28] border-gray-800 text-white max-w-md">
+        <DialogContent className="bg-white border-gray-200 text-gray-900 max-w-md">
           <DialogHeader>
             <DialogTitle>New File in {selectedTheme}</DialogTitle>
           </DialogHeader>
           <form onSubmit={handleCreateFile} className="space-y-4 mt-4">
             <div>
-              <Label className="text-gray-300">File Path</Label>
+              <Label className="text-gray-700">File Path</Label>
               <Input
                 value={newFile.path}
                 onChange={(e) => setNewFile(prev => ({ ...prev, path: e.target.value }))}
                 placeholder="e.g., templates/custom/page.html"
                 required
-                className="bg-gray-800 border-gray-700 text-white"
+                className="bg-white border-gray-200 text-gray-900"
               />
             </div>
             <div>
-              <Label className="text-gray-300">Initial Content</Label>
+              <Label className="text-gray-700">Initial Content</Label>
               <textarea
                 value={newFile.content}
                 onChange={(e) => setNewFile(prev => ({ ...prev, content: e.target.value }))}
                 placeholder="Optional..."
                 rows={4}
-                className="w-full bg-gray-800 border border-gray-700 text-white rounded-md p-2 text-sm font-mono"
+                className="w-full bg-white border border-gray-200 text-gray-900 rounded-md p-2 text-sm font-mono"
               />
             </div>
             <div className="flex gap-2">
-              <Button type="button" variant="ghost" onClick={() => setShowNewFileModal(false)} className="flex-1 text-gray-400">
+              <Button type="button" variant="ghost" onClick={() => setShowNewFileModal(false)} className="flex-1 text-gray-500">
                 Cancel
               </Button>
               <Button type="submit" className="flex-1 bg-cyan-600 hover:bg-cyan-700">

@@ -284,21 +284,21 @@ const MerchantEmails = () => {
 
   const getCategoryColor = (category) => {
     switch (category) {
-      case 'order': return 'bg-blue-500/10 text-blue-400';
-      case 'shipping': return 'bg-emerald-500/10 text-emerald-400';
+      case 'order': return 'bg-blue-500/10 text-blue-600';
+      case 'shipping': return 'bg-emerald-500/10 text-emerald-600';
       case 'payment': return 'bg-amber-500/10 text-amber-400';
-      case 'quote': return 'bg-purple-500/10 text-purple-400';
-      default: return 'bg-gray-500/10 text-gray-400';
+      case 'quote': return 'bg-purple-500/10 text-purple-600';
+      default: return 'bg-gray-500/10 text-gray-500';
     }
   };
 
   const getStatusIcon = (status) => {
     switch (status) {
-      case 'sent': return <Send size={14} className="text-emerald-400" />;
-      case 'delivered': return <CheckCircle size={14} className="text-emerald-400" />;
-      case 'opened': return <Eye size={14} className="text-blue-400" />;
-      case 'failed': return <XCircle size={14} className="text-red-400" />;
-      default: return <Clock size={14} className="text-gray-400" />;
+      case 'sent': return <Send size={14} className="text-emerald-600" />;
+      case 'delivered': return <CheckCircle size={14} className="text-emerald-600" />;
+      case 'opened': return <Eye size={14} className="text-blue-600" />;
+      case 'failed': return <XCircle size={14} className="text-red-600" />;
+      default: return <Clock size={14} className="text-gray-500" />;
     }
   };
 
@@ -372,11 +372,11 @@ const MerchantEmails = () => {
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-bold text-white">Email Management</h1>
-          <p className="text-gray-400 mt-1">Manage email communications with customers</p>
+          <h1 className="text-2xl font-bold text-gray-900">Email Management</h1>
+          <p className="text-gray-500 mt-1">Manage email communications with customers</p>
         </div>
         <div className="flex items-center gap-3">
-          <Button variant="outline" onClick={fetchData} className="border-gray-700 text-gray-300">
+          <Button variant="outline" onClick={fetchData} className="border-gray-200 text-gray-700">
             <RefreshCw size={16} className="mr-2" />
             Refresh
           </Button>
@@ -389,57 +389,57 @@ const MerchantEmails = () => {
 
       {/* Stats Cards */}
       <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-        <Card className="bg-[#1a1f2e] border-gray-800">
+        <Card className="bg-[#1a1f2e] border-gray-200">
           <CardContent className="p-4">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm text-gray-400">Total Sent</p>
-                <p className="text-2xl font-bold text-white mt-1">{stats.total_sent}</p>
+                <p className="text-sm text-gray-500">Total Sent</p>
+                <p className="text-2xl font-bold text-gray-900 mt-1">{stats.total_sent}</p>
                 <p className="text-xs text-gray-500 mt-1">All time</p>
               </div>
               <div className="p-3 bg-blue-500/10 rounded-lg">
-                <Mail className="text-blue-400" size={24} />
+                <Mail className="text-blue-600" size={24} />
               </div>
             </div>
           </CardContent>
         </Card>
 
-        <Card className="bg-[#1a1f2e] border-gray-800">
+        <Card className="bg-[#1a1f2e] border-gray-200">
           <CardContent className="p-4">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm text-gray-400">Sent Today</p>
-                <p className="text-2xl font-bold text-white mt-1">{stats.sent_today}</p>
-                <p className="text-xs text-emerald-400 mt-1">Active today</p>
+                <p className="text-sm text-gray-500">Sent Today</p>
+                <p className="text-2xl font-bold text-gray-900 mt-1">{stats.sent_today}</p>
+                <p className="text-xs text-emerald-600 mt-1">Active today</p>
               </div>
               <div className="p-3 bg-emerald-500/10 rounded-lg">
-                <Send className="text-emerald-400" size={24} />
+                <Send className="text-emerald-600" size={24} />
               </div>
             </div>
           </CardContent>
         </Card>
 
-        <Card className="bg-[#1a1f2e] border-gray-800">
+        <Card className="bg-[#1a1f2e] border-gray-200">
           <CardContent className="p-4">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm text-gray-400">Delivery Rate</p>
-                <p className="text-2xl font-bold text-white mt-1">{stats.delivery_rate}%</p>
+                <p className="text-sm text-gray-500">Delivery Rate</p>
+                <p className="text-2xl font-bold text-gray-900 mt-1">{stats.delivery_rate}%</p>
                 <p className="text-xs text-gray-500 mt-1">Successfully delivered</p>
               </div>
               <div className="p-3 bg-purple-500/10 rounded-lg">
-                <CheckCircle className="text-purple-400" size={24} />
+                <CheckCircle className="text-purple-600" size={24} />
               </div>
             </div>
           </CardContent>
         </Card>
 
-        <Card className="bg-[#1a1f2e] border-gray-800">
+        <Card className="bg-[#1a1f2e] border-gray-200">
           <CardContent className="p-4">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm text-gray-400">Open Rate</p>
-                <p className="text-2xl font-bold text-white mt-1">{stats.open_rate}%</p>
+                <p className="text-sm text-gray-500">Open Rate</p>
+                <p className="text-2xl font-bold text-gray-900 mt-1">{stats.open_rate}%</p>
                 <p className="text-xs text-gray-500 mt-1">Email engagement</p>
               </div>
               <div className="p-3 bg-amber-500/10 rounded-lg">
@@ -453,12 +453,12 @@ const MerchantEmails = () => {
       {/* Tabs */}
       <Tabs value={activeTab} onValueChange={setActiveTab}>
         <div className="flex items-center justify-between">
-          <TabsList className="bg-[#1a1f2e] border border-gray-800">
-            <TabsTrigger value="history" className="data-[state=active]:bg-emerald-500/20 data-[state=active]:text-emerald-400">
+          <TabsList className="bg-[#1a1f2e] border border-gray-200">
+            <TabsTrigger value="history" className="data-[state=active]:bg-emerald-50 data-[state=active]:text-emerald-600">
               <Clock size={16} className="mr-2" />
               Email History
             </TabsTrigger>
-            <TabsTrigger value="templates" className="data-[state=active]:bg-emerald-500/20 data-[state=active]:text-emerald-400">
+            <TabsTrigger value="templates" className="data-[state=active]:bg-emerald-50 data-[state=active]:text-emerald-600">
               <FileText size={16} className="mr-2" />
               Templates
             </TabsTrigger>
@@ -473,19 +473,19 @@ const MerchantEmails = () => {
                 placeholder="Search..."
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
-                className="pl-10 pr-4 py-2 bg-[#1a1f2e] border border-gray-700 rounded-lg text-white text-sm w-64 focus:outline-none focus:border-emerald-500"
+                className="pl-10 pr-4 py-2 bg-[#1a1f2e] border border-gray-200 rounded-lg text-gray-900 text-sm w-64 focus:outline-none focus:border-emerald-500"
               />
             </div>
             <Select value={categoryFilter} onValueChange={setCategoryFilter}>
-              <SelectTrigger className="w-40 bg-[#1a1f2e] border-gray-700 text-white">
+              <SelectTrigger className="w-40 bg-[#1a1f2e] border-gray-200 text-gray-900">
                 <SelectValue placeholder="Category" />
               </SelectTrigger>
-              <SelectContent className="bg-[#1a1f2e] border-gray-700">
-                <SelectItem value="all" className="text-white">All Categories</SelectItem>
-                <SelectItem value="order" className="text-white">Order</SelectItem>
-                <SelectItem value="shipping" className="text-white">Shipping</SelectItem>
-                <SelectItem value="payment" className="text-white">Payment</SelectItem>
-                <SelectItem value="quote" className="text-white">Quote</SelectItem>
+              <SelectContent className="bg-[#1a1f2e] border-gray-200">
+                <SelectItem value="all" className="text-gray-900">All Categories</SelectItem>
+                <SelectItem value="order" className="text-gray-900">Order</SelectItem>
+                <SelectItem value="shipping" className="text-gray-900">Shipping</SelectItem>
+                <SelectItem value="payment" className="text-gray-900">Payment</SelectItem>
+                <SelectItem value="quote" className="text-gray-900">Quote</SelectItem>
               </SelectContent>
             </Select>
           </div>
@@ -493,10 +493,10 @@ const MerchantEmails = () => {
 
         {/* Email History Tab */}
         <TabsContent value="history" className="mt-4">
-          <Card className="bg-[#1a1f2e] border-gray-800">
+          <Card className="bg-[#1a1f2e] border-gray-200">
             <CardContent className="p-0">
               {filteredEmails.length === 0 ? (
-                <div className="flex flex-col items-center justify-center py-16 text-gray-400">
+                <div className="flex flex-col items-center justify-center py-16 text-gray-500">
                   <Mail size={48} className="mb-4 opacity-50" />
                   <p className="text-lg font-medium">No emails found</p>
                   <p className="text-sm">Email history will appear here when emails are sent</p>
@@ -506,7 +506,7 @@ const MerchantEmails = () => {
                   {filteredEmails.map((email, index) => (
                     <div
                       key={index}
-                      className="p-4 hover:bg-gray-800/50 cursor-pointer transition-colors"
+                      className="p-4 hover:bg-white/50 cursor-pointer transition-colors"
                       onClick={() => { setSelectedEmail(email); setShowEmailDetail(true); }}
                     >
                       <div className="flex items-start justify-between">
@@ -516,12 +516,12 @@ const MerchantEmails = () => {
                           </div>
                           <div className="flex-1 min-w-0">
                             <div className="flex items-center gap-2 mb-1">
-                              <span className="font-medium text-white truncate">{email.subject}</span>
+                              <span className="font-medium text-gray-900 truncate">{email.subject}</span>
                               <span className={`text-xs px-2 py-0.5 rounded ${getCategoryColor(email.template?.split('_')[0])}`}>
                                 {email.template?.replace(/_/g, ' ') || 'Custom'}
                               </span>
                             </div>
-                            <div className="flex items-center gap-2 text-sm text-gray-400">
+                            <div className="flex items-center gap-2 text-sm text-gray-500">
                               <User size={12} />
                               <span>{email.customer_name || email.to}</span>
                               <span className="text-gray-600">•</span>
@@ -531,7 +531,7 @@ const MerchantEmails = () => {
                               <ShoppingBag size={12} />
                               <Link 
                                 to={`/merchant/orders/${email.order_id}`}
-                                className="hover:text-emerald-400"
+                                className="hover:text-emerald-600"
                                 onClick={(e) => e.stopPropagation()}
                               >
                                 {email.order_number}
@@ -558,14 +558,14 @@ const MerchantEmails = () => {
             {filteredTemplates.map((template) => (
               <Card 
                 key={template.id} 
-                className="bg-[#1a1f2e] border-gray-800 hover:border-gray-700 transition-colors cursor-pointer"
+                className="bg-[#1a1f2e] border-gray-200 hover:border-gray-200 transition-colors cursor-pointer"
                 onClick={() => { setSelectedTemplate(template); setShowTemplateModal(true); }}
               >
                 <CardHeader className="pb-2">
                   <div className="flex items-start justify-between">
                     <div>
-                      <CardTitle className="text-white text-base">{template.name}</CardTitle>
-                      <CardDescription className="text-gray-400 text-sm mt-1">
+                      <CardTitle className="text-gray-900 text-base">{template.name}</CardTitle>
+                      <CardDescription className="text-gray-500 text-sm mt-1">
                         {template.description}
                       </CardDescription>
                     </div>
@@ -575,15 +575,15 @@ const MerchantEmails = () => {
                   </div>
                 </CardHeader>
                 <CardContent>
-                  <div className="bg-gray-800/50 rounded p-3 mt-2">
-                    <p className="text-xs text-gray-400 mb-1">Subject:</p>
-                    <p className="text-sm text-white truncate">{template.subject}</p>
+                  <div className="bg-white/50 rounded p-3 mt-2">
+                    <p className="text-xs text-gray-500 mb-1">Subject:</p>
+                    <p className="text-sm text-gray-900 truncate">{template.subject}</p>
                   </div>
                   <div className="flex items-center justify-between mt-3">
                     <Button 
                       variant="ghost" 
                       size="sm" 
-                      className="text-gray-400 hover:text-white"
+                      className="text-gray-500 hover:text-gray-900"
                       onClick={(e) => { 
                         e.stopPropagation(); 
                         setSelectedTemplate(template); 
@@ -595,7 +595,7 @@ const MerchantEmails = () => {
                     <Button 
                       variant="ghost" 
                       size="sm" 
-                      className="text-emerald-400 hover:text-emerald-300"
+                      className="text-emerald-600 hover:text-emerald-300"
                       onClick={(e) => { 
                         e.stopPropagation(); 
                         loadTemplate(template.id);
@@ -614,10 +614,10 @@ const MerchantEmails = () => {
 
       {/* Compose Email Modal */}
       <Dialog open={showComposeModal} onOpenChange={setShowComposeModal}>
-        <DialogContent className="bg-[#1a1f2e] border-gray-700 max-w-2xl">
+        <DialogContent className="bg-[#1a1f2e] border-gray-200 max-w-2xl">
           <DialogHeader>
-            <DialogTitle className="text-white">Compose Email</DialogTitle>
-            <DialogDescription className="text-gray-400">
+            <DialogTitle className="text-gray-900">Compose Email</DialogTitle>
+            <DialogDescription className="text-gray-500">
               Send an email to a customer regarding their order
             </DialogDescription>
           </DialogHeader>
@@ -625,7 +625,7 @@ const MerchantEmails = () => {
           <div className="space-y-4 mt-4">
             <div className="grid grid-cols-2 gap-4">
               <div>
-                <label className="text-sm text-gray-400 block mb-1">Select Order</label>
+                <label className="text-sm text-gray-500 block mb-1">Select Order</label>
                 <Select value={composeData.orderId} onValueChange={(v) => {
                   const order = orders.find(o => o.id === v);
                   setComposeData(prev => ({
@@ -634,12 +634,12 @@ const MerchantEmails = () => {
                     to: order?.customer_email || ''
                   }));
                 }}>
-                  <SelectTrigger className="bg-gray-800 border-gray-700 text-white">
+                  <SelectTrigger className="bg-white border-gray-200 text-gray-900">
                     <SelectValue placeholder="Select order..." />
                   </SelectTrigger>
-                  <SelectContent className="bg-gray-800 border-gray-700 max-h-60">
+                  <SelectContent className="bg-white border-gray-200 max-h-60">
                     {orders.map(order => (
-                      <SelectItem key={order.id} value={order.id} className="text-white">
+                      <SelectItem key={order.id} value={order.id} className="text-gray-900">
                         {order.order_number} - {order.customer_name}
                       </SelectItem>
                     ))}
@@ -647,15 +647,15 @@ const MerchantEmails = () => {
                 </Select>
               </div>
               <div>
-                <label className="text-sm text-gray-400 block mb-1">Template</label>
+                <label className="text-sm text-gray-500 block mb-1">Template</label>
                 <Select value={composeData.template} onValueChange={loadTemplate}>
-                  <SelectTrigger className="bg-gray-800 border-gray-700 text-white">
+                  <SelectTrigger className="bg-white border-gray-200 text-gray-900">
                     <SelectValue placeholder="Select template..." />
                   </SelectTrigger>
-                  <SelectContent className="bg-gray-800 border-gray-700">
-                    <SelectItem value="custom" className="text-white">Custom Email</SelectItem>
+                  <SelectContent className="bg-white border-gray-200">
+                    <SelectItem value="custom" className="text-gray-900">Custom Email</SelectItem>
                     {templates.map(t => (
-                      <SelectItem key={t.id} value={t.id} className="text-white">{t.name}</SelectItem>
+                      <SelectItem key={t.id} value={t.id} className="text-gray-900">{t.name}</SelectItem>
                     ))}
                   </SelectContent>
                 </Select>
@@ -663,35 +663,35 @@ const MerchantEmails = () => {
             </div>
 
             <div>
-              <label className="text-sm text-gray-400 block mb-1">To</label>
+              <label className="text-sm text-gray-500 block mb-1">To</label>
               <input
                 type="email"
                 value={composeData.to}
                 onChange={(e) => setComposeData(prev => ({ ...prev, to: e.target.value }))}
                 placeholder="customer@example.com"
-                className="w-full px-3 py-2 bg-gray-800 border border-gray-700 rounded text-white"
+                className="w-full px-3 py-2 bg-white border border-gray-200 rounded text-gray-900"
               />
             </div>
 
             <div>
-              <label className="text-sm text-gray-400 block mb-1">Subject</label>
+              <label className="text-sm text-gray-500 block mb-1">Subject</label>
               <input
                 type="text"
                 value={composeData.subject}
                 onChange={(e) => setComposeData(prev => ({ ...prev, subject: e.target.value }))}
                 placeholder="Email subject..."
-                className="w-full px-3 py-2 bg-gray-800 border border-gray-700 rounded text-white"
+                className="w-full px-3 py-2 bg-white border border-gray-200 rounded text-gray-900"
               />
             </div>
 
             <div>
-              <label className="text-sm text-gray-400 block mb-1">Body</label>
+              <label className="text-sm text-gray-500 block mb-1">Body</label>
               <textarea
                 value={composeData.body}
                 onChange={(e) => setComposeData(prev => ({ ...prev, body: e.target.value }))}
                 rows={10}
                 placeholder="Email content..."
-                className="w-full px-3 py-2 bg-gray-800 border border-gray-700 rounded text-white resize-none"
+                className="w-full px-3 py-2 bg-white border border-gray-200 rounded text-gray-900 resize-none"
               />
               <p className="text-xs text-gray-500 mt-1">
                 Use placeholders: {'{customer_name}'}, {'{order_number}'}, {'{total}'}, {'{tracking_number}'}, etc.
@@ -700,7 +700,7 @@ const MerchantEmails = () => {
           </div>
 
           <DialogFooter className="mt-6">
-            <Button variant="outline" onClick={() => setShowComposeModal(false)} className="border-gray-700 text-gray-300">
+            <Button variant="outline" onClick={() => setShowComposeModal(false)} className="border-gray-200 text-gray-700">
               Cancel
             </Button>
             <Button onClick={handleSendEmail} className="bg-emerald-600 hover:bg-emerald-700">
@@ -713,35 +713,35 @@ const MerchantEmails = () => {
 
       {/* Email Detail Modal */}
       <Dialog open={showEmailDetail} onOpenChange={setShowEmailDetail}>
-        <DialogContent className="bg-[#1a1f2e] border-gray-700 max-w-2xl">
+        <DialogContent className="bg-[#1a1f2e] border-gray-200 max-w-2xl">
           <DialogHeader>
-            <DialogTitle className="text-white">Email Details</DialogTitle>
+            <DialogTitle className="text-gray-900">Email Details</DialogTitle>
           </DialogHeader>
           
           {selectedEmail && (
             <div className="space-y-4 mt-4">
-              <div className="flex items-center justify-between p-3 bg-gray-800/50 rounded">
+              <div className="flex items-center justify-between p-3 bg-white/50 rounded">
                 <div className="flex items-center gap-2">
                   {getStatusIcon(selectedEmail.status)}
-                  <span className="text-white capitalize">{selectedEmail.status || 'Sent'}</span>
+                  <span className="text-gray-900 capitalize">{selectedEmail.status || 'Sent'}</span>
                 </div>
-                <span className="text-gray-400 text-sm">{formatDate(selectedEmail.sent_at)}</span>
+                <span className="text-gray-500 text-sm">{formatDate(selectedEmail.sent_at)}</span>
               </div>
 
               <div className="space-y-3">
                 <div>
                   <p className="text-xs text-gray-500">To</p>
-                  <p className="text-white">{selectedEmail.to}</p>
+                  <p className="text-gray-900">{selectedEmail.to}</p>
                 </div>
                 <div>
                   <p className="text-xs text-gray-500">Subject</p>
-                  <p className="text-white">{selectedEmail.subject}</p>
+                  <p className="text-gray-900">{selectedEmail.subject}</p>
                 </div>
                 <div>
                   <p className="text-xs text-gray-500">Related Order</p>
                   <Link 
                     to={`/merchant/orders/${selectedEmail.order_id}`}
-                    className="text-emerald-400 hover:text-emerald-300 flex items-center gap-1"
+                    className="text-emerald-600 hover:text-emerald-300 flex items-center gap-1"
                   >
                     {selectedEmail.order_number}
                     <ExternalLink size={12} />
@@ -749,8 +749,8 @@ const MerchantEmails = () => {
                 </div>
                 <div>
                   <p className="text-xs text-gray-500 mb-2">Content</p>
-                  <div className="bg-gray-800/50 p-4 rounded max-h-80 overflow-auto">
-                    <pre className="text-gray-300 text-sm whitespace-pre-wrap font-sans">
+                  <div className="bg-white/50 p-4 rounded max-h-80 overflow-auto">
+                    <pre className="text-gray-700 text-sm whitespace-pre-wrap font-sans">
                       {selectedEmail.body}
                     </pre>
                   </div>
@@ -760,7 +760,7 @@ const MerchantEmails = () => {
           )}
 
           <DialogFooter className="mt-6">
-            <Button variant="outline" onClick={() => setShowEmailDetail(false)} className="border-gray-700 text-gray-300">
+            <Button variant="outline" onClick={() => setShowEmailDetail(false)} className="border-gray-200 text-gray-700">
               Close
             </Button>
             <Button 
@@ -786,25 +786,25 @@ const MerchantEmails = () => {
 
       {/* Template Preview Modal */}
       <Dialog open={showTemplateModal} onOpenChange={setShowTemplateModal}>
-        <DialogContent className="bg-[#1a1f2e] border-gray-700 max-w-2xl">
+        <DialogContent className="bg-[#1a1f2e] border-gray-200 max-w-2xl">
           <DialogHeader>
-            <DialogTitle className="text-white">{selectedTemplate?.name}</DialogTitle>
-            <DialogDescription className="text-gray-400">
+            <DialogTitle className="text-gray-900">{selectedTemplate?.name}</DialogTitle>
+            <DialogDescription className="text-gray-500">
               {selectedTemplate?.description}
             </DialogDescription>
           </DialogHeader>
           
           {selectedTemplate && (
             <div className="space-y-4 mt-4">
-              <div className="p-3 bg-gray-800/50 rounded">
+              <div className="p-3 bg-white/50 rounded">
                 <p className="text-xs text-gray-500 mb-1">Subject Line</p>
-                <p className="text-white">{selectedTemplate.subject}</p>
+                <p className="text-gray-900">{selectedTemplate.subject}</p>
               </div>
               
               <div>
                 <p className="text-xs text-gray-500 mb-2">Email Body</p>
-                <div className="bg-gray-800/50 p-4 rounded max-h-96 overflow-auto">
-                  <pre className="text-gray-300 text-sm whitespace-pre-wrap font-sans">
+                <div className="bg-white/50 p-4 rounded max-h-96 overflow-auto">
+                  <pre className="text-gray-700 text-sm whitespace-pre-wrap font-sans">
                     {selectedTemplate.body}
                   </pre>
                 </div>
@@ -815,7 +815,7 @@ const MerchantEmails = () => {
                   <AlertCircle size={16} className="text-amber-400 mt-0.5" />
                   <div>
                     <p className="text-sm text-amber-400 font-medium">Template Variables</p>
-                    <p className="text-xs text-gray-400 mt-1">
+                    <p className="text-xs text-gray-500 mt-1">
                       Variables in {'{curly braces}'} will be replaced with actual order data when the email is sent.
                     </p>
                   </div>
@@ -825,7 +825,7 @@ const MerchantEmails = () => {
           )}
 
           <DialogFooter className="mt-6">
-            <Button variant="outline" onClick={() => setShowTemplateModal(false)} className="border-gray-700 text-gray-300">
+            <Button variant="outline" onClick={() => setShowTemplateModal(false)} className="border-gray-200 text-gray-700">
               Close
             </Button>
             <Button 

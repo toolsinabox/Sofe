@@ -252,12 +252,12 @@ const MerchantQuotes = () => {
 
   const getStatusConfig = (status) => {
     const configs = {
-      pending: { icon: Clock, color: 'bg-yellow-500/20 text-yellow-400 border-yellow-500/30', label: 'Pending' },
-      sent: { icon: Send, color: 'bg-blue-500/20 text-blue-400 border-blue-500/30', label: 'Sent' },
-      accepted: { icon: CheckCircle, color: 'bg-emerald-500/20 text-emerald-400 border-emerald-500/30', label: 'Accepted' },
-      rejected: { icon: XCircle, color: 'bg-red-500/20 text-red-400 border-red-500/30', label: 'Rejected' },
-      expired: { icon: Timer, color: 'bg-gray-500/20 text-gray-400 border-gray-500/30', label: 'Expired' },
-      converted: { icon: ShoppingCart, color: 'bg-purple-500/20 text-purple-400 border-purple-500/30', label: 'Converted' }
+      pending: { icon: Clock, color: 'bg-yellow-50 text-yellow-600 border-yellow-500/30', label: 'Pending' },
+      sent: { icon: Send, color: 'bg-blue-50 text-blue-600 border-blue-500/30', label: 'Sent' },
+      accepted: { icon: CheckCircle, color: 'bg-emerald-50 text-emerald-600 border-emerald-500/30', label: 'Accepted' },
+      rejected: { icon: XCircle, color: 'bg-red-50 text-red-600 border-red-500/30', label: 'Rejected' },
+      expired: { icon: Timer, color: 'bg-gray-500/20 text-gray-500 border-gray-500/30', label: 'Expired' },
+      converted: { icon: ShoppingCart, color: 'bg-purple-50 text-purple-600 border-purple-500/30', label: 'Converted' }
     };
     return configs[status] || configs.pending;
   };
@@ -300,8 +300,8 @@ const MerchantQuotes = () => {
           <CardContent className="p-6">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-gray-400 text-sm">Total Quotes</p>
-                <p className="text-3xl font-bold text-white mt-1">{stats.totalQuotes || quotes.length}</p>
+                <p className="text-gray-500 text-sm">Total Quotes</p>
+                <p className="text-3xl font-bold text-gray-900 mt-1">{stats.totalQuotes || quotes.length}</p>
                 <p className="text-amber-400 text-sm mt-1 flex items-center gap-1">
                   <FileText size={14} /> All time
                 </p>
@@ -317,12 +317,12 @@ const MerchantQuotes = () => {
           <CardContent className="p-6">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-gray-400 text-sm">Pending Review</p>
-                <p className="text-3xl font-bold text-white mt-1">{quoteCounts.pending + quoteCounts.sent}</p>
-                <p className="text-yellow-400 text-sm mt-1">Awaiting response</p>
+                <p className="text-gray-500 text-sm">Pending Review</p>
+                <p className="text-3xl font-bold text-gray-900 mt-1">{quoteCounts.pending + quoteCounts.sent}</p>
+                <p className="text-yellow-600 text-sm mt-1">Awaiting response</p>
               </div>
-              <div className="p-3 bg-yellow-500/20 rounded-xl">
-                <Clock className="text-yellow-400" size={24} />
+              <div className="p-3 bg-yellow-50 rounded-xl">
+                <Clock className="text-yellow-600" size={24} />
               </div>
             </div>
           </CardContent>
@@ -332,14 +332,14 @@ const MerchantQuotes = () => {
           <CardContent className="p-6">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-gray-400 text-sm">Total Quote Value</p>
-                <p className="text-3xl font-bold text-white mt-1">{formatCurrency(stats.totalValue || quotes.reduce((s, q) => s + (q.total || 0), 0))}</p>
-                <p className="text-emerald-400 text-sm mt-1 flex items-center gap-1">
+                <p className="text-gray-500 text-sm">Total Quote Value</p>
+                <p className="text-3xl font-bold text-gray-900 mt-1">{formatCurrency(stats.totalValue || quotes.reduce((s, q) => s + (q.total || 0), 0))}</p>
+                <p className="text-emerald-600 text-sm mt-1 flex items-center gap-1">
                   <ArrowUpRight size={14} /> Pipeline value
                 </p>
               </div>
-              <div className="p-3 bg-emerald-500/20 rounded-xl">
-                <DollarSign className="text-emerald-400" size={24} />
+              <div className="p-3 bg-emerald-50 rounded-xl">
+                <DollarSign className="text-emerald-600" size={24} />
               </div>
             </div>
           </CardContent>
@@ -349,16 +349,16 @@ const MerchantQuotes = () => {
           <CardContent className="p-6">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-gray-400 text-sm">Conversion Rate</p>
-                <p className="text-3xl font-bold text-white mt-1">
+                <p className="text-gray-500 text-sm">Conversion Rate</p>
+                <p className="text-3xl font-bold text-gray-900 mt-1">
                   {quotes.length > 0 ? ((quoteCounts.converted / quotes.length) * 100).toFixed(1) : 0}%
                 </p>
-                <p className="text-purple-400 text-sm mt-1 flex items-center gap-1">
+                <p className="text-purple-600 text-sm mt-1 flex items-center gap-1">
                   <TrendingUp size={14} /> Quote to order
                 </p>
               </div>
-              <div className="p-3 bg-purple-500/20 rounded-xl">
-                <TrendingUp className="text-purple-400" size={24} />
+              <div className="p-3 bg-purple-50 rounded-xl">
+                <TrendingUp className="text-purple-600" size={24} />
               </div>
             </div>
           </CardContent>
@@ -376,12 +376,12 @@ const MerchantQuotes = () => {
               className={`px-4 py-2.5 rounded-lg text-sm font-medium whitespace-nowrap transition-all flex items-center gap-2 ${
                 statusFilter === status
                   ? 'bg-amber-500/20 text-amber-400 border border-amber-500/30'
-                  : 'bg-gray-800/50 text-gray-400 border border-gray-800 hover:text-white hover:border-gray-700'
+                  : 'bg-white/50 text-gray-500 border border-gray-200 hover:text-gray-900 hover:border-gray-200'
               }`}
             >
               {config && <config.icon size={14} />}
               {status.charAt(0).toUpperCase() + status.slice(1)}
-              <span className="px-1.5 py-0.5 rounded bg-gray-800/80 text-xs">
+              <span className="px-1.5 py-0.5 rounded bg-white/80 text-xs">
                 {quoteCounts[status]}
               </span>
             </button>
@@ -398,16 +398,16 @@ const MerchantQuotes = () => {
             placeholder="Search by quote #, customer, company..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            className="w-full bg-gray-800/50 border border-gray-700 rounded-lg pl-10 pr-4 py-2.5 text-sm text-white placeholder-gray-500 focus:outline-none focus:border-amber-500/50 focus:ring-1 focus:ring-amber-500/50 transition-all"
+            className="w-full bg-white/50 border border-gray-200 rounded-lg pl-10 pr-4 py-2.5 text-sm text-gray-900 placeholder-gray-500 focus:outline-none focus:border-amber-500/50 focus:ring-1 focus:ring-amber-500/50 transition-all"
           />
         </div>
         
         <div className="flex items-center gap-2">
-          <Button onClick={() => fetchQuotes()} variant="outline" className="border-gray-700 text-gray-300 hover:bg-gray-800">
+          <Button onClick={() => fetchQuotes()} variant="outline" className="border-gray-200 text-gray-700 hover:bg-white">
             <RefreshCw size={16} className="mr-2" />
             Refresh
           </Button>
-          <Button variant="outline" className="border-gray-700 text-gray-300 hover:bg-gray-800">
+          <Button variant="outline" className="border-gray-200 text-gray-700 hover:bg-white">
             <Download size={16} className="mr-2" />
             Export
           </Button>
@@ -415,7 +415,7 @@ const MerchantQuotes = () => {
       </div>
 
       {/* Quotes Table */}
-      <Card className="bg-[#151b28] border-gray-800">
+      <Card className="bg-white border-gray-200">
         <CardContent className="p-0">
           {loading ? (
             <div className="p-8 text-center">
@@ -425,7 +425,7 @@ const MerchantQuotes = () => {
           ) : filteredQuotes.length === 0 ? (
             <div className="p-12 text-center">
               <FileText className="mx-auto text-gray-600 mb-3" size={48} />
-              <p className="text-gray-400 font-medium">No quotes found</p>
+              <p className="text-gray-500 font-medium">No quotes found</p>
               <p className="text-gray-500 text-sm mt-1">Quote requests from customers will appear here</p>
             </div>
           ) : (
@@ -433,15 +433,15 @@ const MerchantQuotes = () => {
               <div className="overflow-x-auto">
                 <table className="w-full">
                   <thead>
-                    <tr className="border-b border-gray-800 bg-gray-800/30">
-                      <th className="text-left py-4 px-6 text-gray-400 font-medium text-sm">Quote</th>
-                      <th className="text-left py-4 px-6 text-gray-400 font-medium text-sm">Customer</th>
-                      <th className="text-left py-4 px-6 text-gray-400 font-medium text-sm">Items</th>
-                      <th className="text-left py-4 px-6 text-gray-400 font-medium text-sm">Total</th>
-                      <th className="text-left py-4 px-6 text-gray-400 font-medium text-sm">Status</th>
-                      <th className="text-left py-4 px-6 text-gray-400 font-medium text-sm">Valid Until</th>
-                      <th className="text-left py-4 px-6 text-gray-400 font-medium text-sm">Created</th>
-                      <th className="text-right py-4 px-6 text-gray-400 font-medium text-sm">Actions</th>
+                    <tr className="border-b border-gray-200 bg-white/30">
+                      <th className="text-left py-4 px-6 text-gray-500 font-medium text-sm">Quote</th>
+                      <th className="text-left py-4 px-6 text-gray-500 font-medium text-sm">Customer</th>
+                      <th className="text-left py-4 px-6 text-gray-500 font-medium text-sm">Items</th>
+                      <th className="text-left py-4 px-6 text-gray-500 font-medium text-sm">Total</th>
+                      <th className="text-left py-4 px-6 text-gray-500 font-medium text-sm">Status</th>
+                      <th className="text-left py-4 px-6 text-gray-500 font-medium text-sm">Valid Until</th>
+                      <th className="text-left py-4 px-6 text-gray-500 font-medium text-sm">Created</th>
+                      <th className="text-right py-4 px-6 text-gray-500 font-medium text-sm">Actions</th>
                     </tr>
                   </thead>
                   <tbody>
@@ -454,12 +454,12 @@ const MerchantQuotes = () => {
                       return (
                         <tr 
                           key={quote.id} 
-                          className="border-b border-gray-800/50 hover:bg-gray-800/30 transition-colors cursor-pointer"
+                          className="border-b border-gray-200/50 hover:bg-white/30 transition-colors cursor-pointer"
                           onClick={() => navigate(`/merchant/quotes/${quote.id}`)}
                         >
                           <td className="py-4 px-6">
                             <div>
-                              <span className="text-white font-medium">{quote.quote_number}</span>
+                              <span className="text-gray-900 font-medium">{quote.quote_number}</span>
                               {quote.purchase_order && (
                                 <p className="text-gray-500 text-xs mt-0.5">PO: {quote.purchase_order}</p>
                               )}
@@ -467,7 +467,7 @@ const MerchantQuotes = () => {
                           </td>
                           <td className="py-4 px-6">
                             <div>
-                              <p className="text-white font-medium">{quote.customer_name}</p>
+                              <p className="text-gray-900 font-medium">{quote.customer_name}</p>
                               {quote.company_name && (
                                 <p className="text-gray-500 text-sm flex items-center gap-1">
                                   <Building size={12} />
@@ -484,23 +484,23 @@ const MerchantQuotes = () => {
                                   key={idx}
                                   src={item.image || 'https://via.placeholder.com/32'} 
                                   alt="" 
-                                  className="w-8 h-8 rounded object-cover border border-gray-700"
+                                  className="w-8 h-8 rounded object-cover border border-gray-200"
                                 />
                               ))}
                               {(quote.items?.length || 0) > 2 && (
-                                <span className="text-gray-400 text-xs">+{quote.items.length - 2}</span>
+                                <span className="text-gray-500 text-xs">+{quote.items.length - 2}</span>
                               )}
-                              <span className="text-gray-400 text-sm ml-1">
+                              <span className="text-gray-500 text-sm ml-1">
                                 {quote.items?.reduce((sum, i) => sum + i.quantity, 0) || 0} items
                               </span>
                             </div>
                           </td>
                           <td className="py-4 px-6">
-                            <span className="text-white font-medium">{formatCurrency(quote.total)}</span>
+                            <span className="text-gray-900 font-medium">{formatCurrency(quote.total)}</span>
                           </td>
                           <td className="py-4 px-6">
                             <span className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium border ${
-                              expired ? 'bg-gray-500/20 text-gray-400 border-gray-500/30' : statusConfig.color
+                              expired ? 'bg-gray-500/20 text-gray-500 border-gray-500/30' : statusConfig.color
                             }`}>
                               <StatusIcon size={12} />
                               {expired ? 'Expired' : statusConfig.label}
@@ -508,7 +508,7 @@ const MerchantQuotes = () => {
                           </td>
                           <td className="py-4 px-6">
                             <div>
-                              <span className={`text-sm ${expired ? 'text-red-400' : daysLeft !== null && daysLeft <= 7 ? 'text-yellow-400' : 'text-gray-400'}`}>
+                              <span className={`text-sm ${expired ? 'text-red-600' : daysLeft !== null && daysLeft <= 7 ? 'text-yellow-600' : 'text-gray-500'}`}>
                                 {formatDate(quote.valid_until)}
                               </span>
                               {daysLeft !== null && daysLeft > 0 && !expired && (
@@ -518,19 +518,19 @@ const MerchantQuotes = () => {
                               )}
                             </div>
                           </td>
-                          <td className="py-4 px-6 text-gray-400 text-sm">
+                          <td className="py-4 px-6 text-gray-500 text-sm">
                             {formatDate(quote.created_at)}
                           </td>
                           <td className="py-4 px-6 text-right" onClick={(e) => e.stopPropagation()}>
                             <DropdownMenu>
                               <DropdownMenuTrigger asChild>
-                                <button className="p-2 rounded hover:bg-gray-800 text-gray-400 hover:text-white transition-colors">
+                                <button className="p-2 rounded hover:bg-white text-gray-500 hover:text-gray-900 transition-colors">
                                   <MoreVertical size={18} />
                                 </button>
                               </DropdownMenuTrigger>
-                              <DropdownMenuContent align="end" className="bg-[#1a1f2e] border-gray-700 w-56">
+                              <DropdownMenuContent align="end" className="bg-[#1a1f2e] border-gray-200 w-56">
                                 <DropdownMenuItem 
-                                  className="text-gray-300 hover:text-white hover:bg-gray-700/50 cursor-pointer"
+                                  className="text-gray-700 hover:text-gray-900 hover:bg-gray-100/50 cursor-pointer"
                                   onClick={() => navigate(`/merchant/quotes/${quote.id}`)}
                                 >
                                   <Eye size={14} className="mr-2" /> View Details
@@ -538,7 +538,7 @@ const MerchantQuotes = () => {
                                 <DropdownMenuSeparator className="bg-gray-700" />
                                 {quote.status === 'pending' && (
                                   <DropdownMenuItem 
-                                    className="text-gray-300 hover:text-white hover:bg-gray-700/50 cursor-pointer"
+                                    className="text-gray-700 hover:text-gray-900 hover:bg-gray-100/50 cursor-pointer"
                                     onClick={() => {
                                       setSelectedQuote(quote);
                                       setEmailSubject(`Quote ${quote.quote_number} from Tools in a Box`);
@@ -550,33 +550,33 @@ const MerchantQuotes = () => {
                                 )}
                                 {(quote.status === 'accepted' || quote.status === 'sent') && (
                                   <DropdownMenuItem 
-                                    className="text-emerald-400 hover:text-emerald-300 hover:bg-gray-700/50 cursor-pointer"
+                                    className="text-emerald-600 hover:text-emerald-300 hover:bg-gray-100/50 cursor-pointer"
                                     onClick={() => { setSelectedQuote(quote); setShowConvertModal(true); }}
                                   >
                                     <ShoppingCart size={14} className="mr-2" /> Convert to Order
                                   </DropdownMenuItem>
                                 )}
                                 <DropdownMenuItem 
-                                  className="text-gray-300 hover:text-white hover:bg-gray-700/50 cursor-pointer"
+                                  className="text-gray-700 hover:text-gray-900 hover:bg-gray-100/50 cursor-pointer"
                                   onClick={() => { setSelectedQuote(quote); setNewStatus(quote.status); setShowStatusModal(true); }}
                                 >
                                   <RefreshCw size={14} className="mr-2" /> Update Status
                                 </DropdownMenuItem>
                                 <DropdownMenuItem 
-                                  className="text-gray-300 hover:text-white hover:bg-gray-700/50 cursor-pointer"
+                                  className="text-gray-700 hover:text-gray-900 hover:bg-gray-100/50 cursor-pointer"
                                   onClick={() => { setSelectedQuote(quote); setMerchantNote(quote.merchant_notes || ''); setShowNoteModal(true); }}
                                 >
                                   <FileText size={14} className="mr-2" /> Add Note
                                 </DropdownMenuItem>
                                 <DropdownMenuItem 
-                                  className="text-gray-300 hover:text-white hover:bg-gray-700/50 cursor-pointer"
+                                  className="text-gray-700 hover:text-gray-900 hover:bg-gray-100/50 cursor-pointer"
                                   onClick={() => duplicateQuote(quote)}
                                 >
                                   <Copy size={14} className="mr-2" /> Duplicate
                                 </DropdownMenuItem>
                                 <DropdownMenuSeparator className="bg-gray-700" />
                                 <DropdownMenuItem 
-                                  className="text-red-400 hover:text-red-300 hover:bg-gray-700/50 cursor-pointer"
+                                  className="text-red-600 hover:text-red-300 hover:bg-gray-100/50 cursor-pointer"
                                   onClick={() => { setSelectedQuote(quote); setShowDeleteDialog(true); }}
                                 >
                                   <Trash2 size={14} className="mr-2" /> Delete Quote
@@ -592,8 +592,8 @@ const MerchantQuotes = () => {
               </div>
               
               {/* Pagination */}
-              <div className="flex items-center justify-between px-6 py-4 border-t border-gray-800">
-                <p className="text-gray-400 text-sm">
+              <div className="flex items-center justify-between px-6 py-4 border-t border-gray-200">
+                <p className="text-gray-500 text-sm">
                   Showing {((currentPage - 1) * quotesPerPage) + 1} - {Math.min(currentPage * quotesPerPage, totalQuotes)} of {totalQuotes} quotes
                 </p>
                 <div className="flex items-center gap-2">
@@ -602,11 +602,11 @@ const MerchantQuotes = () => {
                     size="sm"
                     onClick={() => setCurrentPage(p => Math.max(1, p - 1))}
                     disabled={currentPage === 1}
-                    className="border-gray-700 text-gray-300 hover:bg-gray-800 disabled:opacity-50"
+                    className="border-gray-200 text-gray-700 hover:bg-white disabled:opacity-50"
                   >
                     <ChevronLeft size={16} />
                   </Button>
-                  <span className="text-gray-400 text-sm px-2">
+                  <span className="text-gray-500 text-sm px-2">
                     Page {currentPage} of {Math.ceil(totalQuotes / quotesPerPage) || 1}
                   </span>
                   <Button
@@ -614,7 +614,7 @@ const MerchantQuotes = () => {
                     size="sm"
                     onClick={() => setCurrentPage(p => p + 1)}
                     disabled={currentPage >= Math.ceil(totalQuotes / quotesPerPage)}
-                    className="border-gray-700 text-gray-300 hover:bg-gray-800 disabled:opacity-50"
+                    className="border-gray-200 text-gray-700 hover:bg-white disabled:opacity-50"
                   >
                     <ChevronRight size={16} />
                   </Button>
@@ -627,18 +627,18 @@ const MerchantQuotes = () => {
 
       {/* Update Status Modal */}
       <Dialog open={showStatusModal} onOpenChange={setShowStatusModal}>
-        <DialogContent className="bg-[#151b28] border-gray-800 text-white">
+        <DialogContent className="bg-white border-gray-200 text-gray-900">
           <DialogHeader>
             <DialogTitle>Update Quote Status</DialogTitle>
           </DialogHeader>
           <div className="space-y-4 mt-4">
             <div>
-              <label className="text-sm text-gray-400 block mb-2">Quote: {selectedQuote?.quote_number}</label>
+              <label className="text-sm text-gray-500 block mb-2">Quote: {selectedQuote?.quote_number}</label>
               <Select value={newStatus} onValueChange={setNewStatus}>
-                <SelectTrigger className="bg-gray-800/50 border-gray-700 text-white">
+                <SelectTrigger className="bg-white/50 border-gray-200 text-gray-900">
                   <SelectValue placeholder="Select status" />
                 </SelectTrigger>
-                <SelectContent className="bg-[#1a1f2e] border-gray-700">
+                <SelectContent className="bg-[#1a1f2e] border-gray-200">
                   <SelectItem value="pending">Pending</SelectItem>
                   <SelectItem value="sent">Sent</SelectItem>
                   <SelectItem value="accepted">Accepted</SelectItem>
@@ -649,7 +649,7 @@ const MerchantQuotes = () => {
             </div>
           </div>
           <DialogFooter className="mt-6">
-            <Button variant="outline" onClick={() => setShowStatusModal(false)} className="border-gray-700 text-gray-300">
+            <Button variant="outline" onClick={() => setShowStatusModal(false)} className="border-gray-200 text-gray-700">
               Cancel
             </Button>
             <Button onClick={updateQuoteStatus} className="bg-amber-600 hover:bg-amber-700">
@@ -661,38 +661,38 @@ const MerchantQuotes = () => {
 
       {/* Convert to Order Modal */}
       <Dialog open={showConvertModal} onOpenChange={setShowConvertModal}>
-        <DialogContent className="bg-[#151b28] border-gray-800 text-white">
+        <DialogContent className="bg-white border-gray-200 text-gray-900">
           <DialogHeader>
             <DialogTitle>Convert Quote to Order</DialogTitle>
           </DialogHeader>
           <div className="space-y-4 mt-4">
             <div className="p-4 bg-emerald-500/10 border border-emerald-500/30 rounded-lg">
-              <p className="text-emerald-400 text-sm flex items-center gap-2">
+              <p className="text-emerald-600 text-sm flex items-center gap-2">
                 <CheckCircle size={16} />
                 This will create a new order and deduct stock from inventory.
               </p>
             </div>
-            <div className="p-4 bg-gray-800/50 rounded-lg space-y-2">
+            <div className="p-4 bg-white/50 rounded-lg space-y-2">
               <div className="flex justify-between">
-                <span className="text-gray-400">Quote</span>
-                <span className="text-white">{selectedQuote?.quote_number}</span>
+                <span className="text-gray-500">Quote</span>
+                <span className="text-gray-900">{selectedQuote?.quote_number}</span>
               </div>
               <div className="flex justify-between">
-                <span className="text-gray-400">Customer</span>
-                <span className="text-white">{selectedQuote?.customer_name}</span>
+                <span className="text-gray-500">Customer</span>
+                <span className="text-gray-900">{selectedQuote?.customer_name}</span>
               </div>
               <div className="flex justify-between">
-                <span className="text-gray-400">Items</span>
-                <span className="text-white">{selectedQuote?.items?.length || 0} items</span>
+                <span className="text-gray-500">Items</span>
+                <span className="text-gray-900">{selectedQuote?.items?.length || 0} items</span>
               </div>
-              <div className="flex justify-between pt-2 border-t border-gray-700">
-                <span className="text-white font-medium">Total</span>
-                <span className="text-white font-bold">{formatCurrency(selectedQuote?.total)}</span>
+              <div className="flex justify-between pt-2 border-t border-gray-200">
+                <span className="text-gray-900 font-medium">Total</span>
+                <span className="text-gray-900 font-bold">{formatCurrency(selectedQuote?.total)}</span>
               </div>
             </div>
           </div>
           <DialogFooter className="mt-6">
-            <Button variant="outline" onClick={() => setShowConvertModal(false)} className="border-gray-700 text-gray-300">
+            <Button variant="outline" onClick={() => setShowConvertModal(false)} className="border-gray-200 text-gray-700">
               Cancel
             </Button>
             <Button onClick={convertToOrder} className="bg-emerald-600 hover:bg-emerald-700">
@@ -705,15 +705,15 @@ const MerchantQuotes = () => {
 
       {/* Delete Confirmation Dialog */}
       <AlertDialog open={showDeleteDialog} onOpenChange={setShowDeleteDialog}>
-        <AlertDialogContent className="bg-[#151b28] border-gray-800">
+        <AlertDialogContent className="bg-white border-gray-200">
           <AlertDialogHeader>
-            <AlertDialogTitle className="text-white">Delete Quote?</AlertDialogTitle>
-            <AlertDialogDescription className="text-gray-400">
+            <AlertDialogTitle className="text-gray-900">Delete Quote?</AlertDialogTitle>
+            <AlertDialogDescription className="text-gray-500">
               Are you sure you want to delete quote {selectedQuote?.quote_number}? This action cannot be undone.
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel className="bg-gray-800 border-gray-700 text-gray-300 hover:bg-gray-700">
+            <AlertDialogCancel className="bg-white border-gray-200 text-gray-700 hover:bg-gray-100">
               Cancel
             </AlertDialogCancel>
             <AlertDialogAction onClick={deleteQuote} className="bg-red-600 hover:bg-red-700">
@@ -725,24 +725,24 @@ const MerchantQuotes = () => {
 
       {/* Add Note Modal */}
       <Dialog open={showNoteModal} onOpenChange={setShowNoteModal}>
-        <DialogContent className="bg-[#151b28] border-gray-800 text-white">
+        <DialogContent className="bg-white border-gray-200 text-gray-900">
           <DialogHeader>
             <DialogTitle>Merchant Notes</DialogTitle>
           </DialogHeader>
           <div className="space-y-4 mt-4">
             <div>
-              <label className="text-sm text-gray-400 block mb-2">Quote: {selectedQuote?.quote_number}</label>
+              <label className="text-sm text-gray-500 block mb-2">Quote: {selectedQuote?.quote_number}</label>
               <textarea
                 value={merchantNote}
                 onChange={(e) => setMerchantNote(e.target.value)}
                 placeholder="Internal notes (not visible to customer)..."
                 rows={4}
-                className="w-full bg-gray-800/50 border border-gray-700 rounded-lg px-4 py-3 text-white placeholder-gray-500 focus:outline-none focus:border-amber-500/50 resize-none"
+                className="w-full bg-white/50 border border-gray-200 rounded-lg px-4 py-3 text-gray-900 placeholder-gray-500 focus:outline-none focus:border-amber-500/50 resize-none"
               />
             </div>
           </div>
           <DialogFooter className="mt-6">
-            <Button variant="outline" onClick={() => setShowNoteModal(false)} className="border-gray-700 text-gray-300">
+            <Button variant="outline" onClick={() => setShowNoteModal(false)} className="border-gray-200 text-gray-700">
               Cancel
             </Button>
             <Button onClick={addMerchantNote} className="bg-amber-600 hover:bg-amber-700">
@@ -754,34 +754,34 @@ const MerchantQuotes = () => {
 
       {/* Send Quote Email Modal */}
       <Dialog open={showEmailModal} onOpenChange={setShowEmailModal}>
-        <DialogContent className="bg-[#151b28] border-gray-800 text-white max-w-2xl">
+        <DialogContent className="bg-white border-gray-200 text-gray-900 max-w-2xl">
           <DialogHeader>
             <DialogTitle>Send Quote to Customer</DialogTitle>
           </DialogHeader>
           <div className="space-y-4 mt-4">
-            <div className="p-3 bg-gray-800/50 rounded-lg">
-              <p className="text-gray-400 text-sm">To: {selectedQuote?.customer_email}</p>
+            <div className="p-3 bg-white/50 rounded-lg">
+              <p className="text-gray-500 text-sm">To: {selectedQuote?.customer_email}</p>
               {selectedQuote?.company_name && (
-                <p className="text-gray-400 text-sm">{selectedQuote.company_name}</p>
+                <p className="text-gray-500 text-sm">{selectedQuote.company_name}</p>
               )}
             </div>
             <div>
-              <label className="text-sm text-gray-400 block mb-2">Subject</label>
+              <label className="text-sm text-gray-500 block mb-2">Subject</label>
               <input
                 type="text"
                 value={emailSubject}
                 onChange={(e) => setEmailSubject(e.target.value)}
-                className="w-full bg-gray-800/50 border border-gray-700 rounded-lg px-4 py-2.5 text-white placeholder-gray-500 focus:outline-none focus:border-amber-500/50"
+                className="w-full bg-white/50 border border-gray-200 rounded-lg px-4 py-2.5 text-gray-900 placeholder-gray-500 focus:outline-none focus:border-amber-500/50"
               />
             </div>
             <div>
-              <label className="text-sm text-gray-400 block mb-2">Message</label>
+              <label className="text-sm text-gray-500 block mb-2">Message</label>
               <textarea
                 value={emailBody}
                 onChange={(e) => setEmailBody(e.target.value)}
                 placeholder="Add a personalized message..."
                 rows={6}
-                className="w-full bg-gray-800/50 border border-gray-700 rounded-lg px-4 py-3 text-white placeholder-gray-500 focus:outline-none focus:border-amber-500/50 resize-none"
+                className="w-full bg-white/50 border border-gray-200 rounded-lg px-4 py-3 text-gray-900 placeholder-gray-500 focus:outline-none focus:border-amber-500/50 resize-none"
               />
             </div>
             <div className="p-3 bg-amber-500/10 border border-amber-500/30 rounded-lg">
@@ -791,7 +791,7 @@ const MerchantQuotes = () => {
             </div>
           </div>
           <DialogFooter className="mt-6">
-            <Button variant="outline" onClick={() => setShowEmailModal(false)} className="border-gray-700 text-gray-300">
+            <Button variant="outline" onClick={() => setShowEmailModal(false)} className="border-gray-200 text-gray-700">
               Cancel
             </Button>
             <Button onClick={sendQuoteEmail} className="bg-amber-600 hover:bg-amber-700">

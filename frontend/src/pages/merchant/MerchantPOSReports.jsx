@@ -215,17 +215,17 @@ const MerchantPOSReports = () => {
   };
 
   const getVarianceColor = (variance) => {
-    if (variance === null || variance === undefined) return 'text-gray-400';
-    if (variance === 0) return 'text-emerald-400';
-    if (variance > 0) return 'text-blue-400';
-    return 'text-red-400';
+    if (variance === null || variance === undefined) return 'text-gray-500';
+    if (variance === 0) return 'text-emerald-600';
+    if (variance > 0) return 'text-blue-600';
+    return 'text-red-600';
   };
 
   const getVarianceIcon = (variance) => {
     if (variance === null || variance === undefined) return null;
-    if (variance === 0) return <CheckCircle className="w-4 h-4 text-emerald-400" />;
-    if (variance > 0) return <ArrowUpCircle className="w-4 h-4 text-blue-400" />;
-    return <ArrowDownCircle className="w-4 h-4 text-red-400" />;
+    if (variance === 0) return <CheckCircle className="w-4 h-4 text-emerald-600" />;
+    if (variance > 0) return <ArrowUpCircle className="w-4 h-4 text-blue-600" />;
+    return <ArrowDownCircle className="w-4 h-4 text-red-600" />;
   };
 
   return (
@@ -233,18 +233,18 @@ const MerchantPOSReports = () => {
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <h1 className="text-xl sm:text-2xl font-bold text-white flex items-center gap-2">
-            <BarChart3 className="w-6 h-6 text-emerald-400" />
+          <h1 className="text-xl sm:text-2xl font-bold text-gray-900 flex items-center gap-2">
+            <BarChart3 className="w-6 h-6 text-emerald-600" />
             POS Reports
           </h1>
-          <p className="text-gray-400 text-sm mt-1">Sales, shifts, and cash management reports</p>
+          <p className="text-gray-500 text-sm mt-1">Sales, shifts, and cash management reports</p>
         </div>
         
         <div className="flex items-center gap-2">
           <Button
             variant="outline"
             onClick={fetchReportData}
-            className="border-gray-700 text-gray-300"
+            className="border-gray-200 text-gray-700"
           >
             <RefreshCw className="w-4 h-4 mr-2" />
             Refresh
@@ -255,50 +255,50 @@ const MerchantPOSReports = () => {
       {/* Summary Cards */}
       {summary && (
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
-          <Card className="bg-[#151b28] border-gray-800">
+          <Card className="bg-white border-gray-200">
             <CardContent className="p-3 sm:p-4">
               <div className="flex items-start justify-between">
                 <div>
-                  <p className="text-gray-400 text-xs sm:text-sm">Today&apos;s Sales</p>
-                  <p className="text-lg sm:text-2xl font-bold text-white mt-1">
+                  <p className="text-gray-500 text-xs sm:text-sm">Today&apos;s Sales</p>
+                  <p className="text-lg sm:text-2xl font-bold text-gray-900 mt-1">
                     {formatCurrency(summary.today?.sales)}
                   </p>
                   <p className="text-gray-500 text-xs mt-1">
                     {summary.today?.transactions || 0} transactions
                   </p>
                 </div>
-                <div className="w-10 h-10 bg-emerald-500/20 rounded-lg flex items-center justify-center">
-                  <DollarSign className="w-5 h-5 text-emerald-400" />
+                <div className="w-10 h-10 bg-emerald-50 rounded-lg flex items-center justify-center">
+                  <DollarSign className="w-5 h-5 text-emerald-600" />
                 </div>
               </div>
             </CardContent>
           </Card>
 
-          <Card className="bg-[#151b28] border-gray-800">
+          <Card className="bg-white border-gray-200">
             <CardContent className="p-3 sm:p-4">
               <div className="flex items-start justify-between">
                 <div>
-                  <p className="text-gray-400 text-xs sm:text-sm">All Time Sales</p>
-                  <p className="text-lg sm:text-2xl font-bold text-white mt-1">
+                  <p className="text-gray-500 text-xs sm:text-sm">All Time Sales</p>
+                  <p className="text-lg sm:text-2xl font-bold text-gray-900 mt-1">
                     {formatCurrency(summary.all_time?.sales)}
                   </p>
                   <p className="text-gray-500 text-xs mt-1">
                     {summary.all_time?.transactions || 0} transactions
                   </p>
                 </div>
-                <div className="w-10 h-10 bg-blue-500/20 rounded-lg flex items-center justify-center">
-                  <TrendingUp className="w-5 h-5 text-blue-400" />
+                <div className="w-10 h-10 bg-blue-50 rounded-lg flex items-center justify-center">
+                  <TrendingUp className="w-5 h-5 text-blue-600" />
                 </div>
               </div>
             </CardContent>
           </Card>
 
-          <Card className="bg-[#151b28] border-gray-800">
+          <Card className="bg-white border-gray-200">
             <CardContent className="p-3 sm:p-4">
               <div className="flex items-start justify-between">
                 <div>
-                  <p className="text-gray-400 text-xs sm:text-sm">Avg Transaction</p>
-                  <p className="text-lg sm:text-2xl font-bold text-white mt-1">
+                  <p className="text-gray-500 text-xs sm:text-sm">Avg Transaction</p>
+                  <p className="text-lg sm:text-2xl font-bold text-gray-900 mt-1">
                     {formatCurrency(summary.today?.transactions > 0 
                       ? summary.today?.sales / summary.today?.transactions 
                       : 0
@@ -306,25 +306,25 @@ const MerchantPOSReports = () => {
                   </p>
                   <p className="text-gray-500 text-xs mt-1">Today</p>
                 </div>
-                <div className="w-10 h-10 bg-purple-500/20 rounded-lg flex items-center justify-center">
-                  <Receipt className="w-5 h-5 text-purple-400" />
+                <div className="w-10 h-10 bg-purple-50 rounded-lg flex items-center justify-center">
+                  <Receipt className="w-5 h-5 text-purple-600" />
                 </div>
               </div>
             </CardContent>
           </Card>
 
-          <Card className="bg-[#151b28] border-gray-800">
+          <Card className="bg-white border-gray-200">
             <CardContent className="p-3 sm:p-4">
               <div className="flex items-start justify-between">
                 <div>
-                  <p className="text-gray-400 text-xs sm:text-sm">Open Shifts</p>
-                  <p className="text-lg sm:text-2xl font-bold text-white mt-1">
+                  <p className="text-gray-500 text-xs sm:text-sm">Open Shifts</p>
+                  <p className="text-lg sm:text-2xl font-bold text-gray-900 mt-1">
                     {summary.open_shifts || 0}
                   </p>
                   <p className="text-gray-500 text-xs mt-1">Active registers</p>
                 </div>
-                <div className="w-10 h-10 bg-orange-500/20 rounded-lg flex items-center justify-center">
-                  <Monitor className="w-5 h-5 text-orange-400" />
+                <div className="w-10 h-10 bg-orange-50 rounded-lg flex items-center justify-center">
+                  <Monitor className="w-5 h-5 text-orange-600" />
                 </div>
               </div>
             </CardContent>
@@ -333,7 +333,7 @@ const MerchantPOSReports = () => {
       )}
 
       {/* Date & Filters */}
-      <Card className="bg-[#151b28] border-gray-800">
+      <Card className="bg-white border-gray-200">
         <CardContent className="p-3 sm:p-4">
           <div className="flex flex-col sm:flex-row items-start sm:items-center gap-3 sm:gap-4">
             {/* Date Picker */}
@@ -342,24 +342,24 @@ const MerchantPOSReports = () => {
                 variant="ghost"
                 size="sm"
                 onClick={() => handleDateChange(-1)}
-                className="text-gray-400 hover:text-white"
+                className="text-gray-500 hover:text-gray-900"
               >
                 <ChevronLeft className="w-4 h-4" />
               </Button>
-              <div className="flex items-center gap-2 px-3 py-2 bg-gray-800 rounded-lg">
-                <Calendar className="w-4 h-4 text-gray-400" />
+              <div className="flex items-center gap-2 px-3 py-2 bg-white rounded-lg">
+                <Calendar className="w-4 h-4 text-gray-500" />
                 <Input
                   type="date"
                   value={selectedDate}
                   onChange={(e) => setSelectedDate(e.target.value)}
-                  className="bg-transparent border-0 text-white text-sm p-0 h-auto w-auto"
+                  className="bg-transparent border-0 text-gray-900 text-sm p-0 h-auto w-auto"
                 />
               </div>
               <Button
                 variant="ghost"
                 size="sm"
                 onClick={() => handleDateChange(1)}
-                className="text-gray-400 hover:text-white"
+                className="text-gray-500 hover:text-gray-900"
                 disabled={selectedDate >= new Date().toISOString().split('T')[0]}
               >
                 <ChevronRight className="w-4 h-4" />
@@ -369,27 +369,27 @@ const MerchantPOSReports = () => {
             {/* Filters */}
             <div className="flex items-center gap-2 flex-wrap">
               <Select value={selectedOutlet} onValueChange={setSelectedOutlet}>
-                <SelectTrigger className="w-36 bg-gray-800 border-gray-700 text-white text-sm">
-                  <Building2 className="w-4 h-4 mr-2 text-gray-400" />
+                <SelectTrigger className="w-36 bg-white border-gray-200 text-gray-900 text-sm">
+                  <Building2 className="w-4 h-4 mr-2 text-gray-500" />
                   <SelectValue placeholder="Outlet" />
                 </SelectTrigger>
-                <SelectContent className="bg-gray-800 border-gray-700">
-                  <SelectItem value="all" className="text-white">All Outlets</SelectItem>
+                <SelectContent className="bg-white border-gray-200">
+                  <SelectItem value="all" className="text-gray-900">All Outlets</SelectItem>
                   {outlets.map(o => (
-                    <SelectItem key={o.id} value={o.id} className="text-white">{o.name}</SelectItem>
+                    <SelectItem key={o.id} value={o.id} className="text-gray-900">{o.name}</SelectItem>
                   ))}
                 </SelectContent>
               </Select>
 
               <Select value={selectedRegister} onValueChange={setSelectedRegister}>
-                <SelectTrigger className="w-36 bg-gray-800 border-gray-700 text-white text-sm">
-                  <Monitor className="w-4 h-4 mr-2 text-gray-400" />
+                <SelectTrigger className="w-36 bg-white border-gray-200 text-gray-900 text-sm">
+                  <Monitor className="w-4 h-4 mr-2 text-gray-500" />
                   <SelectValue placeholder="Register" />
                 </SelectTrigger>
-                <SelectContent className="bg-gray-800 border-gray-700">
-                  <SelectItem value="all" className="text-white">All Registers</SelectItem>
+                <SelectContent className="bg-white border-gray-200">
+                  <SelectItem value="all" className="text-gray-900">All Registers</SelectItem>
                   {registers.map(r => (
-                    <SelectItem key={r.id} value={r.id} className="text-white">{r.name}</SelectItem>
+                    <SelectItem key={r.id} value={r.id} className="text-gray-900">{r.name}</SelectItem>
                   ))}
                 </SelectContent>
               </Select>
@@ -401,7 +401,7 @@ const MerchantPOSReports = () => {
                 variant={selectedDate === new Date().toISOString().split('T')[0] ? 'default' : 'ghost'}
                 size="sm"
                 onClick={() => setSelectedDate(new Date().toISOString().split('T')[0])}
-                className={selectedDate === new Date().toISOString().split('T')[0] ? 'bg-emerald-600' : 'text-gray-400'}
+                className={selectedDate === new Date().toISOString().split('T')[0] ? 'bg-emerald-600' : 'text-gray-500'}
               >
                 Today
               </Button>
@@ -413,7 +413,7 @@ const MerchantPOSReports = () => {
                   yesterday.setDate(yesterday.getDate() - 1);
                   setSelectedDate(yesterday.toISOString().split('T')[0]);
                 }}
-                className="text-gray-400"
+                className="text-gray-500"
               >
                 Yesterday
               </Button>
@@ -424,7 +424,7 @@ const MerchantPOSReports = () => {
 
       {/* Tabs */}
       <Tabs defaultValue="daily" className="space-y-4">
-        <TabsList className="bg-gray-800/50 p-1">
+        <TabsList className="bg-white/50 p-1">
           <TabsTrigger value="daily" className="data-[state=active]:bg-emerald-600">
             <BarChart3 className="w-4 h-4 mr-2" />
             Daily Summary
@@ -447,7 +447,7 @@ const MerchantPOSReports = () => {
         <TabsContent value="daily" className="space-y-4">
           {loading ? (
             <div className="flex items-center justify-center py-12">
-              <Loader2 className="w-8 h-8 animate-spin text-emerald-400" />
+              <Loader2 className="w-8 h-8 animate-spin text-emerald-600" />
             </div>
           ) : dailyReport ? (
             <>
@@ -456,7 +456,7 @@ const MerchantPOSReports = () => {
                   variant="outline"
                   size="sm"
                   onClick={exportDailyReport}
-                  className="border-gray-700 text-gray-300"
+                  className="border-gray-200 text-gray-700"
                 >
                   <Download className="w-4 h-4 mr-2" />
                   Export CSV
@@ -465,38 +465,38 @@ const MerchantPOSReports = () => {
 
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                 {/* Sales Summary */}
-                <Card className="bg-[#151b28] border-gray-800">
+                <Card className="bg-white border-gray-200">
                   <CardHeader className="pb-2">
-                    <CardTitle className="text-white text-sm flex items-center gap-2">
-                      <DollarSign className="w-4 h-4 text-emerald-400" />
+                    <CardTitle className="text-gray-900 text-sm flex items-center gap-2">
+                      <DollarSign className="w-4 h-4 text-emerald-600" />
                       Sales Summary
                     </CardTitle>
                   </CardHeader>
                   <CardContent className="space-y-3">
                     <div className="flex justify-between items-center">
-                      <span className="text-gray-400 text-sm">Total Sales</span>
-                      <span className="text-white font-semibold text-lg">{formatCurrency(dailyReport.total_sales)}</span>
+                      <span className="text-gray-500 text-sm">Total Sales</span>
+                      <span className="text-gray-900 font-semibold text-lg">{formatCurrency(dailyReport.total_sales)}</span>
                     </div>
                     <div className="flex justify-between items-center">
-                      <span className="text-gray-400 text-sm">Transactions</span>
-                      <span className="text-white font-medium">{dailyReport.total_transactions}</span>
+                      <span className="text-gray-500 text-sm">Transactions</span>
+                      <span className="text-gray-900 font-medium">{dailyReport.total_transactions}</span>
                     </div>
                     <div className="flex justify-between items-center">
-                      <span className="text-gray-400 text-sm">Items Sold</span>
-                      <span className="text-white font-medium">{dailyReport.total_items}</span>
+                      <span className="text-gray-500 text-sm">Items Sold</span>
+                      <span className="text-gray-900 font-medium">{dailyReport.total_items}</span>
                     </div>
-                    <div className="flex justify-between items-center pt-2 border-t border-gray-700">
-                      <span className="text-gray-400 text-sm">Average Sale</span>
-                      <span className="text-emerald-400 font-semibold">{formatCurrency(dailyReport.average_transaction)}</span>
+                    <div className="flex justify-between items-center pt-2 border-t border-gray-200">
+                      <span className="text-gray-500 text-sm">Average Sale</span>
+                      <span className="text-emerald-600 font-semibold">{formatCurrency(dailyReport.average_transaction)}</span>
                     </div>
                   </CardContent>
                 </Card>
 
                 {/* Payment Methods */}
-                <Card className="bg-[#151b28] border-gray-800">
+                <Card className="bg-white border-gray-200">
                   <CardHeader className="pb-2">
-                    <CardTitle className="text-white text-sm flex items-center gap-2">
-                      <CreditCard className="w-4 h-4 text-blue-400" />
+                    <CardTitle className="text-gray-900 text-sm flex items-center gap-2">
+                      <CreditCard className="w-4 h-4 text-blue-600" />
                       Payment Methods
                     </CardTitle>
                   </CardHeader>
@@ -506,13 +506,13 @@ const MerchantPOSReports = () => {
                         <div key={method} className="flex justify-between items-center">
                           <div className="flex items-center gap-2">
                             {method === 'cash' ? (
-                              <Banknote className="w-4 h-4 text-emerald-400" />
+                              <Banknote className="w-4 h-4 text-emerald-600" />
                             ) : (
-                              <CreditCard className="w-4 h-4 text-blue-400" />
+                              <CreditCard className="w-4 h-4 text-blue-600" />
                             )}
-                            <span className="text-gray-400 text-sm capitalize">{method}</span>
+                            <span className="text-gray-500 text-sm capitalize">{method}</span>
                           </div>
-                          <span className="text-white font-medium">{formatCurrency(amount)}</span>
+                          <span className="text-gray-900 font-medium">{formatCurrency(amount)}</span>
                         </div>
                       ))
                     ) : (
@@ -522,33 +522,33 @@ const MerchantPOSReports = () => {
                 </Card>
 
                 {/* Quick Stats */}
-                <Card className="bg-[#151b28] border-gray-800">
+                <Card className="bg-white border-gray-200">
                   <CardHeader className="pb-2">
-                    <CardTitle className="text-white text-sm flex items-center gap-2">
-                      <TrendingUp className="w-4 h-4 text-purple-400" />
+                    <CardTitle className="text-gray-900 text-sm flex items-center gap-2">
+                      <TrendingUp className="w-4 h-4 text-purple-600" />
                       Performance
                     </CardTitle>
                   </CardHeader>
                   <CardContent className="space-y-3">
                     <div className="flex justify-between items-center">
-                      <span className="text-gray-400 text-sm">Items per Sale</span>
-                      <span className="text-white font-medium">
+                      <span className="text-gray-500 text-sm">Items per Sale</span>
+                      <span className="text-gray-900 font-medium">
                         {dailyReport.total_transactions > 0 
                           ? (dailyReport.total_items / dailyReport.total_transactions).toFixed(1)
                           : '0'}
                       </span>
                     </div>
                     <div className="flex justify-between items-center">
-                      <span className="text-gray-400 text-sm">Cash Ratio</span>
-                      <span className="text-white font-medium">
+                      <span className="text-gray-500 text-sm">Cash Ratio</span>
+                      <span className="text-gray-900 font-medium">
                         {dailyReport.total_sales > 0 
                           ? Math.round(((dailyReport.payment_breakdown?.cash || 0) / dailyReport.total_sales) * 100)
                           : 0}%
                       </span>
                     </div>
                     <div className="flex justify-between items-center">
-                      <span className="text-gray-400 text-sm">Card Ratio</span>
-                      <span className="text-white font-medium">
+                      <span className="text-gray-500 text-sm">Card Ratio</span>
+                      <span className="text-gray-900 font-medium">
                         {dailyReport.total_sales > 0 
                           ? Math.round(((dailyReport.payment_breakdown?.card || 0) / dailyReport.total_sales) * 100)
                           : 0}%
@@ -569,12 +569,12 @@ const MerchantPOSReports = () => {
         {/* Transactions Tab */}
         <TabsContent value="transactions" className="space-y-4">
           <div className="flex justify-between items-center">
-            <p className="text-gray-400 text-sm">{transactions.length} transactions</p>
+            <p className="text-gray-500 text-sm">{transactions.length} transactions</p>
             <Button
               variant="outline"
               size="sm"
               onClick={exportTransactions}
-              className="border-gray-700 text-gray-300"
+              className="border-gray-200 text-gray-700"
               disabled={transactions.length === 0}
             >
               <FileSpreadsheet className="w-4 h-4 mr-2" />
@@ -582,19 +582,19 @@ const MerchantPOSReports = () => {
             </Button>
           </div>
 
-          <Card className="bg-[#151b28] border-gray-800">
+          <Card className="bg-white border-gray-200">
             <CardContent className="p-0">
               <div className="overflow-x-auto">
                 <table className="w-full">
-                  <thead className="bg-gray-800/50">
+                  <thead className="bg-white/50">
                     <tr>
-                      <th className="text-left text-xs text-gray-400 font-medium p-3">Transaction</th>
-                      <th className="text-left text-xs text-gray-400 font-medium p-3">Time</th>
-                      <th className="text-left text-xs text-gray-400 font-medium p-3">Customer</th>
-                      <th className="text-left text-xs text-gray-400 font-medium p-3">Items</th>
-                      <th className="text-left text-xs text-gray-400 font-medium p-3">Payment</th>
-                      <th className="text-right text-xs text-gray-400 font-medium p-3">Total</th>
-                      <th className="text-center text-xs text-gray-400 font-medium p-3">Status</th>
+                      <th className="text-left text-xs text-gray-500 font-medium p-3">Transaction</th>
+                      <th className="text-left text-xs text-gray-500 font-medium p-3">Time</th>
+                      <th className="text-left text-xs text-gray-500 font-medium p-3">Customer</th>
+                      <th className="text-left text-xs text-gray-500 font-medium p-3">Items</th>
+                      <th className="text-left text-xs text-gray-500 font-medium p-3">Payment</th>
+                      <th className="text-right text-xs text-gray-500 font-medium p-3">Total</th>
+                      <th className="text-center text-xs text-gray-500 font-medium p-3">Status</th>
                     </tr>
                   </thead>
                   <tbody className="divide-y divide-gray-800">
@@ -608,41 +608,41 @@ const MerchantPOSReports = () => {
                       transactions.map((trans) => (
                         <tr 
                           key={trans.id} 
-                          className="hover:bg-gray-800/30 cursor-pointer"
+                          className="hover:bg-white/30 cursor-pointer"
                           onClick={() => setSelectedTransaction(trans)}
                         >
                           <td className="p-3">
-                            <span className="text-white text-sm font-medium">{trans.transaction_number}</span>
+                            <span className="text-gray-900 text-sm font-medium">{trans.transaction_number}</span>
                           </td>
                           <td className="p-3">
-                            <span className="text-gray-400 text-sm">{formatTime(trans.created_at)}</span>
+                            <span className="text-gray-500 text-sm">{formatTime(trans.created_at)}</span>
                           </td>
                           <td className="p-3">
-                            <span className="text-gray-300 text-sm">{trans.customer_name || 'Walk-in'}</span>
+                            <span className="text-gray-700 text-sm">{trans.customer_name || 'Walk-in'}</span>
                           </td>
                           <td className="p-3">
-                            <span className="text-gray-400 text-sm">{trans.items?.length || 0} items</span>
+                            <span className="text-gray-500 text-sm">{trans.items?.length || 0} items</span>
                           </td>
                           <td className="p-3">
                             <div className="flex items-center gap-1.5">
                               {trans.payments?.[0]?.method === 'cash' ? (
-                                <Banknote className="w-4 h-4 text-emerald-400" />
+                                <Banknote className="w-4 h-4 text-emerald-600" />
                               ) : (
-                                <CreditCard className="w-4 h-4 text-blue-400" />
+                                <CreditCard className="w-4 h-4 text-blue-600" />
                               )}
-                              <span className="text-gray-300 text-sm capitalize">{trans.payments?.[0]?.method}</span>
+                              <span className="text-gray-700 text-sm capitalize">{trans.payments?.[0]?.method}</span>
                             </div>
                           </td>
                           <td className="p-3 text-right">
-                            <span className="text-white font-semibold">{formatCurrency(trans.total)}</span>
+                            <span className="text-gray-900 font-semibold">{formatCurrency(trans.total)}</span>
                           </td>
                           <td className="p-3 text-center">
                             <span className={`text-xs px-2 py-1 rounded-full ${
                               trans.status === 'completed' 
-                                ? 'bg-emerald-500/20 text-emerald-400' 
+                                ? 'bg-emerald-50 text-emerald-600' 
                                 : trans.status === 'refunded'
-                                  ? 'bg-red-500/20 text-red-400'
-                                  : 'bg-gray-500/20 text-gray-400'
+                                  ? 'bg-red-50 text-red-600'
+                                  : 'bg-gray-500/20 text-gray-500'
                             }`}>
                               {trans.status}
                             </span>
@@ -660,12 +660,12 @@ const MerchantPOSReports = () => {
         {/* Shifts Tab */}
         <TabsContent value="shifts" className="space-y-4">
           <div className="flex justify-between items-center">
-            <p className="text-gray-400 text-sm">{shifts.length} shifts</p>
+            <p className="text-gray-500 text-sm">{shifts.length} shifts</p>
             <Button
               variant="outline"
               size="sm"
               onClick={exportShifts}
-              className="border-gray-700 text-gray-300"
+              className="border-gray-200 text-gray-700"
               disabled={shifts.length === 0}
             >
               <FileSpreadsheet className="w-4 h-4 mr-2" />
@@ -673,20 +673,20 @@ const MerchantPOSReports = () => {
             </Button>
           </div>
 
-          <Card className="bg-[#151b28] border-gray-800">
+          <Card className="bg-white border-gray-200">
             <CardContent className="p-0">
               <div className="overflow-x-auto">
                 <table className="w-full">
-                  <thead className="bg-gray-800/50">
+                  <thead className="bg-white/50">
                     <tr>
-                      <th className="text-left text-xs text-gray-400 font-medium p-3">Staff</th>
-                      <th className="text-left text-xs text-gray-400 font-medium p-3">Opened</th>
-                      <th className="text-left text-xs text-gray-400 font-medium p-3">Closed</th>
-                      <th className="text-right text-xs text-gray-400 font-medium p-3">Opening</th>
-                      <th className="text-right text-xs text-gray-400 font-medium p-3">Expected</th>
-                      <th className="text-right text-xs text-gray-400 font-medium p-3">Actual</th>
-                      <th className="text-right text-xs text-gray-400 font-medium p-3">Variance</th>
-                      <th className="text-center text-xs text-gray-400 font-medium p-3">Status</th>
+                      <th className="text-left text-xs text-gray-500 font-medium p-3">Staff</th>
+                      <th className="text-left text-xs text-gray-500 font-medium p-3">Opened</th>
+                      <th className="text-left text-xs text-gray-500 font-medium p-3">Closed</th>
+                      <th className="text-right text-xs text-gray-500 font-medium p-3">Opening</th>
+                      <th className="text-right text-xs text-gray-500 font-medium p-3">Expected</th>
+                      <th className="text-right text-xs text-gray-500 font-medium p-3">Actual</th>
+                      <th className="text-right text-xs text-gray-500 font-medium p-3">Variance</th>
+                      <th className="text-center text-xs text-gray-500 font-medium p-3">Status</th>
                     </tr>
                   </thead>
                   <tbody className="divide-y divide-gray-800">
@@ -698,29 +698,29 @@ const MerchantPOSReports = () => {
                       </tr>
                     ) : (
                       shifts.map((shift) => (
-                        <tr key={shift.id} className="hover:bg-gray-800/30">
+                        <tr key={shift.id} className="hover:bg-white/30">
                           <td className="p-3">
                             <div className="flex items-center gap-2">
-                              <User className="w-4 h-4 text-gray-400" />
-                              <span className="text-white text-sm">{shift.staff_name}</span>
+                              <User className="w-4 h-4 text-gray-500" />
+                              <span className="text-gray-900 text-sm">{shift.staff_name}</span>
                             </div>
                           </td>
                           <td className="p-3">
-                            <span className="text-gray-400 text-sm">{formatDateTime(shift.opened_at)}</span>
+                            <span className="text-gray-500 text-sm">{formatDateTime(shift.opened_at)}</span>
                           </td>
                           <td className="p-3">
-                            <span className="text-gray-400 text-sm">
+                            <span className="text-gray-500 text-sm">
                               {shift.closed_at ? formatDateTime(shift.closed_at) : '-'}
                             </span>
                           </td>
                           <td className="p-3 text-right">
-                            <span className="text-gray-300 text-sm">{formatCurrency(shift.opening_float)}</span>
+                            <span className="text-gray-700 text-sm">{formatCurrency(shift.opening_float)}</span>
                           </td>
                           <td className="p-3 text-right">
-                            <span className="text-white font-medium">{formatCurrency(shift.expected_cash)}</span>
+                            <span className="text-gray-900 font-medium">{formatCurrency(shift.expected_cash)}</span>
                           </td>
                           <td className="p-3 text-right">
-                            <span className="text-gray-300 text-sm">
+                            <span className="text-gray-700 text-sm">
                               {shift.actual_cash !== null ? formatCurrency(shift.actual_cash) : '-'}
                             </span>
                           </td>
@@ -735,8 +735,8 @@ const MerchantPOSReports = () => {
                           <td className="p-3 text-center">
                             <span className={`text-xs px-2 py-1 rounded-full ${
                               shift.status === 'open' 
-                                ? 'bg-emerald-500/20 text-emerald-400' 
-                                : 'bg-gray-500/20 text-gray-400'
+                                ? 'bg-emerald-50 text-emerald-600' 
+                                : 'bg-gray-500/20 text-gray-500'
                             }`}>
                               {shift.status}
                             </span>
@@ -754,20 +754,20 @@ const MerchantPOSReports = () => {
         {/* Cash Movements Tab */}
         <TabsContent value="cash" className="space-y-4">
           <div className="flex justify-between items-center">
-            <p className="text-gray-400 text-sm">{cashMovements.length} movements</p>
+            <p className="text-gray-500 text-sm">{cashMovements.length} movements</p>
           </div>
 
-          <Card className="bg-[#151b28] border-gray-800">
+          <Card className="bg-white border-gray-200">
             <CardContent className="p-0">
               <div className="overflow-x-auto">
                 <table className="w-full">
-                  <thead className="bg-gray-800/50">
+                  <thead className="bg-white/50">
                     <tr>
-                      <th className="text-left text-xs text-gray-400 font-medium p-3">Type</th>
-                      <th className="text-left text-xs text-gray-400 font-medium p-3">Amount</th>
-                      <th className="text-left text-xs text-gray-400 font-medium p-3">Reason</th>
-                      <th className="text-left text-xs text-gray-400 font-medium p-3">Staff</th>
-                      <th className="text-left text-xs text-gray-400 font-medium p-3">Time</th>
+                      <th className="text-left text-xs text-gray-500 font-medium p-3">Type</th>
+                      <th className="text-left text-xs text-gray-500 font-medium p-3">Amount</th>
+                      <th className="text-left text-xs text-gray-500 font-medium p-3">Reason</th>
+                      <th className="text-left text-xs text-gray-500 font-medium p-3">Staff</th>
+                      <th className="text-left text-xs text-gray-500 font-medium p-3">Time</th>
                     </tr>
                   </thead>
                   <tbody className="divide-y divide-gray-800">
@@ -779,16 +779,16 @@ const MerchantPOSReports = () => {
                       </tr>
                     ) : (
                       cashMovements.map((movement) => (
-                        <tr key={movement.id} className="hover:bg-gray-800/30">
+                        <tr key={movement.id} className="hover:bg-white/30">
                           <td className="p-3">
                             <div className="flex items-center gap-2">
                               {movement.type === 'in' ? (
-                                <ArrowDownCircle className="w-4 h-4 text-emerald-400" />
+                                <ArrowDownCircle className="w-4 h-4 text-emerald-600" />
                               ) : (
-                                <ArrowUpCircle className="w-4 h-4 text-red-400" />
+                                <ArrowUpCircle className="w-4 h-4 text-red-600" />
                               )}
                               <span className={`text-sm font-medium ${
-                                movement.type === 'in' ? 'text-emerald-400' : 'text-red-400'
+                                movement.type === 'in' ? 'text-emerald-600' : 'text-red-600'
                               }`}>
                                 Cash {movement.type === 'in' ? 'In' : 'Out'}
                               </span>
@@ -796,19 +796,19 @@ const MerchantPOSReports = () => {
                           </td>
                           <td className="p-3">
                             <span className={`font-medium ${
-                              movement.type === 'in' ? 'text-emerald-400' : 'text-red-400'
+                              movement.type === 'in' ? 'text-emerald-600' : 'text-red-600'
                             }`}>
                               {movement.type === 'in' ? '+' : '-'}{formatCurrency(movement.amount)}
                             </span>
                           </td>
                           <td className="p-3">
-                            <span className="text-gray-300 text-sm">{movement.reason}</span>
+                            <span className="text-gray-700 text-sm">{movement.reason}</span>
                           </td>
                           <td className="p-3">
-                            <span className="text-gray-400 text-sm">{movement.staff_name}</span>
+                            <span className="text-gray-500 text-sm">{movement.staff_name}</span>
                           </td>
                           <td className="p-3">
-                            <span className="text-gray-400 text-sm">{formatDateTime(movement.created_at)}</span>
+                            <span className="text-gray-500 text-sm">{formatDateTime(movement.created_at)}</span>
                           </td>
                         </tr>
                       ))
@@ -823,81 +823,81 @@ const MerchantPOSReports = () => {
 
       {/* Transaction Detail Modal */}
       <Dialog open={!!selectedTransaction} onOpenChange={() => setSelectedTransaction(null)}>
-        <DialogContent className="bg-[#151b28] border-gray-800 text-white max-w-md">
+        <DialogContent className="bg-white border-gray-200 text-gray-900 max-w-md">
           <DialogHeader>
             <DialogTitle className="flex items-center gap-2">
-              <Receipt className="w-5 h-5 text-emerald-400" />
+              <Receipt className="w-5 h-5 text-emerald-600" />
               Transaction Details
             </DialogTitle>
           </DialogHeader>
           
           {selectedTransaction && (
             <div className="space-y-4">
-              <div className="p-3 bg-gray-800/50 rounded-lg space-y-2">
+              <div className="p-3 bg-white/50 rounded-lg space-y-2">
                 <div className="flex justify-between">
-                  <span className="text-gray-400 text-sm">Transaction #</span>
-                  <span className="text-white font-medium">{selectedTransaction.transaction_number}</span>
+                  <span className="text-gray-500 text-sm">Transaction #</span>
+                  <span className="text-gray-900 font-medium">{selectedTransaction.transaction_number}</span>
                 </div>
                 <div className="flex justify-between">
-                  <span className="text-gray-400 text-sm">Date</span>
-                  <span className="text-gray-300 text-sm">{formatDateTime(selectedTransaction.created_at)}</span>
+                  <span className="text-gray-500 text-sm">Date</span>
+                  <span className="text-gray-700 text-sm">{formatDateTime(selectedTransaction.created_at)}</span>
                 </div>
                 <div className="flex justify-between">
-                  <span className="text-gray-400 text-sm">Staff</span>
-                  <span className="text-gray-300 text-sm">{selectedTransaction.staff_name || 'N/A'}</span>
+                  <span className="text-gray-500 text-sm">Staff</span>
+                  <span className="text-gray-700 text-sm">{selectedTransaction.staff_name || 'N/A'}</span>
                 </div>
                 <div className="flex justify-between">
-                  <span className="text-gray-400 text-sm">Customer</span>
-                  <span className="text-gray-300 text-sm">{selectedTransaction.customer_name || 'Walk-in'}</span>
+                  <span className="text-gray-500 text-sm">Customer</span>
+                  <span className="text-gray-700 text-sm">{selectedTransaction.customer_name || 'Walk-in'}</span>
                 </div>
               </div>
 
-              <div className="border-t border-gray-700 pt-3">
-                <p className="text-gray-400 text-sm mb-2">Items</p>
+              <div className="border-t border-gray-200 pt-3">
+                <p className="text-gray-500 text-sm mb-2">Items</p>
                 <div className="space-y-2">
                   {selectedTransaction.items?.map((item, i) => (
                     <div key={i} className="flex justify-between text-sm">
-                      <span className="text-gray-300">{item.quantity}x {item.name}</span>
-                      <span className="text-white">{formatCurrency(item.subtotal)}</span>
+                      <span className="text-gray-700">{item.quantity}x {item.name}</span>
+                      <span className="text-gray-900">{formatCurrency(item.subtotal)}</span>
                     </div>
                   ))}
                 </div>
               </div>
 
-              <div className="border-t border-gray-700 pt-3 space-y-2">
+              <div className="border-t border-gray-200 pt-3 space-y-2">
                 <div className="flex justify-between text-sm">
-                  <span className="text-gray-400">Subtotal</span>
-                  <span className="text-white">{formatCurrency(selectedTransaction.subtotal)}</span>
+                  <span className="text-gray-500">Subtotal</span>
+                  <span className="text-gray-900">{formatCurrency(selectedTransaction.subtotal)}</span>
                 </div>
                 {selectedTransaction.discount_total > 0 && (
                   <div className="flex justify-between text-sm">
-                    <span className="text-gray-400">Discount</span>
-                    <span className="text-red-400">-{formatCurrency(selectedTransaction.discount_total)}</span>
+                    <span className="text-gray-500">Discount</span>
+                    <span className="text-red-600">-{formatCurrency(selectedTransaction.discount_total)}</span>
                   </div>
                 )}
                 <div className="flex justify-between text-sm">
-                  <span className="text-gray-400">Tax</span>
-                  <span className="text-white">{formatCurrency(selectedTransaction.tax_total)}</span>
+                  <span className="text-gray-500">Tax</span>
+                  <span className="text-gray-900">{formatCurrency(selectedTransaction.tax_total)}</span>
                 </div>
-                <div className="flex justify-between font-semibold text-lg pt-2 border-t border-gray-700">
-                  <span className="text-white">Total</span>
-                  <span className="text-emerald-400">{formatCurrency(selectedTransaction.total)}</span>
+                <div className="flex justify-between font-semibold text-lg pt-2 border-t border-gray-200">
+                  <span className="text-gray-900">Total</span>
+                  <span className="text-emerald-600">{formatCurrency(selectedTransaction.total)}</span>
                 </div>
               </div>
 
               <div className="flex justify-between items-center pt-2">
                 <div className="flex items-center gap-2">
                   {selectedTransaction.payments?.[0]?.method === 'cash' ? (
-                    <Banknote className="w-5 h-5 text-emerald-400" />
+                    <Banknote className="w-5 h-5 text-emerald-600" />
                   ) : (
-                    <CreditCard className="w-5 h-5 text-blue-400" />
+                    <CreditCard className="w-5 h-5 text-blue-600" />
                   )}
-                  <span className="text-gray-300 capitalize">{selectedTransaction.payments?.[0]?.method}</span>
+                  <span className="text-gray-700 capitalize">{selectedTransaction.payments?.[0]?.method}</span>
                 </div>
                 <span className={`text-xs px-2 py-1 rounded-full ${
                   selectedTransaction.status === 'completed' 
-                    ? 'bg-emerald-500/20 text-emerald-400' 
-                    : 'bg-red-500/20 text-red-400'
+                    ? 'bg-emerald-50 text-emerald-600' 
+                    : 'bg-red-50 text-red-600'
                 }`}>
                   {selectedTransaction.status}
                 </span>

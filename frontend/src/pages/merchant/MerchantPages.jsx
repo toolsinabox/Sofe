@@ -42,7 +42,7 @@ const EditorToolbar = ({ onFormat }) => {
   ];
 
   return (
-    <div className="flex flex-wrap gap-1 p-2 bg-gray-900 border border-gray-700 rounded-t-lg">
+    <div className="flex flex-wrap gap-1 p-2 bg-gray-50 border border-gray-200 rounded-t-lg">
       {tools.map((tool, i) => 
         tool.divider ? (
           <div key={i} className="w-px h-6 bg-gray-700 mx-1" />
@@ -51,7 +51,7 @@ const EditorToolbar = ({ onFormat }) => {
             key={i}
             type="button"
             onClick={() => onFormat(tool.tag)}
-            className="p-1.5 rounded hover:bg-gray-700 text-gray-400 hover:text-white"
+            className="p-1.5 rounded hover:bg-gray-100 text-gray-500 hover:text-gray-900"
             title={tool.title}
           >
             <tool.icon size={16} />
@@ -72,10 +72,10 @@ const ImageUploader = ({ label, value, onChange, uploading, onUpload }) => {
 
   return (
     <div>
-      <Label className="text-gray-300">{label}</Label>
+      <Label className="text-gray-700">{label}</Label>
       <div className="mt-1 grid grid-cols-2 gap-4">
         {/* Preview */}
-        <div className="aspect-video bg-gray-900 rounded-lg border border-gray-700 overflow-hidden flex items-center justify-center">
+        <div className="aspect-video bg-gray-50 rounded-lg border border-gray-200 overflow-hidden flex items-center justify-center">
           {value ? (
             <img src={value} alt={label} className="w-full h-full object-cover" />
           ) : (
@@ -89,7 +89,7 @@ const ImageUploader = ({ label, value, onChange, uploading, onUpload }) => {
         <div
           {...getRootProps()}
           className={`aspect-video border-2 border-dashed rounded-lg flex flex-col items-center justify-center cursor-pointer transition-colors ${
-            isDragActive ? 'border-blue-500 bg-blue-500/10' : 'border-gray-600 hover:border-gray-500'
+            isDragActive ? 'border-blue-500 bg-blue-500/10' : 'border-gray-200 hover:border-gray-500'
           }`}
         >
           <input {...getInputProps()} />
@@ -97,8 +97,8 @@ const ImageUploader = ({ label, value, onChange, uploading, onUpload }) => {
             <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-500" />
           ) : (
             <>
-              <Upload size={24} className="text-gray-400 mb-2" />
-              <p className="text-gray-400 text-sm text-center px-4">
+              <Upload size={24} className="text-gray-500 mb-2" />
+              <p className="text-gray-500 text-sm text-center px-4">
                 {isDragActive ? 'Drop image here' : 'Click or drag to upload'}
               </p>
             </>
@@ -111,14 +111,14 @@ const ImageUploader = ({ label, value, onChange, uploading, onUpload }) => {
             value={value}
             onChange={(e) => onChange(e.target.value)}
             placeholder="Image URL"
-            className="bg-gray-700 border-gray-600 text-white text-sm"
+            className="bg-gray-700 border-gray-200 text-gray-900 text-sm"
           />
           <Button
             type="button"
             variant="outline"
             size="sm"
             onClick={() => onChange('')}
-            className="text-red-400 border-gray-600 hover:bg-red-500/10"
+            className="text-red-600 border-gray-200 hover:bg-red-500/10"
           >
             Remove
           </Button>
@@ -303,8 +303,8 @@ const MerchantPages = () => {
     <div className="p-6">
       <div className="flex justify-between items-center mb-6">
         <div>
-          <h1 className="text-2xl font-bold text-white">Pages</h1>
-          <p className="text-gray-400 text-sm mt-1">Manage your store pages, content, and SEO settings</p>
+          <h1 className="text-2xl font-bold text-gray-900">Pages</h1>
+          <p className="text-gray-500 text-sm mt-1">Manage your store pages, content, and SEO settings</p>
         </div>
         <Button onClick={() => openModal()} className="bg-blue-600 hover:bg-blue-700">
           <Plus size={16} className="mr-2" /> Add Page
@@ -312,47 +312,47 @@ const MerchantPages = () => {
       </div>
 
       {/* Pages List */}
-      <div className="bg-gray-800 rounded-lg overflow-hidden">
+      <div className="bg-white rounded-lg overflow-hidden">
         <table className="w-full">
           <thead>
-            <tr className="bg-gray-900">
-              <th className="text-left p-4 text-gray-400 font-medium w-12"></th>
-              <th className="text-left p-4 text-gray-400 font-medium">Page Name</th>
-              <th className="text-left p-4 text-gray-400 font-medium">URL Slug</th>
-              <th className="text-left p-4 text-gray-400 font-medium">Image</th>
-              <th className="text-left p-4 text-gray-400 font-medium">Visibility</th>
-              <th className="text-left p-4 text-gray-400 font-medium">Status</th>
-              <th className="text-right p-4 text-gray-400 font-medium">Actions</th>
+            <tr className="bg-gray-50">
+              <th className="text-left p-4 text-gray-500 font-medium w-12"></th>
+              <th className="text-left p-4 text-gray-500 font-medium">Page Name</th>
+              <th className="text-left p-4 text-gray-500 font-medium">URL Slug</th>
+              <th className="text-left p-4 text-gray-500 font-medium">Image</th>
+              <th className="text-left p-4 text-gray-500 font-medium">Visibility</th>
+              <th className="text-left p-4 text-gray-500 font-medium">Status</th>
+              <th className="text-right p-4 text-gray-500 font-medium">Actions</th>
             </tr>
           </thead>
           <tbody>
             {pages.map((page) => (
-              <tr key={page.id} className="border-t border-gray-700 hover:bg-gray-750">
+              <tr key={page.id} className="border-t border-gray-200 hover:bg-gray-750">
                 <td className="p-4 text-gray-500">
                   <GripVertical size={16} />
                 </td>
                 <td className="p-4">
                   <div className="flex items-center gap-3">
                     {page.is_homepage ? (
-                      <Home size={18} className="text-yellow-400" />
+                      <Home size={18} className="text-yellow-600" />
                     ) : (
                       <FileText size={18} className="text-gray-500" />
                     )}
                     <div>
-                      <p className="text-white font-medium flex items-center gap-2">
+                      <p className="text-gray-900 font-medium flex items-center gap-2">
                         {page.name}
                         {page.is_system && (
                           <Lock size={12} className="text-gray-500" title="System page - cannot be deleted" />
                         )}
                       </p>
                       {page.is_homepage && (
-                        <span className="text-xs text-yellow-400">Default Homepage</span>
+                        <span className="text-xs text-yellow-600">Default Homepage</span>
                       )}
                     </div>
                   </div>
                 </td>
                 <td className="p-4">
-                  <code className="text-cyan-400 bg-gray-900 px-2 py-1 rounded text-sm">
+                  <code className="text-cyan-400 bg-gray-50 px-2 py-1 rounded text-sm">
                     /{page.slug}
                   </code>
                 </td>
@@ -361,7 +361,7 @@ const MerchantPages = () => {
                     <img 
                       src={page.main_image} 
                       alt={page.name}
-                      className="w-16 h-10 object-cover rounded border border-gray-700"
+                      className="w-16 h-10 object-cover rounded border border-gray-200"
                     />
                   ) : (
                     <span className="text-gray-500 text-sm">—</span>
@@ -370,12 +370,12 @@ const MerchantPages = () => {
                 <td className="p-4">
                   <div className="flex items-center gap-2">
                     {page.visible_on_menu && (
-                      <span className="flex items-center gap-1 text-blue-400 text-xs bg-blue-500/10 px-2 py-0.5 rounded">
+                      <span className="flex items-center gap-1 text-blue-600 text-xs bg-blue-500/10 px-2 py-0.5 rounded">
                         <Menu size={10} /> Menu
                       </span>
                     )}
                     {page.visible_on_sitemap && (
-                      <span className="flex items-center gap-1 text-green-400 text-xs bg-green-500/10 px-2 py-0.5 rounded">
+                      <span className="flex items-center gap-1 text-green-600 text-xs bg-green-500/10 px-2 py-0.5 rounded">
                         <Map size={10} /> Sitemap
                       </span>
                     )}
@@ -383,7 +383,7 @@ const MerchantPages = () => {
                 </td>
                 <td className="p-4">
                   {page.is_active ? (
-                    <span className="flex items-center gap-1 text-green-400 text-sm">
+                    <span className="flex items-center gap-1 text-green-600 text-sm">
                       <Eye size={14} /> Active
                     </span>
                   ) : (
@@ -396,7 +396,7 @@ const MerchantPages = () => {
                   <div className="flex items-center justify-end gap-2">
                     <button
                       onClick={() => openModal(page)}
-                      className="p-2 rounded hover:bg-gray-700 text-gray-400 hover:text-white"
+                      className="p-2 rounded hover:bg-gray-100 text-gray-500 hover:text-gray-900"
                       title="Edit"
                     >
                       <Edit size={16} />
@@ -404,7 +404,7 @@ const MerchantPages = () => {
                     {!page.is_system && (
                       <button
                         onClick={() => deletePage(page.id)}
-                        className="p-2 rounded hover:bg-gray-700 text-gray-400 hover:text-red-400"
+                        className="p-2 rounded hover:bg-gray-100 text-gray-500 hover:text-red-600"
                         title="Delete"
                       >
                         <Trash2 size={16} />
@@ -428,26 +428,26 @@ const MerchantPages = () => {
       {/* Edit Modal */}
       {showModal && (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 overflow-y-auto py-8">
-          <div className="bg-gray-800 rounded-lg w-full max-w-4xl mx-4 max-h-[90vh] overflow-hidden flex flex-col">
-            <div className="flex justify-between items-center p-6 border-b border-gray-700">
-              <h2 className="text-xl font-bold text-white">
+          <div className="bg-white rounded-lg w-full max-w-4xl mx-4 max-h-[90vh] overflow-hidden flex flex-col">
+            <div className="flex justify-between items-center p-6 border-b border-gray-200">
+              <h2 className="text-xl font-bold text-gray-900">
                 {editingPage ? `Edit: ${editingPage.name}` : 'Create New Page'}
               </h2>
-              <button onClick={() => setShowModal(false)} className="text-gray-400 hover:text-white">
+              <button onClick={() => setShowModal(false)} className="text-gray-500 hover:text-gray-900">
                 <X size={20} />
               </button>
             </div>
 
             {/* Tabs */}
-            <div className="flex border-b border-gray-700 px-6">
+            <div className="flex border-b border-gray-200 px-6">
               {['general', 'content', 'images', 'seo', 'visibility'].map((tab) => (
                 <button
                   key={tab}
                   onClick={() => setActiveTab(tab)}
                   className={`px-4 py-3 text-sm font-medium capitalize border-b-2 transition-colors ${
                     activeTab === tab
-                      ? 'text-blue-400 border-blue-400'
-                      : 'text-gray-400 border-transparent hover:text-white'
+                      ? 'text-blue-600 border-blue-400'
+                      : 'text-gray-500 border-transparent hover:text-gray-900'
                   }`}
                 >
                   {tab === 'seo' ? 'SEO Settings' : tab}
@@ -460,7 +460,7 @@ const MerchantPages = () => {
               {activeTab === 'general' && (
                 <div className="space-y-4">
                   <div>
-                    <Label className="text-gray-300">Page Name *</Label>
+                    <Label className="text-gray-700">Page Name *</Label>
                     <Input
                       value={formData.name}
                       onChange={(e) => {
@@ -472,14 +472,14 @@ const MerchantPages = () => {
                         });
                       }}
                       placeholder="e.g., About Us, Contact, FAQ"
-                      className="bg-gray-700 border-gray-600 text-white mt-1"
+                      className="bg-gray-700 border-gray-200 text-gray-900 mt-1"
                     />
                   </div>
                   
                   <div>
-                    <Label className="text-gray-300">URL Slug *</Label>
+                    <Label className="text-gray-700">URL Slug *</Label>
                     <div className="flex items-center mt-1">
-                      <span className="bg-gray-900 text-gray-500 px-3 py-2 rounded-l border border-r-0 border-gray-600">
+                      <span className="bg-gray-50 text-gray-500 px-3 py-2 rounded-l border border-r-0 border-gray-200">
                         /live/page/
                       </span>
                       <Input
@@ -487,21 +487,21 @@ const MerchantPages = () => {
                         onChange={(e) => setFormData({ ...formData, slug: e.target.value })}
                         placeholder="about-us"
                         disabled={editingPage?.is_system}
-                        className="bg-gray-700 border-gray-600 text-white rounded-l-none"
+                        className="bg-gray-700 border-gray-200 text-gray-900 rounded-l-none"
                       />
                     </div>
                     {editingPage?.is_system && (
-                      <p className="text-xs text-yellow-400 mt-1">System page slug cannot be changed</p>
+                      <p className="text-xs text-yellow-600 mt-1">System page slug cannot be changed</p>
                     )}
                   </div>
 
                   <div className="grid grid-cols-2 gap-4">
                     <div>
-                      <Label className="text-gray-300">Template</Label>
+                      <Label className="text-gray-700">Template</Label>
                       <select
                         value={formData.template}
                         onChange={(e) => setFormData({ ...formData, template: e.target.value })}
-                        className="w-full h-10 px-3 bg-gray-700 border border-gray-600 rounded-md text-white mt-1"
+                        className="w-full h-10 px-3 bg-gray-700 border border-gray-200 rounded-md text-gray-900 mt-1"
                       >
                         <option value="default">Default</option>
                         <option value="full-width">Full Width</option>
@@ -510,19 +510,19 @@ const MerchantPages = () => {
                       </select>
                     </div>
                     <div>
-                      <Label className="text-gray-300">Sort Order</Label>
+                      <Label className="text-gray-700">Sort Order</Label>
                       <Input
                         type="number"
                         value={formData.sort_order}
                         onChange={(e) => setFormData({ ...formData, sort_order: parseInt(e.target.value) || 0 })}
-                        className="bg-gray-700 border-gray-600 text-white mt-1"
+                        className="bg-gray-700 border-gray-200 text-gray-900 mt-1"
                       />
                     </div>
                   </div>
 
-                  <div className="flex items-center justify-between pt-2 border-t border-gray-700">
+                  <div className="flex items-center justify-between pt-2 border-t border-gray-200">
                     <div>
-                      <p className="text-gray-300">Page Active</p>
+                      <p className="text-gray-700">Page Active</p>
                       <p className="text-sm text-gray-500">Show this page on the website</p>
                     </div>
                     <Switch
@@ -537,16 +537,16 @@ const MerchantPages = () => {
               {activeTab === 'content' && (
                 <div className="space-y-4">
                   <div>
-                    <Label className="text-gray-300 mb-2 block">Page Content (HTML)</Label>
+                    <Label className="text-gray-700 mb-2 block">Page Content (HTML)</Label>
                     <EditorToolbar onFormat={handleFormat} />
                     <Textarea
                       ref={contentRef}
                       value={formData.content}
                       onChange={(e) => setFormData({ ...formData, content: e.target.value })}
                       placeholder="<div class='container mx-auto py-8'>&#10;  <h1 class='text-3xl font-bold mb-4'>Page Title</h1>&#10;  <p class='text-gray-600'>Your content here...</p>&#10;</div>"
-                      className="bg-gray-700 border-gray-600 text-white h-80 font-mono text-sm rounded-t-none border-t-0"
+                      className="bg-gray-700 border-gray-200 text-gray-900 h-80 font-mono text-sm rounded-t-none border-t-0"
                     />
-                    <div className="bg-gray-900 border border-t-0 border-gray-700 rounded-b-lg p-3">
+                    <div className="bg-gray-50 border border-t-0 border-gray-200 rounded-b-lg p-3">
                       <p className="text-xs text-gray-500">
                         <strong>Template Tags:</strong> You can use tags like <code className="text-cyan-400">[@store_name@]</code>, <code className="text-cyan-400">[@store_email@]</code>, <code className="text-cyan-400">[@page_title@]</code>
                       </p>
@@ -554,13 +554,13 @@ const MerchantPages = () => {
                   </div>
 
                   {/* Content Preview */}
-                  <div className="border border-gray-700 rounded-lg overflow-hidden">
-                    <div className="bg-gray-900 px-4 py-2 border-b border-gray-700">
-                      <span className="text-sm text-gray-400">Preview</span>
+                  <div className="border border-gray-200 rounded-lg overflow-hidden">
+                    <div className="bg-gray-50 px-4 py-2 border-b border-gray-200">
+                      <span className="text-sm text-gray-500">Preview</span>
                     </div>
                     <div 
                       className="p-4 bg-white text-black min-h-[200px] prose prose-sm max-w-none"
-                      dangerouslySetInnerHTML={{ __html: formData.content || '<p class="text-gray-400 italic">No content yet...</p>' }}
+                      dangerouslySetInnerHTML={{ __html: formData.content || '<p class="text-gray-500 italic">No content yet...</p>' }}
                     />
                   </div>
                 </div>
@@ -585,8 +585,8 @@ const MerchantPages = () => {
                     onUpload={handleAltImageUpload}
                   />
                   
-                  <div className="bg-gray-900 rounded-lg p-4">
-                    <p className="text-sm text-gray-400">
+                  <div className="bg-gray-50 rounded-lg p-4">
+                    <p className="text-sm text-gray-500">
                       <strong>Tip:</strong> Use images to represent your page visually. The main image can be displayed as a hero banner or featured image on the page. Images are accessible via template tags:
                     </p>
                     <ul className="mt-2 space-y-1 text-sm text-gray-500">
@@ -600,71 +600,71 @@ const MerchantPages = () => {
               {/* SEO Tab */}
               {activeTab === 'seo' && (
                 <div className="space-y-4">
-                  <div className="bg-gray-900 rounded-lg p-4 mb-4">
-                    <div className="flex items-center gap-2 text-gray-400 mb-2">
+                  <div className="bg-gray-50 rounded-lg p-4 mb-4">
+                    <div className="flex items-center gap-2 text-gray-500 mb-2">
                       <Search size={16} />
                       <span className="text-sm">Search Engine Preview</span>
                     </div>
-                    <p className="text-blue-400 text-lg hover:underline cursor-pointer">
+                    <p className="text-blue-600 text-lg hover:underline cursor-pointer">
                       {formData.seo_title || formData.name || 'Page Title'}
                     </p>
-                    <p className="text-green-400 text-sm">
+                    <p className="text-green-600 text-sm">
                       {BACKEND_URL}/live/page/{formData.slug || 'page-slug'}
                     </p>
-                    <p className="text-gray-400 text-sm mt-1 line-clamp-2">
+                    <p className="text-gray-500 text-sm mt-1 line-clamp-2">
                       {formData.seo_description || 'No description set. Add a meta description to improve SEO.'}
                     </p>
                   </div>
 
                   <div>
-                    <Label className="text-gray-300">SEO Page Title</Label>
+                    <Label className="text-gray-700">SEO Page Title</Label>
                     <Input
                       value={formData.seo_title}
                       onChange={(e) => setFormData({ ...formData, seo_title: e.target.value })}
                       placeholder="Title that appears in browser tab and search results"
-                      className="bg-gray-700 border-gray-600 text-white mt-1"
+                      className="bg-gray-700 border-gray-200 text-gray-900 mt-1"
                     />
                     <p className="text-xs text-gray-500 mt-1">{formData.seo_title.length}/60 characters</p>
                   </div>
 
                   <div>
-                    <Label className="text-gray-300">SEO Meta Keywords</Label>
+                    <Label className="text-gray-700">SEO Meta Keywords</Label>
                     <Input
                       value={formData.seo_keywords}
                       onChange={(e) => setFormData({ ...formData, seo_keywords: e.target.value })}
                       placeholder="keyword1, keyword2, keyword3"
-                      className="bg-gray-700 border-gray-600 text-white mt-1"
+                      className="bg-gray-700 border-gray-200 text-gray-900 mt-1"
                     />
                   </div>
 
                   <div>
-                    <Label className="text-gray-300">SEO Meta Description</Label>
+                    <Label className="text-gray-700">SEO Meta Description</Label>
                     <Textarea
                       value={formData.seo_description}
                       onChange={(e) => setFormData({ ...formData, seo_description: e.target.value })}
                       placeholder="A brief description of this page for search engines"
-                      className="bg-gray-700 border-gray-600 text-white mt-1 h-24"
+                      className="bg-gray-700 border-gray-200 text-gray-900 mt-1 h-24"
                     />
                     <p className="text-xs text-gray-500 mt-1">{formData.seo_description.length}/160 characters</p>
                   </div>
 
                   <div>
-                    <Label className="text-gray-300">SEO Page Heading (H1)</Label>
+                    <Label className="text-gray-700">SEO Page Heading (H1)</Label>
                     <Input
                       value={formData.seo_heading}
                       onChange={(e) => setFormData({ ...formData, seo_heading: e.target.value })}
                       placeholder="Main heading that appears on the page"
-                      className="bg-gray-700 border-gray-600 text-white mt-1"
+                      className="bg-gray-700 border-gray-200 text-gray-900 mt-1"
                     />
                   </div>
 
                   <div>
-                    <Label className="text-gray-300">Canonical URL</Label>
+                    <Label className="text-gray-700">Canonical URL</Label>
                     <Input
                       value={formData.canonical_url}
                       onChange={(e) => setFormData({ ...formData, canonical_url: e.target.value })}
                       placeholder="https://yoursite.com/page (leave empty for default)"
-                      className="bg-gray-700 border-gray-600 text-white mt-1"
+                      className="bg-gray-700 border-gray-200 text-gray-900 mt-1"
                     />
                     <p className="text-xs text-gray-500 mt-1">Only set if this page has duplicate content elsewhere</p>
                   </div>
@@ -674,9 +674,9 @@ const MerchantPages = () => {
               {/* Visibility Tab */}
               {activeTab === 'visibility' && (
                 <div className="space-y-6">
-                  <div className="flex items-center justify-between p-4 bg-gray-900 rounded-lg">
+                  <div className="flex items-center justify-between p-4 bg-gray-50 rounded-lg">
                     <div>
-                      <p className="text-white font-medium flex items-center gap-2">
+                      <p className="text-gray-900 font-medium flex items-center gap-2">
                         <Menu size={18} /> Show in Navigation Menu
                       </p>
                       <p className="text-sm text-gray-500 mt-1">Display this page in the main navigation menu</p>
@@ -687,9 +687,9 @@ const MerchantPages = () => {
                     />
                   </div>
 
-                  <div className="flex items-center justify-between p-4 bg-gray-900 rounded-lg">
+                  <div className="flex items-center justify-between p-4 bg-gray-50 rounded-lg">
                     <div>
-                      <p className="text-white font-medium flex items-center gap-2">
+                      <p className="text-gray-900 font-medium flex items-center gap-2">
                         <Map size={18} /> Include in Sitemap
                       </p>
                       <p className="text-sm text-gray-500 mt-1">Include this page in the XML sitemap for search engines</p>
@@ -700,9 +700,9 @@ const MerchantPages = () => {
                     />
                   </div>
 
-                  <div className="flex items-center justify-between p-4 bg-gray-900 rounded-lg">
+                  <div className="flex items-center justify-between p-4 bg-gray-50 rounded-lg">
                     <div>
-                      <p className="text-white font-medium flex items-center gap-2">
+                      <p className="text-gray-900 font-medium flex items-center gap-2">
                         <Globe size={18} /> Page Active
                       </p>
                       <p className="text-sm text-gray-500 mt-1">Make this page publicly accessible</p>
@@ -716,8 +716,8 @@ const MerchantPages = () => {
               )}
             </div>
 
-            <div className="flex justify-end gap-3 p-6 border-t border-gray-700">
-              <Button variant="outline" onClick={() => setShowModal(false)} className="border-gray-600">
+            <div className="flex justify-end gap-3 p-6 border-t border-gray-200">
+              <Button variant="outline" onClick={() => setShowModal(false)} className="border-gray-200">
                 Cancel
               </Button>
               <Button onClick={handleSave} className="bg-blue-600 hover:bg-blue-700">

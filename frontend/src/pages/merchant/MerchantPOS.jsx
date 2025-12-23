@@ -1077,8 +1077,8 @@ const MerchantPOS = () => {
     return (
       <div className="h-[calc(100vh-120px)] flex items-center justify-center">
         <div className="text-center">
-          <Loader2 className="w-10 h-10 animate-spin text-emerald-400 mx-auto mb-4" />
-          <p className="text-gray-400">Loading POS...</p>
+          <Loader2 className="w-10 h-10 animate-spin text-emerald-600 mx-auto mb-4" />
+          <p className="text-gray-500">Loading POS...</p>
         </div>
       </div>
     );
@@ -1091,7 +1091,7 @@ const MerchantPOS = () => {
         <Card className="w-full max-w-md bg-white border-slate-200 shadow-xl">
           <CardHeader className="text-center pb-2">
             <div className="w-16 h-16 bg-gradient-to-br from-cyan-500 to-teal-500 rounded-2xl flex items-center justify-center mx-auto mb-4 shadow-lg shadow-cyan-500/25">
-              <Monitor className="w-8 h-8 text-white" />
+              <Monitor className="w-8 h-8 text-gray-900" />
             </div>
             <CardTitle className="text-slate-800 text-xl">POS Setup</CardTitle>
             <p className="text-slate-500 text-sm mt-1">Select your outlet and register to begin</p>
@@ -1153,7 +1153,7 @@ const MerchantPOS = () => {
             <Button 
               onClick={handleSetupComplete}
               disabled={!selectedOutlet || !selectedRegister}
-              className="w-full bg-gradient-to-r from-cyan-500 to-teal-500 hover:from-cyan-600 hover:to-teal-600 text-white py-6 mt-4 rounded-xl shadow-lg shadow-cyan-500/25"
+              className="w-full bg-gradient-to-r from-cyan-500 to-teal-500 hover:from-cyan-600 hover:to-teal-600 text-gray-900 py-6 mt-4 rounded-xl shadow-lg shadow-cyan-500/25"
             >
               <PlayCircle className="w-5 h-5 mr-2" />
               Continue
@@ -1217,7 +1217,7 @@ const MerchantPOS = () => {
               <Button
                 onClick={handleOpenShift}
                 disabled={processing || !openingFloat}
-                className="w-full bg-gradient-to-r from-cyan-500 to-teal-500 hover:from-cyan-600 hover:to-teal-600 text-white rounded-xl"
+                className="w-full bg-gradient-to-r from-cyan-500 to-teal-500 hover:from-cyan-600 hover:to-teal-600 text-gray-900 rounded-xl"
               >
                 {processing ? (
                   <><Loader2 className="w-4 h-4 mr-2 animate-spin" /> Opening...</>
@@ -1327,7 +1327,7 @@ const MerchantPOS = () => {
               onClick={() => setSelectedCategory('all')}
               className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-xl transition-all ${
                 selectedCategory === 'all' 
-                  ? 'bg-gradient-to-r from-cyan-500 to-teal-500 text-white shadow-lg shadow-cyan-500/25' 
+                  ? 'bg-gradient-to-r from-cyan-500 to-teal-500 text-gray-900 shadow-lg shadow-cyan-500/25' 
                   : 'text-slate-600 hover:bg-slate-100'
               }`}
             >
@@ -1340,7 +1340,7 @@ const MerchantPOS = () => {
                 onClick={() => setSelectedCategory(cat)}
                 className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-xl transition-all ${
                   selectedCategory === cat 
-                    ? 'bg-gradient-to-r from-cyan-500 to-teal-500 text-white shadow-lg shadow-cyan-500/25' 
+                    ? 'bg-gradient-to-r from-cyan-500 to-teal-500 text-gray-900 shadow-lg shadow-cyan-500/25' 
                     : 'text-slate-600 hover:bg-slate-100'
                 }`}
               >
@@ -1445,7 +1445,7 @@ const MerchantPOS = () => {
             {customer ? (
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 bg-gradient-to-br from-cyan-500 to-teal-500 rounded-full flex items-center justify-center text-white font-semibold">
+                  <div className="w-10 h-10 bg-gradient-to-br from-cyan-500 to-teal-500 rounded-full flex items-center justify-center text-gray-900 font-semibold">
                     {customer.name?.charAt(0)?.toUpperCase() || 'C'}
                   </div>
                   <div>
@@ -1562,7 +1562,7 @@ const MerchantPOS = () => {
             <Button
               onClick={() => setShowPayment(true)}
               disabled={cart.length === 0 || !currentShift}
-              className="w-full py-6 text-lg font-semibold bg-gradient-to-r from-cyan-500 to-teal-500 hover:from-cyan-600 hover:to-teal-600 text-white rounded-xl shadow-lg shadow-cyan-500/25 disabled:opacity-50 disabled:shadow-none"
+              className="w-full py-6 text-lg font-semibold bg-gradient-to-r from-cyan-500 to-teal-500 hover:from-cyan-600 hover:to-teal-600 text-gray-900 rounded-xl shadow-lg shadow-cyan-500/25 disabled:opacity-50 disabled:shadow-none"
             >
               <Wallet className="w-5 h-5 mr-2" />
               Pay Now
@@ -1609,37 +1609,37 @@ const MerchantPOS = () => {
 
       {/* Open Shift Modal */}
       <Dialog open={showOpenShift} onOpenChange={setShowOpenShift}>
-        <DialogContent className="bg-[#151b28] border-gray-800 text-white max-w-sm">
+        <DialogContent className="bg-white border-gray-200 text-gray-900 max-w-sm">
           <DialogHeader>
             <DialogTitle className="flex items-center gap-2">
-              <PlayCircle className="w-5 h-5 text-emerald-400" />
+              <PlayCircle className="w-5 h-5 text-emerald-600" />
               Open Shift
             </DialogTitle>
-            <DialogDescription className="text-gray-400">
+            <DialogDescription className="text-gray-500">
               Enter your opening cash float to begin selling
             </DialogDescription>
           </DialogHeader>
           
           <div className="py-4 space-y-4">
-            <div className="p-3 bg-gray-800/50 rounded-lg">
-              <div className="flex items-center gap-2 text-sm text-gray-400 mb-1">
+            <div className="p-3 bg-white/50 rounded-lg">
+              <div className="flex items-center gap-2 text-sm text-gray-500 mb-1">
                 <Building2 className="w-4 h-4" />
                 <span>{selectedOutlet?.name}</span>
               </div>
-              <div className="flex items-center gap-2 text-sm text-gray-400">
+              <div className="flex items-center gap-2 text-sm text-gray-500">
                 <Monitor className="w-4 h-4" />
                 <span>{selectedRegister?.name}</span>
               </div>
             </div>
             
             <div>
-              <Label className="text-gray-400 text-sm mb-2 block">Opening Float ($)</Label>
+              <Label className="text-gray-500 text-sm mb-2 block">Opening Float ($)</Label>
               <Input
                 type="number"
                 value={openingFloat}
                 onChange={(e) => setOpeningFloat(e.target.value)}
                 placeholder="0.00"
-                className="bg-gray-800 border-gray-700 text-white text-xl text-center py-3"
+                className="bg-white border-gray-200 text-gray-900 text-xl text-center py-3"
                 autoFocus
               />
               <p className="text-xs text-gray-500 mt-2">Enter the starting cash amount in the drawer</p>
@@ -1651,7 +1651,7 @@ const MerchantPOS = () => {
                   key={amount}
                   variant="outline"
                   onClick={() => setOpeningFloat(amount.toString())}
-                  className="border-gray-700 text-gray-300 hover:bg-gray-800"
+                  className="border-gray-200 text-gray-700 hover:bg-white"
                 >
                   ${amount}
                 </Button>
@@ -1666,14 +1666,14 @@ const MerchantPOS = () => {
                 setShowOpenShift(false);
                 setShowSetup(true);
               }}
-              className="border-gray-700 text-gray-300"
+              className="border-gray-200 text-gray-700"
             >
               Back
             </Button>
             <Button
               onClick={handleOpenShift}
               disabled={processing || !openingFloat}
-              className="bg-emerald-600 hover:bg-emerald-700 text-white"
+              className="bg-emerald-600 hover:bg-emerald-700 text-gray-900"
             >
               {processing ? (
                 <><Loader2 className="w-4 h-4 mr-2 animate-spin" /> Opening...</>
@@ -1687,53 +1687,53 @@ const MerchantPOS = () => {
 
       {/* Close Shift (Cash-Up) Modal */}
       <Dialog open={showCloseShift} onOpenChange={setShowCloseShift}>
-        <DialogContent className="bg-[#151b28] border-gray-800 text-white max-w-md">
+        <DialogContent className="bg-white border-gray-200 text-gray-900 max-w-md">
           <DialogHeader>
             <DialogTitle className="flex items-center gap-2">
-              <Calculator className="w-5 h-5 text-orange-400" />
+              <Calculator className="w-5 h-5 text-orange-600" />
               Cash Up & Close Shift
             </DialogTitle>
           </DialogHeader>
           
           <div className="py-4 space-y-4">
             {/* Shift Summary */}
-            <div className="p-4 bg-gray-800/50 rounded-lg space-y-2">
+            <div className="p-4 bg-white/50 rounded-lg space-y-2">
               <div className="flex justify-between text-sm">
-                <span className="text-gray-400">Opening Float</span>
-                <span className="text-white">${currentShift?.opening_float?.toFixed(2)}</span>
+                <span className="text-gray-500">Opening Float</span>
+                <span className="text-gray-900">${currentShift?.opening_float?.toFixed(2)}</span>
               </div>
               <div className="flex justify-between text-sm">
-                <span className="text-gray-400">Cash Sales</span>
-                <span className="text-emerald-400">
+                <span className="text-gray-500">Cash Sales</span>
+                <span className="text-emerald-600">
                   +${((currentShift?.expected_cash || 0) - (currentShift?.opening_float || 0)).toFixed(2)}
                 </span>
               </div>
               <div className="h-px bg-gray-700 my-2" />
               <div className="flex justify-between font-semibold">
-                <span className="text-gray-300">Expected Cash</span>
-                <span className="text-white text-lg">${currentShift?.expected_cash?.toFixed(2)}</span>
+                <span className="text-gray-700">Expected Cash</span>
+                <span className="text-gray-900 text-lg">${currentShift?.expected_cash?.toFixed(2)}</span>
               </div>
             </div>
             
             <div className="grid grid-cols-2 gap-4">
               <div>
-                <Label className="text-gray-400 text-sm mb-2 block">Actual Cash Counted ($)</Label>
+                <Label className="text-gray-500 text-sm mb-2 block">Actual Cash Counted ($)</Label>
                 <Input
                   type="number"
                   value={closingData.actualCash}
                   onChange={(e) => setClosingData(prev => ({ ...prev, actualCash: e.target.value }))}
                   placeholder="0.00"
-                  className="bg-gray-800 border-gray-700 text-white text-center"
+                  className="bg-white border-gray-200 text-gray-900 text-center"
                 />
               </div>
               <div>
-                <Label className="text-gray-400 text-sm mb-2 block">Closing Float ($)</Label>
+                <Label className="text-gray-500 text-sm mb-2 block">Closing Float ($)</Label>
                 <Input
                   type="number"
                   value={closingData.closingFloat}
                   onChange={(e) => setClosingData(prev => ({ ...prev, closingFloat: e.target.value }))}
                   placeholder="0.00"
-                  className="bg-gray-800 border-gray-700 text-white text-center"
+                  className="bg-white border-gray-200 text-gray-900 text-center"
                 />
               </div>
             </div>
@@ -1742,18 +1742,18 @@ const MerchantPOS = () => {
             {closingData.actualCash && currentShift && (
               <div className={`p-3 rounded-lg text-center ${
                 parseFloat(closingData.actualCash) === currentShift.expected_cash
-                  ? 'bg-emerald-500/20 border border-emerald-500/30'
+                  ? 'bg-emerald-50 border border-emerald-500/30'
                   : parseFloat(closingData.actualCash) > currentShift.expected_cash
-                    ? 'bg-blue-500/20 border border-blue-500/30'
-                    : 'bg-red-500/20 border border-red-500/30'
+                    ? 'bg-blue-50 border border-blue-500/30'
+                    : 'bg-red-50 border border-red-500/30'
               }`}>
-                <p className="text-sm text-gray-400 mb-1">Variance</p>
+                <p className="text-sm text-gray-500 mb-1">Variance</p>
                 <p className={`text-xl font-bold ${
                   parseFloat(closingData.actualCash) === currentShift.expected_cash
-                    ? 'text-emerald-400'
+                    ? 'text-emerald-600'
                     : parseFloat(closingData.actualCash) > currentShift.expected_cash
-                      ? 'text-blue-400'
-                      : 'text-red-400'
+                      ? 'text-blue-600'
+                      : 'text-red-600'
                 }`}>
                   {parseFloat(closingData.actualCash) >= currentShift.expected_cash ? '+' : ''}
                   ${(parseFloat(closingData.actualCash) - currentShift.expected_cash).toFixed(2)}
@@ -1769,12 +1769,12 @@ const MerchantPOS = () => {
             )}
             
             <div>
-              <Label className="text-gray-400 text-sm mb-2 block">Notes (Optional)</Label>
+              <Label className="text-gray-500 text-sm mb-2 block">Notes (Optional)</Label>
               <Input
                 value={closingData.notes}
                 onChange={(e) => setClosingData(prev => ({ ...prev, notes: e.target.value }))}
                 placeholder="Any notes about this shift..."
-                className="bg-gray-800 border-gray-700 text-white"
+                className="bg-white border-gray-200 text-gray-900"
               />
             </div>
           </div>
@@ -1783,14 +1783,14 @@ const MerchantPOS = () => {
             <Button
               variant="outline"
               onClick={() => setShowCloseShift(false)}
-              className="border-gray-700 text-gray-300"
+              className="border-gray-200 text-gray-700"
             >
               Cancel
             </Button>
             <Button
               onClick={handleCloseShift}
               disabled={processing || !closingData.actualCash || !closingData.closingFloat}
-              className="bg-orange-600 hover:bg-orange-700 text-white"
+              className="bg-orange-600 hover:bg-orange-700 text-gray-900"
             >
               {processing ? (
                 <><Loader2 className="w-4 h-4 mr-2 animate-spin" /> Processing...</>
@@ -1804,10 +1804,10 @@ const MerchantPOS = () => {
 
       {/* Cash Movement Modal */}
       <Dialog open={showCashMovement} onOpenChange={setShowCashMovement}>
-        <DialogContent className="bg-[#151b28] border-gray-800 text-white max-w-sm">
+        <DialogContent className="bg-white border-gray-200 text-gray-900 max-w-sm">
           <DialogHeader>
             <DialogTitle className="flex items-center gap-2">
-              <DollarSign className="w-5 h-5 text-blue-400" />
+              <DollarSign className="w-5 h-5 text-blue-600" />
               Cash In / Out
             </DialogTitle>
           </DialogHeader>
@@ -1817,7 +1817,7 @@ const MerchantPOS = () => {
               <Button
                 variant={cashMovement.type === 'in' ? 'default' : 'outline'}
                 onClick={() => setCashMovement(prev => ({ ...prev, type: 'in' }))}
-                className={cashMovement.type === 'in' ? 'bg-emerald-600' : 'border-gray-700 text-gray-300'}
+                className={cashMovement.type === 'in' ? 'bg-emerald-600' : 'border-gray-200 text-gray-700'}
               >
                 <ArrowDownCircle className="w-4 h-4 mr-2" />
                 Cash In
@@ -1825,7 +1825,7 @@ const MerchantPOS = () => {
               <Button
                 variant={cashMovement.type === 'out' ? 'default' : 'outline'}
                 onClick={() => setCashMovement(prev => ({ ...prev, type: 'out' }))}
-                className={cashMovement.type === 'out' ? 'bg-red-600' : 'border-gray-700 text-gray-300'}
+                className={cashMovement.type === 'out' ? 'bg-red-600' : 'border-gray-200 text-gray-700'}
               >
                 <ArrowUpCircle className="w-4 h-4 mr-2" />
                 Cash Out
@@ -1833,23 +1833,23 @@ const MerchantPOS = () => {
             </div>
             
             <div>
-              <Label className="text-gray-400 text-sm mb-2 block">Amount ($)</Label>
+              <Label className="text-gray-500 text-sm mb-2 block">Amount ($)</Label>
               <Input
                 type="number"
                 value={cashMovement.amount}
                 onChange={(e) => setCashMovement(prev => ({ ...prev, amount: e.target.value }))}
                 placeholder="0.00"
-                className="bg-gray-800 border-gray-700 text-white text-xl text-center py-3"
+                className="bg-white border-gray-200 text-gray-900 text-xl text-center py-3"
               />
             </div>
             
             <div>
-              <Label className="text-gray-400 text-sm mb-2 block">Reason</Label>
+              <Label className="text-gray-500 text-sm mb-2 block">Reason</Label>
               <Input
                 value={cashMovement.reason}
                 onChange={(e) => setCashMovement(prev => ({ ...prev, reason: e.target.value }))}
                 placeholder={cashMovement.type === 'in' ? 'e.g., Float top-up, Change' : 'e.g., Petty cash, Bank deposit'}
-                className="bg-gray-800 border-gray-700 text-white"
+                className="bg-white border-gray-200 text-gray-900"
               />
             </div>
             
@@ -1859,7 +1859,7 @@ const MerchantPOS = () => {
                   key={amount}
                   variant="outline"
                   onClick={() => setCashMovement(prev => ({ ...prev, amount: amount.toString() }))}
-                  className="border-gray-700 text-gray-300 hover:bg-gray-800"
+                  className="border-gray-200 text-gray-700 hover:bg-white"
                 >
                   ${amount}
                 </Button>
@@ -1871,7 +1871,7 @@ const MerchantPOS = () => {
             <Button
               variant="outline"
               onClick={() => setShowCashMovement(false)}
-              className="border-gray-700 text-gray-300"
+              className="border-gray-200 text-gray-700"
             >
               Cancel
             </Button>
@@ -1892,23 +1892,23 @@ const MerchantPOS = () => {
 
       {/* Payment Modal - Maropost Style with Payment Terms */}
       <Dialog open={showPayment} onOpenChange={setShowPayment}>
-        <DialogContent className="bg-[#151b28] border-gray-800 text-white max-w-lg max-h-[90vh] overflow-y-auto">
+        <DialogContent className="bg-white border-gray-200 text-gray-900 max-w-lg max-h-[90vh] overflow-y-auto">
           <DialogHeader>
             <DialogTitle className="flex items-center gap-2 text-lg">
-              <Wallet className="w-5 h-5 text-emerald-400" />
+              <Wallet className="w-5 h-5 text-emerald-600" />
               Payment
             </DialogTitle>
           </DialogHeader>
           
           <div className="py-2 space-y-4">
             {/* Payment Terms Tabs */}
-            <div className="flex border-b border-gray-700">
+            <div className="flex border-b border-gray-200">
               <button
                 onClick={() => setPaymentTerm('pay_in_full')}
                 className={`flex-1 py-2 px-4 text-sm font-medium border-b-2 transition-colors ${
                   paymentTerm === 'pay_in_full' 
-                    ? 'border-emerald-500 text-emerald-400' 
-                    : 'border-transparent text-gray-400 hover:text-gray-300'
+                    ? 'border-emerald-500 text-emerald-600' 
+                    : 'border-transparent text-gray-500 hover:text-gray-700'
                 }`}
               >
                 Pay in full
@@ -1917,8 +1917,8 @@ const MerchantPOS = () => {
                 onClick={() => setPaymentTerm('pay_later')}
                 className={`flex-1 py-2 px-4 text-sm font-medium border-b-2 transition-colors ${
                   paymentTerm === 'pay_later' 
-                    ? 'border-blue-500 text-blue-400' 
-                    : 'border-transparent text-gray-400 hover:text-gray-300'
+                    ? 'border-blue-500 text-blue-600' 
+                    : 'border-transparent text-gray-500 hover:text-gray-700'
                 }`}
               >
                 Pay later
@@ -1927,8 +1927,8 @@ const MerchantPOS = () => {
                 onClick={() => setPaymentTerm('layby')}
                 className={`flex-1 py-2 px-4 text-sm font-medium border-b-2 transition-colors ${
                   paymentTerm === 'layby' 
-                    ? 'border-purple-500 text-purple-400' 
-                    : 'border-transparent text-gray-400 hover:text-gray-300'
+                    ? 'border-purple-500 text-purple-600' 
+                    : 'border-transparent text-gray-500 hover:text-gray-700'
                 }`}
               >
                 Layby
@@ -1936,43 +1936,43 @@ const MerchantPOS = () => {
             </div>
             
             {/* Amount Summary */}
-            <div className="text-center py-3 bg-gray-800/50 rounded-lg">
-              <p className="text-gray-400 text-sm mb-1">
+            <div className="text-center py-3 bg-white/50 rounded-lg">
+              <p className="text-gray-500 text-sm mb-1">
                 {paymentTerm === 'pay_in_full' ? 'Amount Due' : 'Total Sale'}
               </p>
-              <p className="text-3xl font-bold text-emerald-400">${total.toFixed(2)}</p>
+              <p className="text-3xl font-bold text-emerald-600">${total.toFixed(2)}</p>
             </div>
             
             {/* Pay Later Options */}
             {paymentTerm === 'pay_later' && (
               <div className="space-y-3 p-3 bg-blue-500/10 border border-blue-500/30 rounded-lg">
-                <p className="text-blue-400 text-sm font-medium">Initial Payment</p>
+                <p className="text-blue-600 text-sm font-medium">Initial Payment</p>
                 <div className="grid grid-cols-4 gap-2">
                   <Button
                     variant={initialPaymentType === 'none' ? 'default' : 'outline'}
                     onClick={() => setInitialPaymentType('none')}
-                    className={`text-xs ${initialPaymentType === 'none' ? 'bg-blue-600' : 'border-gray-700 text-gray-300'}`}
+                    className={`text-xs ${initialPaymentType === 'none' ? 'bg-blue-600' : 'border-gray-200 text-gray-700'}`}
                   >
                     No
                   </Button>
                   <Button
                     variant={initialPaymentType === 'percent_10' ? 'default' : 'outline'}
                     onClick={() => setInitialPaymentType('percent_10')}
-                    className={`text-xs ${initialPaymentType === 'percent_10' ? 'bg-blue-600' : 'border-gray-700 text-gray-300'}`}
+                    className={`text-xs ${initialPaymentType === 'percent_10' ? 'bg-blue-600' : 'border-gray-200 text-gray-700'}`}
                   >
                     10%
                   </Button>
                   <Button
                     variant={initialPaymentType === 'percent_20' ? 'default' : 'outline'}
                     onClick={() => setInitialPaymentType('percent_20')}
-                    className={`text-xs ${initialPaymentType === 'percent_20' ? 'bg-blue-600' : 'border-gray-700 text-gray-300'}`}
+                    className={`text-xs ${initialPaymentType === 'percent_20' ? 'bg-blue-600' : 'border-gray-200 text-gray-700'}`}
                   >
                     20%
                   </Button>
                   <Button
                     variant={initialPaymentType === 'custom' ? 'default' : 'outline'}
                     onClick={() => setInitialPaymentType('custom')}
-                    className={`text-xs ${initialPaymentType === 'custom' ? 'bg-blue-600' : 'border-gray-700 text-gray-300'}`}
+                    className={`text-xs ${initialPaymentType === 'custom' ? 'bg-blue-600' : 'border-gray-200 text-gray-700'}`}
                   >
                     Custom
                   </Button>
@@ -1983,21 +1983,21 @@ const MerchantPOS = () => {
                     value={initialPaymentAmount}
                     onChange={(e) => setInitialPaymentAmount(e.target.value)}
                     placeholder="Enter amount"
-                    className="bg-gray-800 border-gray-700 text-white"
+                    className="bg-white border-gray-200 text-gray-900"
                   />
                 )}
                 {initialPayment > 0 && (
                   <div className="flex justify-between text-sm">
-                    <span className="text-gray-400">Pay now:</span>
-                    <span className="text-blue-400 font-medium">${initialPayment.toFixed(2)}</span>
+                    <span className="text-gray-500">Pay now:</span>
+                    <span className="text-blue-600 font-medium">${initialPayment.toFixed(2)}</span>
                   </div>
                 )}
                 <div className="flex justify-between text-sm">
-                  <span className="text-gray-400">Remaining:</span>
-                  <span className="text-gray-300 font-medium">${remainingBalance.toFixed(2)}</span>
+                  <span className="text-gray-500">Remaining:</span>
+                  <span className="text-gray-700 font-medium">${remainingBalance.toFixed(2)}</span>
                 </div>
                 {!customer && (
-                  <p className="text-yellow-400 text-xs flex items-center gap-1">
+                  <p className="text-yellow-600 text-xs flex items-center gap-1">
                     <AlertTriangle className="w-3 h-3" />
                     Customer required for Pay Later
                   </p>
@@ -2008,26 +2008,26 @@ const MerchantPOS = () => {
             {/* Layby Options */}
             {paymentTerm === 'layby' && (
               <div className="space-y-3 p-3 bg-purple-500/10 border border-purple-500/30 rounded-lg">
-                <p className="text-purple-400 text-sm font-medium">When does this need to be fully paid?</p>
+                <p className="text-purple-600 text-sm font-medium">When does this need to be fully paid?</p>
                 <div className="grid grid-cols-3 gap-2">
                   <Button
                     variant={laybyDuePeriod === '4_weeks' ? 'default' : 'outline'}
                     onClick={() => setLaybyDuePeriod('4_weeks')}
-                    className={`text-xs ${laybyDuePeriod === '4_weeks' ? 'bg-purple-600' : 'border-gray-700 text-gray-300'}`}
+                    className={`text-xs ${laybyDuePeriod === '4_weeks' ? 'bg-purple-600' : 'border-gray-200 text-gray-700'}`}
                   >
                     4 weeks
                   </Button>
                   <Button
                     variant={laybyDuePeriod === '8_weeks' ? 'default' : 'outline'}
                     onClick={() => setLaybyDuePeriod('8_weeks')}
-                    className={`text-xs ${laybyDuePeriod === '8_weeks' ? 'bg-purple-600' : 'border-gray-700 text-gray-300'}`}
+                    className={`text-xs ${laybyDuePeriod === '8_weeks' ? 'bg-purple-600' : 'border-gray-200 text-gray-700'}`}
                   >
                     8 weeks
                   </Button>
                   <Button
                     variant={laybyDuePeriod === 'custom' ? 'default' : 'outline'}
                     onClick={() => setLaybyDuePeriod('custom')}
-                    className={`text-xs ${laybyDuePeriod === 'custom' ? 'bg-purple-600' : 'border-gray-700 text-gray-300'}`}
+                    className={`text-xs ${laybyDuePeriod === 'custom' ? 'bg-purple-600' : 'border-gray-200 text-gray-700'}`}
                   >
                     Select date
                   </Button>
@@ -2037,7 +2037,7 @@ const MerchantPOS = () => {
                     type="date"
                     value={laybyDueDate}
                     onChange={(e) => setLaybyDueDate(e.target.value)}
-                    className="bg-gray-800 border-gray-700 text-white"
+                    className="bg-white border-gray-200 text-gray-900"
                     min={new Date().toISOString().split('T')[0]}
                   />
                 )}
@@ -2048,33 +2048,33 @@ const MerchantPOS = () => {
                 )}
                 
                 <div className="border-t border-purple-500/30 pt-3 mt-2">
-                  <p className="text-purple-400 text-sm font-medium mb-2">Initial Payment</p>
+                  <p className="text-purple-600 text-sm font-medium mb-2">Initial Payment</p>
                   <div className="grid grid-cols-4 gap-2">
                     <Button
                       variant={initialPaymentType === 'none' ? 'default' : 'outline'}
                       onClick={() => setInitialPaymentType('none')}
-                      className={`text-xs ${initialPaymentType === 'none' ? 'bg-purple-600' : 'border-gray-700 text-gray-300'}`}
+                      className={`text-xs ${initialPaymentType === 'none' ? 'bg-purple-600' : 'border-gray-200 text-gray-700'}`}
                     >
                       No
                     </Button>
                     <Button
                       variant={initialPaymentType === 'percent_10' ? 'default' : 'outline'}
                       onClick={() => setInitialPaymentType('percent_10')}
-                      className={`text-xs ${initialPaymentType === 'percent_10' ? 'bg-purple-600' : 'border-gray-700 text-gray-300'}`}
+                      className={`text-xs ${initialPaymentType === 'percent_10' ? 'bg-purple-600' : 'border-gray-200 text-gray-700'}`}
                     >
                       10%
                     </Button>
                     <Button
                       variant={initialPaymentType === 'percent_20' ? 'default' : 'outline'}
                       onClick={() => setInitialPaymentType('percent_20')}
-                      className={`text-xs ${initialPaymentType === 'percent_20' ? 'bg-purple-600' : 'border-gray-700 text-gray-300'}`}
+                      className={`text-xs ${initialPaymentType === 'percent_20' ? 'bg-purple-600' : 'border-gray-200 text-gray-700'}`}
                     >
                       20%
                     </Button>
                     <Button
                       variant={initialPaymentType === 'custom' ? 'default' : 'outline'}
                       onClick={() => setInitialPaymentType('custom')}
-                      className={`text-xs ${initialPaymentType === 'custom' ? 'bg-purple-600' : 'border-gray-700 text-gray-300'}`}
+                      className={`text-xs ${initialPaymentType === 'custom' ? 'bg-purple-600' : 'border-gray-200 text-gray-700'}`}
                     >
                       Custom
                     </Button>
@@ -2085,23 +2085,23 @@ const MerchantPOS = () => {
                       value={initialPaymentAmount}
                       onChange={(e) => setInitialPaymentAmount(e.target.value)}
                       placeholder="Enter amount"
-                      className="bg-gray-800 border-gray-700 text-white mt-2"
+                      className="bg-white border-gray-200 text-gray-900 mt-2"
                     />
                   )}
                 </div>
                 
                 {initialPayment > 0 && (
                   <div className="flex justify-between text-sm">
-                    <span className="text-gray-400">Pay now:</span>
-                    <span className="text-purple-400 font-medium">${initialPayment.toFixed(2)}</span>
+                    <span className="text-gray-500">Pay now:</span>
+                    <span className="text-purple-600 font-medium">${initialPayment.toFixed(2)}</span>
                   </div>
                 )}
                 <div className="flex justify-between text-sm">
-                  <span className="text-gray-400">Remaining:</span>
-                  <span className="text-gray-300 font-medium">${remainingBalance.toFixed(2)}</span>
+                  <span className="text-gray-500">Remaining:</span>
+                  <span className="text-gray-700 font-medium">${remainingBalance.toFixed(2)}</span>
                 </div>
                 {!customer && (
-                  <p className="text-yellow-400 text-xs flex items-center gap-1">
+                  <p className="text-yellow-600 text-xs flex items-center gap-1">
                     <AlertTriangle className="w-3 h-3" />
                     Customer required for Layby
                   </p>
@@ -2110,11 +2110,11 @@ const MerchantPOS = () => {
             )}
             
             {/* Ship to Customer Toggle */}
-            <div className="p-3 bg-gray-800/50 rounded-lg space-y-3">
+            <div className="p-3 bg-white/50 rounded-lg space-y-3">
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-2">
-                  <Truck className="w-4 h-4 text-orange-400" />
-                  <span className="text-gray-300 text-sm font-medium">Ship to customer</span>
+                  <Truck className="w-4 h-4 text-orange-600" />
+                  <span className="text-gray-700 text-sm font-medium">Ship to customer</span>
                 </div>
                 <button
                   onClick={() => {
@@ -2137,10 +2137,10 @@ const MerchantPOS = () => {
               
               {/* Shipping Options */}
               {shipToCustomer && (
-                <div className="space-y-3 pt-2 border-t border-gray-700">
+                <div className="space-y-3 pt-2 border-t border-gray-200">
                   {/* Shipping Method Dropdown */}
                   <div className="space-y-2">
-                    <Label className="text-gray-400 text-xs">Shipping Option</Label>
+                    <Label className="text-gray-500 text-xs">Shipping Option</Label>
                     <Select 
                       value={selectedShipping?.id || ''} 
                       onValueChange={(value) => {
@@ -2148,19 +2148,19 @@ const MerchantPOS = () => {
                         setSelectedShipping(method);
                       }}
                     >
-                      <SelectTrigger className="bg-gray-800 border-gray-700 text-white text-sm">
+                      <SelectTrigger className="bg-white border-gray-200 text-gray-900 text-sm">
                         <SelectValue placeholder="Select shipping option..." />
                       </SelectTrigger>
-                      <SelectContent className="bg-gray-800 border-gray-700">
+                      <SelectContent className="bg-white border-gray-200">
                         {shippingMethods.map(method => (
                           <SelectItem 
                             key={method.id} 
                             value={method.id}
-                            className="text-white hover:bg-gray-700"
+                            className="text-gray-900 hover:bg-gray-100"
                           >
                             <div className="flex justify-between items-center w-full gap-4">
                               <span>{method.name}</span>
-                              <span className="text-orange-400 font-medium">
+                              <span className="text-orange-600 font-medium">
                                 {method.price === 0 ? 'FREE' : `$${method.price.toFixed(2)}`}
                               </span>
                             </div>
@@ -2175,7 +2175,7 @@ const MerchantPOS = () => {
                   
                   {/* Signature Required Toggle */}
                   <div className="flex items-center justify-between">
-                    <span className="text-gray-400 text-xs">Signature required</span>
+                    <span className="text-gray-500 text-xs">Signature required</span>
                     <button
                       onClick={() => setSignatureRequired(!signatureRequired)}
                       className={`relative w-10 h-5 rounded-full transition-colors ${
@@ -2192,7 +2192,7 @@ const MerchantPOS = () => {
                   
                   {/* Delivery Instructions */}
                   <div className="space-y-1">
-                    <Label className="text-gray-400 text-xs flex items-center gap-1">
+                    <Label className="text-gray-500 text-xs flex items-center gap-1">
                       <PenLine className="w-3 h-3" />
                       Delivery instructions
                     </Label>
@@ -2201,15 +2201,15 @@ const MerchantPOS = () => {
                       onChange={(e) => setDeliveryInstructions(e.target.value)}
                       placeholder="E.g., Leave at front door, Call on arrival..."
                       rows={2}
-                      className="w-full bg-gray-800 border border-gray-700 rounded-md text-white text-xs p-2 focus:border-orange-500 focus:outline-none"
+                      className="w-full bg-white border border-gray-200 rounded-md text-gray-900 text-xs p-2 focus:border-orange-500 focus:outline-none"
                     />
                   </div>
                   
                   {/* Shipping Cost Display */}
                   {selectedShipping && (
-                    <div className="flex justify-between items-center pt-2 border-t border-gray-700">
-                      <span className="text-gray-400 text-sm">Shipping Cost:</span>
-                      <span className="text-orange-400 font-bold">
+                    <div className="flex justify-between items-center pt-2 border-t border-gray-200">
+                      <span className="text-gray-500 text-sm">Shipping Cost:</span>
+                      <span className="text-orange-600 font-bold">
                         {selectedShipping.price === 0 ? 'FREE' : `$${selectedShipping.price.toFixed(2)}`}
                       </span>
                     </div>
@@ -2217,7 +2217,7 @@ const MerchantPOS = () => {
                   
                   {/* Warning if no customer */}
                   {!customer && (
-                    <p className="text-yellow-400 text-xs flex items-center gap-1">
+                    <p className="text-yellow-600 text-xs flex items-center gap-1">
                       <AlertTriangle className="w-3 h-3" />
                       Add customer for delivery address
                     </p>
@@ -2228,12 +2228,12 @@ const MerchantPOS = () => {
             
             {/* Payment Method Selection */}
             <div className="space-y-2">
-              <p className="text-gray-400 text-sm">Payment Method</p>
+              <p className="text-gray-500 text-sm">Payment Method</p>
               <div className="grid grid-cols-2 gap-2">
                 <Button
                   variant={paymentMethod === 'cash' ? 'default' : 'outline'}
                   onClick={() => setPaymentMethod('cash')}
-                  className={`${paymentMethod === 'cash' ? 'bg-emerald-600' : 'border-gray-700 text-gray-300'}`}
+                  className={`${paymentMethod === 'cash' ? 'bg-emerald-600' : 'border-gray-200 text-gray-700'}`}
                 >
                   <Banknote className="w-4 h-4 mr-2" />
                   Cash
@@ -2241,7 +2241,7 @@ const MerchantPOS = () => {
                 <Button
                   variant={paymentMethod === 'card' ? 'default' : 'outline'}
                   onClick={() => setPaymentMethod('card')}
-                  className={`${paymentMethod === 'card' ? 'bg-blue-600' : 'border-gray-700 text-gray-300'}`}
+                  className={`${paymentMethod === 'card' ? 'bg-blue-600' : 'border-gray-200 text-gray-700'}`}
                 >
                   <CreditCard className="w-4 h-4 mr-2" />
                   Card
@@ -2253,13 +2253,13 @@ const MerchantPOS = () => {
             {paymentMethod === 'cash' && (
               <div className="space-y-3">
                 <div>
-                  <label className="text-gray-400 text-sm mb-2 block">Cash Received</label>
+                  <label className="text-gray-500 text-sm mb-2 block">Cash Received</label>
                   <Input
                     type="number"
                     value={cashReceived}
                     onChange={(e) => setCashReceived(e.target.value)}
                     placeholder="0.00"
-                    className="bg-gray-800 border-gray-700 text-white text-xl text-center py-3"
+                    className="bg-white border-gray-200 text-gray-900 text-xl text-center py-3"
                     autoFocus
                   />
                 </div>
@@ -2270,7 +2270,7 @@ const MerchantPOS = () => {
                       key={amount}
                       variant="outline"
                       onClick={() => setCashReceived(amount.toString())}
-                      className="border-gray-700 text-gray-300 hover:bg-gray-800"
+                      className="border-gray-200 text-gray-700 hover:bg-white"
                     >
                       ${amount}
                     </Button>
@@ -2280,15 +2280,15 @@ const MerchantPOS = () => {
                 <Button
                   variant="outline"
                   onClick={() => setCashReceived((paymentTerm === 'pay_in_full' ? total : initialPayment).toFixed(2))}
-                  className="w-full border-gray-700 text-gray-300 hover:bg-gray-800"
+                  className="w-full border-gray-200 text-gray-700 hover:bg-white"
                 >
                   Exact Amount (${(paymentTerm === 'pay_in_full' ? total : initialPayment).toFixed(2)})
                 </Button>
                 
                 {change > 0 && (
                   <div className="text-center py-3 bg-emerald-500/10 border border-emerald-500/30 rounded-lg">
-                    <p className="text-gray-400 text-sm mb-1">Change Due</p>
-                    <p className="text-2xl font-bold text-emerald-400">${change.toFixed(2)}</p>
+                    <p className="text-gray-500 text-sm mb-1">Change Due</p>
+                    <p className="text-2xl font-bold text-emerald-600">${change.toFixed(2)}</p>
                   </div>
                 )}
               </div>
@@ -2297,8 +2297,8 @@ const MerchantPOS = () => {
             {/* Card Payment Details */}
             {paymentMethod === 'card' && (
               <div className="text-center py-4">
-                <CreditCard className="w-12 h-12 mx-auto mb-3 text-blue-400" />
-                <p className="text-gray-400">Present card to terminal</p>
+                <CreditCard className="w-12 h-12 mx-auto mb-3 text-blue-600" />
+                <p className="text-gray-500">Present card to terminal</p>
                 <p className="text-gray-500 text-sm mt-1">Click Complete when payment is confirmed</p>
               </div>
             )}
@@ -2308,7 +2308,7 @@ const MerchantPOS = () => {
             <Button
               variant="outline"
               onClick={() => setShowPayment(false)}
-              className="border-gray-700 text-gray-300 w-full sm:w-auto"
+              className="border-gray-200 text-gray-700 w-full sm:w-auto"
             >
               Edit Sale
             </Button>
@@ -2320,7 +2320,7 @@ const MerchantPOS = () => {
                 (paymentTerm === 'layby' && !laybyDuePeriod) ||
                 (paymentMethod === 'cash' && (!cashReceived || parseFloat(cashReceived) < (paymentTerm === 'pay_in_full' ? total : initialPayment)))
               }
-              className="bg-emerald-600 hover:bg-emerald-700 text-white w-full sm:w-auto"
+              className="bg-emerald-600 hover:bg-emerald-700 text-gray-900 w-full sm:w-auto"
             >
               {processing ? (
                 <><Loader2 className="w-4 h-4 mr-2 animate-spin" /> Processing...</>
@@ -2334,14 +2334,14 @@ const MerchantPOS = () => {
 
       {/* Confirm Sale Modal (Phase 1 - Maropost Style) */}
       <Dialog open={showConfirmSale} onOpenChange={setShowConfirmSale}>
-        <DialogContent className="bg-[#151b28] border-gray-800 text-white max-w-md">
+        <DialogContent className="bg-white border-gray-200 text-gray-900 max-w-md">
           <DialogHeader>
             <DialogTitle className="flex items-center gap-2 text-lg">
-              <CheckCircle2 className="w-6 h-6 text-emerald-400" />
+              <CheckCircle2 className="w-6 h-6 text-emerald-600" />
               Confirm Sale
             </DialogTitle>
             {lastTransaction && (
-              <p className="text-gray-400 text-sm mt-1">
+              <p className="text-gray-500 text-sm mt-1">
                 {lastTransaction.transaction_number}
               </p>
             )}
@@ -2359,10 +2359,10 @@ const MerchantPOS = () => {
               }`}>
                 <p className={`text-2xl font-bold ${
                   lastTransaction.payment_terms?.type === 'pay_in_full' 
-                    ? 'text-emerald-400' 
+                    ? 'text-emerald-600' 
                     : lastTransaction.payment_terms?.type === 'layby'
-                      ? 'text-purple-400'
-                      : 'text-blue-400'
+                      ? 'text-purple-600'
+                      : 'text-blue-600'
                 }`}>
                   ${lastTransaction.total.toFixed(2)}
                 </p>
@@ -2381,7 +2381,7 @@ const MerchantPOS = () => {
                   }
                 </p>
                 {lastTransaction.payment_terms?.type !== 'pay_in_full' && (
-                  <p className="text-gray-400 text-xs mt-2">
+                  <p className="text-gray-500 text-xs mt-2">
                     Remaining: ${lastTransaction.payment_terms.remaining_balance.toFixed(2)}
                     {lastTransaction.payment_terms?.due_date && (
                       <span className="ml-2">| Due: {lastTransaction.payment_terms.due_date}</span>
@@ -2394,16 +2394,16 @@ const MerchantPOS = () => {
               {lastTransaction.shipping && (
                 <div className="bg-orange-500/10 border border-orange-500/30 rounded-lg p-3">
                   <div className="flex items-center gap-2 mb-2">
-                    <Truck className="w-4 h-4 text-orange-400" />
-                    <span className="text-orange-400 text-sm font-medium">Shipping</span>
+                    <Truck className="w-4 h-4 text-orange-600" />
+                    <span className="text-orange-600 text-sm font-medium">Shipping</span>
                   </div>
                   <div className="text-xs space-y-1">
-                    <p className="text-gray-300">{lastTransaction.shipping.method}</p>
+                    <p className="text-gray-700">{lastTransaction.shipping.method}</p>
                     <p className="text-orange-300 font-medium">
                       {lastTransaction.shipping.cost === 0 ? 'FREE' : `$${lastTransaction.shipping.cost.toFixed(2)}`}
                     </p>
                     {lastTransaction.shipping.signature_required && (
-                      <p className="text-gray-400">✍️ Signature required</p>
+                      <p className="text-gray-500">✍️ Signature required</p>
                     )}
                     {lastTransaction.shipping.delivery_instructions && (
                       <p className="text-gray-500 italic text-xs">&ldquo;{lastTransaction.shipping.delivery_instructions}&rdquo;</p>
@@ -2414,20 +2414,20 @@ const MerchantPOS = () => {
               
               {/* Set Sale Status */}
               <div className="space-y-2">
-                <Label className="text-gray-300 text-sm flex items-center gap-2">
+                <Label className="text-gray-700 text-sm flex items-center gap-2">
                   <FileText className="w-4 h-4" />
                   Set sale status
                 </Label>
                 <Select value={saleStatus} onValueChange={setSaleStatus}>
-                  <SelectTrigger className="bg-gray-800 border-gray-700 text-white">
+                  <SelectTrigger className="bg-white border-gray-200 text-gray-900">
                     <SelectValue />
                   </SelectTrigger>
-                  <SelectContent className="bg-gray-800 border-gray-700">
+                  <SelectContent className="bg-white border-gray-200">
                     {saleStatusOptions.map(option => (
                       <SelectItem 
                         key={option.value} 
                         value={option.value}
-                        className="text-white hover:bg-gray-700"
+                        className="text-gray-900 hover:bg-gray-100"
                       >
                         {option.label}
                       </SelectItem>
@@ -2444,12 +2444,12 @@ const MerchantPOS = () => {
               </div>
               
               {/* Receipt Actions */}
-              <div className="space-y-3 pt-2 border-t border-gray-700">
+              <div className="space-y-3 pt-2 border-t border-gray-200">
                 <div className="flex gap-2">
                   <Button
                     variant="outline"
                     onClick={printReceipt}
-                    className="flex-1 border-gray-700 text-gray-300 hover:bg-gray-800"
+                    className="flex-1 border-gray-200 text-gray-700 hover:bg-white"
                   >
                     <Printer className="w-4 h-4 mr-2" />
                     Print Receipt
@@ -2459,7 +2459,7 @@ const MerchantPOS = () => {
                 {/* Email Receipt */}
                 <div className="space-y-2">
                   <div className="flex items-center justify-between">
-                    <Label className="text-gray-300 text-sm flex items-center gap-2">
+                    <Label className="text-gray-700 text-sm flex items-center gap-2">
                       <Mail className="w-4 h-4" />
                       Email Receipt
                     </Label>
@@ -2467,7 +2467,7 @@ const MerchantPOS = () => {
                       type="checkbox"
                       checked={emailReceipt}
                       onChange={(e) => setEmailReceipt(e.target.checked)}
-                      className="w-4 h-4 rounded border-gray-600 bg-gray-800 text-emerald-500 focus:ring-emerald-500"
+                      className="w-4 h-4 rounded border-gray-200 bg-white text-emerald-500 focus:ring-emerald-500"
                     />
                   </div>
                   {emailReceipt && (
@@ -2476,32 +2476,32 @@ const MerchantPOS = () => {
                       value={receiptEmail}
                       onChange={(e) => setReceiptEmail(e.target.value)}
                       placeholder="customer@email.com"
-                      className="bg-gray-800 border-gray-700 text-white text-sm"
+                      className="bg-white border-gray-200 text-gray-900 text-sm"
                     />
                   )}
                 </div>
               </div>
               
               {/* Add Note */}
-              <div className="pt-2 border-t border-gray-700">
+              <div className="pt-2 border-t border-gray-200">
                 {!showSaleNote ? (
                   <Button
                     variant="ghost"
                     onClick={() => setShowSaleNote(true)}
-                    className="text-gray-400 hover:text-white hover:bg-gray-800 w-full justify-start"
+                    className="text-gray-500 hover:text-gray-900 hover:bg-white w-full justify-start"
                   >
                     <StickyNote className="w-4 h-4 mr-2" />
                     Add Note +
                   </Button>
                 ) : (
                   <div className="space-y-2">
-                    <Label className="text-gray-300 text-sm">Order Note</Label>
+                    <Label className="text-gray-700 text-sm">Order Note</Label>
                     <textarea
                       value={saleNote}
                       onChange={(e) => setSaleNote(e.target.value)}
                       placeholder="Add a note to this order..."
                       rows={3}
-                      className="w-full bg-gray-800 border border-gray-700 rounded-md text-white text-sm p-2 focus:border-emerald-500 focus:outline-none"
+                      className="w-full bg-white border border-gray-200 rounded-md text-gray-900 text-sm p-2 focus:border-emerald-500 focus:outline-none"
                     />
                   </div>
                 )}
@@ -2516,7 +2516,7 @@ const MerchantPOS = () => {
                 setShowConfirmSale(false);
                 // Go back to add more items (restore cart from transaction)
               }}
-              className="border-gray-700 text-gray-300 w-full sm:w-auto"
+              className="border-gray-200 text-gray-700 w-full sm:w-auto"
             >
               <ChevronLeft className="w-4 h-4 mr-1" />
               Back to Sale
@@ -2524,7 +2524,7 @@ const MerchantPOS = () => {
             <Button
               onClick={completeSale}
               disabled={completingSale || (emailReceipt && !receiptEmail)}
-              className="bg-emerald-600 hover:bg-emerald-700 text-white w-full sm:w-auto"
+              className="bg-emerald-600 hover:bg-emerald-700 text-gray-900 w-full sm:w-auto"
             >
               {completingSale ? (
                 <><Loader2 className="w-4 h-4 mr-2 animate-spin" /> Completing...</>
@@ -2538,10 +2538,10 @@ const MerchantPOS = () => {
 
       {/* Receipt Modal */}
       <Dialog open={showReceipt} onOpenChange={setShowReceipt}>
-        <DialogContent className="bg-[#151b28] border-gray-800 text-white max-w-sm">
+        <DialogContent className="bg-white border-gray-200 text-gray-900 max-w-sm">
           <DialogHeader>
             <DialogTitle className="flex items-center gap-2">
-              <Check className="w-5 h-5 text-emerald-400" />
+              <Check className="w-5 h-5 text-emerald-600" />
               Payment Successful
             </DialogTitle>
           </DialogHeader>
@@ -2628,7 +2628,7 @@ const MerchantPOS = () => {
             <Button
               variant="outline"
               onClick={printReceipt}
-              className="border-gray-700 text-gray-300 w-full sm:w-auto"
+              className="border-gray-200 text-gray-700 w-full sm:w-auto"
             >
               <Printer className="w-4 h-4 mr-2" />
               Print
@@ -2638,7 +2638,7 @@ const MerchantPOS = () => {
                 variant="outline"
                 onClick={handleSendEmailReceipt}
                 disabled={sendingEmail}
-                className="border-blue-600 text-blue-400 hover:bg-blue-600/10 w-full sm:w-auto"
+                className="border-blue-600 text-blue-600 hover:bg-blue-600/10 w-full sm:w-auto"
               >
                 {sendingEmail ? (
                   <><Loader2 className="w-4 h-4 mr-2 animate-spin" /> Sending...</>
@@ -2652,7 +2652,7 @@ const MerchantPOS = () => {
                 setShowReceipt(false);
                 searchInputRef.current?.focus();
               }}
-              className="bg-emerald-600 hover:bg-emerald-700 text-white w-full sm:w-auto"
+              className="bg-emerald-600 hover:bg-emerald-700 text-gray-900 w-full sm:w-auto"
             >
               New Sale
             </Button>
@@ -2662,7 +2662,7 @@ const MerchantPOS = () => {
 
       {/* Customer Search Modal */}
       <Dialog open={showCustomerSearch} onOpenChange={setShowCustomerSearch}>
-        <DialogContent className="bg-[#151b28] border-gray-800 text-white max-w-md">
+        <DialogContent className="bg-white border-gray-200 text-gray-900 max-w-md">
           <DialogHeader>
             <DialogTitle>Select Customer</DialogTitle>
           </DialogHeader>
@@ -2672,7 +2672,7 @@ const MerchantPOS = () => {
               type="text"
               placeholder="Search customers..."
               onChange={(e) => searchCustomers(e.target.value)}
-              className="bg-gray-800 border-gray-700 text-white"
+              className="bg-white border-gray-200 text-gray-900"
             />
             
             {/* Add New Customer Button */}
@@ -2682,7 +2682,7 @@ const MerchantPOS = () => {
                 setShowCustomerSearch(false);
                 setShowAddCustomer(true);
               }}
-              className="w-full border-dashed border-emerald-500/50 text-emerald-400 hover:bg-emerald-500/10"
+              className="w-full border-dashed border-emerald-500/50 text-emerald-600 hover:bg-emerald-500/10"
             >
               <UserPlus className="w-4 h-4 mr-2" />
               Add New Customer
@@ -2696,13 +2696,13 @@ const MerchantPOS = () => {
                     setCustomer(c);
                     setShowCustomerSearch(false);
                   }}
-                  className="w-full flex items-center gap-3 p-3 bg-gray-800/50 rounded-lg hover:bg-gray-800 transition-colors text-left"
+                  className="w-full flex items-center gap-3 p-3 bg-white/50 rounded-lg hover:bg-white transition-colors text-left"
                 >
                   <div className="w-10 h-10 bg-gray-700 rounded-full flex items-center justify-center">
-                    <User className="w-5 h-5 text-gray-400" />
+                    <User className="w-5 h-5 text-gray-500" />
                   </div>
                   <div>
-                    <p className="text-white font-medium">{c.name}</p>
+                    <p className="text-gray-900 font-medium">{c.name}</p>
                     <p className="text-gray-500 text-xs">{c.email}</p>
                   </div>
                 </button>
@@ -2716,7 +2716,7 @@ const MerchantPOS = () => {
                   setCustomer(null);
                   setShowCustomerSearch(false);
                 }}
-                className="w-full border-gray-700 text-gray-300"
+                className="w-full border-gray-200 text-gray-700"
               >
                 Remove Customer
               </Button>
@@ -2727,10 +2727,10 @@ const MerchantPOS = () => {
 
       {/* Discount Modal */}
       <Dialog open={showDiscount} onOpenChange={setShowDiscount}>
-        <DialogContent className="bg-[#151b28] border-gray-800 text-white max-w-sm">
+        <DialogContent className="bg-white border-gray-200 text-gray-900 max-w-sm">
           <DialogHeader>
             <DialogTitle className="flex items-center gap-2">
-              <Percent className="w-5 h-5 text-emerald-400" />
+              <Percent className="w-5 h-5 text-emerald-600" />
               Apply Discount
             </DialogTitle>
             {discountSettings && (
@@ -2748,14 +2748,14 @@ const MerchantPOS = () => {
               <Button
                 variant={cartDiscount.type === 'fixed' ? 'default' : 'outline'}
                 onClick={() => setCartDiscount(prev => ({ ...prev, type: 'fixed' }))}
-                className={cartDiscount.type === 'fixed' ? 'bg-emerald-600' : 'border-gray-700 text-gray-300'}
+                className={cartDiscount.type === 'fixed' ? 'bg-emerald-600' : 'border-gray-200 text-gray-700'}
               >
                 $ Fixed
               </Button>
               <Button
                 variant={cartDiscount.type === 'percentage' ? 'default' : 'outline'}
                 onClick={() => setCartDiscount(prev => ({ ...prev, type: 'percentage' }))}
-                className={cartDiscount.type === 'percentage' ? 'bg-emerald-600' : 'border-gray-700 text-gray-300'}
+                className={cartDiscount.type === 'percentage' ? 'bg-emerald-600' : 'border-gray-200 text-gray-700'}
               >
                 % Percentage
               </Button>
@@ -2766,7 +2766,7 @@ const MerchantPOS = () => {
               value={cartDiscount.value || ''}
               onChange={(e) => setCartDiscount(prev => ({ ...prev, value: parseFloat(e.target.value) || 0 }))}
               placeholder={cartDiscount.type === 'fixed' ? 'Enter amount' : 'Enter percentage'}
-              className="bg-gray-800 border-gray-700 text-white text-center text-xl py-3"
+              className="bg-white border-gray-200 text-gray-900 text-center text-xl py-3"
             />
             
             <div className="grid grid-cols-4 gap-2">
@@ -2775,7 +2775,7 @@ const MerchantPOS = () => {
                   key={val}
                   variant="outline"
                   onClick={() => setCartDiscount(prev => ({ ...prev, value: val }))}
-                  className="border-gray-700 text-gray-300"
+                  className="border-gray-200 text-gray-700"
                 >
                   {cartDiscount.type === 'fixed' ? `$${val}` : `${val}%`}
                 </Button>
@@ -2790,13 +2790,13 @@ const MerchantPOS = () => {
                 setCartDiscount({ type: 'fixed', value: 0 });
                 setShowDiscount(false);
               }}
-              className="border-gray-700 text-gray-300"
+              className="border-gray-200 text-gray-700"
             >
               Clear
             </Button>
             <Button
               onClick={() => applyDiscount(cartDiscount.type, cartDiscount.value)}
-              className="bg-emerald-600 hover:bg-emerald-700 text-white"
+              className="bg-emerald-600 hover:bg-emerald-700 text-gray-900"
             >
               Apply
             </Button>
@@ -2806,10 +2806,10 @@ const MerchantPOS = () => {
 
       {/* Shift History Modal */}
       <Dialog open={showShiftHistory} onOpenChange={setShowShiftHistory}>
-        <DialogContent className="bg-[#151b28] border-gray-800 text-white max-w-lg">
+        <DialogContent className="bg-white border-gray-200 text-gray-900 max-w-lg">
           <DialogHeader>
             <DialogTitle className="flex items-center gap-2">
-              <History className="w-5 h-5 text-blue-400" />
+              <History className="w-5 h-5 text-blue-600" />
               Shift History
             </DialogTitle>
           </DialogHeader>
@@ -2823,22 +2823,22 @@ const MerchantPOS = () => {
             ) : (
               <div className="space-y-3">
                 {shiftHistory.map((shift) => (
-                  <div key={shift.id} className="p-3 bg-gray-800/50 rounded-lg">
+                  <div key={shift.id} className="p-3 bg-white/50 rounded-lg">
                     <div className="flex items-center justify-between mb-2">
-                      <span className="text-white font-medium">{shift.staff_name}</span>
+                      <span className="text-gray-900 font-medium">{shift.staff_name}</span>
                       <span className={`text-xs px-2 py-0.5 rounded-full ${
-                        shift.status === 'open' ? 'bg-emerald-500/20 text-emerald-400' : 'bg-gray-600/50 text-gray-400'
+                        shift.status === 'open' ? 'bg-emerald-50 text-emerald-600' : 'bg-gray-600/50 text-gray-500'
                       }`}>
                         {shift.status}
                       </span>
                     </div>
-                    <div className="grid grid-cols-2 gap-2 text-xs text-gray-400">
+                    <div className="grid grid-cols-2 gap-2 text-xs text-gray-500">
                       <div>Opened: {new Date(shift.opened_at).toLocaleString()}</div>
                       {shift.closed_at && <div>Closed: {new Date(shift.closed_at).toLocaleString()}</div>}
                       <div>Opening: ${shift.opening_float?.toFixed(2)}</div>
                       <div>Expected: ${shift.expected_cash?.toFixed(2)}</div>
                       {shift.variance !== null && (
-                        <div className={shift.variance === 0 ? 'text-emerald-400' : shift.variance > 0 ? 'text-blue-400' : 'text-red-400'}>
+                        <div className={shift.variance === 0 ? 'text-emerald-600' : shift.variance > 0 ? 'text-blue-600' : 'text-red-600'}>
                           Variance: ${shift.variance?.toFixed(2)}
                         </div>
                       )}
@@ -2853,13 +2853,13 @@ const MerchantPOS = () => {
 
       {/* Returns Modal */}
       <Dialog open={showReturns} onOpenChange={setShowReturns}>
-        <DialogContent className="bg-[#151b28] border-gray-800 text-white max-w-2xl max-h-[90vh] overflow-y-auto">
+        <DialogContent className="bg-white border-gray-200 text-gray-900 max-w-2xl max-h-[90vh] overflow-y-auto">
           <DialogHeader>
             <DialogTitle className="flex items-center gap-2">
-              <RotateCcw className="w-5 h-5 text-orange-400" />
+              <RotateCcw className="w-5 h-5 text-orange-600" />
               Process Return / Refund
             </DialogTitle>
-            <DialogDescription className="text-gray-400">
+            <DialogDescription className="text-gray-500">
               Search for the original transaction to process a return
             </DialogDescription>
           </DialogHeader>
@@ -2872,12 +2872,12 @@ const MerchantPOS = () => {
                 value={returnTransactionSearch}
                 onChange={(e) => setReturnTransactionSearch(e.target.value)}
                 placeholder="Enter transaction number (e.g., POS-20251222-0001)"
-                className="bg-gray-800 border-gray-700 text-white flex-1"
+                className="bg-white border-gray-200 text-gray-900 flex-1"
                 onKeyDown={(e) => e.key === 'Enter' && searchReturnTransaction()}
               />
               <Button
                 onClick={searchReturnTransaction}
-                className="bg-gray-700 hover:bg-gray-600"
+                className="bg-gray-700 hover:bg-gray-100"
               >
                 <Search className="w-4 h-4" />
               </Button>
@@ -2886,21 +2886,21 @@ const MerchantPOS = () => {
             {/* Transaction Found */}
             {returnTransaction && (
               <div className="space-y-4">
-                <div className="p-3 bg-gray-800/50 rounded-lg">
+                <div className="p-3 bg-white/50 rounded-lg">
                   <div className="flex justify-between items-center mb-2">
-                    <span className="text-white font-medium">{returnTransaction.transaction_number}</span>
-                    <span className="text-gray-400 text-sm">
+                    <span className="text-gray-900 font-medium">{returnTransaction.transaction_number}</span>
+                    <span className="text-gray-500 text-sm">
                       {new Date(returnTransaction.created_at).toLocaleString()}
                     </span>
                   </div>
-                  <div className="text-sm text-gray-400">
-                    Original Total: <span className="text-white">${returnTransaction.total?.toFixed(2)}</span>
+                  <div className="text-sm text-gray-500">
+                    Original Total: <span className="text-gray-900">${returnTransaction.total?.toFixed(2)}</span>
                   </div>
                 </div>
                 
                 {/* Returnable Items */}
                 <div className="space-y-2">
-                  <Label className="text-gray-300 text-sm">Select items to return:</Label>
+                  <Label className="text-gray-700 text-sm">Select items to return:</Label>
                   {returnableItems.length === 0 ? (
                     <p className="text-gray-500 text-sm py-4 text-center">
                       All items from this transaction have been returned
@@ -2914,19 +2914,19 @@ const MerchantPOS = () => {
                         <div
                           key={item.product_id}
                           className={`p-3 rounded-lg cursor-pointer transition-colors ${
-                            isSelected ? 'bg-orange-500/20 border border-orange-500/50' : 'bg-gray-800/50 hover:bg-gray-800'
+                            isSelected ? 'bg-orange-50 border border-orange-500/50' : 'bg-white/50 hover:bg-white'
                           }`}
                           onClick={() => toggleReturnItem(item)}
                         >
                           <div className="flex items-center justify-between">
                             <div className="flex items-center gap-3">
                               <div className={`w-5 h-5 rounded border-2 flex items-center justify-center ${
-                                isSelected ? 'bg-orange-500 border-orange-500' : 'border-gray-600'
+                                isSelected ? 'bg-orange-500 border-orange-500' : 'border-gray-200'
                               }`}>
-                                {isSelected && <Check className="w-3 h-3 text-white" />}
+                                {isSelected && <Check className="w-3 h-3 text-gray-900" />}
                               </div>
                               <div>
-                                <p className="text-white text-sm">{item.name}</p>
+                                <p className="text-gray-900 text-sm">{item.name}</p>
                                 <p className="text-gray-500 text-xs">
                                   ${item.price.toFixed(2)} × {item.max_returnable} available
                                   {item.already_returned > 0 && ` (${item.already_returned} already returned)`}
@@ -2942,7 +2942,7 @@ const MerchantPOS = () => {
                                 >
                                   <Minus className="w-3 h-3" />
                                 </button>
-                                <span className="w-8 text-center text-white">{selectedItem?.return_qty || 1}</span>
+                                <span className="w-8 text-center text-gray-900">{selectedItem?.return_qty || 1}</span>
                                 <button
                                   onClick={() => updateReturnQty(item.product_id, (selectedItem?.return_qty || 1) + 1)}
                                   className="w-6 h-6 bg-gray-700 rounded flex items-center justify-center"
@@ -2962,29 +2962,29 @@ const MerchantPOS = () => {
                   <>
                     {/* Return Reason */}
                     <div className="space-y-2">
-                      <Label className="text-gray-300 text-sm">Return Reason</Label>
+                      <Label className="text-gray-700 text-sm">Return Reason</Label>
                       <Select value={returnReason} onValueChange={setReturnReason}>
-                        <SelectTrigger className="bg-gray-800 border-gray-700 text-white">
+                        <SelectTrigger className="bg-white border-gray-200 text-gray-900">
                           <SelectValue placeholder="Select reason..." />
                         </SelectTrigger>
-                        <SelectContent className="bg-gray-800 border-gray-700">
-                          <SelectItem value="customer_return" className="text-white">Customer Changed Mind</SelectItem>
-                          <SelectItem value="defective" className="text-white">Defective Product</SelectItem>
-                          <SelectItem value="wrong_item" className="text-white">Wrong Item</SelectItem>
-                          <SelectItem value="damaged" className="text-white">Damaged in Transit</SelectItem>
-                          <SelectItem value="other" className="text-white">Other</SelectItem>
+                        <SelectContent className="bg-white border-gray-200">
+                          <SelectItem value="customer_return" className="text-gray-900">Customer Changed Mind</SelectItem>
+                          <SelectItem value="defective" className="text-gray-900">Defective Product</SelectItem>
+                          <SelectItem value="wrong_item" className="text-gray-900">Wrong Item</SelectItem>
+                          <SelectItem value="damaged" className="text-gray-900">Damaged in Transit</SelectItem>
+                          <SelectItem value="other" className="text-gray-900">Other</SelectItem>
                         </SelectContent>
                       </Select>
                     </div>
                     
                     {/* Refund Method */}
                     <div className="space-y-2">
-                      <Label className="text-gray-300 text-sm">Refund Method</Label>
+                      <Label className="text-gray-700 text-sm">Refund Method</Label>
                       <div className="flex gap-2">
                         <Button
                           variant={refundMethod === 'cash' ? 'default' : 'outline'}
                           onClick={() => setRefundMethod('cash')}
-                          className={refundMethod === 'cash' ? 'bg-emerald-600' : 'border-gray-700 text-gray-300'}
+                          className={refundMethod === 'cash' ? 'bg-emerald-600' : 'border-gray-200 text-gray-700'}
                         >
                           <Banknote className="w-4 h-4 mr-2" />
                           Cash
@@ -2992,7 +2992,7 @@ const MerchantPOS = () => {
                         <Button
                           variant={refundMethod === 'card' ? 'default' : 'outline'}
                           onClick={() => setRefundMethod('card')}
-                          className={refundMethod === 'card' ? 'bg-blue-600' : 'border-gray-700 text-gray-300'}
+                          className={refundMethod === 'card' ? 'bg-blue-600' : 'border-gray-200 text-gray-700'}
                         >
                           <CreditCard className="w-4 h-4 mr-2" />
                           Card
@@ -3000,7 +3000,7 @@ const MerchantPOS = () => {
                         <Button
                           variant={refundMethod === 'store_credit' ? 'default' : 'outline'}
                           onClick={() => setRefundMethod('store_credit')}
-                          className={refundMethod === 'store_credit' ? 'bg-purple-600' : 'border-gray-700 text-gray-300'}
+                          className={refundMethod === 'store_credit' ? 'bg-purple-600' : 'border-gray-200 text-gray-700'}
                         >
                           <Receipt className="w-4 h-4 mr-2" />
                           Store Credit
@@ -3010,8 +3010,8 @@ const MerchantPOS = () => {
                     
                     {/* Refund Total */}
                     <div className="p-4 bg-orange-500/10 border border-orange-500/30 rounded-lg text-center">
-                      <p className="text-gray-400 text-sm mb-1">Refund Amount</p>
-                      <p className="text-3xl font-bold text-orange-400">${calculateReturnTotal().toFixed(2)}</p>
+                      <p className="text-gray-500 text-sm mb-1">Refund Amount</p>
+                      <p className="text-3xl font-bold text-orange-600">${calculateReturnTotal().toFixed(2)}</p>
                     </div>
                   </>
                 )}
@@ -3030,14 +3030,14 @@ const MerchantPOS = () => {
                 setReturnReason('');
                 setReturnTransactionSearch('');
               }}
-              className="border-gray-700 text-gray-300"
+              className="border-gray-200 text-gray-700"
             >
               Cancel
             </Button>
             <Button
               onClick={processReturn}
               disabled={processingReturn || returnItems.length === 0 || !returnReason}
-              className="bg-orange-600 hover:bg-orange-700 text-white"
+              className="bg-orange-600 hover:bg-orange-700 text-gray-900"
             >
               {processingReturn ? (
                 <><Loader2 className="w-4 h-4 mr-2 animate-spin" /> Processing...</>
@@ -3051,10 +3051,10 @@ const MerchantPOS = () => {
 
       {/* Add Customer Modal */}
       <Dialog open={showAddCustomer} onOpenChange={setShowAddCustomer}>
-        <DialogContent className="bg-[#151b28] border-gray-800 text-white max-w-lg max-h-[90vh] overflow-y-auto">
+        <DialogContent className="bg-white border-gray-200 text-gray-900 max-w-lg max-h-[90vh] overflow-y-auto">
           <DialogHeader>
             <DialogTitle className="flex items-center gap-2">
-              <UserPlus className="w-5 h-5 text-emerald-400" />
+              <UserPlus className="w-5 h-5 text-emerald-600" />
               Add New Customer
             </DialogTitle>
           </DialogHeader>
@@ -3063,36 +3063,36 @@ const MerchantPOS = () => {
             {/* Basic Info - Names */}
             <div className="grid grid-cols-2 gap-3">
               <div className="space-y-2">
-                <Label className="text-gray-300 text-sm">First Name *</Label>
+                <Label className="text-gray-700 text-sm">First Name *</Label>
                 <Input
                   value={newCustomer.firstName}
                   onChange={(e) => setNewCustomer(prev => ({ ...prev, firstName: e.target.value }))}
                   placeholder="John"
-                  className="bg-gray-800 border-gray-700 text-white"
+                  className="bg-white border-gray-200 text-gray-900"
                 />
               </div>
               
               <div className="space-y-2">
-                <Label className="text-gray-300 text-sm">Last Name *</Label>
+                <Label className="text-gray-700 text-sm">Last Name *</Label>
                 <Input
                   value={newCustomer.lastName}
                   onChange={(e) => setNewCustomer(prev => ({ ...prev, lastName: e.target.value }))}
                   placeholder="Smith"
-                  className="bg-gray-800 border-gray-700 text-white"
+                  className="bg-white border-gray-200 text-gray-900"
                 />
               </div>
             </div>
             
             {/* Company */}
             <div className="space-y-2">
-              <Label className="text-gray-300 text-sm">Company Name</Label>
+              <Label className="text-gray-700 text-sm">Company Name</Label>
               <div className="relative">
                 <Building2 className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-500" />
                 <Input
                   value={newCustomer.company}
                   onChange={(e) => setNewCustomer(prev => ({ ...prev, company: e.target.value }))}
                   placeholder="Company Pty Ltd"
-                  className="bg-gray-800 border-gray-700 text-white pl-10"
+                  className="bg-white border-gray-200 text-gray-900 pl-10"
                 />
               </div>
             </div>
@@ -3100,7 +3100,7 @@ const MerchantPOS = () => {
             {/* Email & Phone */}
             <div className="grid grid-cols-2 gap-3">
               <div className="space-y-2">
-                <Label className="text-gray-300 text-sm">Email *</Label>
+                <Label className="text-gray-700 text-sm">Email *</Label>
                 <div className="relative">
                   <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-500" />
                   <Input
@@ -3108,13 +3108,13 @@ const MerchantPOS = () => {
                     value={newCustomer.email}
                     onChange={(e) => setNewCustomer(prev => ({ ...prev, email: e.target.value }))}
                     placeholder="john@example.com"
-                    className="bg-gray-800 border-gray-700 text-white pl-10"
+                    className="bg-white border-gray-200 text-gray-900 pl-10"
                   />
                 </div>
               </div>
               
               <div className="space-y-2">
-                <Label className="text-gray-300 text-sm">Phone Number</Label>
+                <Label className="text-gray-700 text-sm">Phone Number</Label>
                 <div className="relative">
                   <Phone className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-500" />
                   <Input
@@ -3122,52 +3122,52 @@ const MerchantPOS = () => {
                     value={newCustomer.phone}
                     onChange={(e) => setNewCustomer(prev => ({ ...prev, phone: e.target.value }))}
                     placeholder="0400 000 000"
-                    className="bg-gray-800 border-gray-700 text-white pl-10"
+                    className="bg-white border-gray-200 text-gray-900 pl-10"
                   />
                 </div>
               </div>
             </div>
             
             {/* Billing Address */}
-            <div className="pt-2 border-t border-gray-700">
-              <Label className="text-gray-300 text-sm font-medium">Billing Address</Label>
+            <div className="pt-2 border-t border-gray-200">
+              <Label className="text-gray-700 text-sm font-medium">Billing Address</Label>
               <div className="mt-2 space-y-3">
                 <Input
                   value={newCustomer.billingAddress}
                   onChange={(e) => setNewCustomer(prev => ({ ...prev, billingAddress: e.target.value }))}
                   placeholder="Street address"
-                  className="bg-gray-800 border-gray-700 text-white"
+                  className="bg-white border-gray-200 text-gray-900"
                 />
                 <div className="grid grid-cols-3 gap-2">
                   <Input
                     value={newCustomer.billingCity}
                     onChange={(e) => setNewCustomer(prev => ({ ...prev, billingCity: e.target.value }))}
                     placeholder="City"
-                    className="bg-gray-800 border-gray-700 text-white"
+                    className="bg-white border-gray-200 text-gray-900"
                   />
                   <Select 
                     value={newCustomer.billingState} 
                     onValueChange={(value) => setNewCustomer(prev => ({ ...prev, billingState: value }))}
                   >
-                    <SelectTrigger className="bg-gray-800 border-gray-700 text-white">
+                    <SelectTrigger className="bg-white border-gray-200 text-gray-900">
                       <SelectValue placeholder="State" />
                     </SelectTrigger>
-                    <SelectContent className="bg-gray-800 border-gray-700">
-                      <SelectItem value="NSW" className="text-white hover:bg-gray-700">NSW</SelectItem>
-                      <SelectItem value="VIC" className="text-white hover:bg-gray-700">VIC</SelectItem>
-                      <SelectItem value="QLD" className="text-white hover:bg-gray-700">QLD</SelectItem>
-                      <SelectItem value="WA" className="text-white hover:bg-gray-700">WA</SelectItem>
-                      <SelectItem value="SA" className="text-white hover:bg-gray-700">SA</SelectItem>
-                      <SelectItem value="TAS" className="text-white hover:bg-gray-700">TAS</SelectItem>
-                      <SelectItem value="ACT" className="text-white hover:bg-gray-700">ACT</SelectItem>
-                      <SelectItem value="NT" className="text-white hover:bg-gray-700">NT</SelectItem>
+                    <SelectContent className="bg-white border-gray-200">
+                      <SelectItem value="NSW" className="text-gray-900 hover:bg-gray-100">NSW</SelectItem>
+                      <SelectItem value="VIC" className="text-gray-900 hover:bg-gray-100">VIC</SelectItem>
+                      <SelectItem value="QLD" className="text-gray-900 hover:bg-gray-100">QLD</SelectItem>
+                      <SelectItem value="WA" className="text-gray-900 hover:bg-gray-100">WA</SelectItem>
+                      <SelectItem value="SA" className="text-gray-900 hover:bg-gray-100">SA</SelectItem>
+                      <SelectItem value="TAS" className="text-gray-900 hover:bg-gray-100">TAS</SelectItem>
+                      <SelectItem value="ACT" className="text-gray-900 hover:bg-gray-100">ACT</SelectItem>
+                      <SelectItem value="NT" className="text-gray-900 hover:bg-gray-100">NT</SelectItem>
                     </SelectContent>
                   </Select>
                   <Input
                     value={newCustomer.billingPostcode}
                     onChange={(e) => setNewCustomer(prev => ({ ...prev, billingPostcode: e.target.value }))}
                     placeholder="Postcode"
-                    className="bg-gray-800 border-gray-700 text-white"
+                    className="bg-white border-gray-200 text-gray-900"
                   />
                 </div>
               </div>
@@ -3180,54 +3180,54 @@ const MerchantPOS = () => {
                 id="sameAsDelivery"
                 checked={newCustomer.sameAsDelivery}
                 onChange={(e) => setNewCustomer(prev => ({ ...prev, sameAsDelivery: e.target.checked }))}
-                className="w-4 h-4 rounded border-gray-600 bg-gray-800 text-emerald-500 focus:ring-emerald-500"
+                className="w-4 h-4 rounded border-gray-200 bg-white text-emerald-500 focus:ring-emerald-500"
               />
-              <Label htmlFor="sameAsDelivery" className="text-gray-300 text-sm cursor-pointer">
+              <Label htmlFor="sameAsDelivery" className="text-gray-700 text-sm cursor-pointer">
                 Delivery address same as billing
               </Label>
             </div>
             
             {/* Delivery Address (shown if different) */}
             {!newCustomer.sameAsDelivery && (
-              <div className="pt-2 border-t border-gray-700">
-                <Label className="text-gray-300 text-sm font-medium">Delivery Address</Label>
+              <div className="pt-2 border-t border-gray-200">
+                <Label className="text-gray-700 text-sm font-medium">Delivery Address</Label>
                 <div className="mt-2 space-y-3">
                   <Input
                     value={newCustomer.deliveryAddress}
                     onChange={(e) => setNewCustomer(prev => ({ ...prev, deliveryAddress: e.target.value }))}
                     placeholder="Street address"
-                    className="bg-gray-800 border-gray-700 text-white"
+                    className="bg-white border-gray-200 text-gray-900"
                   />
                   <div className="grid grid-cols-3 gap-2">
                     <Input
                       value={newCustomer.deliveryCity}
                       onChange={(e) => setNewCustomer(prev => ({ ...prev, deliveryCity: e.target.value }))}
                       placeholder="City"
-                      className="bg-gray-800 border-gray-700 text-white"
+                      className="bg-white border-gray-200 text-gray-900"
                     />
                     <Select 
                       value={newCustomer.deliveryState} 
                       onValueChange={(value) => setNewCustomer(prev => ({ ...prev, deliveryState: value }))}
                     >
-                      <SelectTrigger className="bg-gray-800 border-gray-700 text-white">
+                      <SelectTrigger className="bg-white border-gray-200 text-gray-900">
                         <SelectValue placeholder="State" />
                       </SelectTrigger>
-                      <SelectContent className="bg-gray-800 border-gray-700">
-                        <SelectItem value="NSW" className="text-white hover:bg-gray-700">NSW</SelectItem>
-                        <SelectItem value="VIC" className="text-white hover:bg-gray-700">VIC</SelectItem>
-                        <SelectItem value="QLD" className="text-white hover:bg-gray-700">QLD</SelectItem>
-                        <SelectItem value="WA" className="text-white hover:bg-gray-700">WA</SelectItem>
-                        <SelectItem value="SA" className="text-white hover:bg-gray-700">SA</SelectItem>
-                        <SelectItem value="TAS" className="text-white hover:bg-gray-700">TAS</SelectItem>
-                        <SelectItem value="ACT" className="text-white hover:bg-gray-700">ACT</SelectItem>
-                        <SelectItem value="NT" className="text-white hover:bg-gray-700">NT</SelectItem>
+                      <SelectContent className="bg-white border-gray-200">
+                        <SelectItem value="NSW" className="text-gray-900 hover:bg-gray-100">NSW</SelectItem>
+                        <SelectItem value="VIC" className="text-gray-900 hover:bg-gray-100">VIC</SelectItem>
+                        <SelectItem value="QLD" className="text-gray-900 hover:bg-gray-100">QLD</SelectItem>
+                        <SelectItem value="WA" className="text-gray-900 hover:bg-gray-100">WA</SelectItem>
+                        <SelectItem value="SA" className="text-gray-900 hover:bg-gray-100">SA</SelectItem>
+                        <SelectItem value="TAS" className="text-gray-900 hover:bg-gray-100">TAS</SelectItem>
+                        <SelectItem value="ACT" className="text-gray-900 hover:bg-gray-100">ACT</SelectItem>
+                        <SelectItem value="NT" className="text-gray-900 hover:bg-gray-100">NT</SelectItem>
                       </SelectContent>
                     </Select>
                     <Input
                       value={newCustomer.deliveryPostcode}
                       onChange={(e) => setNewCustomer(prev => ({ ...prev, deliveryPostcode: e.target.value }))}
                       placeholder="Postcode"
-                      className="bg-gray-800 border-gray-700 text-white"
+                      className="bg-white border-gray-200 text-gray-900"
                     />
                   </div>
                 </div>
@@ -3257,14 +3257,14 @@ const MerchantPOS = () => {
                   deliveryPostcode: ''
                 });
               }}
-              className="border-gray-700 text-gray-300"
+              className="border-gray-200 text-gray-700"
             >
               Cancel
             </Button>
             <Button
               onClick={handleQuickAddCustomer}
               disabled={addingCustomer || !newCustomer.firstName || !newCustomer.lastName || !newCustomer.email}
-              className="bg-emerald-600 hover:bg-emerald-700 text-white"
+              className="bg-emerald-600 hover:bg-emerald-700 text-gray-900"
             >
               {addingCustomer ? (
                 <><Loader2 className="w-4 h-4 mr-2 animate-spin" /> Adding...</>
@@ -3278,10 +3278,10 @@ const MerchantPOS = () => {
 
       {/* Discount Approval Modal */}
       <Dialog open={showDiscountApproval} onOpenChange={setShowDiscountApproval}>
-        <DialogContent className="bg-[#151b28] border-gray-800 text-white max-w-sm">
+        <DialogContent className="bg-white border-gray-200 text-gray-900 max-w-sm">
           <DialogHeader>
             <DialogTitle className="flex items-center gap-2">
-              <Shield className="w-5 h-5 text-yellow-400" />
+              <Shield className="w-5 h-5 text-yellow-600" />
               Discount Requires Approval
             </DialogTitle>
           </DialogHeader>
@@ -3289,17 +3289,17 @@ const MerchantPOS = () => {
           <div className="py-4 space-y-4">
             <div className="p-4 bg-yellow-500/10 border border-yellow-500/30 rounded-lg">
               <div className="flex items-center gap-2 mb-2">
-                <Lock className="w-4 h-4 text-yellow-400" />
-                <span className="text-yellow-400 font-medium">Permission Required</span>
+                <Lock className="w-4 h-4 text-yellow-600" />
+                <span className="text-yellow-600 font-medium">Permission Required</span>
               </div>
-              <p className="text-gray-400 text-sm">
+              <p className="text-gray-500 text-sm">
                 The discount of {pendingDiscount?.type === 'percentage' 
                   ? `${pendingDiscount?.value}%` 
                   : `$${pendingDiscount?.value}`} exceeds your authorization limit.
               </p>
             </div>
             
-            <p className="text-gray-400 text-sm">
+            <p className="text-gray-500 text-sm">
               You can request manager approval to apply this discount.
             </p>
           </div>
@@ -3311,13 +3311,13 @@ const MerchantPOS = () => {
                 setShowDiscountApproval(false);
                 setPendingDiscount(null);
               }}
-              className="border-gray-700 text-gray-300"
+              className="border-gray-200 text-gray-700"
             >
               Cancel
             </Button>
             <Button
               onClick={requestDiscountApproval}
-              className="bg-yellow-600 hover:bg-yellow-700 text-white"
+              className="bg-yellow-600 hover:bg-yellow-700 text-gray-900"
             >
               <Shield className="w-4 h-4 mr-2" />
               Request Approval

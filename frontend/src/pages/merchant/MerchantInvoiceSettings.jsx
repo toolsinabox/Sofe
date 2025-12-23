@@ -147,7 +147,7 @@ const MerchantInvoiceSettings = () => {
           {settings.showLogo && settings.logo ? (
             <img src={settings.logo} alt="Logo" className="h-16 mb-2" />
           ) : (
-            <div className="w-16 h-16 rounded-lg flex items-center justify-center text-white font-bold text-2xl mb-2" style={{ backgroundColor: settings.primaryColor }}>
+            <div className="w-16 h-16 rounded-lg flex items-center justify-center text-gray-900 font-bold text-2xl mb-2" style={{ backgroundColor: settings.primaryColor }}>
               TIB
             </div>
           )}
@@ -271,11 +271,11 @@ const MerchantInvoiceSettings = () => {
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-bold text-white">Invoice Settings</h1>
-          <p className="text-gray-400">Customize your invoice template and appearance</p>
+          <h1 className="text-2xl font-bold text-gray-900">Invoice Settings</h1>
+          <p className="text-gray-500">Customize your invoice template and appearance</p>
         </div>
         <div className="flex gap-2">
-          <Button variant="outline" onClick={() => setShowPreview(true)} className="border-gray-700 text-gray-300 hover:bg-gray-800">
+          <Button variant="outline" onClick={() => setShowPreview(true)} className="border-gray-200 text-gray-700 hover:bg-white">
             <Eye size={16} className="mr-2" />
             Preview
           </Button>
@@ -290,26 +290,26 @@ const MerchantInvoiceSettings = () => {
         {/* Settings Panel */}
         <div className="lg:col-span-2 space-y-6">
           <Tabs value={activeTab} onValueChange={setActiveTab}>
-            <TabsList className="bg-gray-800/50 border border-gray-700">
-              <TabsTrigger value="editor" className="data-[state=active]:bg-emerald-500/20 data-[state=active]:text-emerald-400">
+            <TabsList className="bg-white/50 border border-gray-200">
+              <TabsTrigger value="editor" className="data-[state=active]:bg-emerald-50 data-[state=active]:text-emerald-600">
                 <Layout size={14} className="mr-2" /> Layout
               </TabsTrigger>
-              <TabsTrigger value="branding" className="data-[state=active]:bg-emerald-500/20 data-[state=active]:text-emerald-400">
+              <TabsTrigger value="branding" className="data-[state=active]:bg-emerald-50 data-[state=active]:text-emerald-600">
                 <Image size={14} className="mr-2" /> Branding
               </TabsTrigger>
-              <TabsTrigger value="styling" className="data-[state=active]:bg-emerald-500/20 data-[state=active]:text-emerald-400">
+              <TabsTrigger value="styling" className="data-[state=active]:bg-emerald-50 data-[state=active]:text-emerald-600">
                 <Palette size={14} className="mr-2" /> Styling
               </TabsTrigger>
-              <TabsTrigger value="content" className="data-[state=active]:bg-emerald-500/20 data-[state=active]:text-emerald-400">
+              <TabsTrigger value="content" className="data-[state=active]:bg-emerald-50 data-[state=active]:text-emerald-600">
                 <Type size={14} className="mr-2" /> Content
               </TabsTrigger>
             </TabsList>
 
             {/* Layout Tab */}
             <TabsContent value="editor" className="space-y-4">
-              <Card className="bg-[#151b28] border-gray-800">
-                <CardHeader className="border-b border-gray-800">
-                  <CardTitle className="text-white text-base">Header Layout</CardTitle>
+              <Card className="bg-white border-gray-200">
+                <CardHeader className="border-b border-gray-200">
+                  <CardTitle className="text-gray-900 text-base">Header Layout</CardTitle>
                 </CardHeader>
                 <CardContent className="p-4 space-y-4">
                   <div className="flex items-center gap-2">
@@ -320,7 +320,7 @@ const MerchantInvoiceSettings = () => {
                       onChange={(e) => setTemplate({...template, showLogo: e.target.checked})}
                       className="rounded"
                     />
-                    <label htmlFor="showLogo" className="text-gray-300 text-sm">Show Logo</label>
+                    <label htmlFor="showLogo" className="text-gray-700 text-sm">Show Logo</label>
                   </div>
                   <div className="flex items-center gap-2">
                     <input
@@ -330,16 +330,16 @@ const MerchantInvoiceSettings = () => {
                       onChange={(e) => setTemplate({...template, showTagline: e.target.checked})}
                       className="rounded"
                     />
-                    <label htmlFor="showTagline" className="text-gray-300 text-sm">Show Tagline</label>
+                    <label htmlFor="showTagline" className="text-gray-700 text-sm">Show Tagline</label>
                   </div>
                   <div>
-                    <label className="text-gray-400 text-sm block mb-2">Logo Position</label>
+                    <label className="text-gray-500 text-sm block mb-2">Logo Position</label>
                     <div className="flex gap-2">
                       {['left', 'center', 'right'].map(pos => (
                         <button
                           key={pos}
                           onClick={() => setTemplate({...template, logoPosition: pos})}
-                          className={`px-4 py-2 rounded border ${template.logoPosition === pos ? 'bg-emerald-500/20 border-emerald-500 text-emerald-400' : 'bg-gray-800 border-gray-700 text-gray-400'}`}
+                          className={`px-4 py-2 rounded border ${template.logoPosition === pos ? 'bg-emerald-50 border-emerald-500 text-emerald-600' : 'bg-white border-gray-200 text-gray-500'}`}
                         >
                           {pos === 'left' && <AlignLeft size={16} />}
                           {pos === 'center' && <AlignCenter size={16} />}
@@ -351,13 +351,13 @@ const MerchantInvoiceSettings = () => {
                 </CardContent>
               </Card>
 
-              <Card className="bg-[#151b28] border-gray-800">
-                <CardHeader className="border-b border-gray-800">
-                  <CardTitle className="text-white text-base">Table Columns</CardTitle>
+              <Card className="bg-white border-gray-200">
+                <CardHeader className="border-b border-gray-200">
+                  <CardTitle className="text-gray-900 text-base">Table Columns</CardTitle>
                 </CardHeader>
                 <CardContent className="p-4 space-y-3">
                   {template.tableColumns.map((col, idx) => (
-                    <div key={col.id} className="flex items-center gap-3 p-3 bg-gray-800/50 rounded-lg">
+                    <div key={col.id} className="flex items-center gap-3 p-3 bg-white/50 rounded-lg">
                       <input
                         type="checkbox"
                         checked={col.show}
@@ -368,7 +368,7 @@ const MerchantInvoiceSettings = () => {
                         }}
                         className="rounded"
                       />
-                      <span className="text-white flex-1">{col.label}</span>
+                      <span className="text-gray-900 flex-1">{col.label}</span>
                       <input
                         type="text"
                         value={col.width}
@@ -377,7 +377,7 @@ const MerchantInvoiceSettings = () => {
                           updated[idx].width = e.target.value;
                           setTemplate({...template, tableColumns: updated});
                         }}
-                        className="w-20 bg-gray-700 border border-gray-600 rounded px-2 py-1 text-white text-sm text-center"
+                        className="w-20 bg-gray-700 border border-gray-200 rounded px-2 py-1 text-gray-900 text-sm text-center"
                       />
                     </div>
                   ))}
@@ -387,92 +387,92 @@ const MerchantInvoiceSettings = () => {
 
             {/* Branding Tab */}
             <TabsContent value="branding" className="space-y-4">
-              <Card className="bg-[#151b28] border-gray-800">
-                <CardHeader className="border-b border-gray-800">
-                  <CardTitle className="text-white text-base">Company Branding</CardTitle>
+              <Card className="bg-white border-gray-200">
+                <CardHeader className="border-b border-gray-200">
+                  <CardTitle className="text-gray-900 text-base">Company Branding</CardTitle>
                 </CardHeader>
                 <CardContent className="p-4 space-y-4">
                   <div>
-                    <label className="text-gray-400 text-sm block mb-2">Logo URL</label>
+                    <label className="text-gray-500 text-sm block mb-2">Logo URL</label>
                     <input
                       type="url"
                       value={template.logo}
                       onChange={(e) => setTemplate({...template, logo: e.target.value})}
                       placeholder="https://..."
-                      className="w-full bg-gray-800 border border-gray-700 rounded px-3 py-2 text-white"
+                      className="w-full bg-white border border-gray-200 rounded px-3 py-2 text-gray-900"
                     />
                   </div>
                   <div>
-                    <label className="text-gray-400 text-sm block mb-2">Company Name</label>
+                    <label className="text-gray-500 text-sm block mb-2">Company Name</label>
                     <input
                       type="text"
                       value={template.companyName}
                       onChange={(e) => setTemplate({...template, companyName: e.target.value})}
-                      className="w-full bg-gray-800 border border-gray-700 rounded px-3 py-2 text-white"
+                      className="w-full bg-white border border-gray-200 rounded px-3 py-2 text-gray-900"
                     />
                   </div>
                   <div>
-                    <label className="text-gray-400 text-sm block mb-2">Tagline</label>
+                    <label className="text-gray-500 text-sm block mb-2">Tagline</label>
                     <input
                       type="text"
                       value={template.tagline}
                       onChange={(e) => setTemplate({...template, tagline: e.target.value})}
-                      className="w-full bg-gray-800 border border-gray-700 rounded px-3 py-2 text-white"
+                      className="w-full bg-white border border-gray-200 rounded px-3 py-2 text-gray-900"
                     />
                   </div>
                   <div>
-                    <label className="text-gray-400 text-sm block mb-2">ABN</label>
+                    <label className="text-gray-500 text-sm block mb-2">ABN</label>
                     <input
                       type="text"
                       value={template.abn}
                       onChange={(e) => setTemplate({...template, abn: e.target.value})}
-                      className="w-full bg-gray-800 border border-gray-700 rounded px-3 py-2 text-white"
+                      className="w-full bg-white border border-gray-200 rounded px-3 py-2 text-gray-900"
                     />
                   </div>
                 </CardContent>
               </Card>
 
-              <Card className="bg-[#151b28] border-gray-800">
-                <CardHeader className="border-b border-gray-800">
-                  <CardTitle className="text-white text-base">Contact Information</CardTitle>
+              <Card className="bg-white border-gray-200">
+                <CardHeader className="border-b border-gray-200">
+                  <CardTitle className="text-gray-900 text-base">Contact Information</CardTitle>
                 </CardHeader>
                 <CardContent className="p-4 space-y-4">
                   <div className="grid grid-cols-2 gap-4">
                     <div>
-                      <label className="text-gray-400 text-sm block mb-2">Email</label>
+                      <label className="text-gray-500 text-sm block mb-2">Email</label>
                       <input
                         type="email"
                         value={template.email}
                         onChange={(e) => setTemplate({...template, email: e.target.value})}
-                        className="w-full bg-gray-800 border border-gray-700 rounded px-3 py-2 text-white"
+                        className="w-full bg-white border border-gray-200 rounded px-3 py-2 text-gray-900"
                       />
                     </div>
                     <div>
-                      <label className="text-gray-400 text-sm block mb-2">Phone</label>
+                      <label className="text-gray-500 text-sm block mb-2">Phone</label>
                       <input
                         type="tel"
                         value={template.phone}
                         onChange={(e) => setTemplate({...template, phone: e.target.value})}
-                        className="w-full bg-gray-800 border border-gray-700 rounded px-3 py-2 text-white"
+                        className="w-full bg-white border border-gray-200 rounded px-3 py-2 text-gray-900"
                       />
                     </div>
                   </div>
                   <div>
-                    <label className="text-gray-400 text-sm block mb-2">Website</label>
+                    <label className="text-gray-500 text-sm block mb-2">Website</label>
                     <input
                       type="url"
                       value={template.website}
                       onChange={(e) => setTemplate({...template, website: e.target.value})}
-                      className="w-full bg-gray-800 border border-gray-700 rounded px-3 py-2 text-white"
+                      className="w-full bg-white border border-gray-200 rounded px-3 py-2 text-gray-900"
                     />
                   </div>
                   <div>
-                    <label className="text-gray-400 text-sm block mb-2">Address</label>
+                    <label className="text-gray-500 text-sm block mb-2">Address</label>
                     <textarea
                       value={template.address}
                       onChange={(e) => setTemplate({...template, address: e.target.value})}
                       rows={3}
-                      className="w-full bg-gray-800 border border-gray-700 rounded px-3 py-2 text-white resize-none"
+                      className="w-full bg-white border border-gray-200 rounded px-3 py-2 text-gray-900 resize-none"
                     />
                   </div>
                 </CardContent>
@@ -481,54 +481,54 @@ const MerchantInvoiceSettings = () => {
 
             {/* Styling Tab */}
             <TabsContent value="styling" className="space-y-4">
-              <Card className="bg-[#151b28] border-gray-800">
-                <CardHeader className="border-b border-gray-800">
-                  <CardTitle className="text-white text-base">Colors & Typography</CardTitle>
+              <Card className="bg-white border-gray-200">
+                <CardHeader className="border-b border-gray-200">
+                  <CardTitle className="text-gray-900 text-base">Colors & Typography</CardTitle>
                 </CardHeader>
                 <CardContent className="p-4 space-y-4">
                   <div className="grid grid-cols-2 gap-4">
                     <div>
-                      <label className="text-gray-400 text-sm block mb-2">Primary Color</label>
+                      <label className="text-gray-500 text-sm block mb-2">Primary Color</label>
                       <div className="flex gap-2">
                         <input
                           type="color"
                           value={template.primaryColor}
                           onChange={(e) => setTemplate({...template, primaryColor: e.target.value})}
-                          className="w-12 h-10 rounded border border-gray-700 cursor-pointer"
+                          className="w-12 h-10 rounded border border-gray-200 cursor-pointer"
                         />
                         <input
                           type="text"
                           value={template.primaryColor}
                           onChange={(e) => setTemplate({...template, primaryColor: e.target.value})}
-                          className="flex-1 bg-gray-800 border border-gray-700 rounded px-3 py-2 text-white font-mono"
+                          className="flex-1 bg-white border border-gray-200 rounded px-3 py-2 text-gray-900 font-mono"
                         />
                       </div>
                     </div>
                     <div>
-                      <label className="text-gray-400 text-sm block mb-2">Secondary Color</label>
+                      <label className="text-gray-500 text-sm block mb-2">Secondary Color</label>
                       <div className="flex gap-2">
                         <input
                           type="color"
                           value={template.secondaryColor}
                           onChange={(e) => setTemplate({...template, secondaryColor: e.target.value})}
-                          className="w-12 h-10 rounded border border-gray-700 cursor-pointer"
+                          className="w-12 h-10 rounded border border-gray-200 cursor-pointer"
                         />
                         <input
                           type="text"
                           value={template.secondaryColor}
                           onChange={(e) => setTemplate({...template, secondaryColor: e.target.value})}
-                          className="flex-1 bg-gray-800 border border-gray-700 rounded px-3 py-2 text-white font-mono"
+                          className="flex-1 bg-white border border-gray-200 rounded px-3 py-2 text-gray-900 font-mono"
                         />
                       </div>
                     </div>
                   </div>
                   <div>
-                    <label className="text-gray-400 text-sm block mb-2">Font Family</label>
+                    <label className="text-gray-500 text-sm block mb-2">Font Family</label>
                     <Select value={template.fontFamily} onValueChange={(v) => setTemplate({...template, fontFamily: v})}>
-                      <SelectTrigger className="bg-gray-800 border-gray-700 text-white">
+                      <SelectTrigger className="bg-white border-gray-200 text-gray-900">
                         <SelectValue />
                       </SelectTrigger>
-                      <SelectContent className="bg-[#1a1f2e] border-gray-700">
+                      <SelectContent className="bg-[#1a1f2e] border-gray-200">
                         <SelectItem value="Inter">Inter</SelectItem>
                         <SelectItem value="Arial">Arial</SelectItem>
                         <SelectItem value="Helvetica">Helvetica</SelectItem>
@@ -538,12 +538,12 @@ const MerchantInvoiceSettings = () => {
                     </Select>
                   </div>
                   <div>
-                    <label className="text-gray-400 text-sm block mb-2">Base Font Size</label>
+                    <label className="text-gray-500 text-sm block mb-2">Base Font Size</label>
                     <Select value={template.fontSize} onValueChange={(v) => setTemplate({...template, fontSize: v})}>
-                      <SelectTrigger className="bg-gray-800 border-gray-700 text-white">
+                      <SelectTrigger className="bg-white border-gray-200 text-gray-900">
                         <SelectValue />
                       </SelectTrigger>
-                      <SelectContent className="bg-[#1a1f2e] border-gray-700">
+                      <SelectContent className="bg-[#1a1f2e] border-gray-200">
                         <SelectItem value="12px">Small (12px)</SelectItem>
                         <SelectItem value="14px">Medium (14px)</SelectItem>
                         <SelectItem value="16px">Large (16px)</SelectItem>
@@ -556,9 +556,9 @@ const MerchantInvoiceSettings = () => {
 
             {/* Content Tab */}
             <TabsContent value="content" className="space-y-4">
-              <Card className="bg-[#151b28] border-gray-800">
-                <CardHeader className="border-b border-gray-800">
-                  <CardTitle className="text-white text-base">Payment Details</CardTitle>
+              <Card className="bg-white border-gray-200">
+                <CardHeader className="border-b border-gray-200">
+                  <CardTitle className="text-gray-900 text-base">Payment Details</CardTitle>
                 </CardHeader>
                 <CardContent className="p-4 space-y-4">
                   <div className="flex items-center gap-2">
@@ -569,50 +569,50 @@ const MerchantInvoiceSettings = () => {
                       onChange={(e) => setTemplate({...template, showBankDetails: e.target.checked})}
                       className="rounded"
                     />
-                    <label htmlFor="showBankDetails" className="text-gray-300 text-sm">Show Bank Details</label>
+                    <label htmlFor="showBankDetails" className="text-gray-700 text-sm">Show Bank Details</label>
                   </div>
                   <div>
-                    <label className="text-gray-400 text-sm block mb-2">Bank Details</label>
+                    <label className="text-gray-500 text-sm block mb-2">Bank Details</label>
                     <input
                       type="text"
                       value={template.bankDetails}
                       onChange={(e) => setTemplate({...template, bankDetails: e.target.value})}
-                      className="w-full bg-gray-800 border border-gray-700 rounded px-3 py-2 text-white"
+                      className="w-full bg-white border border-gray-200 rounded px-3 py-2 text-gray-900"
                     />
                   </div>
                   <div>
-                    <label className="text-gray-400 text-sm block mb-2">Payment Terms</label>
+                    <label className="text-gray-500 text-sm block mb-2">Payment Terms</label>
                     <input
                       type="text"
                       value={template.paymentTerms}
                       onChange={(e) => setTemplate({...template, paymentTerms: e.target.value})}
-                      className="w-full bg-gray-800 border border-gray-700 rounded px-3 py-2 text-white"
+                      className="w-full bg-white border border-gray-200 rounded px-3 py-2 text-gray-900"
                     />
                   </div>
                 </CardContent>
               </Card>
 
-              <Card className="bg-[#151b28] border-gray-800">
-                <CardHeader className="border-b border-gray-800">
-                  <CardTitle className="text-white text-base">Footer Content</CardTitle>
+              <Card className="bg-white border-gray-200">
+                <CardHeader className="border-b border-gray-200">
+                  <CardTitle className="text-gray-900 text-base">Footer Content</CardTitle>
                 </CardHeader>
                 <CardContent className="p-4 space-y-4">
                   <div>
-                    <label className="text-gray-400 text-sm block mb-2">Footer Text</label>
+                    <label className="text-gray-500 text-sm block mb-2">Footer Text</label>
                     <input
                       type="text"
                       value={template.footerText}
                       onChange={(e) => setTemplate({...template, footerText: e.target.value})}
-                      className="w-full bg-gray-800 border border-gray-700 rounded px-3 py-2 text-white"
+                      className="w-full bg-white border border-gray-200 rounded px-3 py-2 text-gray-900"
                     />
                   </div>
                   <div>
-                    <label className="text-gray-400 text-sm block mb-2">Default Notes</label>
+                    <label className="text-gray-500 text-sm block mb-2">Default Notes</label>
                     <textarea
                       value={template.defaultNotes}
                       onChange={(e) => setTemplate({...template, defaultNotes: e.target.value})}
                       rows={3}
-                      className="w-full bg-gray-800 border border-gray-700 rounded px-3 py-2 text-white resize-none"
+                      className="w-full bg-white border border-gray-200 rounded px-3 py-2 text-gray-900 resize-none"
                     />
                   </div>
                 </CardContent>
@@ -623,9 +623,9 @@ const MerchantInvoiceSettings = () => {
 
         {/* Live Preview */}
         <div className="lg:col-span-1">
-          <Card className="bg-[#151b28] border-gray-800 sticky top-4">
-            <CardHeader className="border-b border-gray-800">
-              <CardTitle className="text-white text-base flex items-center gap-2">
+          <Card className="bg-white border-gray-200 sticky top-4">
+            <CardHeader className="border-b border-gray-200">
+              <CardTitle className="text-gray-900 text-base flex items-center gap-2">
                 <Eye size={18} />
                 Live Preview
               </CardTitle>

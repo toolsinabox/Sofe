@@ -102,13 +102,13 @@ const CopyableTag = ({ tag, desc }) => {
   return (
     <div 
       onClick={copyTag}
-      className="flex items-start gap-2 p-1.5 rounded hover:bg-gray-700 cursor-pointer group"
+      className="flex items-start gap-2 p-1.5 rounded hover:bg-gray-100 cursor-pointer group"
     >
-      <code className="text-xs text-cyan-400 bg-gray-900 px-1.5 py-0.5 rounded flex-shrink-0 max-w-[160px] truncate">
+      <code className="text-xs text-cyan-400 bg-gray-50 px-1.5 py-0.5 rounded flex-shrink-0 max-w-[160px] truncate">
         {tag}
       </code>
       <span className="text-xs text-gray-500 flex-1">{desc}</span>
-      {copied ? <Check size={12} className="text-green-400 flex-shrink-0" /> : <Copy size={12} className="text-gray-600 group-hover:text-gray-400 flex-shrink-0" />}
+      {copied ? <Check size={12} className="text-green-600 flex-shrink-0" /> : <Copy size={12} className="text-gray-600 group-hover:text-gray-500 flex-shrink-0" />}
     </div>
   );
 };
@@ -120,17 +120,17 @@ const TemplateTagsPanel = ({ isOpen, onClose }) => {
   if (!isOpen) return null;
   
   return (
-    <div className="absolute right-0 top-0 w-72 h-full bg-gray-900 border-l border-gray-700 overflow-y-auto z-10">
-      <div className="sticky top-0 bg-gray-900 p-3 border-b border-gray-700 flex items-center justify-between">
-        <h4 className="text-sm font-medium text-white flex items-center gap-2">
+    <div className="absolute right-0 top-0 w-72 h-full bg-gray-50 border-l border-gray-200 overflow-y-auto z-10">
+      <div className="sticky top-0 bg-gray-50 p-3 border-b border-gray-200 flex items-center justify-between">
+        <h4 className="text-sm font-medium text-gray-900 flex items-center gap-2">
           <Tag size={14} className="text-cyan-400" />
           Template Tags
         </h4>
-        <button onClick={onClose} className="text-gray-500 hover:text-white">
+        <button onClick={onClose} className="text-gray-500 hover:text-gray-900">
           <X size={16} />
         </button>
       </div>
-      <p className="text-xs text-gray-500 px-3 py-2 border-b border-gray-800">
+      <p className="text-xs text-gray-500 px-3 py-2 border-b border-gray-200">
         Click any tag to copy. Use these in your HTML content.
       </p>
       <div className="p-2">
@@ -138,7 +138,7 @@ const TemplateTagsPanel = ({ isOpen, onClose }) => {
           <div key={key} className="mb-2">
             <button
               onClick={() => setExpandedSection(expandedSection === key ? '' : key)}
-              className="w-full flex items-center justify-between px-2 py-1.5 rounded bg-gray-800 hover:bg-gray-750 text-gray-300 text-xs font-medium"
+              className="w-full flex items-center justify-between px-2 py-1.5 rounded bg-white hover:bg-gray-750 text-gray-700 text-xs font-medium"
             >
               {section.title}
               {expandedSection === key ? <ChevronUp size={14} /> : <ChevronDown size={14} />}
@@ -184,21 +184,21 @@ const BlockEditor = ({ block, onUpdate, onDelete, onMoveUp, onMoveDown, isFirst,
   };
 
   return (
-    <div className={`bg-gray-800 rounded-lg border ${block.is_active ? 'border-gray-700' : 'border-gray-700/50 opacity-60'}`}>
+    <div className={`bg-white rounded-lg border ${block.is_active ? 'border-gray-200' : 'border-gray-200/50 opacity-60'}`}>
       {/* Block Header */}
-      <div className="flex items-center gap-3 p-3 border-b border-gray-700">
+      <div className="flex items-center gap-3 p-3 border-b border-gray-200">
         <div className="flex flex-col gap-1">
           <button
             onClick={onMoveUp}
             disabled={isFirst}
-            className="p-0.5 text-gray-400 hover:text-white disabled:opacity-30"
+            className="p-0.5 text-gray-500 hover:text-gray-900 disabled:opacity-30"
           >
             <ChevronUp size={14} />
           </button>
           <button
             onClick={onMoveDown}
             disabled={isLast}
-            className="p-0.5 text-gray-400 hover:text-white disabled:opacity-30"
+            className="p-0.5 text-gray-500 hover:text-gray-900 disabled:opacity-30"
           >
             <ChevronDown size={14} />
           </button>
@@ -214,7 +214,7 @@ const BlockEditor = ({ block, onUpdate, onDelete, onMoveUp, onMoveDown, isFirst,
             value={block.title || ''}
             onChange={(e) => onUpdate({ ...block, title: e.target.value })}
             placeholder={`${blockType.label} Block`}
-            className="bg-transparent text-white text-sm font-medium w-full focus:outline-none"
+            className="bg-transparent text-gray-900 text-sm font-medium w-full focus:outline-none"
           />
           <p className="text-xs text-gray-500">{blockType.description}</p>
         </div>
@@ -222,7 +222,7 @@ const BlockEditor = ({ block, onUpdate, onDelete, onMoveUp, onMoveDown, isFirst,
         <div className="flex items-center gap-2">
           <button
             onClick={() => onUpdate({ ...block, is_active: !block.is_active })}
-            className={`p-2 rounded ${block.is_active ? 'text-green-400' : 'text-gray-500'}`}
+            className={`p-2 rounded ${block.is_active ? 'text-green-600' : 'text-gray-500'}`}
             title={block.is_active ? 'Active' : 'Inactive'}
           >
             {block.is_active ? <Eye size={16} /> : <EyeOff size={16} />}
@@ -230,14 +230,14 @@ const BlockEditor = ({ block, onUpdate, onDelete, onMoveUp, onMoveDown, isFirst,
           
           <button
             onClick={() => setIsExpanded(!isExpanded)}
-            className="p-2 text-gray-400 hover:text-white"
+            className="p-2 text-gray-500 hover:text-gray-900"
           >
             {isExpanded ? <ChevronUp size={16} /> : <ChevronDown size={16} />}
           </button>
           
           <button
             onClick={onDelete}
-            className="p-2 text-red-400 hover:text-red-300"
+            className="p-2 text-red-600 hover:text-red-300"
           >
             <Trash2 size={16} />
           </button>
@@ -251,13 +251,13 @@ const BlockEditor = ({ block, onUpdate, onDelete, onMoveUp, onMoveDown, isFirst,
           {block.type === 'html' && (
             <div className="relative">
               <div className="flex items-center justify-between mb-2">
-                <Label className="text-gray-300">HTML Content</Label>
+                <Label className="text-gray-700">HTML Content</Label>
                 <button
                   onClick={() => setShowTagsPanel(!showTagsPanel)}
                   className={`flex items-center gap-1.5 px-2 py-1 text-xs rounded transition-colors ${
                     showTagsPanel 
                       ? 'bg-cyan-600/20 text-cyan-400 border border-cyan-600/40' 
-                      : 'bg-gray-700 text-gray-400 hover:text-white hover:bg-gray-600'
+                      : 'bg-gray-700 text-gray-500 hover:text-gray-900 hover:bg-gray-100'
                   }`}
                 >
                   <Tag size={12} />
@@ -269,7 +269,7 @@ const BlockEditor = ({ block, onUpdate, onDelete, onMoveUp, onMoveDown, isFirst,
                   value={block.content || ''}
                   onChange={(e) => onUpdate({ ...block, content: e.target.value })}
                   placeholder="<div>Your HTML here...</div>&#10;&#10;Use template tags like [@store_name@] or [%thumb_list%] for dynamic content."
-                  className={`bg-gray-700 border-gray-600 text-white font-mono text-sm min-h-48 ${showTagsPanel ? 'pr-72' : ''}`}
+                  className={`bg-gray-700 border-gray-200 text-gray-900 font-mono text-sm min-h-48 ${showTagsPanel ? 'pr-72' : ''}`}
                 />
                 <TemplateTagsPanel isOpen={showTagsPanel} onClose={() => setShowTagsPanel(false)} />
               </div>
@@ -282,12 +282,12 @@ const BlockEditor = ({ block, onUpdate, onDelete, onMoveUp, onMoveDown, isFirst,
           {/* Text Block */}
           {block.type === 'text' && (
             <div>
-              <Label className="text-gray-300 mb-2 block">Text Content</Label>
+              <Label className="text-gray-700 mb-2 block">Text Content</Label>
               <Textarea
                 value={block.content || ''}
                 onChange={(e) => onUpdate({ ...block, content: e.target.value })}
                 placeholder="Enter your text content..."
-                className="bg-gray-700 border-gray-600 text-white min-h-24"
+                className="bg-gray-700 border-gray-200 text-gray-900 min-h-24"
               />
             </div>
           )}
@@ -296,60 +296,60 @@ const BlockEditor = ({ block, onUpdate, onDelete, onMoveUp, onMoveDown, isFirst,
           {block.type === 'image' && (
             <div className="space-y-3">
               <div>
-                <Label className="text-gray-300 mb-1 block">Image URL</Label>
+                <Label className="text-gray-700 mb-1 block">Image URL</Label>
                 <Input
                   value={block.settings?.src || ''}
                   onChange={(e) => updateSetting('src', e.target.value)}
                   placeholder="https://..."
-                  className="bg-gray-700 border-gray-600 text-white"
+                  className="bg-gray-700 border-gray-200 text-gray-900"
                 />
               </div>
               <div className="grid grid-cols-2 gap-3">
                 <div>
-                  <Label className="text-gray-300 mb-1 block">Alt Text</Label>
+                  <Label className="text-gray-700 mb-1 block">Alt Text</Label>
                   <Input
                     value={block.settings?.alt || ''}
                     onChange={(e) => updateSetting('alt', e.target.value)}
                     placeholder="Image description"
-                    className="bg-gray-700 border-gray-600 text-white"
+                    className="bg-gray-700 border-gray-200 text-gray-900"
                   />
                 </div>
                 <div>
-                  <Label className="text-gray-300 mb-1 block">Link URL</Label>
+                  <Label className="text-gray-700 mb-1 block">Link URL</Label>
                   <Input
                     value={block.settings?.link || ''}
                     onChange={(e) => updateSetting('link', e.target.value)}
                     placeholder="/page or https://..."
-                    className="bg-gray-700 border-gray-600 text-white"
+                    className="bg-gray-700 border-gray-200 text-gray-900"
                   />
                 </div>
               </div>
               <div className="grid grid-cols-2 gap-3">
                 <div>
-                  <Label className="text-gray-300 mb-1 block">Max Width</Label>
+                  <Label className="text-gray-700 mb-1 block">Max Width</Label>
                   <Input
                     value={block.settings?.width || '100%'}
                     onChange={(e) => updateSetting('width', e.target.value)}
                     placeholder="100% or 500px"
-                    className="bg-gray-700 border-gray-600 text-white"
+                    className="bg-gray-700 border-gray-200 text-gray-900"
                   />
                 </div>
                 <div>
-                  <Label className="text-gray-300 mb-1 block">Alignment</Label>
+                  <Label className="text-gray-700 mb-1 block">Alignment</Label>
                   <Select value={block.settings?.alignment || 'center'} onValueChange={(v) => updateSetting('alignment', v)}>
-                    <SelectTrigger className="bg-gray-700 border-gray-600 text-white">
+                    <SelectTrigger className="bg-gray-700 border-gray-200 text-gray-900">
                       <SelectValue />
                     </SelectTrigger>
-                    <SelectContent className="bg-gray-800 border-gray-700">
-                      <SelectItem value="left" className="text-gray-300">Left</SelectItem>
-                      <SelectItem value="center" className="text-gray-300">Center</SelectItem>
-                      <SelectItem value="right" className="text-gray-300">Right</SelectItem>
+                    <SelectContent className="bg-white border-gray-200">
+                      <SelectItem value="left" className="text-gray-700">Left</SelectItem>
+                      <SelectItem value="center" className="text-gray-700">Center</SelectItem>
+                      <SelectItem value="right" className="text-gray-700">Right</SelectItem>
                     </SelectContent>
                   </Select>
                 </div>
               </div>
               {block.settings?.src && (
-                <div className="mt-2 p-2 bg-gray-900 rounded">
+                <div className="mt-2 p-2 bg-gray-50 rounded">
                   <img src={block.settings.src} alt="Preview" className="max-h-32 mx-auto" />
                 </div>
               )}
@@ -359,12 +359,12 @@ const BlockEditor = ({ block, onUpdate, onDelete, onMoveUp, onMoveDown, isFirst,
           {/* Video Block */}
           {block.type === 'video' && (
             <div>
-              <Label className="text-gray-300 mb-1 block">Video URL</Label>
+              <Label className="text-gray-700 mb-1 block">Video URL</Label>
               <Input
                 value={block.settings?.src || ''}
                 onChange={(e) => updateSetting('src', e.target.value)}
                 placeholder="YouTube URL or embed URL"
-                className="bg-gray-700 border-gray-600 text-white"
+                className="bg-gray-700 border-gray-200 text-gray-900"
               />
               <p className="text-xs text-gray-500 mt-1">Supports YouTube links (youtube.com/watch?v=... or youtu.be/...)</p>
             </div>
@@ -374,26 +374,26 @@ const BlockEditor = ({ block, onUpdate, onDelete, onMoveUp, onMoveDown, isFirst,
           {block.type === 'product_grid' && (
             <div className="grid grid-cols-2 gap-3">
               <div>
-                <Label className="text-gray-300 mb-1 block">Number of Products</Label>
+                <Label className="text-gray-700 mb-1 block">Number of Products</Label>
                 <Input
                   type="number"
                   value={block.settings?.limit || 4}
                   onChange={(e) => updateSetting('limit', parseInt(e.target.value) || 4)}
-                  className="bg-gray-700 border-gray-600 text-white"
+                  className="bg-gray-700 border-gray-200 text-gray-900"
                 />
               </div>
               <div>
-                <Label className="text-gray-300 mb-1 block">Columns</Label>
+                <Label className="text-gray-700 mb-1 block">Columns</Label>
                 <Select value={String(block.settings?.columns || 4)} onValueChange={(v) => updateSetting('columns', parseInt(v))}>
-                  <SelectTrigger className="bg-gray-700 border-gray-600 text-white">
+                  <SelectTrigger className="bg-gray-700 border-gray-200 text-gray-900">
                     <SelectValue />
                   </SelectTrigger>
-                  <SelectContent className="bg-gray-800 border-gray-700">
-                    <SelectItem value="2" className="text-gray-300">2 Columns</SelectItem>
-                    <SelectItem value="3" className="text-gray-300">3 Columns</SelectItem>
-                    <SelectItem value="4" className="text-gray-300">4 Columns</SelectItem>
-                    <SelectItem value="5" className="text-gray-300">5 Columns</SelectItem>
-                    <SelectItem value="6" className="text-gray-300">6 Columns</SelectItem>
+                  <SelectContent className="bg-white border-gray-200">
+                    <SelectItem value="2" className="text-gray-700">2 Columns</SelectItem>
+                    <SelectItem value="3" className="text-gray-700">3 Columns</SelectItem>
+                    <SelectItem value="4" className="text-gray-700">4 Columns</SelectItem>
+                    <SelectItem value="5" className="text-gray-700">5 Columns</SelectItem>
+                    <SelectItem value="6" className="text-gray-700">6 Columns</SelectItem>
                   </SelectContent>
                 </Select>
               </div>
@@ -402,7 +402,7 @@ const BlockEditor = ({ block, onUpdate, onDelete, onMoveUp, onMoveDown, isFirst,
                   checked={block.settings?.show_price !== false}
                   onCheckedChange={(v) => updateSetting('show_price', v)}
                 />
-                <Label className="text-gray-300">Show Price</Label>
+                <Label className="text-gray-700">Show Price</Label>
               </div>
             </div>
           )}
@@ -411,25 +411,25 @@ const BlockEditor = ({ block, onUpdate, onDelete, onMoveUp, onMoveDown, isFirst,
           {block.type === 'category_grid' && (
             <div className="grid grid-cols-2 gap-3">
               <div>
-                <Label className="text-gray-300 mb-1 block">Number of Categories</Label>
+                <Label className="text-gray-700 mb-1 block">Number of Categories</Label>
                 <Input
                   type="number"
                   value={block.settings?.limit || 6}
                   onChange={(e) => updateSetting('limit', parseInt(e.target.value) || 6)}
-                  className="bg-gray-700 border-gray-600 text-white"
+                  className="bg-gray-700 border-gray-200 text-gray-900"
                 />
               </div>
               <div>
-                <Label className="text-gray-300 mb-1 block">Columns</Label>
+                <Label className="text-gray-700 mb-1 block">Columns</Label>
                 <Select value={String(block.settings?.columns || 3)} onValueChange={(v) => updateSetting('columns', parseInt(v))}>
-                  <SelectTrigger className="bg-gray-700 border-gray-600 text-white">
+                  <SelectTrigger className="bg-gray-700 border-gray-200 text-gray-900">
                     <SelectValue />
                   </SelectTrigger>
-                  <SelectContent className="bg-gray-800 border-gray-700">
-                    <SelectItem value="2" className="text-gray-300">2 Columns</SelectItem>
-                    <SelectItem value="3" className="text-gray-300">3 Columns</SelectItem>
-                    <SelectItem value="4" className="text-gray-300">4 Columns</SelectItem>
-                    <SelectItem value="6" className="text-gray-300">6 Columns</SelectItem>
+                  <SelectContent className="bg-white border-gray-200">
+                    <SelectItem value="2" className="text-gray-700">2 Columns</SelectItem>
+                    <SelectItem value="3" className="text-gray-700">3 Columns</SelectItem>
+                    <SelectItem value="4" className="text-gray-700">4 Columns</SelectItem>
+                    <SelectItem value="6" className="text-gray-700">6 Columns</SelectItem>
                   </SelectContent>
                 </Select>
               </div>
@@ -439,12 +439,12 @@ const BlockEditor = ({ block, onUpdate, onDelete, onMoveUp, onMoveDown, isFirst,
           {/* Spacer Block */}
           {block.type === 'spacer' && (
             <div>
-              <Label className="text-gray-300 mb-1 block">Height</Label>
+              <Label className="text-gray-700 mb-1 block">Height</Label>
               <Input
                 value={block.settings?.height || '50px'}
                 onChange={(e) => updateSetting('height', e.target.value)}
                 placeholder="50px or 2rem"
-                className="bg-gray-700 border-gray-600 text-white"
+                className="bg-gray-700 border-gray-200 text-gray-900"
               />
             </div>
           )}
@@ -453,34 +453,34 @@ const BlockEditor = ({ block, onUpdate, onDelete, onMoveUp, onMoveDown, isFirst,
           {block.type === 'divider' && (
             <div className="grid grid-cols-3 gap-3">
               <div>
-                <Label className="text-gray-300 mb-1 block">Style</Label>
+                <Label className="text-gray-700 mb-1 block">Style</Label>
                 <Select value={block.settings?.style || 'solid'} onValueChange={(v) => updateSetting('style', v)}>
-                  <SelectTrigger className="bg-gray-700 border-gray-600 text-white">
+                  <SelectTrigger className="bg-gray-700 border-gray-200 text-gray-900">
                     <SelectValue />
                   </SelectTrigger>
-                  <SelectContent className="bg-gray-800 border-gray-700">
-                    <SelectItem value="solid" className="text-gray-300">Solid</SelectItem>
-                    <SelectItem value="dashed" className="text-gray-300">Dashed</SelectItem>
-                    <SelectItem value="dotted" className="text-gray-300">Dotted</SelectItem>
+                  <SelectContent className="bg-white border-gray-200">
+                    <SelectItem value="solid" className="text-gray-700">Solid</SelectItem>
+                    <SelectItem value="dashed" className="text-gray-700">Dashed</SelectItem>
+                    <SelectItem value="dotted" className="text-gray-700">Dotted</SelectItem>
                   </SelectContent>
                 </Select>
               </div>
               <div>
-                <Label className="text-gray-300 mb-1 block">Color</Label>
+                <Label className="text-gray-700 mb-1 block">Color</Label>
                 <Input
                   type="color"
                   value={block.settings?.color || '#e5e7eb'}
                   onChange={(e) => updateSetting('color', e.target.value)}
-                  className="bg-gray-700 border-gray-600 h-10"
+                  className="bg-gray-700 border-gray-200 h-10"
                 />
               </div>
               <div>
-                <Label className="text-gray-300 mb-1 block">Width</Label>
+                <Label className="text-gray-700 mb-1 block">Width</Label>
                 <Input
                   value={block.settings?.width || '100%'}
                   onChange={(e) => updateSetting('width', e.target.value)}
                   placeholder="100% or 50%"
-                  className="bg-gray-700 border-gray-600 text-white"
+                  className="bg-gray-700 border-gray-200 text-gray-900"
                 />
               </div>
             </div>
@@ -567,11 +567,11 @@ const ZoneEditor = ({ zone, onSave, onClose }) => {
 
   return (
     <div className="fixed inset-0 bg-black/50 flex items-start justify-center z-50 p-4 overflow-y-auto">
-      <div className="bg-gray-900 rounded-lg w-full max-w-4xl border border-gray-700 my-8">
+      <div className="bg-gray-50 rounded-lg w-full max-w-4xl border border-gray-200 my-8">
         {/* Header */}
-        <div className="flex items-center justify-between p-4 border-b border-gray-700 sticky top-0 bg-gray-900 z-10">
+        <div className="flex items-center justify-between p-4 border-b border-gray-200 sticky top-0 bg-gray-50 z-10">
           <div>
-            <h2 className="text-lg font-semibold text-white">
+            <h2 className="text-lg font-semibold text-gray-900">
               {zone?.id ? 'Edit Content Zone' : 'Create Content Zone'}
             </h2>
             {formData.name && (
@@ -584,7 +584,7 @@ const ZoneEditor = ({ zone, onSave, onClose }) => {
               </button>
             )}
           </div>
-          <button onClick={onClose} className="text-gray-400 hover:text-white">
+          <button onClick={onClose} className="text-gray-500 hover:text-gray-900">
             <X size={20} />
           </button>
         </div>
@@ -593,80 +593,80 @@ const ZoneEditor = ({ zone, onSave, onClose }) => {
           {/* Zone Settings */}
           <div className="grid grid-cols-2 gap-4">
             <div>
-              <Label className="text-gray-300 mb-1 block">Zone Name *</Label>
+              <Label className="text-gray-700 mb-1 block">Zone Name *</Label>
               <Input
                 value={formData.name}
                 onChange={(e) => setFormData(prev => ({ ...prev, name: e.target.value.toLowerCase().replace(/\s+/g, '_') }))}
                 placeholder="homepage_promo"
-                className="bg-gray-800 border-gray-700 text-white"
+                className="bg-white border-gray-200 text-gray-900"
               />
               <p className="text-xs text-gray-500 mt-1">Used in templates: [%content_zone name:'...'%]</p>
             </div>
             <div>
-              <Label className="text-gray-300 mb-1 block">Display Label *</Label>
+              <Label className="text-gray-700 mb-1 block">Display Label *</Label>
               <Input
                 value={formData.label}
                 onChange={(e) => setFormData(prev => ({ ...prev, label: e.target.value }))}
                 placeholder="Homepage Promotional Area"
-                className="bg-gray-800 border-gray-700 text-white"
+                className="bg-white border-gray-200 text-gray-900"
               />
             </div>
           </div>
 
           <div className="grid grid-cols-2 gap-4">
             <div>
-              <Label className="text-gray-300 mb-1 block">Page</Label>
+              <Label className="text-gray-700 mb-1 block">Page</Label>
               <Select value={formData.page} onValueChange={(v) => setFormData(prev => ({ ...prev, page: v }))}>
-                <SelectTrigger className="bg-gray-800 border-gray-700 text-white">
+                <SelectTrigger className="bg-white border-gray-200 text-gray-900">
                   <SelectValue />
                 </SelectTrigger>
-                <SelectContent className="bg-gray-800 border-gray-700">
-                  <SelectItem value="home" className="text-gray-300">Homepage</SelectItem>
-                  <SelectItem value="product" className="text-gray-300">Product Page</SelectItem>
-                  <SelectItem value="category" className="text-gray-300">Category Page</SelectItem>
-                  <SelectItem value="cart" className="text-gray-300">Cart Page</SelectItem>
-                  <SelectItem value="global" className="text-gray-300">Global (All Pages)</SelectItem>
+                <SelectContent className="bg-white border-gray-200">
+                  <SelectItem value="home" className="text-gray-700">Homepage</SelectItem>
+                  <SelectItem value="product" className="text-gray-700">Product Page</SelectItem>
+                  <SelectItem value="category" className="text-gray-700">Category Page</SelectItem>
+                  <SelectItem value="cart" className="text-gray-700">Cart Page</SelectItem>
+                  <SelectItem value="global" className="text-gray-700">Global (All Pages)</SelectItem>
                 </SelectContent>
               </Select>
             </div>
             <div>
-              <Label className="text-gray-300 mb-1 block">Description</Label>
+              <Label className="text-gray-700 mb-1 block">Description</Label>
               <Input
                 value={formData.description || ''}
                 onChange={(e) => setFormData(prev => ({ ...prev, description: e.target.value }))}
                 placeholder="Optional description"
-                className="bg-gray-800 border-gray-700 text-white"
+                className="bg-white border-gray-200 text-gray-900"
               />
             </div>
           </div>
 
           {/* Device Visibility */}
-          <div className="bg-gray-800 rounded-lg p-4">
-            <Label className="text-gray-300 mb-3 block">Display On</Label>
+          <div className="bg-white rounded-lg p-4">
+            <Label className="text-gray-700 mb-3 block">Display On</Label>
             <div className="flex gap-6">
               <label className="flex items-center gap-2 cursor-pointer">
                 <Switch
                   checked={formData.show_on_desktop}
                   onCheckedChange={(v) => setFormData(prev => ({ ...prev, show_on_desktop: v }))}
                 />
-                <Monitor size={18} className="text-blue-400" />
-                <span className="text-gray-300">Desktop</span>
+                <Monitor size={18} className="text-blue-600" />
+                <span className="text-gray-700">Desktop</span>
               </label>
               <label className="flex items-center gap-2 cursor-pointer">
                 <Switch
                   checked={formData.show_on_tablet}
                   onCheckedChange={(v) => setFormData(prev => ({ ...prev, show_on_tablet: v }))}
                 />
-                <Tablet size={18} className="text-purple-400" />
-                <span className="text-gray-300">Tablet</span>
+                <Tablet size={18} className="text-purple-600" />
+                <span className="text-gray-700">Tablet</span>
               </label>
               <label className="flex items-center gap-2 cursor-pointer">
                 <Switch
                   checked={formData.show_on_mobile}
                   onCheckedChange={(v) => setFormData(prev => ({ ...prev, show_on_mobile: v }))}
                 />
-                <Smartphone size={18} className="text-green-400" />
-                <span className="text-gray-300">Mobile</span>
+                <Smartphone size={18} className="text-green-600" />
+                <span className="text-gray-700">Mobile</span>
               </label>
             </div>
           </div>
@@ -674,18 +674,18 @@ const ZoneEditor = ({ zone, onSave, onClose }) => {
           {/* Content Blocks */}
           <div>
             <div className="flex items-center justify-between mb-3">
-              <Label className="text-gray-300">Content Blocks</Label>
+              <Label className="text-gray-700">Content Blocks</Label>
               <span className="text-sm text-gray-500">{formData.blocks.length} block(s)</span>
             </div>
 
             {/* Add Block Buttons */}
-            <div className="flex flex-wrap gap-2 mb-4 p-3 bg-gray-800 rounded-lg">
-              <span className="text-sm text-gray-400 mr-2">Add:</span>
+            <div className="flex flex-wrap gap-2 mb-4 p-3 bg-white rounded-lg">
+              <span className="text-sm text-gray-500 mr-2">Add:</span>
               {BLOCK_TYPES.map(type => (
                 <button
                   key={type.id}
                   onClick={() => addBlock(type.id)}
-                  className="flex items-center gap-1 px-3 py-1.5 bg-gray-700 hover:bg-gray-600 rounded text-sm text-gray-300"
+                  className="flex items-center gap-1 px-3 py-1.5 bg-gray-700 hover:bg-gray-100 rounded text-sm text-gray-700"
                 >
                   <type.icon size={14} />
                   {type.label}
@@ -696,7 +696,7 @@ const ZoneEditor = ({ zone, onSave, onClose }) => {
             {/* Blocks List */}
             <div className="space-y-3">
               {formData.blocks.length === 0 ? (
-                <div className="text-center py-8 text-gray-500 bg-gray-800 rounded-lg border border-dashed border-gray-700">
+                <div className="text-center py-8 text-gray-500 bg-white rounded-lg border border-dashed border-gray-200">
                   <Layout className="w-8 h-8 mx-auto mb-2 opacity-50" />
                   <p>No blocks yet. Add your first content block above.</p>
                 </div>
@@ -719,16 +719,16 @@ const ZoneEditor = ({ zone, onSave, onClose }) => {
         </div>
 
         {/* Footer */}
-        <div className="flex items-center justify-between p-4 border-t border-gray-700 sticky bottom-0 bg-gray-900">
+        <div className="flex items-center justify-between p-4 border-t border-gray-200 sticky bottom-0 bg-gray-50">
           <label className="flex items-center gap-2 cursor-pointer">
             <Switch
               checked={formData.is_active}
               onCheckedChange={(v) => setFormData(prev => ({ ...prev, is_active: v }))}
             />
-            <span className="text-gray-300">Zone Active</span>
+            <span className="text-gray-700">Zone Active</span>
           </label>
           <div className="flex gap-3">
-            <Button variant="outline" onClick={onClose} className="border-gray-700 text-gray-300">
+            <Button variant="outline" onClick={onClose} className="border-gray-200 text-gray-700">
               Cancel
             </Button>
             <Button onClick={handleSave} disabled={saving} className="bg-cyan-600 hover:bg-cyan-700">
@@ -819,8 +819,8 @@ const MerchantContentZones = () => {
     <div className="p-6">
       <div className="flex items-center justify-between mb-6">
         <div>
-          <h1 className="text-2xl font-bold text-white">Content Zones</h1>
-          <p className="text-gray-400">Manage customizable content areas for your pages</p>
+          <h1 className="text-2xl font-bold text-gray-900">Content Zones</h1>
+          <p className="text-gray-500">Manage customizable content areas for your pages</p>
         </div>
         <Button onClick={() => { setEditingZone(null); setShowEditor(true); }} className="bg-cyan-600 hover:bg-cyan-700">
           <Plus size={18} className="mr-2" />
@@ -830,18 +830,18 @@ const MerchantContentZones = () => {
 
       {/* Filter */}
       <div className="flex items-center gap-3 mb-6">
-        <Label className="text-gray-400">Filter by page:</Label>
+        <Label className="text-gray-500">Filter by page:</Label>
         <Select value={filterPage} onValueChange={setFilterPage}>
-          <SelectTrigger className="w-40 bg-gray-800 border-gray-700 text-white">
+          <SelectTrigger className="w-40 bg-white border-gray-200 text-gray-900">
             <SelectValue />
           </SelectTrigger>
-          <SelectContent className="bg-gray-800 border-gray-700">
-            <SelectItem value="all" className="text-gray-300">All Pages</SelectItem>
-            <SelectItem value="home" className="text-gray-300">Homepage</SelectItem>
-            <SelectItem value="product" className="text-gray-300">Product</SelectItem>
-            <SelectItem value="category" className="text-gray-300">Category</SelectItem>
-            <SelectItem value="cart" className="text-gray-300">Cart</SelectItem>
-            <SelectItem value="global" className="text-gray-300">Global</SelectItem>
+          <SelectContent className="bg-white border-gray-200">
+            <SelectItem value="all" className="text-gray-700">All Pages</SelectItem>
+            <SelectItem value="home" className="text-gray-700">Homepage</SelectItem>
+            <SelectItem value="product" className="text-gray-700">Product</SelectItem>
+            <SelectItem value="category" className="text-gray-700">Category</SelectItem>
+            <SelectItem value="cart" className="text-gray-700">Cart</SelectItem>
+            <SelectItem value="global" className="text-gray-700">Global</SelectItem>
           </SelectContent>
         </Select>
       </div>
@@ -849,10 +849,10 @@ const MerchantContentZones = () => {
       {/* Zones List */}
       <div className="space-y-4">
         {filteredZones.length === 0 ? (
-          <div className="text-center py-12 bg-gray-800 rounded-lg border border-gray-700">
+          <div className="text-center py-12 bg-white rounded-lg border border-gray-200">
             <Layout className="w-12 h-12 mx-auto text-gray-500 mb-4" />
-            <h3 className="text-lg font-medium text-white mb-2">No Content Zones</h3>
-            <p className="text-gray-400 mb-4">Create your first content zone to add customizable content areas</p>
+            <h3 className="text-lg font-medium text-gray-900 mb-2">No Content Zones</h3>
+            <p className="text-gray-500 mb-4">Create your first content zone to add customizable content areas</p>
             <Button onClick={() => { setEditingZone(null); setShowEditor(true); }} className="bg-cyan-600 hover:bg-cyan-700">
               <Plus size={18} className="mr-2" />
               Create Zone
@@ -862,16 +862,16 @@ const MerchantContentZones = () => {
           filteredZones.map(zone => (
             <div
               key={zone.id}
-              className={`bg-gray-800 rounded-lg border p-4 ${zone.is_active ? 'border-gray-700' : 'border-gray-700/50 opacity-60'}`}
+              className={`bg-white rounded-lg border p-4 ${zone.is_active ? 'border-gray-200' : 'border-gray-200/50 opacity-60'}`}
             >
               <div className="flex items-start justify-between">
                 <div className="flex-1">
                   <div className="flex items-center gap-3 mb-2">
-                    <h3 className="text-lg font-semibold text-white">{zone.label}</h3>
-                    <span className={`px-2 py-0.5 rounded text-xs ${zone.is_active ? 'bg-green-500/20 text-green-400' : 'bg-gray-500/20 text-gray-400'}`}>
+                    <h3 className="text-lg font-semibold text-gray-900">{zone.label}</h3>
+                    <span className={`px-2 py-0.5 rounded text-xs ${zone.is_active ? 'bg-green-50 text-green-600' : 'bg-gray-500/20 text-gray-500'}`}>
                       {zone.is_active ? 'Active' : 'Inactive'}
                     </span>
-                    <span className="px-2 py-0.5 bg-gray-700 rounded text-xs text-gray-400">
+                    <span className="px-2 py-0.5 bg-gray-700 rounded text-xs text-gray-500">
                       {zone.page}
                     </span>
                   </div>
@@ -879,7 +879,7 @@ const MerchantContentZones = () => {
                   <div className="flex items-center gap-2 mb-2">
                     <button
                       onClick={() => copyTag(zone.name)}
-                      className="flex items-center gap-1 px-2 py-1 bg-gray-700 rounded text-xs text-cyan-400 hover:bg-gray-600"
+                      className="flex items-center gap-1 px-2 py-1 bg-gray-700 rounded text-xs text-cyan-400 hover:bg-gray-100"
                     >
                       <Copy size={12} />
                       <code>[%content_zone name:'{zone.name}'%]</code>
@@ -893,9 +893,9 @@ const MerchantContentZones = () => {
                   <div className="flex items-center gap-4 text-sm text-gray-500">
                     <span>{zone.blocks?.length || 0} block(s)</span>
                     <div className="flex items-center gap-1">
-                      {zone.show_on_desktop && <Monitor size={14} className="text-blue-400" />}
-                      {zone.show_on_tablet && <Tablet size={14} className="text-purple-400" />}
-                      {zone.show_on_mobile && <Smartphone size={14} className="text-green-400" />}
+                      {zone.show_on_desktop && <Monitor size={14} className="text-blue-600" />}
+                      {zone.show_on_tablet && <Tablet size={14} className="text-purple-600" />}
+                      {zone.show_on_mobile && <Smartphone size={14} className="text-green-600" />}
                     </div>
                   </div>
                 </div>
@@ -905,7 +905,7 @@ const MerchantContentZones = () => {
                     variant="outline"
                     size="sm"
                     onClick={() => toggleZoneActive(zone)}
-                    className="border-gray-700 text-gray-300"
+                    className="border-gray-200 text-gray-700"
                   >
                     {zone.is_active ? <EyeOff size={16} /> : <Eye size={16} />}
                   </Button>
@@ -913,7 +913,7 @@ const MerchantContentZones = () => {
                     variant="outline"
                     size="sm"
                     onClick={() => { setEditingZone(zone); setShowEditor(true); }}
-                    className="border-gray-700 text-gray-300"
+                    className="border-gray-200 text-gray-700"
                   >
                     <Edit size={16} />
                   </Button>
@@ -921,7 +921,7 @@ const MerchantContentZones = () => {
                     variant="outline"
                     size="sm"
                     onClick={() => handleDeleteZone(zone.id)}
-                    className="border-red-600 text-red-400 hover:bg-red-600/20"
+                    className="border-red-600 text-red-600 hover:bg-red-600/20"
                   >
                     <Trash2 size={16} />
                   </Button>

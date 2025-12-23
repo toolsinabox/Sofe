@@ -188,18 +188,18 @@ const MerchantBanners = () => {
   const DeviceVisibilityBadges = ({ banner }) => (
     <div className="flex gap-1">
       {banner.show_on_desktop !== false && (
-        <span className="p-1.5 bg-blue-500/20 rounded" title="Shows on Desktop">
-          <Monitor className="w-4 h-4 text-blue-400" />
+        <span className="p-1.5 bg-blue-50 rounded" title="Shows on Desktop">
+          <Monitor className="w-4 h-4 text-blue-600" />
         </span>
       )}
       {banner.show_on_tablet !== false && (
-        <span className="p-1.5 bg-purple-500/20 rounded" title="Shows on Tablet">
-          <Tablet className="w-4 h-4 text-purple-400" />
+        <span className="p-1.5 bg-purple-50 rounded" title="Shows on Tablet">
+          <Tablet className="w-4 h-4 text-purple-600" />
         </span>
       )}
       {banner.show_on_mobile !== false && (
-        <span className="p-1.5 bg-green-500/20 rounded" title="Shows on Mobile">
-          <Smartphone className="w-4 h-4 text-green-400" />
+        <span className="p-1.5 bg-green-50 rounded" title="Shows on Mobile">
+          <Smartphone className="w-4 h-4 text-green-600" />
         </span>
       )}
     </div>
@@ -217,8 +217,8 @@ const MerchantBanners = () => {
     <div className="p-6">
       <div className="flex items-center justify-between mb-6">
         <div>
-          <h1 className="text-2xl font-bold text-white">Hero Banners</h1>
-          <p className="text-gray-400">Manage your homepage carousel banners</p>
+          <h1 className="text-2xl font-bold text-gray-900">Hero Banners</h1>
+          <p className="text-gray-500">Manage your homepage carousel banners</p>
         </div>
         <Button onClick={() => openModal()} className="bg-cyan-600 hover:bg-cyan-700">
           <Plus className="w-4 h-4 mr-2" />
@@ -231,8 +231,8 @@ const MerchantBanners = () => {
         {banners.map((banner) => (
           <div
             key={banner.id}
-            className={`bg-gray-800 rounded-lg border overflow-hidden transition-colors ${
-              banner.is_active ? 'border-gray-700' : 'border-gray-700/50 opacity-60'
+            className={`bg-white rounded-lg border overflow-hidden transition-colors ${
+              banner.is_active ? 'border-gray-200' : 'border-gray-200/50 opacity-60'
             }`}
           >
             <div className="flex">
@@ -274,9 +274,9 @@ const MerchantBanners = () => {
                 <div className="flex items-start justify-between">
                   <div>
                     <div className="flex items-center gap-2 mb-2">
-                      <h3 className="font-semibold text-white text-lg">{banner.name || banner.title || 'Untitled Banner'}</h3>
+                      <h3 className="font-semibold text-gray-900 text-lg">{banner.name || banner.title || 'Untitled Banner'}</h3>
                       <span className={`px-2 py-0.5 rounded text-xs font-medium ${
-                        banner.is_active ? 'bg-green-500/20 text-green-400' : 'bg-gray-500/20 text-gray-400'
+                        banner.is_active ? 'bg-green-50 text-green-600' : 'bg-gray-500/20 text-gray-500'
                       }`}>
                         {banner.is_active ? 'Active' : 'Inactive'}
                       </span>
@@ -296,7 +296,7 @@ const MerchantBanners = () => {
                       {banner.link && <span className="bg-gray-700 px-2 py-1 rounded">Has Link</span>}
                     </div>
                   </div>
-                  <div className="flex items-center gap-2 text-gray-400">
+                  <div className="flex items-center gap-2 text-gray-500">
                     <GripVertical className="w-5 h-5" />
                     <span className="text-sm font-medium">#{banner.sort_order + 1}</span>
                   </div>
@@ -307,7 +307,7 @@ const MerchantBanners = () => {
                     variant="outline"
                     size="sm"
                     onClick={() => toggleActive(banner)}
-                    className="border-gray-600 text-gray-300 hover:bg-gray-700"
+                    className="border-gray-200 text-gray-700 hover:bg-gray-100"
                   >
                     {banner.is_active ? (
                       <><EyeOff className="w-4 h-4 mr-1" /> Hide</>
@@ -319,7 +319,7 @@ const MerchantBanners = () => {
                     variant="outline"
                     size="sm"
                     onClick={() => openModal(banner)}
-                    className="border-gray-600 text-gray-300 hover:bg-gray-700"
+                    className="border-gray-200 text-gray-700 hover:bg-gray-100"
                   >
                     <Edit className="w-4 h-4 mr-1" /> Edit
                   </Button>
@@ -327,7 +327,7 @@ const MerchantBanners = () => {
                     variant="outline"
                     size="sm"
                     onClick={() => handleDelete(banner.id)}
-                    className="border-red-600 text-red-400 hover:bg-red-600/20"
+                    className="border-red-600 text-red-600 hover:bg-red-600/20"
                   >
                     <Trash2 className="w-4 h-4" />
                   </Button>
@@ -339,10 +339,10 @@ const MerchantBanners = () => {
       </div>
 
       {banners.length === 0 && (
-        <div className="text-center py-12 bg-gray-800 rounded-lg border border-gray-700">
+        <div className="text-center py-12 bg-white rounded-lg border border-gray-200">
           <Image className="w-12 h-12 mx-auto text-gray-500 mb-4" />
-          <h3 className="text-lg font-medium text-white mb-2">No banners yet</h3>
-          <p className="text-gray-400 mb-4">Create your first hero banner</p>
+          <h3 className="text-lg font-medium text-gray-900 mb-2">No banners yet</h3>
+          <p className="text-gray-500 mb-4">Create your first hero banner</p>
           <Button onClick={() => openModal()} className="bg-cyan-600 hover:bg-cyan-700">
             <Plus className="w-4 h-4 mr-2" />
             Add Banner
@@ -353,12 +353,12 @@ const MerchantBanners = () => {
       {/* Modal */}
       {showModal && (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4 overflow-y-auto">
-          <div className="bg-gray-800 rounded-lg w-full max-w-2xl border border-gray-700 my-8 max-h-[90vh] overflow-y-auto">
-            <div className="flex items-center justify-between p-4 border-b border-gray-700 sticky top-0 bg-gray-800 z-10">
-              <h2 className="text-lg font-semibold text-white">
+          <div className="bg-white rounded-lg w-full max-w-2xl border border-gray-200 my-8 max-h-[90vh] overflow-y-auto">
+            <div className="flex items-center justify-between p-4 border-b border-gray-200 sticky top-0 bg-white z-10">
+              <h2 className="text-lg font-semibold text-gray-900">
                 {editingBanner ? 'Edit Banner' : 'Add Banner'}
               </h2>
-              <button onClick={closeModal} className="text-gray-400 hover:text-white">
+              <button onClick={closeModal} className="text-gray-500 hover:text-gray-900">
                 <X className="w-5 h-5" />
               </button>
             </div>
@@ -366,18 +366,18 @@ const MerchantBanners = () => {
             <form onSubmit={handleSubmit} className="p-4 space-y-4">
               {/* Banner Name */}
               <div>
-                <Label className="text-gray-300 mb-2 block">Banner Name</Label>
+                <Label className="text-gray-700 mb-2 block">Banner Name</Label>
                 <Input
                   value={formData.name}
                   onChange={(e) => setFormData(prev => ({ ...prev, name: e.target.value }))}
                   placeholder="e.g., Summer Sale, Homepage Hero"
-                  className="bg-gray-700 border-gray-600 text-white"
+                  className="bg-gray-700 border-gray-200 text-gray-900"
                 />
                 <p className="text-xs text-gray-500 mt-1">Internal name for identification</p>
               </div>
 
               {/* Section Tabs */}
-              <div className="flex border-b border-gray-700">
+              <div className="flex border-b border-gray-200">
                 {[
                   { id: 'image', label: 'Image & Visibility', icon: Image },
                   { id: 'content', label: 'Content', icon: Type },
@@ -390,7 +390,7 @@ const MerchantBanners = () => {
                     className={`flex items-center gap-2 px-4 py-2 text-sm font-medium transition-colors ${
                       activeSection === section.id
                         ? 'text-cyan-400 border-b-2 border-cyan-400'
-                        : 'text-gray-400 hover:text-gray-300'
+                        : 'text-gray-500 hover:text-gray-700'
                     }`}
                   >
                     <section.icon className="w-4 h-4" />
@@ -404,28 +404,28 @@ const MerchantBanners = () => {
                 <div className="space-y-4">
                   {/* Single Image Upload */}
                   <div>
-                    <Label className="text-gray-300 mb-2 block">Banner Image</Label>
+                    <Label className="text-gray-700 mb-2 block">Banner Image</Label>
                     <div
                       {...dropzone.getRootProps()}
                       className={`border-2 border-dashed rounded-lg p-6 text-center cursor-pointer transition-colors ${
-                        dropzone.isDragActive ? 'border-cyan-500 bg-cyan-500/10' : 'border-gray-600 hover:border-gray-500'
+                        dropzone.isDragActive ? 'border-cyan-500 bg-cyan-500/10' : 'border-gray-200 hover:border-gray-500'
                       }`}
                     >
                       <input {...dropzone.getInputProps()} />
                       {uploading ? (
                         <div className="py-4">
                           <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-cyan-500 mx-auto mb-2"></div>
-                          <p className="text-gray-400">Uploading...</p>
+                          <p className="text-gray-500">Uploading...</p>
                         </div>
                       ) : formData.image ? (
                         <div className="relative">
                           <img src={formData.image} alt="Banner Preview" className="max-h-48 mx-auto rounded" />
-                          <p className="text-xs text-gray-400 mt-3">Click or drag to replace image</p>
+                          <p className="text-xs text-gray-500 mt-3">Click or drag to replace image</p>
                         </div>
                       ) : (
                         <>
                           <Image className="w-12 h-12 mx-auto mb-3 text-gray-500" />
-                          <p className="text-gray-300 mb-1">Drop image here or click to upload</p>
+                          <p className="text-gray-700 mb-1">Drop image here or click to upload</p>
                           <p className="text-xs text-gray-500">Recommended: 1920 x 600px (PNG, JPG, WebP)</p>
                         </>
                       )}
@@ -434,11 +434,11 @@ const MerchantBanners = () => {
 
                   {/* Device Visibility Toggles */}
                   <div className="bg-gray-700/50 rounded-lg p-4">
-                    <Label className="text-gray-300 mb-3 block font-medium">Display this banner on:</Label>
+                    <Label className="text-gray-700 mb-3 block font-medium">Display this banner on:</Label>
                     <div className="space-y-3">
-                      <label className="flex items-center justify-between p-3 bg-gray-800 rounded-lg cursor-pointer hover:bg-gray-750">
+                      <label className="flex items-center justify-between p-3 bg-white rounded-lg cursor-pointer hover:bg-gray-750">
                         <div className="flex items-center gap-3">
-                          <Monitor className="w-5 h-5 text-blue-400" />
+                          <Monitor className="w-5 h-5 text-blue-600" />
                           <div>
                             <span className="text-gray-200 font-medium">Desktop</span>
                             <p className="text-xs text-gray-500">Screens 1024px and larger</p>
@@ -450,9 +450,9 @@ const MerchantBanners = () => {
                         />
                       </label>
                       
-                      <label className="flex items-center justify-between p-3 bg-gray-800 rounded-lg cursor-pointer hover:bg-gray-750">
+                      <label className="flex items-center justify-between p-3 bg-white rounded-lg cursor-pointer hover:bg-gray-750">
                         <div className="flex items-center gap-3">
-                          <Tablet className="w-5 h-5 text-purple-400" />
+                          <Tablet className="w-5 h-5 text-purple-600" />
                           <div>
                             <span className="text-gray-200 font-medium">Tablet</span>
                             <p className="text-xs text-gray-500">Screens 768px to 1023px</p>
@@ -464,9 +464,9 @@ const MerchantBanners = () => {
                         />
                       </label>
                       
-                      <label className="flex items-center justify-between p-3 bg-gray-800 rounded-lg cursor-pointer hover:bg-gray-750">
+                      <label className="flex items-center justify-between p-3 bg-white rounded-lg cursor-pointer hover:bg-gray-750">
                         <div className="flex items-center gap-3">
-                          <Smartphone className="w-5 h-5 text-green-400" />
+                          <Smartphone className="w-5 h-5 text-green-600" />
                           <div>
                             <span className="text-gray-200 font-medium">Mobile</span>
                             <p className="text-xs text-gray-500">Screens smaller than 768px</p>
@@ -480,7 +480,7 @@ const MerchantBanners = () => {
                     </div>
                     
                     {!formData.show_on_desktop && !formData.show_on_tablet && !formData.show_on_mobile && (
-                      <p className="text-yellow-400 text-sm mt-3 flex items-center gap-2">
+                      <p className="text-yellow-600 text-sm mt-3 flex items-center gap-2">
                         ⚠️ Banner won't be visible on any device
                       </p>
                     )}
@@ -494,9 +494,9 @@ const MerchantBanners = () => {
                   {/* Title */}
                   <div className="bg-gray-700/30 rounded-lg p-4">
                     <div className="flex items-center justify-between mb-2">
-                      <Label className="text-gray-300">Title (Optional)</Label>
+                      <Label className="text-gray-700">Title (Optional)</Label>
                       <label className="flex items-center gap-2 text-sm">
-                        <span className="text-gray-400">Show</span>
+                        <span className="text-gray-500">Show</span>
                         <Switch
                           checked={formData.show_title}
                           onCheckedChange={(checked) => setFormData(prev => ({ ...prev, show_title: checked }))}
@@ -507,7 +507,7 @@ const MerchantBanners = () => {
                       value={formData.title}
                       onChange={(e) => setFormData(prev => ({ ...prev, title: e.target.value }))}
                       placeholder="e.g., Summer Collection 2025"
-                      className={`bg-gray-700 border-gray-600 text-white ${!formData.show_title ? 'opacity-50' : ''}`}
+                      className={`bg-gray-700 border-gray-200 text-gray-900 ${!formData.show_title ? 'opacity-50' : ''}`}
                     />
                     <p className="text-xs text-gray-500 mt-1">Leave empty for image-only banner</p>
                   </div>
@@ -515,9 +515,9 @@ const MerchantBanners = () => {
                   {/* Subtitle */}
                   <div className="bg-gray-700/30 rounded-lg p-4">
                     <div className="flex items-center justify-between mb-2">
-                      <Label className="text-gray-300">Subtitle (Optional)</Label>
+                      <Label className="text-gray-700">Subtitle (Optional)</Label>
                       <label className="flex items-center gap-2 text-sm">
-                        <span className="text-gray-400">Show</span>
+                        <span className="text-gray-500">Show</span>
                         <Switch
                           checked={formData.show_subtitle}
                           onCheckedChange={(checked) => setFormData(prev => ({ ...prev, show_subtitle: checked }))}
@@ -528,16 +528,16 @@ const MerchantBanners = () => {
                       value={formData.subtitle}
                       onChange={(e) => setFormData(prev => ({ ...prev, subtitle: e.target.value }))}
                       placeholder="e.g., Up to 50% off selected items"
-                      className={`bg-gray-700 border-gray-600 text-white ${!formData.show_subtitle ? 'opacity-50' : ''}`}
+                      className={`bg-gray-700 border-gray-200 text-gray-900 ${!formData.show_subtitle ? 'opacity-50' : ''}`}
                     />
                   </div>
 
                   {/* Button */}
                   <div className="bg-gray-700/30 rounded-lg p-4">
                     <div className="flex items-center justify-between mb-2">
-                      <Label className="text-gray-300">Button</Label>
+                      <Label className="text-gray-700">Button</Label>
                       <label className="flex items-center gap-2 text-sm">
-                        <span className="text-gray-400">Show</span>
+                        <span className="text-gray-500">Show</span>
                         <Switch
                           checked={formData.show_button}
                           onCheckedChange={(checked) => setFormData(prev => ({ ...prev, show_button: checked }))}
@@ -546,20 +546,20 @@ const MerchantBanners = () => {
                     </div>
                     <div className={`grid grid-cols-2 gap-4 ${!formData.show_button ? 'opacity-50 pointer-events-none' : ''}`}>
                       <div>
-                        <Label className="text-gray-400 text-xs">Button Text</Label>
+                        <Label className="text-gray-500 text-xs">Button Text</Label>
                         <Input
                           value={formData.button_text}
                           onChange={(e) => setFormData(prev => ({ ...prev, button_text: e.target.value }))}
                           placeholder="Shop Now"
-                          className="bg-gray-700 border-gray-600 text-white"
+                          className="bg-gray-700 border-gray-200 text-gray-900"
                         />
                       </div>
                       <div>
-                        <Label className="text-gray-400 text-xs">Button Style</Label>
+                        <Label className="text-gray-500 text-xs">Button Style</Label>
                         <select
                           value={formData.button_style}
                           onChange={(e) => setFormData(prev => ({ ...prev, button_style: e.target.value }))}
-                          className="w-full bg-gray-700 border border-gray-600 text-white rounded-md p-2"
+                          className="w-full bg-gray-700 border border-gray-200 text-gray-900 rounded-md p-2"
                         >
                           <option value="primary">Primary (Red)</option>
                           <option value="secondary">Secondary (White)</option>
@@ -571,12 +571,12 @@ const MerchantBanners = () => {
 
                   {/* Link */}
                   <div>
-                    <Label className="text-gray-300">Link URL</Label>
+                    <Label className="text-gray-700">Link URL</Label>
                     <Input
                       value={formData.link}
                       onChange={(e) => setFormData(prev => ({ ...prev, link: e.target.value }))}
                       placeholder="/store/products or https://..."
-                      className="bg-gray-700 border-gray-600 text-white"
+                      className="bg-gray-700 border-gray-200 text-gray-900"
                     />
                     <p className="text-xs text-gray-500 mt-1">Where clicking the banner navigates to</p>
                   </div>
@@ -588,7 +588,7 @@ const MerchantBanners = () => {
                 <div className="space-y-4">
                   {/* Text Position */}
                   <div>
-                    <Label className="text-gray-300 mb-2 block">Text Position</Label>
+                    <Label className="text-gray-700 mb-2 block">Text Position</Label>
                     <div className="flex gap-2">
                       {[
                         { value: 'left', icon: AlignLeft, label: 'Left' },
@@ -601,8 +601,8 @@ const MerchantBanners = () => {
                           onClick={() => setFormData(prev => ({ ...prev, text_position: pos.value }))}
                           className={`flex items-center gap-2 px-4 py-2 rounded-lg transition-colors ${
                             formData.text_position === pos.value
-                              ? 'bg-cyan-600 text-white'
-                              : 'bg-gray-700 text-gray-300 hover:bg-gray-600'
+                              ? 'bg-cyan-600 text-gray-900'
+                              : 'bg-gray-700 text-gray-700 hover:bg-gray-100'
                           }`}
                         >
                           <pos.icon className="w-4 h-4" />
@@ -614,18 +614,18 @@ const MerchantBanners = () => {
 
                   {/* Text Color */}
                   <div>
-                    <Label className="text-gray-300 mb-2 block">Text Color</Label>
+                    <Label className="text-gray-700 mb-2 block">Text Color</Label>
                     <div className="flex gap-2">
                       <Input
                         type="color"
                         value={formData.text_color}
                         onChange={(e) => setFormData(prev => ({ ...prev, text_color: e.target.value }))}
-                        className="w-12 h-10 p-1 bg-gray-700 border-gray-600"
+                        className="w-12 h-10 p-1 bg-gray-700 border-gray-200"
                       />
                       <Input
                         value={formData.text_color}
                         onChange={(e) => setFormData(prev => ({ ...prev, text_color: e.target.value }))}
-                        className="bg-gray-700 border-gray-600 text-white flex-1"
+                        className="bg-gray-700 border-gray-200 text-gray-900 flex-1"
                       />
                     </div>
                   </div>
@@ -633,9 +633,9 @@ const MerchantBanners = () => {
                   {/* Overlay */}
                   <div className="bg-gray-700/30 rounded-lg p-4">
                     <div className="flex items-center justify-between mb-3">
-                      <Label className="text-gray-300">Text Overlay</Label>
+                      <Label className="text-gray-700">Text Overlay</Label>
                       <label className="flex items-center gap-2 text-sm">
-                        <span className="text-gray-400">Enable</span>
+                        <span className="text-gray-500">Enable</span>
                         <Switch
                           checked={formData.overlay_enabled}
                           onCheckedChange={(checked) => setFormData(prev => ({ ...prev, overlay_enabled: checked }))}
@@ -643,12 +643,12 @@ const MerchantBanners = () => {
                       </label>
                     </div>
                     <div className={!formData.overlay_enabled ? 'opacity-50 pointer-events-none' : ''}>
-                      <Label className="text-gray-400 text-xs mb-1 block">Overlay Color</Label>
+                      <Label className="text-gray-500 text-xs mb-1 block">Overlay Color</Label>
                       <Input
                         value={formData.overlay_color}
                         onChange={(e) => setFormData(prev => ({ ...prev, overlay_color: e.target.value }))}
                         placeholder="rgba(0,0,0,0.3)"
-                        className="bg-gray-700 border-gray-600 text-white"
+                        className="bg-gray-700 border-gray-200 text-gray-900"
                       />
                       <p className="text-xs text-gray-500 mt-1">Use rgba() for transparency, e.g., rgba(0,0,0,0.5)</p>
                     </div>
@@ -656,12 +656,12 @@ const MerchantBanners = () => {
 
                   {/* Sort Order */}
                   <div>
-                    <Label className="text-gray-300">Sort Order</Label>
+                    <Label className="text-gray-700">Sort Order</Label>
                     <Input
                       type="number"
                       value={formData.sort_order}
                       onChange={(e) => setFormData(prev => ({ ...prev, sort_order: parseInt(e.target.value) || 0 }))}
-                      className="bg-gray-700 border-gray-600 text-white"
+                      className="bg-gray-700 border-gray-200 text-gray-900"
                     />
                     <p className="text-xs text-gray-500 mt-1">Lower numbers appear first in carousel</p>
                   </div>
@@ -669,7 +669,7 @@ const MerchantBanners = () => {
                   {/* Active Toggle */}
                   <div className="flex items-center justify-between bg-gray-700/30 rounded-lg p-4">
                     <div>
-                      <Label className="text-gray-300">Banner Active</Label>
+                      <Label className="text-gray-700">Banner Active</Label>
                       <p className="text-xs text-gray-500">Inactive banners won't show on the storefront</p>
                     </div>
                     <Switch
@@ -681,8 +681,8 @@ const MerchantBanners = () => {
               )}
 
               {/* Action Buttons */}
-              <div className="flex gap-2 pt-4 border-t border-gray-700">
-                <Button type="button" variant="outline" onClick={closeModal} className="flex-1 border-gray-600 text-gray-300">
+              <div className="flex gap-2 pt-4 border-t border-gray-200">
+                <Button type="button" variant="outline" onClick={closeModal} className="flex-1 border-gray-200 text-gray-700">
                   Cancel
                 </Button>
                 <Button 
