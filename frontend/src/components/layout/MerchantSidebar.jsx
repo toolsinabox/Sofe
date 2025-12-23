@@ -207,7 +207,7 @@ const MerchantSidebar = ({ collapsed, setCollapsed, mobileOpen, setMobileOpen })
       <div key={group.id} className="space-y-1">
         <button
           onClick={() => !collapsed && toggleGroup(group.id)}
-          className={`w-full flex items-center gap-3 px-3 py-2 rounded-lg transition-all duration-150 text-gray-600 hover:text-gray-900 hover:bg-gray-100 ${
+          className={`w-full flex items-center gap-3 px-3 py-2 rounded-lg transition-all duration-150 text-slate-300 hover:text-white hover:bg-slate-700 ${
             collapsed ? 'justify-center' : 'justify-between'
           }`}
         >
