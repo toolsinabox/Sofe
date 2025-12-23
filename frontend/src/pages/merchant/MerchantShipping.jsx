@@ -1875,14 +1875,14 @@ const MerchantShipping = () => {
                     <div className="flex items-center gap-2 mt-1">
                       <StableInput
                         type="number"
-                        step="0.1"
+                        step="1"
                         name="max_length"
                         defaultValue={serviceForm.max_length || ''}
                         onBlur={handleServiceFormNumericBlur}
-                        placeholder="1.4"
+                        placeholder="1400"
                         className="bg-gray-700 border-gray-600 text-white"
                       />
-                      <span className="text-gray-400 text-sm">m</span>
+                      <span className="text-gray-400 text-sm">mm</span>
                     </div>
                   </div>
                   <div>
