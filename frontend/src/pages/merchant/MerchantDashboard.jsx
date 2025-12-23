@@ -18,25 +18,25 @@ const API = `${BACKEND_URL}/api`;
 
 const StatCard = ({ title, value, subValue, icon: Icon, trend, loading }) => {
   return (
-    <div className="bg-white rounded-xl border border-gray-200 p-4 hover:shadow-md transition-shadow">
+    <div className="bg-white rounded-lg border border-gray-200 p-3 hover:shadow-sm transition-shadow">
       <div className="flex items-start justify-between">
         <div className="flex-1">
-          <p className="text-gray-500 text-sm font-medium">{title}</p>
+          <p className="text-gray-500 text-xs font-medium">{title}</p>
           {loading ? (
-            <div className="h-7 w-24 bg-gray-100 rounded animate-pulse mt-1" />
+            <div className="h-6 w-20 bg-gray-100 rounded animate-pulse mt-1" />
           ) : (
-            <p className="text-2xl font-bold text-gray-900 mt-1">{value}</p>
+            <p className="text-xl font-bold text-gray-900 mt-0.5">{value}</p>
           )}
           {subValue && (
-            <p className="text-gray-500 text-xs mt-1 flex items-center gap-1">
-              {trend === 'up' && <TrendingUp size={12} className="text-green-500" />}
-              {trend === 'down' && <TrendingDown size={12} className="text-red-500" />}
+            <p className="text-gray-400 text-xs mt-0.5 flex items-center gap-1">
+              {trend === 'up' && <TrendingUp size={10} className="text-green-500" />}
+              {trend === 'down' && <TrendingDown size={10} className="text-red-500" />}
               {subValue}
             </p>
           )}
         </div>
-        <div className="w-10 h-10 rounded-lg bg-blue-50 flex items-center justify-center">
-          <Icon className="w-5 h-5 text-blue-600" />
+        <div className="w-8 h-8 rounded-lg bg-blue-50 flex items-center justify-center">
+          <Icon className="w-4 h-4 text-blue-600" />
         </div>
       </div>
     </div>
