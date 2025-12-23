@@ -723,7 +723,7 @@ const MerchantOrders = () => {
               </Select>
             </div>
             <div className="flex items-center gap-2">
-              <input type="checkbox" id="notify" className="rounded bg-gray-700 border-gray-300" />
+              <input type="checkbox" id="notify" className="rounded bg-white border-gray-300" />
               <label htmlFor="notify" className="text-sm text-gray-500">Notify customer via email</label>
             </div>
           </div>
@@ -805,7 +805,7 @@ const MerchantOrders = () => {
               />
             </div>
             <div className="flex items-center gap-2">
-              <input type="checkbox" id="notifyTracking" className="rounded bg-gray-700 border-gray-300" defaultChecked />
+              <input type="checkbox" id="notifyTracking" className="rounded bg-white border-gray-300" defaultChecked />
               <label htmlFor="notifyTracking" className="text-sm text-gray-500">Send tracking email to customer</label>
             </div>
           </div>
