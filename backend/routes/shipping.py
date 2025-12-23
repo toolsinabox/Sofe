@@ -43,6 +43,26 @@ def safe_int(value, default=0):
     except (ValueError, TypeError):
         return default
 
+def sanitize_shipping_rates(rates: list) -> list:
+    """
+    Sanitize shipping rates to ensure min_charge is properly set.
+    Maropost logic: min_charge should equal base_rate if not explicitly set.
+    Also rounds per_kg_rate to 2 decimal places.
+    """
+    for rate in rates:
+        # Ensure min_charge = base_rate when min_charge is 0 or missing
+        base_rate = safe_float(rate.get("base_rate", 0))
+        min_charge = safe_float(rate.get("min_charge", 0))
+        
+        if min_charge == 0 and base_rate > 0:
+            rate["min_charge"] = base_rate
+        
+        # Round per_kg_rate to 2 decimal places
+        if "per_kg_rate" in rate:
+            rate["per_kg_rate"] = round(safe_float(rate.get("per_kg_rate", 0)), 2)
+    
+    return rates
+
 
 # ============== PYDANTIC MODELS ==============
 
