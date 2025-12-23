@@ -65,6 +65,7 @@ class ShippingService(BaseModel):
     name: str  # Customer-facing name
     code: str  # Internal code
     carrier: str = "custom"  # e.g., "australia_post", "startrack", "custom"
+    routing_group: Optional[str] = None  # Group services together - only cheapest in group shown to customer
     charge_type: str = "weight"  # weight, cubic, fixed, flat, cart_total
     min_charge: float = 0
     max_charge: Optional[float] = None
