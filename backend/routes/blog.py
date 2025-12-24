@@ -277,7 +277,7 @@ async def delete_blog_post(post_id: str):
     # Delete comments
     await db.blog_comments.delete_many({"post_id": post_id})
     
-    result = await db.blog_posts.delete_one({"id": post_id})
+    await db.blog_posts.delete_one({"id": post_id})
     return {"success": True}
 
 @router.post("/posts/{post_id}/like")
