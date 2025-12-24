@@ -50,6 +50,10 @@ import MerchantGiftCards from "./pages/merchant/MerchantGiftCards";
 import MerchantFlashSales from "./pages/merchant/MerchantFlashSales";
 import MerchantAdvancedAnalytics from "./pages/merchant/MerchantAdvancedAnalytics";
 import MerchantSuppliers from "./pages/merchant/MerchantSuppliers";
+import MerchantBundles from "./pages/merchant/MerchantBundles";
+import MerchantEmailMarketing from "./pages/merchant/MerchantEmailMarketing";
+import MerchantCustomerGroups from "./pages/merchant/MerchantCustomerGroups";
+import MerchantBlog from "./pages/merchant/MerchantBlog";
 
 // Live Storefront (Theme-rendered)
 import LiveThemeStorefront from "./pages/store/LiveThemeStorefront";
