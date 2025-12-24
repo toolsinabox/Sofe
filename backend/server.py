@@ -2471,7 +2471,193 @@ class CheckoutRequest(BaseModel):
     notes: Optional[str] = None
     purchase_order: Optional[str] = None
 
-@api_router.post("/checkout/create-payment-intent")
+# ==================== RETURNS/REFUNDS ENDPOINTS ====================
+
+@api_router.get("/returns")
+async def get_returns(
+    status: Optional[str] = None,
+    limit: int = 50,
+    skip: int = 0
+):
+    """Get all return requests"""
+    query = {}
+    if status:
+        query["status"] = status
+    
+    returns = await db.returns.find(query, {"_id": 0}).sort("created_at", -1).skip(skip).limit(limit).to_list(limit)
+    total = await db.returns.count_documents(query)
+    
+    return {"returns": returns, "total": total}
+
+@api_router.get("/returns/stats")
+async def get_returns_stats():
+    """Get returns statistics"""
+    total = await db.returns.count_documents({})
+    pending = await db.returns.count_documents({"status": "pending"})
+    approved = await db.returns.count_documents({"status": "approved"})
+    received = await db.returns.count_documents({"status": "received"})
+    refunded = await db.returns.count_documents({"status": "refunded"})
+    
+    # Calculate total refund amount
+    pipeline = [
+        {"$match": {"refund_status": "completed"}},
+        {"$group": {"_id": None, "total": {"$sum": "$refund_amount"}}}
+    ]
+    result = await db.returns.aggregate(pipeline).to_list(1)
+    total_refunded = result[0]["total"] if result else 0
+    
+    return {
+        "total": total,
+        "pending": pending,
+        "approved": approved,
+        "received": received,
+        "refunded": refunded,
+        "total_refunded": total_refunded
+    }
+
+@api_router.get("/returns/{return_id}")
+async def get_return(return_id: str):
+    """Get a specific return request"""
+    ret = await db.returns.find_one({"id": return_id}, {"_id": 0})
+    if not ret:
+        raise HTTPException(status_code=404, detail="Return not found")
+    return ret
+
+@api_router.post("/returns")
+async def create_return(return_data: Dict[str, Any]):
+    """Create a new return request"""
+    order = await db.orders.find_one({"id": return_data.get("order_id")})
+    if not order:
+        raise HTTPException(status_code=404, detail="Order not found")
+    
+    new_return = ReturnRequest(
+        order_id=return_data.get("order_id"),
+        order_number=order.get("order_number", ""),
+        customer_id=order.get("customer_id"),
+        customer_name=order.get("customer_name", ""),
+        customer_email=order.get("customer_email", ""),
+        items=return_data.get("items", []),
+        reason=return_data.get("reason", "other"),
+        description=return_data.get("description"),
+        refund_amount=return_data.get("refund_amount", 0),
+        refund_method=return_data.get("refund_method", "original"),
+        images=return_data.get("images", [])
+    )
+    
+    await db.returns.insert_one(new_return.dict())
+    return new_return.dict()
+
+@api_router.put("/returns/{return_id}")
+async def update_return(return_id: str, update_data: Dict[str, Any]):
+    """Update a return request"""
+    ret = await db.returns.find_one({"id": return_id})
+    if not ret:
+        raise HTTPException(status_code=404, detail="Return not found")
+    
+    update_data["updated_at"] = datetime.now(timezone.utc).isoformat()
+    
+    # Set timestamp for status changes
+    if update_data.get("status") == "approved" and ret.get("status") != "approved":
+        update_data["approved_at"] = datetime.now(timezone.utc).isoformat()
+    elif update_data.get("status") == "received" and ret.get("status") != "received":
+        update_data["received_at"] = datetime.now(timezone.utc).isoformat()
+    
+    await db.returns.update_one({"id": return_id}, {"$set": update_data})
+    return await db.returns.find_one({"id": return_id}, {"_id": 0})
+
+@api_router.post("/returns/{return_id}/approve")
+async def approve_return(return_id: str, approval_data: Dict[str, Any] = {}):
+    """Approve a return request"""
+    ret = await db.returns.find_one({"id": return_id})
+    if not ret:
+        raise HTTPException(status_code=404, detail="Return not found")
+    
+    update = {
+        "status": "approved",
+        "approved_at": datetime.now(timezone.utc).isoformat(),
+        "updated_at": datetime.now(timezone.utc).isoformat()
+    }
+    if approval_data.get("refund_amount"):
+        update["refund_amount"] = approval_data["refund_amount"]
+    if approval_data.get("merchant_notes"):
+        update["merchant_notes"] = approval_data["merchant_notes"]
+    
+    await db.returns.update_one({"id": return_id}, {"$set": update})
+    return await db.returns.find_one({"id": return_id}, {"_id": 0})
+
+@api_router.post("/returns/{return_id}/reject")
+async def reject_return(return_id: str, rejection_data: Dict[str, Any] = {}):
+    """Reject a return request"""
+    ret = await db.returns.find_one({"id": return_id})
+    if not ret:
+        raise HTTPException(status_code=404, detail="Return not found")
+    
+    update = {
+        "status": "rejected",
+        "merchant_notes": rejection_data.get("reason", ""),
+        "updated_at": datetime.now(timezone.utc).isoformat()
+    }
+    
+    await db.returns.update_one({"id": return_id}, {"$set": update})
+    return await db.returns.find_one({"id": return_id}, {"_id": 0})
+
+@api_router.post("/returns/{return_id}/receive")
+async def receive_return(return_id: str):
+    """Mark return items as received"""
+    ret = await db.returns.find_one({"id": return_id})
+    if not ret:
+        raise HTTPException(status_code=404, detail="Return not found")
+    
+    update = {
+        "status": "received",
+        "received_at": datetime.now(timezone.utc).isoformat(),
+        "updated_at": datetime.now(timezone.utc).isoformat()
+    }
+    
+    await db.returns.update_one({"id": return_id}, {"$set": update})
+    return await db.returns.find_one({"id": return_id}, {"_id": 0})
+
+@api_router.post("/returns/{return_id}/refund")
+async def process_return_refund(return_id: str, refund_data: Dict[str, Any] = {}):
+    """Process refund for a return"""
+    ret = await db.returns.find_one({"id": return_id})
+    if not ret:
+        raise HTTPException(status_code=404, detail="Return not found")
+    
+    refund_amount = refund_data.get("amount", ret.get("refund_amount", 0))
+    
+    update = {
+        "status": "refunded",
+        "refund_status": "completed",
+        "refund_amount": refund_amount,
+        "refunded_at": datetime.now(timezone.utc).isoformat(),
+        "updated_at": datetime.now(timezone.utc).isoformat()
+    }
+    
+    await db.returns.update_one({"id": return_id}, {"$set": update})
+    
+    # Update original order
+    await db.orders.update_one(
+        {"id": ret.get("order_id")},
+        {"$set": {"payment_status": "refunded", "updated_at": datetime.now(timezone.utc).isoformat()}}
+    )
+    
+    return await db.returns.find_one({"id": return_id}, {"_id": 0})
+
+@api_router.delete("/returns/{return_id}")
+async def delete_return(return_id: str):
+    """Delete a return request"""
+    ret = await db.returns.find_one({"id": return_id})
+    if not ret:
+        raise HTTPException(status_code=404, detail="Return not found")
+    
+    if ret.get("status") not in ["pending", "rejected"]:
+        raise HTTPException(status_code=400, detail="Can only delete pending or rejected returns")
+    
+    await db.returns.delete_one({"id": return_id})
+    return {"message": "Return deleted successfully"}
+
+# ==================== CHECKOUT ====================
 async def create_payment_intent(amount: float, currency: str = "aud"):
     """Create a Stripe payment intent for checkout"""
     try:
