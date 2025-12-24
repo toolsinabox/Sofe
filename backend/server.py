@@ -36,6 +36,8 @@ from routes import marketing as marketing_module
 from routes import analytics as analytics_module
 from routes import operations as operations_module
 from routes import customer_management as customer_management_module
+from routes import blog as blog_module
+from routes import abandoned_carts as abandoned_carts_module
 
 ROOT_DIR = Path(__file__).parent
 load_dotenv(ROOT_DIR / '.env')
