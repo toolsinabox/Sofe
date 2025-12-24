@@ -1540,6 +1540,24 @@ const EbayIntegration = () => {
   const [savingTheme, setSavingTheme] = useState(false);
   const [themeSaveMessage, setThemeSaveMessage] = useState(null);
 
+  // Generate product specifications HTML
+  const generateProductSpecs = (product) => {
+    const specs = [];
+    if (product.sku) specs.push(`<li><strong>SKU:</strong> ${product.sku}</li>`);
+    if (product.brand) specs.push(`<li><strong>Brand:</strong> ${product.brand}</li>`);
+    if (product.condition) specs.push(`<li><strong>Condition:</strong> ${product.condition}</li>`);
+    if (product.weight) specs.push(`<li><strong>Weight:</strong> ${product.weight}</li>`);
+    if (product.dimensions) specs.push(`<li><strong>Dimensions:</strong> ${product.dimensions}</li>`);
+    if (product.upc) specs.push(`<li><strong>UPC:</strong> ${product.upc}</li>`);
+    if (product.mpn) specs.push(`<li><strong>MPN:</strong> ${product.mpn}</li>`);
+    if (product.category) specs.push(`<li><strong>Category:</strong> ${product.category}</li>`);
+    
+    if (specs.length === 0) {
+      return '<p>Product specifications will be displayed here.</p>';
+    }
+    return `<ul style="list-style: none; padding: 0; margin: 0;">${specs.join('')}</ul>`;
+  };
+
   // Process HTML template with actual product data for preview
   const processTemplateForPreview = (html) => {
     if (!html) return '';
