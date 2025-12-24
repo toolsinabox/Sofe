@@ -41,7 +41,7 @@ export default function MerchantCustomerGroups() {
     try {
       setLoading(true);
       const [groupsRes, customersRes] = await Promise.all([
-        axios.get(`${BACKEND_URL}/api/customers/groups`),
+        axios.get(`${BACKEND_URL}/api/customer-management/groups`),
         axios.get(`${BACKEND_URL}/api/customers`)
       ]);
       setGroups(groupsRes.data.groups || []);
@@ -60,9 +60,9 @@ export default function MerchantCustomerGroups() {
   const saveGroup = async () => {
     try {
       if (editingGroup) {
-        await axios.put(`${BACKEND_URL}/api/customers/groups/${editingGroup.id}`, formData);
+        await axios.put(`${BACKEND_URL}/api/customer-management/groups/${editingGroup.id}`, formData);
       } else {
-        await axios.post(`${BACKEND_URL}/api/customers/groups`, formData);
+        await axios.post(`${BACKEND_URL}/api/customer-management/groups`, formData);
       }
       setShowModal(false);
       setEditingGroup(null);
@@ -77,7 +77,7 @@ export default function MerchantCustomerGroups() {
   const deleteGroup = async (id) => {
     if (!window.confirm('Delete this group? Members will be removed from the group.')) return;
     try {
-      await axios.delete(`${BACKEND_URL}/api/customers/groups/${id}`);
+      await axios.delete(`${BACKEND_URL}/api/customer-management/groups/${id}`);
       fetchData();
     } catch (error) {
       console.error('Failed to delete:', error);
@@ -86,7 +86,7 @@ export default function MerchantCustomerGroups() {
 
   const assignCustomers = async (customerIds) => {
     try {
-      await axios.post(`${BACKEND_URL}/api/customers/groups/${selectedGroup.id}/members`, customerIds);
+      await axios.post(`${BACKEND_URL}/api/customer-management/groups/${selectedGroup.id}/members`, customerIds);
       fetchData();
       setShowAssignModal(false);
     } catch (error) {
@@ -96,7 +96,7 @@ export default function MerchantCustomerGroups() {
 
   const removeFromGroup = async (groupId, customerId) => {
     try {
-      await axios.delete(`${BACKEND_URL}/api/customers/groups/${groupId}/members/${customerId}`);
+      await axios.delete(`${BACKEND_URL}/api/customer-management/groups/${groupId}/members/${customerId}`);
       fetchData();
     } catch (error) {
       console.error('Failed to remove:', error);
