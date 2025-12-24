@@ -144,7 +144,7 @@ export default function MerchantWarehouses() {
   const receiveTransfer = async (transferId) => {
     try {
       const transfer = transfers.find(t => t.id === transferId);
-      await axios.post(`${BACKEND_URL}/api/operations/stock-transfers/${transferId}/receive`, 
+      await axios.post(`${BACKEND_URL}/api/operations/transfers/${transferId}/receive`, 
         transfer.items.map(item => ({ product_id: item.product_id, quantity_received: item.quantity }))
       );
       fetchData();
