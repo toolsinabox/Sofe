@@ -1,170 +1,152 @@
 <analysis>**original_problem_statement:**
-The user wants to build a Maropost e-commerce clone. The project started with a UI redesign and has since moved to implementing core features, with a strong focus on a deep and realistic eBay integration.
+The user initially wanted to build a Maropost e-commerce clone, focusing on fixing a super advanced eBay theme editor (specifically conditional logic and logo display) and a broken storefront product review system.
 
-Key features and fixes requested throughout the project include:
-- A Skip for now option for the eBay API connection due to credential issues.
-- A super advanced eBay theme editor with a code editor, live preview, product data selector, pre-built templates, save functionality, and conditional logic for elements.
-- A WYSIWYG/Source Code editor for product descriptions.
-- The ability to assign products to multiple categories and have filtering work correctly.
-- A comprehensive CSV import/export system for both products and categories, mimicking Maropost's functionality.
-- A comprehensive product review system allowing customers to upload images on the storefront and enabling admins to manually create/manage reviews.
-- Fixing issues where implemented features, like reviews and eBay conditional logic, were not working as expected on the live site or in the preview.
+After these initial fixes were addressed, the user's request pivoted dramatically to a much broader goal: add a much more features to our platform dashboard. make this the best platform ever find the best features that will actually work and add them, be comprehensive add alot off needed features. The agent has since begun scaffolding a large number of new features as requested.
 
 **User's preferred language**: English
 
 **what currently exists?**
-- A React/FastAPI/MongoDB application with a merchant dashboard and a storefront rendered by a backend template engine.
-- A comprehensive eBay integration page () with a multi-tab dashboard. The advanced theme editor within it has a code editor, 5 pre-built templates, save functionality, and a live preview that renders the template's HTML.
-- The product editor supports multi-category assignment, and the backend filtering logic has been updated to handle this.
-- A full-featured CSV Import/Export system for Products and Categories, accessible from their respective dashboard pages, with a reusable UI component () and dedicated backend routes ().
-- A powerful Product Reviews system. The backend model and APIs support image uploads, admin replies, and manual creation. The merchant dashboard features a completely new page () for advanced review management.
-- An attempted implementation of the review system (including image uploads) on the live storefront's HTML template ().
+- A React/FastAPI/MongoDB application.
+- The eBay theme editor now correctly fetches the store logo for the live preview by using a backend proxy to convert the image to base64, bypassing browser cross-origin restrictions in the preview iframe.
+- The storefront product review system has been verified as **fully functional**, including review display, average ratings, and the Write a Review form with image upload capabilities.
+- A significant number of new, advanced features have been **scaffolded**. This includes:
+    - **Backend:** New API routers (, , , , , ) with placeholder endpoints have been created and integrated into .
+    - **Frontend:** New merchant dashboard pages have been created for Coupons, Loyalty Programs, Gift Cards, Flash Sales, Advanced Analytics, Suppliers, Product Bundles, Email Marketing, and Customer Groups. These pages are linked in  and have corresponding navigation items in the .
 
 **Last working item**:
-- **Last item agent was working:** The user reported that the conditional  tags for images in the eBay theme editor are still not working correctly. The user wants the HTML block for an image to be completely omitted if the corresponding image data is not present. Additionally, the user wants the actual uploaded store logo to be used in the theme preview, not just a placeholder. The agent was starting to investigate this recurring issue.
+- **Last item agent was working:** The agent was executing the user's broad request to add many new, advanced features. It was in the second phase of this effort, creating the backend routes for a **Blog/News system** () and an **Abandoned Cart Recovery** system ().
 - **Status:** IN PROGRESS
 - **Agent Testing Done:** N
-- **Which testing method agent to use?** screenshot tool. The test must verify: 1. In the eBay theme editor, preview a product with fewer than the maximum number of images and confirm the HTML for the missing images is not rendered at all. 2. Confirm the theme preview correctly displays the store's actual logo.
+- **Which testing method agent to use?** backend testing agent. The agent should test the new endpoints via  to ensure they are registered and return basic responses.
 - **User Testing Done:** N
 
 **All Pending/In progress Issue list**:
--   **Issue 1: eBay Theme Conditional Logic & Logo Not Working (P0)**
--   **Issue 2: Storefront Product Reviews Not Displaying/Working (P0)**
--   **Issue 3: eBay Connection Authentication Failure (P1)**
--   **Issue 4: Implement Core eBay Integration Features (P1)**
--   **Issue 5: Implement Pay Later and Layby in POS (P2)**
--   **Issue 6: Comprehensive Shipping Editor Regression Test (P2)**
--   **Issue 7: Fix rate import  mapping (P2)**
--   **Issue 8: Product Data Mismatch Validation (P2)**
--   **Issue 9: No Backend Negative Stock Validation (P2)**
+-   **Issue 1: eBay Theme Conditional Image Logic Not Fully Verified (P1)**
+-   **Issue 2: eBay Connection Authentication Failure (P2)**
+-   **Issue 3: Implement Core eBay Integration Features (P2)**
+-   **Issue 4: Implement Pay Later and Layby in POS (P3)**
+-   **Issue 5: Comprehensive Shipping Editor Regression Test (P3)**
+-   **Issue 6: Fix rate import  mapping (P3)**
+-   **Issue 7: Product Data Mismatch Validation (P3)**
+-   **Issue 8: No Backend Negative Stock Validation (P3)**
 
 Issues Detail:
--   **Issue 1: eBay Theme Conditional Logic & Logo Not Working**
-    -   **Attempted fixes:** The agent previously added regex-based processing in  to handle conditional blocks and added a placeholder URL for the logo. The agent believed this was fixed, but the user's more specific requirements (complete omission of HTML for missing images, use of the real store logo) mean the fix was incomplete.
+-   **Issue 1: eBay Theme Conditional Image Logic Not Fully Verified**
+    -   **Attempted fixes:** The agent fixed the related logo issue but did not explicitly test the user's original requirement: if no photo is in image 3 for example the html and image wont be shown. The regex logic exists but needs to be verified with a product that has fewer than the maximum number of images.
     -   **Next debug checklist:**
-        1.  In , implement logic to fetch the main store's settings, specifically the uploaded logo URL. This may require a new backend endpoint.
-        2.  Pass the real  URL to the  function.
-        3.  In , revise the regex for conditional image blocks () to ensure that if an image does not exist, the entire block (from  to ) is removed, not just replaced with an empty string.
-        4.  Test with a preview product that has a variable number of images (e.g., 2 images) to confirm the logic works correctly for missing images (e.g., image 3 and 4 blocks are removed).
-    -   **Why fix this issue and what will be achieved with this?** This is the user's current highest priority and is essential for the eBay theme editor to be considered functionally complete.
-    -   **Status:** IN PROGRESS
+        1.  In , select a product for the preview that has 1 or 2 images.
+        2.  Inspect the generated HTML in the live preview .
+        3.  Confirm that the HTML blocks for non-existent images (e.g., ) are completely removed from the output.
+    -   **Why fix this issue and what will be achieved with this?** This was part of the user's original high-priority request for the theme editor and needs to be confirmed as resolved.
+    -   **Status:** USER VERIFICATION PENDING
     -   **Is recurring issue?** Y
     -   **Should Test frontend/backend/both after fix?** Frontend.
-    -   **Blocked on other issue:** none
+    -   **Blocked on other issue:** None
 
--   **Issue 2: Storefront Product Reviews Not Displaying/Working**
-    -   **Attempted fixes:** The agent identified the storefront uses a backend template engine and edited . They added an image upload form and updated the inline JavaScript to handle image display and submission. The user reports this is still not working.
-    -   **Next debug checklist:**
-        1.  Using browser developer tools, check for JavaScript console errors on a live storefront product page.
-        2.  Verify the AJAX call within the template's  function is successful and inspect the JSON response from . Ensure the data structure (e.g., ,  array) matches exactly what the inline JavaScript expects.
-        3.  Debug the  JavaScript function. Verify the  object correctly captures all fields and image files before sending the request.
-        4.  Review  to ensure all necessary data is being passed to the product page template context initially.
-    -   **Why fix this issue and what will be achieved with this?** This is a critical e-commerce feature the user has explicitly requested and is currently broken for the end customer.
-    -   **Status:** IN PROGRESS
-    -   **Is recurring issue?** Y
-    -   **Should Test frontend/backend/both after fix?** Both.
-    -   **Blocked on other issue:** none
-
--   **Issue 3: eBay Connection Authentication Failure**
-    -   **Attempted fixes:** An  error from the eBay API is blocking the connection. A Skip for Now button was implemented as a workaround to allow UI development to proceed.
+-   **Issue 2: eBay Connection Authentication Failure**
+    -   **Attempted fixes:** A Skip for Now button was implemented as a workaround. The issue is an  error from the eBay API.
     -   **Next debug checklist:** Guide the user to re-verify their credentials and app scopes on the eBay developer portal.
-    -   **Why fix this issue and what will be achieved with this?** The integration cannot sync products or orders without a successful API connection. The current functionality is UI-only.
-    -   **Status:** NOT STARTED (workaround in place)
+    -   **Why fix this issue and what will be achieved with this?** The integration cannot sync live data without a successful API connection.
+    -   **Status:** NOT STARTED
     -   **Is recurring issue?** Y
     -   **Should Test frontend/backend/both after fix?** Backend.
-    -   **Blocked on other issue:** Blocked on user providing verified credentials/configuration.
-
--   **Issue 4: Implement Core eBay Integration Features**
-    -   **Attempted fixes:** None. UI is built but not connected.
-    -   **Next debug checklist:** Implement backend logic for product sync, inventory sync, and order import once authentication is working.
-    -   **Why fix this issue and what will be achieved with this?** This will deliver the fully working eBay integration the user originally requested.
-    -   **Status:** NOT STARTED
-    -   **Is recurring issue?** N
-    -   **Should Test frontend/backend/both after fix?** Both.
-    -   **Blocked on other issue:** Issue 3: eBay Connection Authentication Failure
+    -   **Blocked on other issue:** User action required to verify credentials.
 
 **In progress Task List**:
--   There are no tasks in progress; current work involves fixing the issues listed above.
+-   **Task 1: Complete Scaffolding of New Features (Phase 2) (P0)**
+    -   **Where to resume:** The agent has created  and . It needs to add the corresponding routers to , add the frontend page routes to , and add the navigation links to .
+    -   **What will be achieved with this?** This will complete the basic setup for all the new features requested by the user, making them visible in the UI and accessible via the API.
+    -   **Status:** IN PROGRESS
+    -   **Should Test frontend/backend/both after fix?** Both.
+    -   **Blocked on something:** None.
 
 **Upcoming and Future Tasks**
--   **Upcoming Tasks:**
-    -   **P1:** Implement Pay Later and Layby transaction logic in the POS.
--   **Future Tasks:**
-    -   **P2:** Add Privacy Policy and Terms of Service CMS pages.
-    -   **P2:** Ensure all footer links in the storefront are functional.
-    -   **P2:** Implement POS offline sync capability.
+- **Upcoming Tasks:**
+    - **P0: Implement Full Functionality for All New Features:** The highest priority is to build out the complete logic for the newly scaffolded features. This is a very large task and should be broken down:
+        -   **Marketing:** Coupons, Loyalty Program, Gift Cards, Flash Sales, Email Marketing.
+        -   **Operations:** Suppliers, Warehouses, Product Bundles.
+        -   **Customers:** Customer Groups, Abandoned Cart Recovery.
+        -   **Content:** Blog/News System.
+        -   **Analytics:** Flesh out the Advanced Analytics dashboard with real data and more charts.
+- **Future Tasks:**
+    - **P2:** Implement core eBay integration features (product sync, order import) once authentication is fixed.
+    - **P3:** Implement Pay Later and Layby in the POS system.
+    - **P3:** Add CMS pages for Privacy Policy and Terms of Service.
+    - **P3:** Fix remaining known issues from the previous fork (shipping rates, stock validation, etc.).
 
 **Completed work in this session**
-- **Feature: Comprehensive Import/Export System**: Built a full-featured CSV import/export system for Products and Categories, including backend logic and a comprehensive, reusable frontend UI for file upload, field selection, and progress tracking.
-- **Feature: Comprehensive Product Reviews System**: Overhauled the review system with backend support for image uploads and admin replies. Built a new, powerful merchant page for managing all aspects of reviews.
-- **Fix: eBay Theme Editor Live Preview & Save**: Fixed the live preview to correctly render raw HTML and implemented the backend endpoint and frontend logic to save themes.
-- **Fix: Multi-Category Product Filtering**: Corrected the backend query to ensure products assigned to multiple categories appear correctly in filtered views.
-- **Feature: eBay Theme Image Galleries**: Updated all 5 pre-built eBay themes to include template tags for a main product image and multiple gallery images.
+- **Fixed: eBay Theme Editor Logo Display:** Implemented a backend proxy endpoint () to fetch the store logo, convert it to base64, and send it to the frontend. This resolves the cross-origin  loading issue and correctly displays the logo in the theme preview.
+- **Verified: Storefront Product Reviews are Working:** Confirmed via screenshots that the product review display, rating system, and the Write a Review form (including image uploads) are all functioning correctly on the live storefront.
+- **Feature Scaffolding (Phase 1):** Created the complete frontend and backend boilerplate for a suite of new features:
+  -   Marketing: Coupons & Discounts, Loyalty Program, Gift Cards, Flash Sales.
+  -   Analytics: Advanced Analytics Dashboard.
+  -   Operations: Suppliers & Warehouses.
+- **Feature Scaffolding (Phase 2 Started):** Began creating files for Product Bundles, Email Marketing, Customer Groups, Blog, and Abandoned Cart recovery.
 
 **Earlier issues found/mentioned but not fixed**
-- All known issues are captured in the **All Pending/In progress Issue list**.
+- All known issues are captured in the **All Pending/In progress Issue list** and **Future Tasks**.
 
 **Known issue recurrence from previous fork**
-- Product Data Mismatch (Status: NOT STARTED)
-- No Backend Negative Stock Validation (Status: NOT STARTED)
-- Incorrect  on Rate Import (Status: NOT STARTED)
+- All recurring issues are listed in the **All Pending/In progress Issue list**.
 
 **Code Architecture**
 
 
 **Key Technical Concepts**
-- **Backend Template Engine:** The live storefront is rendered by a Python-based Maropost template engine, not by React. Changes to the storefront UI/UX must be made in the  templates and their inline JavaScript/CSS.
-- **Reusable React Components:** A complex  component was created to provide a consistent UI for both Product and Category management.
-- **Multipart Form Data:** The review system was enhanced to handle file uploads ( in FastAPI,  in frontend JS) for customer-submitted images.
-- **Complex State Management:** The  component manages a large and complex state for the theme editor, including the code editor content, live preview data, and various settings.
+- **Backend API Proxy:** A FastAPI endpoint was created to fetch a remote resource (the store logo), convert it to a base64 data URL, and serve it to the frontend. This pattern is used to bypass browser CORS policies, particularly for content displayed within an .
+- **Feature Scaffolding:** Rapidly creating the basic file structure (models, routes, components, pages) for new features without implementing the full logic, allowing for quick UI/API validation before deep implementation.
 
 **All files of reference**
--   **/app/frontend/src/pages/merchant/EbayIntegration.jsx**: **(Active work)** Primary file for fixing the eBay theme conditional logic and logo.
--   **/app/backend/themes/toolsinabox/templates/products/template.html**: **(Active work)** The storefront template where customer reviews are broken.
--   **/app/backend/server.py**: Core backend file containing review APIs and product filtering logic relevant to the active issues.
--   **/app/frontend/src/pages/merchant/MerchantReviews.jsx**: The new, fully functional review management dashboard.
--   **/app/frontend/src/components/ImportExport.jsx**: The new reusable component for all import/export functionality.
--   **/app/backend/routes/import_export.py**: The backend logic for the new import/export feature.
+- **In-Progress Scaffolding:**
+    - 
+    - 
+- **Core Files for New Features:**
+    - 
+    - 
+    - 
+- **New Backend Routes:**
+    - 
+    - 
+    - 
+    - 
+- **New Frontend Pages:**
+    - All new  files listed in the architecture.
+- **Fixed File:**
+    - 
 
 **Critical Info for New Agent**
--   **Immediate Priorities:** Your first two tasks are fixing the user's active blockers:
-    1.  **eBay Theme  & Logo (P0):** This is a recurring issue. The user wants the HTML for an image block *completely removed* if the image doesn't exist, and they want the theme to use the *actual* store logo.
-    2.  **Storefront Reviews (P0):** This is also a recurring issue. The review system is broken for customers on the live site. You must debug the backend HTML template () and its inline JavaScript. Do not focus on , as it is not used by the live store.
--   **Storefront vs. Dashboard:** Be very clear about the distinction between the React-based merchant dashboard and the Maropost template-based live storefront. The user's issues span both, and the approach to fixing them is completely different.
--   **Underlying Blocker:** Remember the main eBay API connection is still not functional due to an authentication error. The Skip for now button is a temporary workaround. Core data syncing features cannot be implemented until this is resolved with the user.
+- **MASSIVE PIVOT:** The user's priority has completely shifted from fixing existing bugs to a massive, broad feature expansion. Your primary goal is to continue building out the new features. The original bug backlog (eBay auth, POS, etc.) is now secondary.
+- **Continue Scaffolding First:** Your immediate task is to complete the scaffolding for the Phase 2 features (Blog, Abandoned Carts, etc.) by integrating them into , , and the sidebar, just as the previous agent did for Phase 1.
+- **Then, Implement Logic:** After scaffolding is complete, the main body of work will be to implement the full functionality (CRUD operations, UI interactions, business logic) for the dozens of new features that have been laid out. Plan to tackle them in logical groups (e.g., all Marketing features, then all Operations features).
+- **Reviews are Fixed:** Do not spend time on the storefront reviews. The previous agent verified they are working. You can confidently inform the user of this.
 
 **Last 10 User Messages and any pending HUMAN messages**
 -   
 -   
 -   
--   
--   
--   
--   
--   
+-   ... (and so on)
 -   
 -   
 
 **Project Health Check:**
+-   **Fixed:**
+    -   eBay theme editor logo preview.
+    -   Storefront product review system.
 -   **Broken:**
-    -   eBay theme conditional logic for images.
-    -   eBay theme does not use the uploaded store logo.
-    -   Storefront product review display and image submission.
     -   Core eBay API connection (authentication failure).
 -   **Mocked:**
-    -   The entire eBay integration dashboard (product/order syncing) is UI-only and not connected to live data.
+    -   A large number of new features (Coupons, Loyalty, Analytics, Suppliers, etc.) exist as UI/API shells but have no implementation logic yet.
 
 **3rd Party Integrations**
--   **eBay API:** In progress. Requires User API Key (Client ID, Client Secret). Currently blocked by an  authentication error. A skip for now workaround is in place.
--   **Stripe (Payments):** Exists in the codebase but was not worked on in this session.
+-   **eBay API:** In progress. Requires User API Key. Currently blocked by an  authentication error.
 
 **Testing status**
 -   **Testing agent used after significant changes:** NO
 -   **Troubleshoot agent used after agent stuck in loop:** NO
--   **Test files created:** None
--   **Known regressions:** None identified, but several features (reviews, eBay conditionals) are not working as per the user's latest feedback.
+-   **Test files created:**
+    - 
+    - 
+-   **Known regressions:** None.
 
-**Credentials to test flow:**
--   **Merchant Role:**
-    -   **Username:** 
-    -   **Password:** </analysis>
+**What agent forgot to execute**
+- The agent fixed the eBay logo issue but did not circle back to explicitly test the user's other requirement for the theme editor: ensuring the HTML for conditional images is completely removed when an image is not present. This should be verified.</analysis>
