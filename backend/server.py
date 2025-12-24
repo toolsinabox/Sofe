@@ -272,6 +272,41 @@ class Order(OrderBase):
     created_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
     updated_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
 
+# ==================== RETURNS/REFUNDS ====================
+
+class ReturnItem(BaseModel):
+    product_id: str
+    product_name: str
+    sku: Optional[str] = None
+    quantity: int
+    price: float
+    reason: str  # defective, wrong_item, not_as_described, changed_mind, other
+
+class ReturnRequest(BaseModel):
+    id: str = Field(default_factory=lambda: str(uuid.uuid4()))
+    return_number: str = Field(default_factory=lambda: f"RET-{datetime.now(timezone.utc).strftime('%Y%m%d')}-{str(uuid.uuid4())[:8].upper()}")
+    order_id: str
+    order_number: str
+    customer_id: Optional[str] = None
+    customer_name: str
+    customer_email: str
+    items: List[ReturnItem]
+    reason: str  # Main reason for return
+    description: Optional[str] = None  # Customer's explanation
+    status: str = "pending"  # pending, approved, rejected, received, refunded, closed
+    refund_amount: float = 0
+    refund_method: str = "original"  # original, store_credit, bank_transfer
+    refund_status: str = "pending"  # pending, processing, completed
+    shipping_label: Optional[str] = None
+    tracking_number: Optional[str] = None
+    merchant_notes: Optional[str] = None
+    images: List[str] = []  # Customer uploaded images
+    created_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
+    updated_at: Optional[datetime] = None
+    approved_at: Optional[datetime] = None
+    received_at: Optional[datetime] = None
+    refunded_at: Optional[datetime] = None
+
 # ==================== QUOTES ====================
 
 class QuoteBase(BaseModel):
