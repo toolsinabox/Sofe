@@ -276,6 +276,10 @@ function App() {
               <Route path="flash-sales" element={<MerchantFlashSales />} />
               <Route path="advanced-analytics" element={<MerchantAdvancedAnalytics />} />
               <Route path="suppliers" element={<MerchantSuppliers />} />
+              <Route path="bundles" element={<MerchantBundles />} />
+              <Route path="email-marketing" element={<MerchantEmailMarketing />} />
+              <Route path="customer-groups" element={<MerchantCustomerGroups />} />
+              <Route path="blog" element={<MerchantBlog />} />
             </Route>
 
             {/* Live Theme Storefront - Main customer-facing store */}
