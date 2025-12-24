@@ -61,7 +61,7 @@ export default function MerchantWarehouses() {
       setLoading(true);
       const [warehousesRes, transfersRes, alertsRes, productsRes] = await Promise.all([
         axios.get(`${BACKEND_URL}/api/operations/warehouses`),
-        axios.get(`${BACKEND_URL}/api/operations/stock-transfers`),
+        axios.get(`${BACKEND_URL}/api/operations/transfers`),
         axios.get(`${BACKEND_URL}/api/operations/alerts`),
         axios.get(`${BACKEND_URL}/api/products`)
       ]);
