@@ -564,14 +564,14 @@ const MerchantBlog = () => {
                   <div>
                     <Label>Category</Label>
                     <Select 
-                      value={postForm.category_id} 
-                      onValueChange={(v) => setPostForm({...postForm, category_id: v})}
+                      value={postForm.category_id || "uncategorized"} 
+                      onValueChange={(v) => setPostForm({...postForm, category_id: v === "uncategorized" ? "" : v})}
                     >
                       <SelectTrigger>
                         <SelectValue placeholder="Select category" />
                       </SelectTrigger>
                       <SelectContent>
-                        <SelectItem value="">Uncategorized</SelectItem>
+                        <SelectItem value="uncategorized">Uncategorized</SelectItem>
                         {categories.map(cat => (
                           <SelectItem key={cat.id} value={cat.id}>{cat.name}</SelectItem>
                         ))}
