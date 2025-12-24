@@ -283,6 +283,7 @@ function App() {
               <Route path="customer-groups" element={<MerchantCustomerGroups />} />
               <Route path="blog" element={<MerchantBlog />} />
               <Route path="warehouses" element={<MerchantWarehouses />} />
+              <Route path="returns" element={<MerchantReturns />} />
             </Route>
 
             {/* Live Theme Storefront - Main customer-facing store */}
