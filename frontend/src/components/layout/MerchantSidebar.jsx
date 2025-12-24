@@ -125,6 +125,7 @@ const navGroups = [
     icon: Building2,
     items: [
       { path: '/merchant/suppliers', icon: Truck, label: 'Suppliers & POs' },
+      { path: '/merchant/warehouses', icon: Warehouse, label: 'Warehouses' },
       { path: '/merchant/bundles', icon: Package, label: 'Product Bundles' },
     ]
   },
