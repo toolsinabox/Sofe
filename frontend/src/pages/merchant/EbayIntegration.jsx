@@ -1621,6 +1621,8 @@ const EbayIntegration = () => {
       .replace(/\{\{product_image_5\}\}/g, images[4] || '')
       .replace(/\{\{product_image_6\}\}/g, images[5] || '')
       .replace(/\{\{product_image_count\}\}/g, String(images.length || 0))
+      // Product specifications (generate from product data)
+      .replace(/\{\{product_specs\}\}/g, generateProductSpecs(product))
       // Boolean checks for images (returns 'true' or 'false')
       .replace(/\{\{has_image_1\}\}/g, images[0] ? 'true' : 'false')
       .replace(/\{\{has_image_2\}\}/g, images[1] ? 'true' : 'false')
