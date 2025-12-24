@@ -10,7 +10,7 @@ from motor.motor_asyncio import AsyncIOMotorClient
 import os
 import uuid
 
-router = APIRouter(prefix="/api/customers", tags=["Customers"])
+router = APIRouter(prefix="/api/customer-management", tags=["Customer Management"])
 
 # MongoDB connection
 mongo_url = os.environ.get('MONGO_URL')
