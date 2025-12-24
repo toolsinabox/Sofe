@@ -119,7 +119,7 @@ export default function MerchantWarehouses() {
   const createTransfer = async () => {
     try {
       const items = transferItems.filter(item => item.product_id && item.quantity > 0);
-      await axios.post(`${BACKEND_URL}/api/operations/stock-transfers`, {
+      await axios.post(`${BACKEND_URL}/api/operations/transfers`, {
         ...transferForm,
         items
       });
