@@ -96,6 +96,7 @@ const navGroups = [
     icon: FileText,
     items: [
       { path: '/merchant/pages', icon: FileText, label: 'Pages' },
+      { path: '/merchant/blog', icon: FileText, label: 'Blog & News' },
       { path: '/merchant/banners', icon: Image, label: 'Banners' },
       { path: '/merchant/content-zones', icon: LayoutGrid, label: 'Content Zones' },
       { path: '/merchant/mega-menu', icon: Menu, label: 'Mega Menu' },
@@ -111,9 +112,20 @@ const navGroups = [
       { path: '/merchant/loyalty', icon: Crown, label: 'Loyalty Program' },
       { path: '/merchant/gift-cards', icon: Gift, label: 'Gift Cards' },
       { path: '/merchant/flash-sales', icon: Zap, label: 'Flash Sales' },
+      { path: '/merchant/email-marketing', icon: Mail, label: 'Email Marketing' },
       { path: '/merchant/seo', icon: Search, label: 'SEO Tools' },
       { path: '/merchant/analytics', icon: BarChart3, label: 'Analytics' },
       { path: '/merchant/advanced-analytics', icon: TrendingUp, label: 'Advanced Analytics' },
+    ]
+  },
+  {
+    id: 'customers',
+    label: 'Customers',
+    icon: Users,
+    items: [
+      { path: '/merchant/customers', icon: Users, label: 'All Customers' },
+      { path: '/merchant/customer-groups', icon: Users2, label: 'Customer Groups' },
+      { path: '/merchant/emails', icon: Mail, label: 'Email Campaigns' },
     ]
   },
   {
@@ -122,6 +134,7 @@ const navGroups = [
     icon: Building2,
     items: [
       { path: '/merchant/suppliers', icon: Truck, label: 'Suppliers & POs' },
+      { path: '/merchant/bundles', icon: Package, label: 'Product Bundles' },
     ]
   },
   {
