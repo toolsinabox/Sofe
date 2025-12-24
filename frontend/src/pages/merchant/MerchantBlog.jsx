@@ -60,10 +60,6 @@ const MerchantBlog = () => {
     description: ''
   });
 
-  useEffect(() => {
-    fetchData();
-  }, [statusFilter, categoryFilter]);
-
   const fetchData = async () => {
     setLoading(true);
     try {
@@ -82,6 +78,11 @@ const MerchantBlog = () => {
     }
     setLoading(false);
   };
+
+  useEffect(() => {
+    fetchData();
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [statusFilter, categoryFilter]);
 
   const handleCreatePost = async () => {
     try {
