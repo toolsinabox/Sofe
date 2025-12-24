@@ -87,6 +87,7 @@ const navGroups = [
     icon: Users,
     items: [
       { path: '/merchant/customers', icon: Users, label: 'All Customers' },
+      { path: '/merchant/customer-groups', icon: Users2, label: 'Customer Groups' },
       { path: '/merchant/emails', icon: Mail, label: 'Email Campaigns' },
     ]
   },
