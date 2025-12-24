@@ -66,6 +66,7 @@ const navGroups = [
     items: [
       { path: '/merchant/orders', icon: ShoppingCart, label: 'Orders' },
       { path: '/merchant/quotes', icon: FileText, label: 'Quotes' },
+      { path: '/merchant/returns', icon: RotateCcw, label: 'Returns & Refunds' },
       { path: '/merchant/pos/reports', icon: BarChart3, label: 'POS Reports' },
       { path: '/merchant/abandoned-carts', icon: ShoppingBag, label: 'Abandoned Carts' },
     ]
