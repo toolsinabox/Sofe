@@ -134,7 +134,7 @@ export default function MerchantWarehouses() {
 
   const shipTransfer = async (transferId) => {
     try {
-      await axios.post(`${BACKEND_URL}/api/operations/stock-transfers/${transferId}/ship`);
+      await axios.post(`${BACKEND_URL}/api/operations/transfers/${transferId}/ship`);
       fetchData();
     } catch (error) {
       console.error('Failed to ship transfer:', error);
