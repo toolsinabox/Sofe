@@ -54,6 +54,7 @@ import MerchantBundles from "./pages/merchant/MerchantBundles";
 import MerchantEmailMarketing from "./pages/merchant/MerchantEmailMarketing";
 import MerchantCustomerGroups from "./pages/merchant/MerchantCustomerGroups";
 import MerchantBlog from "./pages/merchant/MerchantBlog";
+import MerchantWarehouses from "./pages/merchant/MerchantWarehouses";
 
 // Live Storefront (Theme-rendered)
 import LiveThemeStorefront from "./pages/store/LiveThemeStorefront";
