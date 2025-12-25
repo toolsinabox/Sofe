@@ -181,31 +181,31 @@ const AdminDashboard = () => {
           </CardHeader>
           <CardContent className="px-4 sm:px-6">
             {loading ? (
-              <div className="h-64 flex items-center justify-center">
-                <RefreshCw className="animate-spin text-gray-500" size={32} />
+              <div className="h-48 sm:h-64 flex items-center justify-center">
+                <RefreshCw className="animate-spin text-gray-500" size={24} />
               </div>
             ) : monthlyRevenueData.length > 0 ? (
-              <div className="h-64 flex items-end gap-3 pt-4">
+              <div className="h-48 sm:h-64 flex items-end gap-1 sm:gap-3 pt-4">
                 {monthlyRevenueData.map((item, index) => {
                   const maxRevenue = Math.max(...monthlyRevenueData.map(d => d.revenue));
                   const height = maxRevenue > 0 ? (item.revenue / maxRevenue) * 100 : 0;
                   return (
-                    <div key={index} className="flex-1 flex flex-col items-center gap-2">
+                    <div key={index} className="flex-1 flex flex-col items-center gap-1 sm:gap-2">
                       <div
                         className="w-full bg-gradient-to-t from-cyan-500/20 to-cyan-500/80 rounded-t-lg hover:from-cyan-500/30 hover:to-cyan-400 transition-all duration-300 cursor-pointer relative group"
                         style={{ height: `${Math.max(height, 5)}%` }}
                       >
-                        <div className="absolute -top-8 left-1/2 -translate-x-1/2 bg-gray-800 px-2 py-1 rounded text-xs text-white opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap">
+                        <div className="absolute -top-8 left-1/2 -translate-x-1/2 bg-gray-800 px-2 py-1 rounded text-xs text-white opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap hidden sm:block">
                           {formatCurrency(item.revenue)}
                         </div>
                       </div>
-                      <span className="text-gray-500 text-xs">{item.month}</span>
+                      <span className="text-gray-500 text-[10px] sm:text-xs">{item.month}</span>
                     </div>
                   );
                 })}
               </div>
             ) : (
-              <div className="h-64 flex items-center justify-center text-gray-500">
+              <div className="h-48 sm:h-64 flex items-center justify-center text-gray-500 text-sm">
                 No revenue data yet. Add merchants to see statistics.
               </div>
             )}
@@ -214,47 +214,47 @@ const AdminDashboard = () => {
 
         {/* Platform Health */}
         <Card className="bg-[#151b28] border-gray-800">
-          <CardHeader className="pb-2">
-            <div className="flex items-center justify-between">
-              <CardTitle className="text-white text-lg font-semibold">Platform Overview</CardTitle>
-              <div className="flex items-center gap-2 text-emerald-400 text-sm">
-                <Activity size={16} />
+          <CardHeader className="pb-2 px-4 sm:px-6">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 sm:gap-0">
+              <CardTitle className="text-white text-base sm:text-lg font-semibold">Platform Overview</CardTitle>
+              <div className="flex items-center gap-2 text-emerald-400 text-xs sm:text-sm">
+                <Activity size={14} className="sm:w-4 sm:h-4" />
                 All Systems Operational
               </div>
             </div>
           </CardHeader>
-          <CardContent>
-            <div className="space-y-4 pt-2">
-              <div className="flex items-center justify-between p-4 bg-gray-800/30 rounded-lg">
+          <CardContent className="px-4 sm:px-6">
+            <div className="space-y-3 sm:space-y-4 pt-2">
+              <div className="flex items-center justify-between p-3 sm:p-4 bg-gray-800/30 rounded-lg">
                 <div>
-                  <p className="text-white font-medium">Total Products</p>
-                  <p className="text-gray-400 text-sm">Across all merchants</p>
+                  <p className="text-white font-medium text-sm sm:text-base">Total Products</p>
+                  <p className="text-gray-400 text-xs sm:text-sm">Across all merchants</p>
                 </div>
                 <div className="text-right">
                   {loading ? (
-                    <div className="h-8 w-16 bg-gray-700 animate-pulse rounded"></div>
+                    <div className="h-6 sm:h-8 w-14 sm:w-16 bg-gray-700 animate-pulse rounded"></div>
                   ) : (
-                    <p className="text-2xl font-bold text-cyan-400">{stats?.total_products?.toLocaleString() || '0'}</p>
+                    <p className="text-xl sm:text-2xl font-bold text-cyan-400">{stats?.total_products?.toLocaleString() || '0'}</p>
                   )}
                 </div>
               </div>
-              <div className="flex items-center justify-between p-4 bg-gray-800/30 rounded-lg">
+              <div className="flex items-center justify-between p-3 sm:p-4 bg-gray-800/30 rounded-lg">
                 <div>
-                  <p className="text-white font-medium">Total Customers</p>
-                  <p className="text-gray-400 text-sm">Registered customers</p>
+                  <p className="text-white font-medium text-sm sm:text-base">Total Customers</p>
+                  <p className="text-gray-400 text-xs sm:text-sm">Registered customers</p>
                 </div>
                 <div className="text-right">
                   {loading ? (
-                    <div className="h-8 w-16 bg-gray-700 animate-pulse rounded"></div>
+                    <div className="h-6 sm:h-8 w-14 sm:w-16 bg-gray-700 animate-pulse rounded"></div>
                   ) : (
-                    <p className="text-2xl font-bold text-emerald-400">{stats?.total_customers?.toLocaleString() || '0'}</p>
+                    <p className="text-xl sm:text-2xl font-bold text-emerald-400">{stats?.total_customers?.toLocaleString() || '0'}</p>
                   )}
                 </div>
               </div>
-              <div className="flex items-center justify-between p-4 bg-gray-800/30 rounded-lg">
+              <div className="flex items-center justify-between p-3 sm:p-4 bg-gray-800/30 rounded-lg">
                 <div>
-                  <p className="text-white font-medium">Platform Users</p>
-                  <p className="text-gray-400 text-sm">Admin & merchant accounts</p>
+                  <p className="text-white font-medium text-sm sm:text-base">Platform Users</p>
+                  <p className="text-gray-400 text-xs sm:text-sm">Admin & merchant accounts</p>
                 </div>
                 <div className="text-right">
                   {loading ? (
