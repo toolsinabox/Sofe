@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import axios from 'axios';
 import { Card, CardContent, CardHeader, CardTitle } from '../ui/card';
 import { Input } from '../ui/input';
@@ -24,11 +24,7 @@ export default function CustomFieldsEditor({ section, values = {}, onChange, com
   const [fields, setFields] = useState([]);
   const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
-    fetchFields();
-  }, [section]);
-
-  const fetchFields = async () => {
+  const fetchFields = useCallback(async () => {
     try {
       setLoading(true);
       const res = await axios.get(`${BACKEND_URL}/api/custom-fields/by-section/${section}`);
@@ -39,7 +35,11 @@ export default function CustomFieldsEditor({ section, values = {}, onChange, com
     } finally {
       setLoading(false);
     }
-  };
+  }, [section]);
+
+  useEffect(() => {
+    fetchFields();
+  }, [fetchFields]);
 
   const handleValueChange = (fieldKey, value) => {
     const newValues = { ...values, [fieldKey]: value };
