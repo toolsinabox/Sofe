@@ -717,7 +717,7 @@ async def create_checkout_session(
                         "name": f"StoreBuilder {plan_id.title()} Plan",
                         "description": f"Monthly subscription to {plan_id.title()} plan",
                     },
-                    "unit_amount": PLANS[plan_id].price * 100,  # Convert to cents
+                    "unit_amount": int(PLANS[plan_id].price_monthly * 100),  # Convert to cents
                     "recurring": {"interval": "month"},
                 },
                 "quantity": 1,
