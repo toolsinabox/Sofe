@@ -168,18 +168,18 @@ const AdminDashboard = () => {
       </div>
 
       {/* Charts Row */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6">
         {/* Revenue Chart */}
         <Card className="bg-[#151b28] border-gray-800">
-          <CardHeader className="pb-2">
+          <CardHeader className="pb-2 px-4 sm:px-6">
             <div className="flex items-center justify-between">
-              <CardTitle className="text-white text-lg font-semibold">Monthly Revenue</CardTitle>
-              <button className="text-cyan-400 text-sm hover:text-cyan-300 flex items-center gap-1">
-                View Report <ArrowUpRight size={14} />
+              <CardTitle className="text-white text-base sm:text-lg font-semibold">Monthly Revenue</CardTitle>
+              <button className="text-cyan-400 text-xs sm:text-sm hover:text-cyan-300 flex items-center gap-1">
+                View Report <ArrowUpRight size={12} className="sm:w-3.5 sm:h-3.5" />
               </button>
             </div>
           </CardHeader>
-          <CardContent>
+          <CardContent className="px-4 sm:px-6">
             {loading ? (
               <div className="h-64 flex items-center justify-center">
                 <RefreshCw className="animate-spin text-gray-500" size={32} />
