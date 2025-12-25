@@ -256,14 +256,6 @@ const MerchantSidebar = ({ collapsed, setCollapsed, mobileOpen, setMobileOpen })
     
     return () => { isMounted = false; };
   }, [store, hasLoadedFromPlatform]);
-          setStoreSettings({
-            store_name: storeData.name,
-            store_logo: storeData.logo || ''
-          });
-        }
-      } catch (e) {}
-    }
-  });
 
   const getInitials = (name) => {
     if (!name) return 'MS';
