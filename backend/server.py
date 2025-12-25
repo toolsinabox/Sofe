@@ -7480,6 +7480,10 @@ app.include_router(custom_fields_module.router)
 template_tags_module.set_db(db)
 app.include_router(template_tags_module.router)
 
+# Include Platform router (multi-tenant store management)
+platform_module.set_db(db)
+app.include_router(platform_module.router)
+
 app.add_middleware(
     CORSMiddleware,
     allow_credentials=True,
