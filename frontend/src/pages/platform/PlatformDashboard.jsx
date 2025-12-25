@@ -119,12 +119,20 @@ export default function PlatformDashboard() {
     localStorage.removeItem('platform_store');
     localStorage.removeItem('platform_owner');
     localStorage.removeItem('platform_stores');
-    navigate('/platform');
+    localStorage.removeItem('store_id');
+    localStorage.removeItem('token');
+    localStorage.removeItem('user');
+    delete axios.defaults.headers.common['X-Store-ID'];
+    delete axios.defaults.headers.common['Authorization'];
+    navigate('/');
   };
 
   const switchStore = (store) => {
     setCurrentStore(store);
     localStorage.setItem('platform_store', JSON.stringify(store));
+    localStorage.setItem('store_id', store.id);
+    axios.defaults.headers.common['X-Store-ID'] = store.id;
+    setAuthStore(store);
     fetchData();
   };
 
