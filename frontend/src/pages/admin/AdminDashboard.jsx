@@ -291,59 +291,64 @@ const AdminDashboard = () => {
               <table className="w-full">
                 <thead>
                   <tr className="border-b border-gray-800">
-                    <th className="text-left py-3 px-4 text-gray-400 font-medium text-sm">Merchant</th>
+                    <th className="text-left py-3 px-4 text-gray-400 font-medium text-sm">Store</th>
+                    <th className="text-left py-3 px-4 text-gray-400 font-medium text-sm">Owner</th>
                     <th className="text-left py-3 px-4 text-gray-400 font-medium text-sm">Plan</th>
-                    <th className="text-left py-3 px-4 text-gray-400 font-medium text-sm">Revenue</th>
+                    <th className="text-left py-3 px-4 text-gray-400 font-medium text-sm">Products</th>
                     <th className="text-left py-3 px-4 text-gray-400 font-medium text-sm">Orders</th>
                     <th className="text-left py-3 px-4 text-gray-400 font-medium text-sm">Status</th>
                   </tr>
                 </thead>
                 <tbody>
-                  {merchants.map((merchant) => (
-                    <tr key={merchant.id} className="border-b border-gray-800/50 hover:bg-gray-800/30 transition-colors">
+                  {merchants.map((store) => (
+                    <tr key={store.id} className="border-b border-gray-800/50 hover:bg-gray-800/30 transition-colors">
                       <td className="py-4 px-4">
                         <div className="flex items-center gap-3">
-                          {merchant.logo ? (
-                            <img
-                              src={merchant.logo.startsWith('/api') ? `${API_URL}${merchant.logo}` : merchant.logo}
-                              alt={merchant.name}
-                              className="w-10 h-10 rounded-lg object-cover"
-                            />
-                          ) : (
-                            <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-cyan-500 to-blue-600 flex items-center justify-center">
-                              <Store size={20} className="text-white" />
-                            </div>
-                          )}
+                          <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-cyan-500 to-blue-600 flex items-center justify-center">
+                            <span className="text-white font-bold text-sm">
+                              {(store.store_name || store.name || 'S').substring(0, 2).toUpperCase()}
+                            </span>
+                          </div>
                           <div>
-                            <p className="text-white font-medium">{merchant.name}</p>
-                            <p className="text-gray-500 text-sm">{merchant.email}</p>
+                            <p className="text-white font-medium">{store.store_name || store.name}</p>
+                            <p className="text-gray-500 text-sm">{store.subdomain}.storebuilder.com</p>
                           </div>
                         </div>
                       </td>
                       <td className="py-4 px-4">
-                        <span className={`px-2.5 py-1 rounded-full text-xs font-medium ${
-                          merchant.plan === 'Enterprise'
-                            ? 'bg-purple-500/20 text-purple-400'
-                            : merchant.plan === 'Professional'
-                            ? 'bg-cyan-500/20 text-cyan-400'
-                            : 'bg-gray-500/20 text-gray-400'
-                        }`}>
-                          {merchant.plan}
-                        </span>
-                      </td>
-                      <td className="py-4 px-4 text-white font-medium">
-                        {formatCurrency(merchant.revenue)}
-                      </td>
-                      <td className="py-4 px-4 text-gray-300">
-                        {(merchant.orders || 0).toLocaleString()}
+                        <div>
+                          <p className="text-white text-sm">{store.owner_name}</p>
+                          <p className="text-gray-500 text-xs">{store.owner_email}</p>
+                        </div>
                       </td>
                       <td className="py-4 px-4">
                         <span className={`px-2.5 py-1 rounded-full text-xs font-medium ${
-                          merchant.status === 'active'
+                          store.plan_id === 'enterprise'
+                            ? 'bg-purple-500/20 text-purple-400'
+                            : store.plan_id === 'professional'
+                            ? 'bg-cyan-500/20 text-cyan-400'
+                            : store.plan_id === 'starter'
+                            ? 'bg-blue-500/20 text-blue-400'
+                            : 'bg-gray-500/20 text-gray-400'
+                        }`}>
+                          {store.plan_id?.charAt(0).toUpperCase() + store.plan_id?.slice(1) || 'Free'}
+                        </span>
+                      </td>
+                      <td className="py-4 px-4 text-gray-300">
+                        {(store.product_count || 0).toLocaleString()}
+                      </td>
+                      <td className="py-4 px-4 text-gray-300">
+                        {(store.order_count || 0).toLocaleString()}
+                      </td>
+                      <td className="py-4 px-4">
+                        <span className={`px-2.5 py-1 rounded-full text-xs font-medium ${
+                          store.status === 'active'
                             ? 'bg-emerald-500/20 text-emerald-400'
+                            : store.status === 'trial'
+                            ? 'bg-yellow-500/20 text-yellow-400'
                             : 'bg-red-500/20 text-red-400'
                         }`}>
-                          {merchant.status?.charAt(0).toUpperCase() + merchant.status?.slice(1)}
+                          {store.status?.charAt(0).toUpperCase() + store.status?.slice(1)}
                         </span>
                       </td>
                     </tr>
