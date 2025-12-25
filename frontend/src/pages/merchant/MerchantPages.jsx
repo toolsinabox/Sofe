@@ -191,7 +191,8 @@ const MerchantPages = () => {
         template: page.template || 'default',
         main_image: page.main_image || '',
         alt_image: page.alt_image || '',
-        sort_order: page.sort_order || 0
+        sort_order: page.sort_order || 0,
+        custom_fields: page.custom_fields || {}
       });
     } else {
       setEditingPage(null);
@@ -210,7 +211,8 @@ const MerchantPages = () => {
         template: 'default',
         main_image: '',
         alt_image: '',
-        sort_order: 0
+        sort_order: 0,
+        custom_fields: {}
       });
     }
     setActiveTab('general');
