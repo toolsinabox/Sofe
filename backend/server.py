@@ -694,6 +694,41 @@ async def get_admin_user(current_user: dict = Depends(get_current_user)) -> dict
         raise HTTPException(status_code=403, detail="Admin access required")
     return current_user
 
+# ==================== MULTI-TENANT STORE CONTEXT ====================
+
+# Default store ID for backward compatibility (Tools In A Box)
+DEFAULT_STORE_ID = "675b5810-f110-42f0-9cac-00cf353f04a5"
+
+async def get_store_id_from_header(request: Request) -> str:
+    """
+    Extract store_id from X-Store-ID header or return default.
+    In production, this would also check the Host header for custom domains.
+    """
+    store_id = request.headers.get("X-Store-ID")
+    if store_id:
+        # Verify store exists
+        store = await db.platform_stores.find_one({"id": store_id})
+        if store:
+            return store_id
+    return DEFAULT_STORE_ID
+
+async def get_store_context(request: Request) -> dict:
+    """
+    Get the current store context including store_id and store details.
+    Used by endpoints that need store-specific data.
+    """
+    store_id = await get_store_id_from_header(request)
+    store = await db.platform_stores.find_one({"id": store_id}, {"_id": 0})
+    return {
+        "store_id": store_id,
+        "store": store
+    }
+
+def add_store_filter(query: dict, store_id: str) -> dict:
+    """Add store_id filter to a query dict"""
+    query["store_id"] = store_id
+    return query
+
 # ==================== THEME TEMPLATES ====================
 
 class ThemeTemplate(BaseModel):
