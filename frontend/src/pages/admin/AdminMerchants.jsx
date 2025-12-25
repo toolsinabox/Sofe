@@ -77,10 +77,11 @@ const AdminMerchants = () => {
       const params = new URLSearchParams();
       
       if (statusFilter !== 'all') params.append('status', statusFilter);
-      if (planFilter !== 'all') params.append('plan', planFilter);
+      if (planFilter !== 'all') params.append('plan_id', planFilter);
       if (searchQuery) params.append('search', searchQuery);
       
-      const res = await axios.get(`${API_URL}/api/admin/websites?${params}`, { headers });
+      // Use platform-stores endpoint to get multi-tenant stores
+      const res = await axios.get(`${API_URL}/api/admin/platform-stores?${params}`, { headers });
       setMerchants(res.data);
     } catch (err) {
       console.error('Error fetching merchants:', err);
