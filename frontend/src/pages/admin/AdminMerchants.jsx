@@ -228,66 +228,70 @@ const AdminMerchants = () => {
       </div>
 
       {error && (
-        <div className="bg-red-500/10 border border-red-500/50 text-red-400 px-4 py-3 rounded-lg flex items-center gap-2">
-          <AlertCircle size={18} />
-          {error}
+        <div className="bg-red-500/10 border border-red-500/50 text-red-400 px-3 sm:px-4 py-2 sm:py-3 rounded-lg flex items-center gap-2 text-sm">
+          <AlertCircle size={16} className="flex-shrink-0" />
+          <span className="flex-1">{error}</span>
           <button onClick={() => setError(null)} className="ml-auto">
-            <X size={18} />
+            <X size={16} />
           </button>
         </div>
       )}
 
       {/* Header Actions */}
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
-        <div className="flex items-center gap-3 flex-1">
-          <div className="relative flex-1 max-w-md">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500" size={18} />
+      <div className="flex flex-col gap-3 sm:gap-4">
+        {/* Search and Filters */}
+        <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-3">
+          <div className="relative flex-1">
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500" size={16} />
             <input
               type="text"
               placeholder="Search merchants..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full bg-gray-800/50 border border-gray-700 rounded-lg pl-10 pr-4 py-2.5 text-sm text-white placeholder-gray-500 focus:outline-none focus:border-cyan-500/50 focus:ring-1 focus:ring-cyan-500/50 transition-all"
+              className="w-full bg-gray-800/50 border border-gray-700 rounded-lg pl-9 pr-4 py-2 text-sm text-white placeholder-gray-500 focus:outline-none focus:border-cyan-500/50 focus:ring-1 focus:ring-cyan-500/50 transition-all"
             />
           </div>
-          <Select value={statusFilter} onValueChange={setStatusFilter}>
-            <SelectTrigger className="w-36 bg-gray-800/50 border-gray-700 text-gray-300">
-              <Filter size={16} className="mr-2" />
-              <SelectValue placeholder="Status" />
-            </SelectTrigger>
-            <SelectContent className="bg-[#1a1f2e] border-gray-700">
-              <SelectItem value="all" className="text-gray-300">All Status</SelectItem>
-              <SelectItem value="active" className="text-gray-300">Active</SelectItem>
-              <SelectItem value="suspended" className="text-gray-300">Suspended</SelectItem>
-            </SelectContent>
-          </Select>
-          <Select value={planFilter} onValueChange={setPlanFilter}>
-            <SelectTrigger className="w-40 bg-gray-800/50 border-gray-700 text-gray-300">
-              <SelectValue placeholder="Plan" />
-            </SelectTrigger>
-            <SelectContent className="bg-[#1a1f2e] border-gray-700">
-              <SelectItem value="all" className="text-gray-300">All Plans</SelectItem>
-              <SelectItem value="Starter" className="text-gray-300">Starter</SelectItem>
-              <SelectItem value="Professional" className="text-gray-300">Professional</SelectItem>
-              <SelectItem value="Enterprise" className="text-gray-300">Enterprise</SelectItem>
-            </SelectContent>
-          </Select>
+          <div className="flex gap-2">
+            <Select value={statusFilter} onValueChange={setStatusFilter}>
+              <SelectTrigger className="w-28 sm:w-36 bg-gray-800/50 border-gray-700 text-gray-300 text-xs sm:text-sm h-9 sm:h-10">
+                <Filter size={14} className="mr-1 sm:mr-2" />
+                <SelectValue placeholder="Status" />
+              </SelectTrigger>
+              <SelectContent className="bg-[#1a1f2e] border-gray-700">
+                <SelectItem value="all" className="text-gray-300 text-sm">All Status</SelectItem>
+                <SelectItem value="active" className="text-gray-300 text-sm">Active</SelectItem>
+                <SelectItem value="suspended" className="text-gray-300 text-sm">Suspended</SelectItem>
+              </SelectContent>
+            </Select>
+            <Select value={planFilter} onValueChange={setPlanFilter}>
+              <SelectTrigger className="w-28 sm:w-40 bg-gray-800/50 border-gray-700 text-gray-300 text-xs sm:text-sm h-9 sm:h-10">
+                <SelectValue placeholder="Plan" />
+              </SelectTrigger>
+              <SelectContent className="bg-[#1a1f2e] border-gray-700">
+                <SelectItem value="all" className="text-gray-300 text-sm">All Plans</SelectItem>
+                <SelectItem value="Starter" className="text-gray-300 text-sm">Starter</SelectItem>
+                <SelectItem value="Professional" className="text-gray-300 text-sm">Professional</SelectItem>
+                <SelectItem value="Enterprise" className="text-gray-300 text-sm">Enterprise</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
         </div>
+        {/* Add Button */}
         <Button 
           onClick={() => { resetForm(); setIsAddModalOpen(true); }}
-          className="bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-600 hover:to-blue-700 text-white"
+          className="w-full sm:w-auto bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-600 hover:to-blue-700 text-white text-sm h-9 sm:h-10"
         >
-          <Plus size={18} className="mr-2" />
+          <Plus size={16} className="mr-1.5" />
           Add Merchant
         </Button>
       </div>
 
       {/* Loading state */}
       {loading ? (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
           {[1, 2, 3, 4, 5, 6].map(i => (
             <Card key={i} className="bg-[#151b28] border-gray-800">
-              <CardContent className="p-6">
+              <CardContent className="p-4 sm:p-6">
                 <div className="animate-pulse space-y-4">
                   <div className="flex items-center gap-3">
                     <div className="w-12 h-12 bg-gray-700 rounded-xl"></div>
