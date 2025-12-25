@@ -347,7 +347,7 @@ export default function PlatformDashboard() {
 
         {/* Quick Actions */}
         <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
-          <Card className="hover:shadow-lg transition-shadow cursor-pointer" onClick={() => window.open(`${storeUrl}/merchant`, '_blank')}>
+          <Card className="hover:shadow-lg transition-shadow cursor-pointer" onClick={handleManageStore}>
             <CardContent className="p-6">
               <div className="w-12 h-12 bg-blue-100 rounded-xl flex items-center justify-center mb-4">
                 <Store className="w-6 h-6 text-blue-600" />
