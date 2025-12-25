@@ -3916,7 +3916,11 @@ async def calculate_tax(
     # Get applicable tax rates
     query = {"country": country, "is_active": True}
     if state:
-        query["$or"] = [{"state": state}, {"state": None}]
+        # Match specific state OR rates that apply to all states (empty string or None)
+        query["$or"] = [{"state": state}, {"state": ""}, {"state": None}]
+    else:
+        # If no state specified, only get rates that apply to all states
+        query["$or"] = [{"state": ""}, {"state": None}]
     
     rates = await db.tax_rates.find(query, {"_id": 0}).sort("priority", 1).to_list(10)
     
