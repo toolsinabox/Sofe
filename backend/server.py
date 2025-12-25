@@ -1730,14 +1730,17 @@ async def delete_category(category_id: str, request: Request):
 # ==================== PRODUCT ENDPOINTS ====================
 
 @api_router.post("/products", response_model=Product)
-async def create_product(product: ProductCreate):
+async def create_product(product: ProductCreate, request: Request):
+    store_id = await get_store_id_from_header(request)
     new_product = Product(**product.dict())
-    await db.products.insert_one(new_product.dict())
+    prod_dict = new_product.dict()
+    prod_dict["store_id"] = store_id
+    await db.products.insert_one(prod_dict)
     
     # Update category product count
     if product.category_id:
         await db.categories.update_one(
-            {"id": product.category_id},
+            {"id": product.category_id, "store_id": store_id},
             {"$inc": {"product_count": 1}}
         )
     
@@ -1745,6 +1748,7 @@ async def create_product(product: ProductCreate):
 
 @api_router.get("/products", response_model=List[Product])
 async def get_products(
+    request: Request,
     category_id: Optional[str] = None,
     is_active: Optional[bool] = None,
     in_stock: Optional[bool] = None,
@@ -1755,7 +1759,8 @@ async def get_products(
     limit: int = Query(default=50, le=100),
     skip: int = 0
 ):
-    query = {}
+    store_id = await get_store_id_from_header(request)
+    query = {"store_id": store_id}
     if category_id:
         # Support both single category_id and multiple category_ids array
         query["$or"] = [
@@ -1769,14 +1774,18 @@ async def get_products(
     if on_sale:
         query["compare_price"] = {"$exists": True, "$ne": None}
     if search:
-        query["$or"] = [
+        search_conditions = [
             {"name": {"$regex": search, "$options": "i"}},
             {"description": {"$regex": search, "$options": "i"}},
             {"sku": {"$regex": search, "$options": "i"}}
         ]
+        if "$or" in query:
+            query["$and"] = [{"$or": query.pop("$or")}, {"$or": search_conditions}]
+        else:
+            query["$or"] = search_conditions
     
     sort_direction = -1 if sort_order == "desc" else 1
-    products = await db.products.find(query).sort(sort_by, sort_direction).skip(skip).limit(limit).to_list(limit)
+    products = await db.products.find(query, {"_id": 0}).sort(sort_by, sort_direction).skip(skip).limit(limit).to_list(limit)
     return [Product(**prod) for prod in products]
 
 @api_router.get("/products/template-tags")
