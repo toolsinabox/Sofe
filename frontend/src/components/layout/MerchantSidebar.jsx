@@ -174,69 +174,78 @@ const MerchantSidebar = ({ collapsed, setCollapsed, mobileOpen, setMobileOpen })
   const { logout, store } = useAuth();
   const navigate = useNavigate();
   const [expandedGroups, setExpandedGroups] = useState(['sales', 'catalog']);
-  
-  // Get initial store name from localStorage synchronously
-  const getInitialStoreName = () => {
-    try {
-      const platformStore = localStorage.getItem('platform_store');
-      if (platformStore) {
-        const storeData = JSON.parse(platformStore);
-        if (storeData && storeData.name) {
-          return storeData.name;
-        }
-      }
-    } catch (e) {}
-    return 'My Store';
-  };
-  
   const [storeSettings, setStoreSettings] = useState({
-    store_name: getInitialStoreName(),
+    store_name: 'My Store',
     store_logo: ''
   });
 
+  // Load store settings on mount and when store changes
   useEffect(() => {
-    // Update when store changes from context
-    if (store && store.name) {
-      setStoreSettings({
-        store_name: store.name,
-        store_logo: store.logo || ''
-      });
-      return;
-    }
+    const loadStoreSettings = () => {
+      // Priority 1: Check localStorage first (set by platform dashboard)
+      const platformStore = localStorage.getItem('platform_store');
+      if (platformStore) {
+        try {
+          const storeData = JSON.parse(platformStore);
+          if (storeData && storeData.name) {
+            setStoreSettings({
+              store_name: storeData.name,
+              store_logo: storeData.logo || ''
+            });
+            return true;
+          }
+        } catch (e) {
+          console.error('Failed to parse platform store data');
+        }
+      }
+      
+      // Priority 2: Use store from context
+      if (store && store.name) {
+        setStoreSettings({
+          store_name: store.name,
+          store_logo: store.logo || ''
+        });
+        return true;
+      }
+      
+      return false;
+    };
     
-    // Check localStorage again in case it was just set
+    // Try to load from localStorage/context first
+    if (!loadStoreSettings()) {
+      // Fallback to API only if no store context found
+      const fetchStoreSettings = async () => {
+        try {
+          const response = await axios.get(`${BACKEND_URL}/api/store/settings`);
+          if (response.data) {
+            setStoreSettings({
+              store_name: response.data.store_name || 'My Store',
+              store_logo: response.data.store_logo || ''
+            });
+          }
+        } catch (error) {
+          console.error('Error fetching store settings:', error);
+        }
+      };
+      fetchStoreSettings();
+    }
+  }, [store]);
+  
+  // Also check on every render in case localStorage changed
+  useEffect(() => {
     const platformStore = localStorage.getItem('platform_store');
     if (platformStore) {
       try {
         const storeData = JSON.parse(platformStore);
-        if (storeData && storeData.name) {
+        if (storeData && storeData.name && storeData.name !== storeSettings.store_name) {
           setStoreSettings({
             store_name: storeData.name,
             store_logo: storeData.logo || ''
           });
-          return;
         }
-      } catch (e) {
-        console.error('Failed to parse platform store data');
-      }
+      } catch (e) {}
     }
-    
-    // Fallback to API only if no store context
-    const fetchStoreSettings = async () => {
-      try {
-        const response = await axios.get(`${BACKEND_URL}/api/store/settings`);
-        if (response.data) {
-          setStoreSettings({
-            store_name: response.data.store_name || 'My Store',
-            store_logo: response.data.store_logo || ''
-          });
-        }
-      } catch (error) {
-        console.error('Error fetching store settings:', error);
-      }
-    };
-    fetchStoreSettings();
-  }, [store]);
+  });
 
   const getInitials = (name) => {
     if (!name) return 'MS';
