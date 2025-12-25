@@ -293,6 +293,7 @@ function App() {
               <Route path="activity-log" element={<MerchantActivityLog />} />
               <Route path="tax" element={<MerchantTaxManagement />} />
               <Route path="import-export" element={<MerchantImportExport />} />
+              <Route path="custom-fields" element={<MerchantCustomFields />} />
             </Route>
 
             {/* Live Theme Storefront - Main customer-facing store */}
