@@ -277,7 +277,7 @@ export default function MerchantActivityLog() {
                       <span className="font-medium">{log.user_name || log.user_email || 'System'}</span>
                       {' '}{log.action}{' '}
                       {log.resource_name && (
-                        <span className="font-medium">"{log.resource_name}"</span>
+                        <span className="font-medium">&quot;{log.resource_name}&quot;</span>
                       )}
                     </p>
                     
