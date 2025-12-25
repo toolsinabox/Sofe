@@ -3085,24 +3085,29 @@ async def delete_quote(quote_id: str):
 # ==================== CUSTOMER ENDPOINTS ====================
 
 @api_router.post("/customers", response_model=Customer)
-async def create_customer(customer: CustomerCreate):
-    # Check if customer with email exists
-    existing = await db.customers.find_one({"email": customer.email})
+async def create_customer(customer: CustomerCreate, request: Request):
+    store_id = await get_store_id_from_header(request)
+    # Check if customer with email exists in this store
+    existing = await db.customers.find_one({"email": customer.email, "store_id": store_id})
     if existing:
         raise HTTPException(status_code=400, detail="Customer with this email already exists")
     
     new_customer = Customer(**customer.dict(exclude={'password'}))
-    await db.customers.insert_one(new_customer.dict())
+    cust_dict = new_customer.dict()
+    cust_dict["store_id"] = store_id
+    await db.customers.insert_one(cust_dict)
     return new_customer
 
 @api_router.get("/customers", response_model=List[Customer])
 async def get_customers(
+    request: Request,
     status: Optional[str] = None,
     search: Optional[str] = None,
     limit: int = Query(default=50, le=100),
     skip: int = 0
 ):
-    query = {}
+    store_id = await get_store_id_from_header(request)
+    query = {"store_id": store_id}
     if status:
         query["status"] = status
     if search:
@@ -3112,34 +3117,37 @@ async def get_customers(
             {"phone": {"$regex": search, "$options": "i"}}
         ]
     
-    customers = await db.customers.find(query).sort("created_at", -1).skip(skip).limit(limit).to_list(limit)
+    customers = await db.customers.find(query, {"_id": 0}).sort("created_at", -1).skip(skip).limit(limit).to_list(limit)
     return [Customer(**cust) for cust in customers]
 
 @api_router.get("/customers/{customer_id}", response_model=Customer)
-async def get_customer(customer_id: str):
-    customer = await db.customers.find_one({"id": customer_id})
+async def get_customer(customer_id: str, request: Request):
+    store_id = await get_store_id_from_header(request)
+    customer = await db.customers.find_one({"id": customer_id, "store_id": store_id}, {"_id": 0})
     if not customer:
         raise HTTPException(status_code=404, detail="Customer not found")
     return Customer(**customer)
 
 @api_router.put("/customers/{customer_id}", response_model=Customer)
-async def update_customer(customer_id: str, customer: CustomerUpdate):
+async def update_customer(customer_id: str, customer: CustomerUpdate, request: Request):
+    store_id = await get_store_id_from_header(request)
     update_data = {k: v for k, v in customer.dict().items() if v is not None}
     update_data["updated_at"] = datetime.now(timezone.utc)
     
     result = await db.customers.update_one(
-        {"id": customer_id},
+        {"id": customer_id, "store_id": store_id},
         {"$set": update_data}
     )
     if result.matched_count == 0:
         raise HTTPException(status_code=404, detail="Customer not found")
     
-    updated = await db.customers.find_one({"id": customer_id})
+    updated = await db.customers.find_one({"id": customer_id}, {"_id": 0})
     return Customer(**updated)
 
 @api_router.delete("/customers/{customer_id}")
-async def delete_customer(customer_id: str):
-    result = await db.customers.delete_one({"id": customer_id})
+async def delete_customer(customer_id: str, request: Request):
+    store_id = await get_store_id_from_header(request)
+    result = await db.customers.delete_one({"id": customer_id, "store_id": store_id})
     if result.deleted_count == 0:
         raise HTTPException(status_code=404, detail="Customer not found")
     return {"message": "Customer deleted successfully"}
@@ -3147,14 +3155,15 @@ async def delete_customer(customer_id: str):
 # ==================== DASHBOARD STATS ====================
 
 @api_router.get("/stats/dashboard")
-async def get_dashboard_stats():
-    total_products = await db.products.count_documents({})
-    total_orders = await db.orders.count_documents({})
-    total_customers = await db.customers.count_documents({})
+async def get_dashboard_stats(request: Request):
+    store_id = await get_store_id_from_header(request)
+    total_products = await db.products.count_documents({"store_id": store_id})
+    total_orders = await db.orders.count_documents({"store_id": store_id})
+    total_customers = await db.customers.count_documents({"store_id": store_id})
     
     # Calculate total revenue
     pipeline = [
-        {"$match": {"payment_status": "paid"}},
+        {"$match": {"payment_status": "paid", "store_id": store_id}},
         {"$group": {"_id": None, "total": {"$sum": "$total"}}}
     ]
     revenue_result = await db.orders.aggregate(pipeline).to_list(1)
