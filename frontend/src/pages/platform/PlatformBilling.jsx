@@ -195,35 +195,35 @@ export default function PlatformBilling() {
         </div>
 
         {subscription && (
-          <Card className="mb-8">
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <CreditCard className="w-5 h-5" />
+          <Card className="mb-6 sm:mb-8">
+            <CardHeader className="px-4 sm:px-6 py-3 sm:py-4">
+              <CardTitle className="flex items-center gap-2 text-base sm:text-lg">
+                <CreditCard className="w-4 h-4 sm:w-5 sm:h-5" />
                 Current Plan
               </CardTitle>
             </CardHeader>
-            <CardContent>
-              <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+            <CardContent className="px-4 sm:px-6 pb-4 sm:pb-6">
+              <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 sm:gap-4">
                 <div>
-                  <div className="flex items-center gap-3">
-                    <span className="text-2xl font-bold">{subscription.plan_name}</span>
-                    <Badge variant={subscription.status === 'active' ? 'default' : 'secondary'}>
+                  <div className="flex items-center gap-2 sm:gap-3">
+                    <span className="text-xl sm:text-2xl font-bold">{subscription.plan_name}</span>
+                    <Badge variant={subscription.status === 'active' ? 'default' : 'secondary'} className="text-xs">
                       {subscription.status === 'trial' && <Clock className="w-3 h-3 mr-1" />}
                       {subscription.status.charAt(0).toUpperCase() + subscription.status.slice(1)}
                     </Badge>
                   </div>
-                  <p className="text-gray-600 mt-1">
+                  <p className="text-gray-600 mt-1 text-sm sm:text-base">
                     ${subscription.plan_price}/month
                     {subscription.current_period_end && (
-                      <span className="ml-2 text-sm">
+                      <span className="block sm:inline sm:ml-2 text-xs sm:text-sm">
                         • Renews {new Date(subscription.current_period_end).toLocaleDateString()}
                       </span>
                     )}
                   </p>
                 </div>
                 {subscription.has_billing_account && (
-                  <Button variant="outline" onClick={handleManageBilling}>
-                    <ExternalLink className="w-4 h-4 mr-2" />
+                  <Button variant="outline" onClick={handleManageBilling} className="w-full sm:w-auto text-sm">
+                    <ExternalLink className="w-3 h-3 sm:w-4 sm:h-4 mr-1 sm:mr-2" />
                     Manage Billing
                   </Button>
                 )}
@@ -233,8 +233,8 @@ export default function PlatformBilling() {
         )}
 
         {/* Plan Comparison */}
-        <h2 className="text-xl font-semibold mb-4">Available Plans</h2>
-        <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
+        <h2 className="text-lg sm:text-xl font-semibold mb-3 sm:mb-4">Available Plans</h2>
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
           {plans.map((plan) => {
             const isCurrent = subscription?.plan_id === plan.id;
             const isDowngrade = subscription && 
