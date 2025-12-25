@@ -289,6 +289,9 @@ function App() {
               <Route path="warehouses" element={<MerchantWarehouses />} />
               <Route path="returns" element={<MerchantReturns />} />
               <Route path="notifications" element={<MerchantNotifications />} />
+              <Route path="activity-log" element={<MerchantActivityLog />} />
+              <Route path="tax" element={<MerchantTaxManagement />} />
+              <Route path="import-export" element={<MerchantImportExport />} />
             </Route>
 
             {/* Live Theme Storefront - Main customer-facing store */}
