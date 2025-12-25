@@ -7440,6 +7440,97 @@ async def get_admin_websites(
     websites = await db.websites.find(query, {"_id": 0}).sort("created_at", -1).skip(skip).limit(limit).to_list(limit)
     return [Website(**w) for w in websites]
 
+@api_router.get("/admin/platform-stores")
+async def get_admin_platform_stores(
+    status: Optional[str] = None,
+    plan_id: Optional[str] = None,
+    search: Optional[str] = None,
+    limit: int = Query(default=50, le=100),
+    skip: int = 0,
+    admin: dict = Depends(get_admin_user)
+):
+    """Get all platform stores (multi-tenant stores)"""
+    query = {}
+    if status:
+        query["status"] = status
+    if plan_id:
+        query["plan_id"] = plan_id
+    if search:
+        query["$or"] = [
+            {"store_name": {"$regex": search, "$options": "i"}},
+            {"subdomain": {"$regex": search, "$options": "i"}}
+        ]
+    
+    stores = await db.platform_stores.find(query, {"_id": 0}).sort("created_at", -1).skip(skip).limit(limit).to_list(limit)
+    
+    # Enrich with owner info and stats
+    enriched_stores = []
+    for store in stores:
+        owner = await db.platform_owners.find_one({"id": store.get("owner_id")}, {"_id": 0})
+        store_id = store.get("id")
+        
+        # Get product count
+        product_count = await db.products.count_documents({"store_id": store_id})
+        order_count = await db.orders.count_documents({"store_id": store_id})
+        customer_count = await db.customers.count_documents({"store_id": store_id})
+        
+        enriched_stores.append({
+            **store,
+            "owner_name": owner.get("name") if owner else "Unknown",
+            "owner_email": owner.get("email") if owner else "Unknown",
+            "product_count": product_count,
+            "order_count": order_count,
+            "customer_count": customer_count
+        })
+    
+    return enriched_stores
+
+@api_router.get("/admin/platform-stats")
+async def get_admin_platform_stats(admin: dict = Depends(get_admin_user)):
+    """Get platform-wide statistics"""
+    total_stores = await db.platform_stores.count_documents({})
+    active_stores = await db.platform_stores.count_documents({"status": "active"})
+    trial_stores = await db.platform_stores.count_documents({"status": "trial"})
+    
+    # Count by plan
+    free_stores = await db.platform_stores.count_documents({"plan_id": "free"})
+    starter_stores = await db.platform_stores.count_documents({"plan_id": "starter"})
+    professional_stores = await db.platform_stores.count_documents({"plan_id": "professional"})
+    enterprise_stores = await db.platform_stores.count_documents({"plan_id": "enterprise"})
+    
+    # Total products, orders across all stores
+    total_products = await db.products.count_documents({})
+    total_orders = await db.orders.count_documents({})
+    total_customers = await db.customers.count_documents({})
+    
+    # Calculate total revenue
+    pipeline = [
+        {"$match": {"payment_status": "paid"}},
+        {"$group": {"_id": None, "total": {"$sum": "$total"}}}
+    ]
+    revenue_result = await db.orders.aggregate(pipeline).to_list(1)
+    total_revenue = revenue_result[0]["total"] if revenue_result else 0
+    
+    # Monthly recurring revenue estimate
+    mrr = (starter_stores * 29) + (professional_stores * 79) + (enterprise_stores * 299)
+    
+    return {
+        "total_stores": total_stores,
+        "active_stores": active_stores,
+        "trial_stores": trial_stores,
+        "stores_by_plan": {
+            "free": free_stores,
+            "starter": starter_stores,
+            "professional": professional_stores,
+            "enterprise": enterprise_stores
+        },
+        "total_products": total_products,
+        "total_orders": total_orders,
+        "total_customers": total_customers,
+        "total_revenue": total_revenue,
+        "mrr": mrr
+    }
+
 @api_router.get("/admin/websites/{website_id}", response_model=Website)
 async def get_admin_website(website_id: str, admin: dict = Depends(get_admin_user)):
     """Get a specific website by ID"""
