@@ -122,6 +122,43 @@ Use REACT_APP_BACKEND_URL from /app/frontend/.env
 5. Select component empty value errors - Fixed in Blog page
 6. eBay Theme Editor - Added generateProductSpecs() function
 7. All sidebar navigation links updated
+8. Tax Management - Added region-based tax with auto-detect from IP geolocation
+9. Import/Export - CSV support with field mapping and preview
+10. Activity Log - Full implementation with filtering and stats
+11. Fixed Request import in server.py for Activity Log
+12. Fixed tax calculation state matching (empty string vs None)
+
+## New Features Added
+- **Tax Management** - Region-based tax rules with:
+  - Multi-country support (AU, NZ, US, GB, CA)
+  - State/region-specific rates
+  - Postcode range support
+  - Auto-detect region via IP geolocation (https://ipapi.co)
+  - Tax calculator with detected location display
+  - Tax classes (standard, reduced, zero)
+  
+- **Import/Export Center** - CSV bulk operations:
+  - Products and Categories support
+  - 34 product fields with auto-mapping
+  - Field selection for export
+  - Preview before import
+  - Update existing or create new
+  - Error handling with skip option
+  - CSV template download
+  
+- **Activity Log** - Track all store activities:
+  - Filter by action type (created, updated, deleted)
+  - Filter by resource type (product, order, customer)
+  - Search by resource name or user
+  - Stats dashboard (total, 24h, created, updated)
+  - Export to JSON
+  - Clear old logs option
+  
+- **Navigation** - Added new System section to sidebar:
+  - Activity Log
+  - Import / Export
+  - Notifications
+  - Tax Management moved to Settings section
 
 ## Known Issues
 1. eBay API Authentication - Blocked, needs user to verify credentials on eBay developer portal
