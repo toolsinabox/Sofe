@@ -3599,7 +3599,7 @@ async def mark_review_helpful(review_id: str):
     return {"message": "Vote recorded"}
 
 @api_router.post("/reviews/upload-image")
-async def upload_review_image(file: UploadFile = File(...)):
+async def upload_review_image(request: Request, file: UploadFile = File(...)):
     """Upload an image for a review"""
     if not file.content_type.startswith('image/'):
         raise HTTPException(status_code=400, detail="File must be an image")
@@ -3618,8 +3618,8 @@ async def upload_review_image(file: UploadFile = File(...)):
     with open(file_path, "wb") as f:
         f.write(contents)
     
-    # Return URL using the API route format
-    return {"url": f"/api/uploads/reviews/{filename}"}
+    # Return URL using the API route format (relative path works with proxy)
+    return {"url": f"/api/uploads/reviews/{filename}", "filename": filename}
 
 # ==================== MERCHANT NOTIFICATIONS ====================
 
