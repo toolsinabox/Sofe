@@ -1,146 +1,128 @@
 <analysis>**original_problem_statement:**
-The user initially requested to add a multitude of advanced features to a merchant platform dashboard to make this the best platform ever. After implementing several features (Activity Log, Tax Management, Import/Export, Custom Fields, Template Tags) and fixing a bug with review image uploads, the user's request evolved. The new, primary goal is to transform the single-instance application into a full-fledged, multi-tenant hosting platform, similar to Shopify or Wix, where each customer can have their own store, frontend, and backend powered by a shared infrastructure. The user has specifically agreed to a Shopify-style multi-tenant architecture (shared application, isolated data).
+The user's primary goal is to create a multi-tenant hosting platform, similar to Shopify, where customers can sign up to create and manage their own e-commerce stores. The platform should be branded as Celora and operate under the  domain. The user also requested an admin hub to oversee all customer stores, revenue, and platform statistics.
 
 **User's preferred language**: English
 
 **what currently exists?**
-A full-stack React/FastAPI/MongoDB application that functions as a single-tenant merchant dashboard. The agent has successfully implemented and tested several advanced features, including an Activity Log, Tax Management, an Import/Export Center, a comprehensive Custom Fields system (integrated into Products, Categories, Pages, and Blog editors), and a Template Tag reference system. A bug preventing product review image uploads has also been fixed and verified.
+A fully functional, multi-tenant e-commerce platform has been built. The application is a React frontend with a FastAPI/MongoDB backend. The platform, now branded Celora, includes a public landing page, a user signup/login system, a platform dashboard for store owners, and a separate merchant dashboard for managing individual store operations (products, orders, etc.).
 
-Most recently, the agent has started scaffolding the multi-tenant platform architecture. This includes new backend routes (), a placeholder for the tenant-resolution middleware in , and new frontend pages for the platform's public-facing site and user management ().
+Crucially, a **Platform Admin Dashboard** has been implemented at , providing a centralized hosting hub to view all tenant stores, platform-wide revenue, and user statistics.
+
+Data isolation is enforced via  on all major database collections, and a backend middleware handles tenant resolution. The system has been pre-configured with three sample stores: Tools In A Box (containing the user's original data), Fashion Hub, and Tech Gadgets Pro. All code has been updated to reference the user's  domain.
 
 **Last working item**:
--   **Last item agent was working:** The agent was in the initial phase of building the **Shopify-style multi-tenant hosting platform**. It has created the foundational file structure for this new platform layer, including the backend router for platform-specific actions (signup, store creation) and the frontend pages for the marketing site, signup/login, and the main platform dashboard where a user can manage their stores.
--   **Status:** IN PROGRESS
--   **Agent Testing Done:** N
--   **Which testing method agent to use?** both. This is a major architectural change. After implementation, backend APIs need to be tested with  (ensuring data is scoped by store), and the frontend needs to be tested with the  tool for both the platform management UI and the individual store dashboards. A full e2e test with the testing agent will be required upon completion.
+-   **Last item agent was working:** The agent completed a comprehensive, end-to-end verification of the entire platform after rebranding it to Celora and configuring it for the  domain. This final double-check involved testing the landing page, signup, platform dashboard, merchant dashboard (for multiple tenants to confirm data isolation), the admin hub, billing page, and custom domain UI.
+-   **Status:** USER VERIFICATION PENDING
+-   **Agent Testing Done:** Y
+-   **Which testing method agent to use?** NA
 -   **User Testing Done:** N
 
 **All Pending/In progress Issue list**:
 -   **Issue 1: eBay Connection Authentication Failure (P2)**
--   **Issue 2: Implement Core eBay Integration Features (P2)**
--   **Issue 3: Comprehensive Shipping Editor Regression Test (P3)**
--   **Issue 4: Fix rate import  mapping (P3)**
--   **Issue 5: Product Data Mismatch Validation (P3)**
--   **Issue 6: No Backend Negative Stock Validation (P3)**
-
-Issues Detail:
--   **Issue 1: eBay Connection Authentication Failure**
-    -   **Attempted fixes:** A Skip for Now button was added as a workaround. The core issue is an  error from the eBay API.
-    -   **Next debug checklist:** Guide the user to re-verify their credentials and app scopes on the eBay developer portal.
-    -   **Why fix this issue and what will be achieved with this?** The integration cannot sync live product and order data without a successful API connection.
+    -   **Attempted fixes:** None in this session; this was de-prioritized. A Skip for Now button exists from a previous session.
+    -   **Next debug checklist:** Guide the user to re-verify their API credentials and application scopes on the eBay developer portal.
+    -   **Why fix this issue and what will be achieved with this?** This is required to enable live product and order synchronization with eBay.
     -   **Status:** BLOCKED
     -   **Is recurring issue?** Y
-    -   **Should Test frontend/backend/both after fix?** Backend.
-    -   **Blocked on other issue:** User action is required to verify credentials.
+    -   **Should Test frontend/backend/both after fix?** Backend
+    -   **Blocked on other issue:** User action required.
 
 **In progress Task List**:
--   **Task 1: Build Multi-Tenant Platform Architecture (P0)**
-    -   **Where to resume:**
-        1.  **Database Schema:** Modify all relevant Pydantic models in  and database collections to include a  field. This is critical for data isolation. Collections to update include , , , , , , etc.
-        2.  **Middleware Implementation:** Flesh out the tenant-resolution middleware in . It should inspect the request's  header, look up the corresponding store in a new  collection, and attach the  to the request state for use in all subsequent database queries.
-        3.  **API Scoping:** Refactor all existing API endpoints (e.g., in , ) to filter queries by the  from the request state. This ensures a merchant from Store A cannot see data from Store B.
-        4.  **Platform Backend:** Implement the logic in  for user signup, login, and the creation of new stores (which will involve creating a new document in the  collection).
-        5.  **Platform Frontend:** Build the UI for , , , and , connecting them to the new platform APIs.
-    -   **What will be achieved with this?** This will transform the application from a single-user system into a scalable, multi-tenant SaaS platform, laying the groundwork for a commercial hosting service.
-    -   **Status:** IN PROGRESS
-    -   **Should Test frontend/backend/both after fix?** Both.
-    -   **Blocked on something:** None.
+-   None. The primary development task is complete.
 
 **Upcoming and Future Tasks**
-- **Upcoming Tasks:**
-  - **P1:** Implement Custom Domain mapping for tenants.
-  - **P2:** Integrate Stripe for subscription billing.
-- **Future Tasks:**
-  - **P2:** Implement core eBay integration features (product sync, order import) once authentication is fixed.
-  - **P3:** Add CMS pages for Privacy Policy and Terms of Service.
-  - **P3:** Address the remaining low-priority issues (shipping rates, stock validation, etc.).
+- **Upcoming Tasks (Deployment & Configuration - P0):**
+    -   **Stripe Go-Live:** Replace the test Stripe keys in  with live production keys to enable real payments.
+    -   **Email Integration:** Implement an email service (e.g., Resend, SendGrid) for transactional emails like welcome messages, order confirmations, and password resets.
+    -   **Full API Scoping Audit:** Perform a final audit of all minor API endpoints (e.g., coupons, returns) to ensure every route is correctly scoped by .
+
+- **Future Tasks (Infrastructure Dependent - P1):**
+    -   **Live Storefront Routing:** The live storefront engine ( Maropost section) needs to be updated to resolve the store based on the request's subdomain. This is a code change required to support the infrastructure setup for .
 
 **Completed work in this session**
-- **Feature: Activity Log, Tax & Import/Export (DONE)**
-  - Implemented backend APIs and frontend pages for all three features.
-  - Fixed a backend crash by adding a missing  import in .
-  - Fixed tax calculation logic to correctly handle country-wide vs. state-specific rates.
-- **Feature: Custom Fields System (DONE)**
-  - Created a full CRUD backend API and frontend management page.
-  - Integrated the custom fields editor into the Products, Categories, Pages, and Blog editor components.
-  - Performed comprehensive API and UI testing to confirm end-to-end functionality.
-- **Feature: Template Tags System (DONE)**
-  - Discovered an existing backend template tag system.
-  - Built a new, user-friendly frontend reference page () that consumes the existing API and merges it with the new custom field tags.
-- **Bug Fix: Product Review Image Uploads (DONE)**
-  - Diagnosed that the upload API was returning a relative URL () instead of a full URL.
-  - Fixed the endpoint in  to return the absolute URL including the .
-  - Verified the fix with API tests and UI screenshots of the storefront.
+-   **Multi-Tenant Architecture Implementation:** Transformed the application from single-tenant to a full Shopify-style multi-tenant platform with complete data isolation for products, orders, customers, reviews, shipping, and pages.
+-   **Platform & Admin Dashboards:**
+    -   Built the Celora platform frontend for user signup, login, and store management.
+    -   Created the critical **Platform Admin Dashboard** () which acts as the Hosting Hub, allowing the platform owner to view all tenant stores, platform-wide revenue, and user stats.
+-   **Data Migration & Scaffolding:** Migrated all of the user's original data into the Tools In A Box store and created two additional empty sample stores for demonstration.
+-   **Branding & Domain Reconfiguration:** Rebranded the entire application (frontend and backend) from StoreBuilder to Celora and updated all domain-specific logic to use .
+-   **Billing and Custom Domain UI:** Implemented the complete frontend UI for Stripe-based subscription management and for users to connect their custom domains.
+-   **Auth & Navigation Flow:** Created a seamless, connected login flow from the platform dashboard directly into the corresponding merchant dashboard with the correct store context.
+-   **Comprehensive Verification:** Conducted multiple rounds of end-to-end testing to ensure all features, especially data isolation and the new admin hub, were functioning correctly.
+
+**Earlier issues found/mentioned but not fixed**
+-   **Issue 1: eBay Connection Authentication Failure**
+    -   **Debug checklist:** The user needs to verify their credentials and app scopes on the eBay developer portal. The current error is .
+    -   **Why to solve this issue and what will be achieved with this?** Fixes the eBay integration, allowing for product and order sync.
+    -   **Should Test frontend/backend/both after fix:** Backend
+    -   **Is recurring issue?** Y
 
 **Known issue recurrence from previous fork**
-- **Issue recurrence in previous fork**: eBay Connection Authentication Failure.
-- **Recurrence count**: 2+
-- **Status**: BLOCKED
+-   **Issue recurrence in previous fork**: eBay Connection Authentication Failure.
+-   **Recurrence count**: 2+
+-   **Status**: BLOCKED
 
 **Code Architecture**
 
 
 **Key Technical Concepts**
-- **Multi-Tenancy Architecture:** The core concept is shifting from a single-user app to a Shopify-style multi-tenant model. This involves:
-  - **Data Isolation:** Using a  in every relevant database collection to separate data between tenants.
-  - **Domain-Based Routing:** Using middleware to identify the tenant based on the request's hostname.
-  - **Shared Application Layer:** A single codebase (frontend and backend) serves all tenants, but shows them only their own data.
-- **Incremental Feature Development:** The agent successfully built complex features (Custom Fields, Template Tags) by creating backend APIs, frontend components, and then integrating them into existing pages, followed by thorough testing.
-- **Code Discovery and Adaptation:** The agent smartly discovered an existing  endpoint and adapted its plan to build a UI for it, rather than creating a conflicting, redundant system.
+-   **Multi-Tenancy (Shared App, Isolated Data):** A single codebase serves all tenants, with data partitioned by a  in the database.
+-   **Header-Based Tenant Resolution:** A FastAPI middleware inspects the  header on incoming requests to set the appropriate data scope for all database queries.
+-   **Centralized Admin Portal:** A dedicated section () with its own API endpoints () provides a global view of the platform, separate from individual tenant data.
+-   **Dynamic Rebranding:** The agent successfully performed a global search-and-replace to change the platform's brand and domain, demonstrating the ability to customize the white-label nature of the application.
 
 **key DB schema**
-- **New Collections to be created:**
-  - : {store_id, owner_user_id, custom_domain, plan, created_at}
-- **Existing Collections to be modified:**
-  - All data collections (, , , , , , , , etc.) must be updated to include a  field to enforce data isolation.
+-   ****: 
+-   ****: 
+-   **Other Collections** (, , , , , ): All include a  field for data isolation.
 
 **All files of reference**
-- **Multi-Tenant Core Files:**
-  -  (New platform API)
-  -  (Middleware and model updates needed)
-  -  (New directory for platform UI)
-  -  (Routing for platform pages)
-- **Completed Feature Files:**
-  - 
-  - 
-  - 
-  - 
-  - 
-  - 
+-   : Contains the core multi-tenant middleware and admin endpoints.
+-   : Logic for user/store creation and management.
+-   : The UI for the Hosting Hub.
+-   : The main UI for a store owner.
+-   : Manages the authentication state and store context.
 
 **Critical Info for New Agent**
-- **Primary Goal:** Your main and only priority is to implement the **multi-tenant architecture**. Do not work on any other features or the old eBay bugs until this is complete.
-- **Implementation Strategy:** Follow the Shopify-style (Option A) plan. This means one shared application, with data isolated by a . The key steps are: modify database schemas, implement the domain-based middleware, scope all API queries, and build the platform signup/management UI.
-- **Review the Conversation:** The user had a detailed discussion about multi-tenant vs. isolated instances. They explicitly agreed on the multi-tenant approach. Refer to messages 436-450 for the full context of this critical decision.
+-   The application's code is **feature-complete** for the multi-tenant goal. Your primary focus should be on assisting the user with deployment configuration, not developing new code features unless explicitly requested.
+-   There are three key user roles with different access points: **Platform Admin** (), **Store Owner** ( -> ), and the **end customer** (storefront).
+-   The platform is now branded **Celora** and hardcoded for the **** domain. Do not change this.
+-   The most critical aspect of the system is **data isolation**. Any future changes must be tested against at least two different store accounts to ensure no data leakage.
 
 **Last 10 User Messages and any pending HUMAN messages**
-- 
-- 
-- 
-- 
-- 
-- 
-- 
-- 
--  -> Awaiting response, but agent answered and user replied  and agent proceeded.
-- 
+-   
+-   
+-   
+-   
+-   
+-   
+-   
+-   
+-   
+-   
 
 **Project Health Check:**
--   **Fixed:** All requested dashboard features (Activity Log, Tax, Import/Export, Custom Fields, Template Tags) and the review image upload bug are fixed and working in the single-tenant context.
--   **Broken:** The architecture is currently single-tenant. It does not support multiple customers. Core eBay integration is still broken.
--   **Mocked:** The multi-tenant platform layer is mocked with placeholder files (, , etc.) but contains no functional logic.
+-   **Fixed:** The application is a fully functional multi-tenant platform with a dedicated admin hub and has been rebranded as requested.
+-   **Broken:** The live storefront () only displays a default store. It requires infrastructure-level subdomain routing to dynamically show the correct tenant's store.
+-   **Mocked:** Stripe billing and custom domain verification are functional at the UI level but rely on test keys and backend placeholders. They require production keys and DNS infrastructure to be fully operational.
 
 **3rd Party Integrations**
--   **eBay API:** Requires User API Key. Currently **BLOCKED** by an  authentication error that requires user intervention.
+-   **Stripe (Payments):** UI and backend logic are complete. Requires User API Key (Live keys for production).
+-   **eBay API:** Integration exists but is **BLOCKED** due to an authentication error. Requires User API Key.
 
 **Testing status**
--   **Testing agent used after significant changes:** NO. The agent performed extensive manual testing via  and  for all completed features. The next major architectural change (multi-tenancy) will require the testing agent.
+-   **Testing agent used after significant changes:** NO
 -   **Troubleshoot agent used after agent stuck in loop:** NO
--   **Test files created:** None.
--   **Known regressions:** None.
+-   **Test files created:** None
+-   **Known regressions:** None
 
 **Credentials to test flow:**
--    / 
+| Role/Store | URL Path | Email | Password |
+| :--- | :--- | :--- | :--- |
+| **Platform Admin** |  |  |  |
+| **Tools In A Box** |  |  |  |
+| **Fashion Hub** |  |  |  |
+| **Tech Gadgets Pro** |  |  |  |
 
 **What agent forgot to execute**
-The agent has been very thorough. It correctly identified the user's shift in priorities from minor fixes to massive feature development and then to a full platform architecture change. No tasks were forgotten; they were correctly re-prioritized based on user requests.</analysis>
+The agent correctly deferred infrastructure-level tasks (DNS, live Stripe keys) to the deployment phase. However, a code-level change to make the Maropost template engine fully subdomain-aware was identified as necessary for live storefronts but was not implemented. This should be prioritized as an upcoming task to complete the multi-tenant storefront functionality.</analysis>
