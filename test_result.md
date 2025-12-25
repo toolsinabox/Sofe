@@ -45,6 +45,31 @@ Use REACT_APP_BACKEND_URL from /app/frontend/.env
 
 ## API Endpoints Tested
 
+### Tax Management (NEW)
+- GET /api/tax/rates ✅
+- POST /api/tax/rates ✅
+- PUT /api/tax/rates/{id} ✅
+- DELETE /api/tax/rates/{id} ✅
+- GET /api/tax/settings ✅
+- PUT /api/tax/settings ✅
+- POST /api/tax/calculate ✅ (with auto-detect region support)
+
+### Import/Export Center (NEW)
+- GET /api/import-export/products/fields ✅
+- GET /api/import-export/products/template ✅
+- POST /api/import-export/products/preview ✅
+- POST /api/import-export/products/import ✅
+- POST /api/import-export/products/export ✅
+- GET /api/import-export/categories/fields ✅
+- GET /api/import-export/categories/template ✅
+- POST /api/import-export/categories/import ✅
+- POST /api/import-export/categories/export ✅
+
+### Activity Log (NEW)
+- GET /api/activity-log ✅
+- GET /api/activity-log/stats ✅
+- DELETE /api/activity-log/clear ✅
+
 ### Marketing
 - GET /api/marketing/coupons ✅
 - POST /api/marketing/coupons ✅
