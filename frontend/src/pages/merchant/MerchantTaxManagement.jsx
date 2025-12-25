@@ -651,25 +651,25 @@ export default function MerchantTaxManagement() {
             <div className="grid grid-cols-2 gap-4">
               <div>
                 <Label>Country</Label>
-                <Select value={calcForm.country} onValueChange={(v) => setCalcForm({...calcForm, country: v})}>
+                <Select value={calcForm.country} onValueChange={(v) => setCalcForm({...calcForm, country: v, state: ''})}>
                   <SelectTrigger>
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="AU">Australia</SelectItem>
-                    <SelectItem value="NZ">New Zealand</SelectItem>
-                    <SelectItem value="US">United States</SelectItem>
+                    {COUNTRIES.map(c => (
+                      <SelectItem key={c.code} value={c.code}>{c.name}</SelectItem>
+                    ))}
                   </SelectContent>
                 </Select>
               </div>
               <div>
-                <Label>State</Label>
+                <Label>State/Region</Label>
                 <Select value={calcForm.state} onValueChange={(v) => setCalcForm({...calcForm, state: v})}>
                   <SelectTrigger>
                     <SelectValue placeholder="Select" />
                   </SelectTrigger>
                   <SelectContent>
-                    {australianStates.map(s => (
+                    {getStatesForCountry(calcForm.country).map(s => (
                       <SelectItem key={s.code} value={s.code}>{s.name}</SelectItem>
                     ))}
                   </SelectContent>
@@ -685,6 +685,34 @@ export default function MerchantTaxManagement() {
                 placeholder="2000"
               />
             </div>
+
+            {/* Auto-detect button */}
+            <Button 
+              variant="outline" 
+              className="w-full" 
+              onClick={detectRegion}
+              disabled={detectingLocation}
+            >
+              {detectingLocation ? (
+                <><Loader2 className="w-4 h-4 mr-2 animate-spin" /> Detecting Location...</>
+              ) : (
+                <><Navigation className="w-4 h-4 mr-2" /> Auto-Detect Region</>
+              )}
+            </Button>
+
+            {detectedLocation && (
+              <div className="p-3 bg-blue-50 rounded-lg text-sm">
+                <div className="flex items-center gap-2 text-blue-800 font-medium mb-1">
+                  <MapPin className="w-4 h-4" /> Detected Location
+                </div>
+                <div className="text-blue-600">
+                  {detectedLocation.city && `${detectedLocation.city}, `}
+                  {detectedLocation.state && `${detectedLocation.state}, `}
+                  {detectedLocation.country}
+                  {detectedLocation.postcode && ` (${detectedLocation.postcode})`}
+                </div>
+              </div>
+            )}
             
             <Button onClick={calculateTax} className="w-full">
               <Calculator className="w-4 h-4 mr-2" /> Calculate Tax
