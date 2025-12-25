@@ -340,7 +340,7 @@ const AdminMerchants = () => {
                     {merchant.logo ? (
                       <img
                         src={merchant.logo.startsWith('/api') ? `${API_URL}${merchant.logo}` : merchant.logo}
-                        alt={merchant.name}
+                        alt={merchant.store_name || merchant.name}
                         className="w-12 h-12 rounded-xl object-cover"
                       />
                     ) : (
@@ -349,8 +349,8 @@ const AdminMerchants = () => {
                       </div>
                     )}
                     <div>
-                      <h3 className="text-white font-semibold">{merchant.name}</h3>
-                      <p className="text-gray-500 text-sm">{merchant.email}</p>
+                      <h3 className="text-white font-semibold">{merchant.store_name || merchant.name}</h3>
+                      <p className="text-gray-500 text-sm">{merchant.owner_email || merchant.email}</p>
                     </div>
                   </div>
                   <DropdownMenu>
@@ -387,37 +387,33 @@ const AdminMerchants = () => {
 
                 <div className="flex items-center gap-2 mb-4">
                   <span className={`px-2.5 py-1 rounded-full text-xs font-medium ${
-                    merchant.plan === 'Enterprise'
+                    (merchant.plan_id || merchant.plan) === 'enterprise'
                       ? 'bg-purple-500/20 text-purple-400'
-                      : merchant.plan === 'Professional'
+                      : (merchant.plan_id || merchant.plan) === 'professional'
                       ? 'bg-cyan-500/20 text-cyan-400'
                       : 'bg-gray-500/20 text-gray-400'
                   }`}>
-                    {merchant.plan}
+                    {(merchant.plan_id || merchant.plan || 'free').charAt(0).toUpperCase() + (merchant.plan_id || merchant.plan || 'free').slice(1)}
                   </span>
                   <span className={`px-2.5 py-1 rounded-full text-xs font-medium ${
                     merchant.status === 'active'
                       ? 'bg-emerald-500/20 text-emerald-400'
+                      : merchant.status === 'trial'
+                      ? 'bg-yellow-500/20 text-yellow-400'
                       : 'bg-red-500/20 text-red-400'
                   }`}>
                     {merchant.status?.charAt(0).toUpperCase() + merchant.status?.slice(1)}
                   </span>
                 </div>
 
-                {merchant.url && (
-                  <a 
-                    href={merchant.url} 
-                    target="_blank" 
-                    rel="noopener noreferrer"
-                    className="text-cyan-400 text-sm hover:text-cyan-300 block mb-4 truncate"
-                  >
-                    {merchant.url}
-                  </a>
-                )}
+                {/* Store URL - subdomain */}
+                <p className="text-gray-500 text-sm mb-4">
+                  {merchant.subdomain}.getcelora.com
+                </p>
 
                 <div className="grid grid-cols-3 gap-4 pt-4 border-t border-gray-800">
                   <div>
-                    <p className="text-gray-500 text-xs mb-1">Revenue</p>
+                    <p className="text-gray-500 text-xs mb-1">Products</p>
                     <p className="text-white font-semibold text-sm">{formatCurrency(merchant.revenue)}</p>
                   </div>
                   <div>
