@@ -7470,6 +7470,10 @@ app.include_router(blog_module.router)
 # Include Abandoned Carts router (cart recovery, automation)
 app.include_router(abandoned_carts_module.router)
 
+# Include Custom Fields router (dynamic fields for products, categories, pages, etc.)
+custom_fields_module.set_db(db)
+app.include_router(custom_fields_module.router)
+
 app.add_middleware(
     CORSMiddleware,
     allow_credentials=True,
