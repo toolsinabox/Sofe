@@ -1974,6 +1974,27 @@ const ProductEditor = ({ product, categories, onSave, onClose, templateTags }) =
                   </div>
                 </div>
               )}
+              
+              {/* Custom Fields Tab */}
+              {activeTab === 'custom' && (
+                <div className="space-y-6 max-w-3xl">
+                  <CustomFieldsEditor
+                    section="products"
+                    values={formData.custom_fields || {}}
+                    onChange={(values) => handleChange('custom_fields', values)}
+                  />
+                  <div className="p-4 bg-blue-50 rounded-lg border border-blue-200">
+                    <h4 className="font-medium text-blue-800 mb-2">Using Custom Fields</h4>
+                    <p className="text-sm text-blue-700">
+                      Custom fields defined here can be displayed on your storefront using template tags.
+                      For example, a field with key &quot;warranty&quot; can be shown using <code className="bg-blue-100 px-1 rounded">{`{{custom_warranty}}`}</code>
+                    </p>
+                    <p className="text-sm text-blue-600 mt-2">
+                      Manage custom fields in <a href="/merchant/custom-fields" className="underline">System → Custom Fields</a>
+                    </p>
+                  </div>
+                </div>
+              )}
             </div>
           </div>
           
