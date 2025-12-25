@@ -155,6 +155,7 @@ const navGroups = [
     items: [
       { path: '/merchant/activity-log', icon: Activity, label: 'Activity Log' },
       { path: '/merchant/import-export', icon: Upload, label: 'Import / Export' },
+      { path: '/merchant/custom-fields', icon: Tag, label: 'Custom Fields' },
       { path: '/merchant/notifications', icon: Bell, label: 'Notifications' },
     ]
   },
