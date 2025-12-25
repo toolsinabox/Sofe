@@ -3,7 +3,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import { 
   Store, Zap, Shield, Globe, CreditCard, BarChart3, Users, 
-  Check, ArrowRight, Star, Play, ChevronRight, Sparkles
+  Check, ArrowRight, Star, Play, ChevronRight, Sparkles, Menu, X
 } from 'lucide-react';
 import { Button } from '../../components/ui/button';
 import { Input } from '../../components/ui/input';
@@ -15,6 +15,7 @@ const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
 export default function PlatformHome() {
   const navigate = useNavigate();
   const [email, setEmail] = useState('');
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   const handleStartFree = () => {
     navigate(`/signup${email ? `?email=${encodeURIComponent(email)}` : ''}`);
