@@ -45,7 +45,10 @@ import {
   Bell,
   Heart,
   Users2,
-  RotateCcw
+  RotateCcw,
+  Activity,
+  Percent,
+  Upload
 } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
 
@@ -139,9 +142,20 @@ const navGroups = [
       { path: '/merchant/store-settings', icon: Store, label: 'Store Settings' },
       { path: '/merchant/shipping', icon: Truck, label: 'Shipping' },
       { path: '/merchant/payments', icon: CreditCard, label: 'Payments' },
+      { path: '/merchant/tax', icon: Percent, label: 'Tax Management' },
       { path: '/merchant/invoice-settings', icon: Receipt, label: 'Invoice Settings' },
       { path: '/merchant/theme-editor', icon: Palette, label: 'Theme Editor' },
       { path: '/merchant/settings', icon: Settings, label: 'General Settings' },
+    ]
+  },
+  {
+    id: 'system',
+    label: 'System',
+    icon: Activity,
+    items: [
+      { path: '/merchant/activity-log', icon: Activity, label: 'Activity Log' },
+      { path: '/merchant/import-export', icon: Upload, label: 'Import / Export' },
+      { path: '/merchant/notifications', icon: Bell, label: 'Notifications' },
     ]
   },
   {
