@@ -57,8 +57,10 @@ export default function PlatformDashboard() {
       // Login to merchant context
       login(token, merchantUser, currentStore);
       
-      // Navigate to merchant dashboard
-      navigate('/merchant');
+      // Small delay to ensure localStorage is committed before navigation
+      setTimeout(() => {
+        navigate('/merchant');
+      }, 50);
     }
   };
 
