@@ -3189,8 +3189,11 @@ async def get_dashboard_stats(request: Request):
 # ==================== HERO BANNERS ====================
 
 @api_router.get("/banners", response_model=List[HeroBanner])
-async def get_banners(include_inactive: bool = False):
-    query = {} if include_inactive else {"is_active": True}
+async def get_banners(request: Request, include_inactive: bool = False):
+    store_id = await get_store_id_from_header(request)
+    query = {"store_id": store_id} if not include_inactive else {"store_id": store_id}
+    if not include_inactive:
+        query["is_active"] = True
     banners = await db.banners.find(query, {"_id": 0}).sort("sort_order", 1).to_list(20)
     # Handle legacy banners that don't have name field - use title as fallback
     result = []
@@ -3201,8 +3204,10 @@ async def get_banners(include_inactive: bool = False):
     return result
 
 @api_router.post("/banners", response_model=HeroBanner)
-async def create_banner(banner: HeroBanner):
+async def create_banner(banner: HeroBanner, request: Request):
+    store_id = await get_store_id_from_header(request)
     banner_data = banner.dict()
+    banner_data["store_id"] = store_id
     # Ensure name is set
     if not banner_data.get('name'):
         banner_data['name'] = banner_data.get('title', 'Untitled Banner')
@@ -3210,10 +3215,11 @@ async def create_banner(banner: HeroBanner):
     return HeroBanner(**banner_data)
 
 @api_router.put("/banners/{banner_id}", response_model=HeroBanner)
-async def update_banner(banner_id: str, banner: BannerUpdate):
+async def update_banner(banner_id: str, banner: BannerUpdate, request: Request):
+    store_id = await get_store_id_from_header(request)
     update_data = {k: v for k, v in banner.dict().items() if v is not None}
     result = await db.banners.update_one(
-        {"id": banner_id},
+        {"id": banner_id, "store_id": store_id},
         {"$set": update_data}
     )
     if result.matched_count == 0:
@@ -3224,8 +3230,9 @@ async def update_banner(banner_id: str, banner: BannerUpdate):
     return HeroBanner(**updated)
 
 @api_router.delete("/banners/{banner_id}")
-async def delete_banner(banner_id: str):
-    result = await db.banners.delete_one({"id": banner_id})
+async def delete_banner(banner_id: str, request: Request):
+    store_id = await get_store_id_from_header(request)
+    result = await db.banners.delete_one({"id": banner_id, "store_id": store_id})
     if result.deleted_count == 0:
         raise HTTPException(status_code=404, detail="Banner not found")
     return {"message": "Banner deleted successfully"}
