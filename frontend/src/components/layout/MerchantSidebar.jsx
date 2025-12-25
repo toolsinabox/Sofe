@@ -180,31 +180,35 @@ const MerchantSidebar = ({ collapsed, setCollapsed, mobileOpen, setMobileOpen })
   });
 
   useEffect(() => {
+    // First check for platform store in localStorage (highest priority)
+    const platformStore = localStorage.getItem('platform_store');
+    if (platformStore) {
+      try {
+        const storeData = JSON.parse(platformStore);
+        if (storeData && storeData.name) {
+          setStoreSettings({
+            store_name: storeData.name,
+            store_logo: storeData.logo || ''
+          });
+          return; // Don't fetch from API if we have platform store data
+        }
+      } catch (e) {
+        console.error('Failed to parse platform store data');
+      }
+    }
+    
+    // Then try auth context store
+    if (store && store.name) {
+      setStoreSettings({
+        store_name: store.name,
+        store_logo: store.logo || ''
+      });
+      return;
+    }
+    
+    // Only fetch from API if no platform store context
     const fetchStoreSettings = async () => {
       try {
-        // First try to use the platform store data from localStorage
-        const platformStore = localStorage.getItem('platform_store');
-        if (platformStore) {
-          const storeData = JSON.parse(platformStore);
-          if (storeData && storeData.name) {
-            setStoreSettings({
-              store_name: storeData.name,
-              store_logo: storeData.logo || ''
-            });
-            return;
-          }
-        }
-        
-        // Then try auth context store
-        if (store && store.name) {
-          setStoreSettings({
-            store_name: store.name,
-            store_logo: store.logo || ''
-          });
-          return;
-        }
-        
-        // Fallback to store settings API
         const response = await axios.get(`${BACKEND_URL}/api/store/settings`);
         if (response.data) {
           setStoreSettings({
