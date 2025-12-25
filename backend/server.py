@@ -1680,42 +1680,49 @@ async def root():
     return {"message": "Maropost Clone API - Operational"}
 
 @api_router.post("/categories", response_model=Category)
-async def create_category(category: CategoryCreate):
+async def create_category(category: CategoryCreate, request: Request):
+    store_id = await get_store_id_from_header(request)
     new_category = Category(**category.dict())
-    await db.categories.insert_one(new_category.dict())
+    cat_dict = new_category.dict()
+    cat_dict["store_id"] = store_id
+    await db.categories.insert_one(cat_dict)
     return new_category
 
 @api_router.get("/categories", response_model=List[Category])
-async def get_categories(is_active: Optional[bool] = None):
-    query = {}
+async def get_categories(request: Request, is_active: Optional[bool] = None):
+    store_id = await get_store_id_from_header(request)
+    query = {"store_id": store_id}
     if is_active is not None:
         query["is_active"] = is_active
-    categories = await db.categories.find(query).sort("sort_order", 1).to_list(100)
+    categories = await db.categories.find(query, {"_id": 0}).sort("sort_order", 1).to_list(100)
     return [Category(**cat) for cat in categories]
 
 @api_router.get("/categories/{category_id}", response_model=Category)
-async def get_category(category_id: str):
-    category = await db.categories.find_one({"id": category_id})
+async def get_category(category_id: str, request: Request):
+    store_id = await get_store_id_from_header(request)
+    category = await db.categories.find_one({"id": category_id, "store_id": store_id}, {"_id": 0})
     if not category:
         raise HTTPException(status_code=404, detail="Category not found")
     return Category(**category)
 
 @api_router.put("/categories/{category_id}", response_model=Category)
-async def update_category(category_id: str, category: CategoryCreate):
+async def update_category(category_id: str, category: CategoryCreate, request: Request):
+    store_id = await get_store_id_from_header(request)
     update_data = category.dict()
     update_data["updated_at"] = datetime.now(timezone.utc)
     result = await db.categories.update_one(
-        {"id": category_id},
+        {"id": category_id, "store_id": store_id},
         {"$set": update_data}
     )
     if result.matched_count == 0:
         raise HTTPException(status_code=404, detail="Category not found")
-    updated = await db.categories.find_one({"id": category_id})
+    updated = await db.categories.find_one({"id": category_id}, {"_id": 0})
     return Category(**updated)
 
 @api_router.delete("/categories/{category_id}")
-async def delete_category(category_id: str):
-    result = await db.categories.delete_one({"id": category_id})
+async def delete_category(category_id: str, request: Request):
+    store_id = await get_store_id_from_header(request)
+    result = await db.categories.delete_one({"id": category_id, "store_id": store_id})
     if result.deleted_count == 0:
         raise HTTPException(status_code=404, detail="Category not found")
     return {"message": "Category deleted successfully"}
