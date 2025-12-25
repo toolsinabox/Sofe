@@ -14,7 +14,7 @@ import {
 } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
 
-const AdminSidebar = ({ collapsed, setCollapsed }) => {
+const AdminSidebar = ({ collapsed, setCollapsed, onClose }) => {
   const { logout } = useAuth();
   const navigate = useNavigate();
 
@@ -22,6 +22,12 @@ const AdminSidebar = ({ collapsed, setCollapsed }) => {
     logout();
     navigate('/admin/login');
   };
+
+  const handleNavClick = () => {
+    // Close mobile sidebar when navigating
+    if (onClose) onClose();
+  };
+
   const navItems = [
     { path: '/admin', icon: LayoutDashboard, label: 'Dashboard', exact: true },
     { path: '/admin/merchants', icon: Store, label: 'Merchants' },
@@ -33,12 +39,12 @@ const AdminSidebar = ({ collapsed, setCollapsed }) => {
 
   return (
     <aside
-      className={`fixed left-0 top-0 h-screen bg-[#0d1117] border-r border-gray-800 transition-all duration-300 z-50 flex flex-col ${
+      className={`h-screen bg-[#0d1117] border-r border-gray-800 transition-all duration-300 flex flex-col ${
         collapsed ? 'w-[70px]' : 'w-[260px]'
       }`}
     >
       {/* Logo */}
-      <div className="h-16 flex items-center justify-between px-4 border-b border-gray-800">
+      <div className="h-14 sm:h-16 flex items-center justify-between px-4 border-b border-gray-800">
         {!collapsed && (
           <div className="flex items-center gap-2">
             <div className="w-8 h-8 bg-gradient-to-br from-blue-600 to-purple-600 rounded-lg flex items-center justify-center">
