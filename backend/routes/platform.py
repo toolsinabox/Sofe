@@ -866,7 +866,7 @@ async def get_subscription_details(store_id: str):
     subscription_details = {
         "plan_id": store.get("plan_id", "free"),
         "plan_name": plan.name if plan else "Free",
-        "plan_price": plan.price if plan else 0,
+        "plan_price": plan.price_monthly if plan else 0,
         "status": store.get("status", "active"),
         "subscription_id": store.get("subscription_id"),
         "has_billing_account": bool(owner and owner.get("stripe_customer_id")),
