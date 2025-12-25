@@ -7475,6 +7475,10 @@ app.include_router(abandoned_carts_module.router)
 custom_fields_module.set_db(db)
 app.include_router(custom_fields_module.router)
 
+# Include Template Tags router (system and custom template tags)
+template_tags_module.set_db(db)
+app.include_router(template_tags_module.router)
+
 app.add_middleware(
     CORSMiddleware,
     allow_credentials=True,
