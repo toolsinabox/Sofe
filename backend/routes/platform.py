@@ -47,7 +47,7 @@ class StoreCreate(BaseModel):
     owner_email: EmailStr
     owner_password: str
     owner_name: str
-    subdomain: str  # e.g., "mystore" -> mystore.yourplatform.com
+    subdomain: str  # e.g., "mystore" -> mystore.getcelora.com
     plan_id: str = "free"
 
 class StoreSetup(BaseModel):
@@ -59,7 +59,7 @@ class StoreSetup(BaseModel):
 class Store(BaseModel):
     id: str = Field(default_factory=lambda: str(uuid4()))
     store_name: str
-    subdomain: str  # mystore.yourplatform.com
+    subdomain: str  # mystore.getcelora.com
     custom_domain: Optional[str] = None  # www.mystore.com
     custom_domain_verified: bool = False
     owner_id: str
@@ -198,7 +198,7 @@ async def get_store_by_domain(domain: str) -> Optional[Dict]:
     if store:
         return store
     
-    # Check subdomain (extract from domain like mystore.yourplatform.com)
+    # Check subdomain (extract from domain like mystore.getcelora.com)
     subdomain = domain.split('.')[0]
     store = await db.platform_stores.find_one(
         {"subdomain": subdomain, "status": "active"},
@@ -312,8 +312,8 @@ async def register_store(store_data: StoreCreate):
             "id": store.id,
             "name": store.store_name,
             "subdomain": store.subdomain,
-            "url": f"https://{subdomain}.yourplatform.com",
-            "dashboard_url": f"https://{subdomain}.yourplatform.com/merchant"
+            "url": f"https://{subdomain}.getcelora.com",
+            "dashboard_url": f"https://{subdomain}.getcelora.com/merchant"
         },
         "owner": {
             "id": owner.id,
@@ -321,7 +321,7 @@ async def register_store(store_data: StoreCreate):
             "name": owner.name
         },
         "token": token,
-        "message": f"Welcome! Your store is ready at {subdomain}.yourplatform.com"
+        "message": f"Welcome! Your store is ready at {subdomain}.getcelora.com"
     }
 
 
@@ -525,7 +525,7 @@ async def add_custom_domain(store_id: str, domain: str):
             "alternative": {
                 "method": "CNAME",
                 "record_name": "www",
-                "record_value": "stores.yourplatform.com"
+                "record_value": "stores.getcelora.com"
             }
         }
     }
@@ -714,7 +714,7 @@ async def create_checkout_session(
                 "price_data": {
                     "currency": "aud",
                     "product_data": {
-                        "name": f"StoreBuilder {plan_id.title()} Plan",
+                        "name": f"Celora {plan_id.title()} Plan",
                         "description": f"Monthly subscription to {plan_id.title()} plan",
                     },
                     "unit_amount": int(PLANS[plan_id].price_monthly * 100),  # Convert to cents
