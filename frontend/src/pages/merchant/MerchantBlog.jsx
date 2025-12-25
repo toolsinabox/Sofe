@@ -627,6 +627,14 @@ const MerchantBlog = () => {
                   </div>
                 </CardContent>
               </Card>
+              
+              {/* Custom Fields */}
+              <CustomFieldsEditor
+                section="blog_posts"
+                values={postForm.custom_fields}
+                onChange={(values) => setPostForm({...postForm, custom_fields: values})}
+                compact={false}
+              />
             </div>
           </div>
 
