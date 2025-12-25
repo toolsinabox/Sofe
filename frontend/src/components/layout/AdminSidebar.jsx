@@ -60,7 +60,7 @@ const AdminSidebar = ({ collapsed, setCollapsed, onClose }) => {
         )}
         <button
           onClick={() => setCollapsed(!collapsed)}
-          className="p-1.5 rounded-lg hover:bg-gray-800 text-gray-400 hover:text-white transition-colors absolute right-2"
+          className="p-1.5 rounded-lg hover:bg-gray-800 text-gray-400 hover:text-white transition-colors absolute right-2 hidden lg:block"
         >
           {collapsed ? <ChevronRight size={18} /> : <ChevronLeft size={18} />}
         </button>
@@ -73,6 +73,7 @@ const AdminSidebar = ({ collapsed, setCollapsed, onClose }) => {
             key={item.path}
             to={item.path}
             end={item.exact}
+            onClick={handleNavClick}
             className={({ isActive }) =>
               `flex items-center gap-3 px-3 py-2.5 rounded-lg transition-all duration-200 group ${
                 isActive
@@ -93,6 +94,7 @@ const AdminSidebar = ({ collapsed, setCollapsed, onClose }) => {
       <div className="p-3 border-t border-gray-800 space-y-1">
         <NavLink
           to="/admin/help"
+          onClick={handleNavClick}
           className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-gray-400 hover:text-white hover:bg-gray-800/50 transition-all"
         >
           <HelpCircle size={20} />
