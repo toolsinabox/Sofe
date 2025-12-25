@@ -321,7 +321,7 @@ export default function PlatformBilling() {
               </CardHeader>
               <CardContent>
                 <p className="text-gray-600">
-                  You'll get immediate access to all features of your new plan. We'll prorate the cost based on your remaining billing period.
+                  You&apos;ll get immediate access to all features of your new plan. We&apos;ll prorate the cost based on your remaining billing period.
                 </p>
               </CardContent>
             </Card>
