@@ -3720,6 +3720,358 @@ async def create_merchant_notification(
     await db.merchant_notifications.insert_one(notification.dict())
     return notification
 
+# ==================== ACTIVITY LOG ====================
+
+class ActivityLog(BaseModel):
+    id: str = Field(default_factory=lambda: str(uuid.uuid4()))
+    action: str  # created, updated, deleted, login, logout, export, import
+    resource_type: str  # product, order, customer, coupon, etc.
+    resource_id: Optional[str] = None
+    resource_name: Optional[str] = None
+    user_id: Optional[str] = None
+    user_name: Optional[str] = None
+    user_email: Optional[str] = None
+    details: Optional[Dict[str, Any]] = None
+    ip_address: Optional[str] = None
+    user_agent: Optional[str] = None
+    created_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
+
+@api_router.get("/activity-log")
+async def get_activity_log(
+    action: Optional[str] = None,
+    resource_type: Optional[str] = None,
+    user_email: Optional[str] = None,
+    start_date: Optional[str] = None,
+    end_date: Optional[str] = None,
+    limit: int = 100,
+    skip: int = 0
+):
+    """Get activity log entries"""
+    query = {}
+    if action:
+        query["action"] = action
+    if resource_type:
+        query["resource_type"] = resource_type
+    if user_email:
+        query["user_email"] = user_email
+    if start_date:
+        query["created_at"] = {"$gte": start_date}
+    if end_date:
+        if "created_at" in query:
+            query["created_at"]["$lte"] = end_date
+        else:
+            query["created_at"] = {"$lte": end_date}
+    
+    logs = await db.activity_log.find(query, {"_id": 0}).sort("created_at", -1).skip(skip).limit(limit).to_list(limit)
+    total = await db.activity_log.count_documents(query)
+    
+    return {"logs": logs, "total": total}
+
+@api_router.get("/activity-log/stats")
+async def get_activity_log_stats():
+    """Get activity log statistics"""
+    total = await db.activity_log.count_documents({})
+    
+    # Count by action
+    pipeline = [{"$group": {"_id": "$action", "count": {"$sum": 1}}}]
+    by_action = await db.activity_log.aggregate(pipeline).to_list(20)
+    action_counts = {item["_id"]: item["count"] for item in by_action if item["_id"]}
+    
+    # Count by resource type
+    pipeline = [{"$group": {"_id": "$resource_type", "count": {"$sum": 1}}}]
+    by_resource = await db.activity_log.aggregate(pipeline).to_list(20)
+    resource_counts = {item["_id"]: item["count"] for item in by_resource if item["_id"]}
+    
+    # Recent activity count (last 24 hours)
+    yesterday = (datetime.now(timezone.utc) - timedelta(days=1)).isoformat()
+    recent = await db.activity_log.count_documents({"created_at": {"$gte": yesterday}})
+    
+    return {
+        "total": total,
+        "by_action": action_counts,
+        "by_resource": resource_counts,
+        "recent_24h": recent
+    }
+
+@api_router.delete("/activity-log/clear")
+async def clear_activity_log(days_to_keep: int = 30):
+    """Clear old activity log entries"""
+    cutoff = (datetime.now(timezone.utc) - timedelta(days=days_to_keep)).isoformat()
+    result = await db.activity_log.delete_many({"created_at": {"$lt": cutoff}})
+    return {"deleted": result.deleted_count}
+
+# Helper function to log activity
+async def log_activity(
+    action: str,
+    resource_type: str,
+    resource_id: Optional[str] = None,
+    resource_name: Optional[str] = None,
+    user_name: Optional[str] = None,
+    user_email: Optional[str] = None,
+    details: Optional[Dict] = None,
+    request: Optional[Request] = None
+):
+    log_entry = ActivityLog(
+        action=action,
+        resource_type=resource_type,
+        resource_id=resource_id,
+        resource_name=resource_name,
+        user_name=user_name,
+        user_email=user_email,
+        details=details,
+        ip_address=request.client.host if request else None,
+        user_agent=request.headers.get("user-agent") if request else None
+    )
+    await db.activity_log.insert_one(log_entry.dict())
+
+# ==================== TAX MANAGEMENT ====================
+
+class TaxRate(BaseModel):
+    id: str = Field(default_factory=lambda: str(uuid.uuid4()))
+    name: str
+    rate: float  # Percentage
+    country: str = "AU"
+    state: Optional[str] = None
+    postcode_from: Optional[str] = None
+    postcode_to: Optional[str] = None
+    tax_class: str = "standard"  # standard, reduced, zero
+    compound: bool = False  # If true, applied after other taxes
+    is_active: bool = True
+    priority: int = 0
+    created_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
+
+class TaxSettings(BaseModel):
+    prices_include_tax: bool = True
+    calculate_tax_based_on: str = "shipping"  # shipping, billing, store
+    shipping_tax_class: str = "standard"
+    display_prices_in_shop: str = "incl"  # incl, excl
+    display_prices_in_cart: str = "incl"
+    tax_round_at_subtotal: bool = False
+    tax_classes: List[str] = ["standard", "reduced", "zero"]
+
+@api_router.get("/tax/rates")
+async def get_tax_rates(country: Optional[str] = None, state: Optional[str] = None):
+    """Get all tax rates"""
+    query = {}
+    if country:
+        query["country"] = country
+    if state:
+        query["state"] = state
+    
+    rates = await db.tax_rates.find(query, {"_id": 0}).sort("priority", 1).to_list(100)
+    return {"rates": rates}
+
+@api_router.post("/tax/rates")
+async def create_tax_rate(rate_data: Dict[str, Any]):
+    """Create a new tax rate"""
+    new_rate = TaxRate(**rate_data)
+    await db.tax_rates.insert_one(new_rate.dict())
+    return new_rate.dict()
+
+@api_router.put("/tax/rates/{rate_id}")
+async def update_tax_rate(rate_id: str, update_data: Dict[str, Any]):
+    """Update a tax rate"""
+    result = await db.tax_rates.update_one({"id": rate_id}, {"$set": update_data})
+    if result.matched_count == 0:
+        raise HTTPException(status_code=404, detail="Tax rate not found")
+    return await db.tax_rates.find_one({"id": rate_id}, {"_id": 0})
+
+@api_router.delete("/tax/rates/{rate_id}")
+async def delete_tax_rate(rate_id: str):
+    """Delete a tax rate"""
+    result = await db.tax_rates.delete_one({"id": rate_id})
+    if result.deleted_count == 0:
+        raise HTTPException(status_code=404, detail="Tax rate not found")
+    return {"success": True}
+
+@api_router.get("/tax/settings")
+async def get_tax_settings():
+    """Get tax settings"""
+    settings = await db.tax_settings.find_one({"id": "tax_settings"}, {"_id": 0})
+    if not settings:
+        settings = TaxSettings().dict()
+        settings["id"] = "tax_settings"
+    return settings
+
+@api_router.put("/tax/settings")
+async def update_tax_settings(settings: Dict[str, Any]):
+    """Update tax settings"""
+    settings["id"] = "tax_settings"
+    await db.tax_settings.update_one(
+        {"id": "tax_settings"},
+        {"$set": settings},
+        upsert=True
+    )
+    return await db.tax_settings.find_one({"id": "tax_settings"}, {"_id": 0})
+
+@api_router.post("/tax/calculate")
+async def calculate_tax(
+    subtotal: float,
+    country: str = "AU",
+    state: Optional[str] = None,
+    postcode: Optional[str] = None
+):
+    """Calculate tax for an order"""
+    # Get applicable tax rates
+    query = {"country": country, "is_active": True}
+    if state:
+        query["$or"] = [{"state": state}, {"state": None}]
+    
+    rates = await db.tax_rates.find(query, {"_id": 0}).sort("priority", 1).to_list(10)
+    
+    total_tax = 0
+    tax_breakdown = []
+    
+    for rate in rates:
+        # Check postcode range if specified
+        if rate.get("postcode_from") and rate.get("postcode_to") and postcode:
+            if not (rate["postcode_from"] <= postcode <= rate["postcode_to"]):
+                continue
+        
+        tax_amount = subtotal * (rate["rate"] / 100)
+        if rate.get("compound"):
+            tax_amount = (subtotal + total_tax) * (rate["rate"] / 100)
+        
+        total_tax += tax_amount
+        tax_breakdown.append({
+            "name": rate["name"],
+            "rate": rate["rate"],
+            "amount": round(tax_amount, 2)
+        })
+    
+    return {
+        "subtotal": subtotal,
+        "tax_total": round(total_tax, 2),
+        "total": round(subtotal + total_tax, 2),
+        "breakdown": tax_breakdown
+    }
+
+# ==================== IMPORT/EXPORT ====================
+
+@api_router.get("/export/{resource_type}")
+async def export_data(resource_type: str, format: str = "csv"):
+    """Export data to CSV or JSON"""
+    collection_map = {
+        "products": "products",
+        "customers": "customers",
+        "orders": "orders",
+        "coupons": "coupons",
+        "reviews": "reviews"
+    }
+    
+    if resource_type not in collection_map:
+        raise HTTPException(status_code=400, detail="Invalid resource type")
+    
+    collection = db[collection_map[resource_type]]
+    data = await collection.find({}, {"_id": 0}).to_list(10000)
+    
+    if format == "json":
+        return {"data": data, "count": len(data)}
+    
+    # CSV format
+    if not data:
+        return Response(content="No data", media_type="text/csv")
+    
+    import io
+    import csv
+    
+    output = io.StringIO()
+    writer = csv.DictWriter(output, fieldnames=data[0].keys())
+    writer.writeheader()
+    for row in data:
+        # Flatten nested objects for CSV
+        flat_row = {}
+        for key, value in row.items():
+            if isinstance(value, (dict, list)):
+                flat_row[key] = str(value)
+            else:
+                flat_row[key] = value
+        writer.writerow(flat_row)
+    
+    return Response(
+        content=output.getvalue(),
+        media_type="text/csv",
+        headers={"Content-Disposition": f"attachment; filename={resource_type}_export.csv"}
+    )
+
+@api_router.post("/import/{resource_type}")
+async def import_data(resource_type: str, data: List[Dict[str, Any]]):
+    """Import data from JSON"""
+    collection_map = {
+        "products": "products",
+        "customers": "customers",
+        "coupons": "coupons"
+    }
+    
+    if resource_type not in collection_map:
+        raise HTTPException(status_code=400, detail="Invalid resource type")
+    
+    collection = db[collection_map[resource_type]]
+    
+    imported = 0
+    errors = []
+    
+    for idx, item in enumerate(data):
+        try:
+            # Generate ID if not present
+            if "id" not in item:
+                item["id"] = str(uuid.uuid4())
+            
+            # Upsert based on ID or SKU
+            if resource_type == "products" and "sku" in item:
+                await collection.update_one(
+                    {"sku": item["sku"]},
+                    {"$set": item},
+                    upsert=True
+                )
+            else:
+                await collection.update_one(
+                    {"id": item["id"]},
+                    {"$set": item},
+                    upsert=True
+                )
+            imported += 1
+        except Exception as e:
+            errors.append({"row": idx, "error": str(e)})
+    
+    return {
+        "imported": imported,
+        "errors": errors,
+        "total": len(data)
+    }
+
+@api_router.get("/import/template/{resource_type}")
+async def get_import_template(resource_type: str):
+    """Get import template for a resource type"""
+    templates = {
+        "products": {
+            "fields": ["sku", "name", "description", "price", "sale_price", "stock", "category", "brand", "weight", "images"],
+            "required": ["sku", "name", "price"],
+            "sample": [
+                {"sku": "PROD-001", "name": "Sample Product", "description": "Description here", "price": 99.99, "stock": 100, "category": "General"}
+            ]
+        },
+        "customers": {
+            "fields": ["email", "first_name", "last_name", "phone", "company", "address", "city", "state", "postcode", "country"],
+            "required": ["email"],
+            "sample": [
+                {"email": "customer@example.com", "first_name": "John", "last_name": "Doe", "phone": "0400000000"}
+            ]
+        },
+        "coupons": {
+            "fields": ["code", "name", "discount_type", "discount_value", "min_order", "max_uses", "expiry_date"],
+            "required": ["code", "discount_type", "discount_value"],
+            "sample": [
+                {"code": "SAVE10", "name": "10% Off", "discount_type": "percentage", "discount_value": 10, "min_order": 50}
+            ]
+        }
+    }
+    
+    if resource_type not in templates:
+        raise HTTPException(status_code=400, detail="Invalid resource type")
+    
+    return templates[resource_type]
+
 # ==================== STOCK NOTIFICATIONS ====================
 
 @api_router.post("/stock-notifications")
