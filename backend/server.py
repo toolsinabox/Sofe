@@ -1934,39 +1934,42 @@ async def get_sale_products(limit: int = 8):
     return [Product(**prod) for prod in products]
 
 @api_router.get("/products/{product_id}", response_model=Product)
-async def get_product(product_id: str):
-    product = await db.products.find_one({"id": product_id})
+async def get_product(product_id: str, request: Request):
+    store_id = await get_store_id_from_header(request)
+    product = await db.products.find_one({"id": product_id, "store_id": store_id}, {"_id": 0})
     if not product:
         raise HTTPException(status_code=404, detail="Product not found")
     return Product(**product)
 
 @api_router.put("/products/{product_id}", response_model=Product)
-async def update_product(product_id: str, product: ProductUpdate):
+async def update_product(product_id: str, product: ProductUpdate, request: Request):
+    store_id = await get_store_id_from_header(request)
     update_data = {k: v for k, v in product.dict().items() if v is not None}
     update_data["updated_at"] = datetime.now(timezone.utc)
     result = await db.products.update_one(
-        {"id": product_id},
+        {"id": product_id, "store_id": store_id},
         {"$set": update_data}
     )
     if result.matched_count == 0:
         raise HTTPException(status_code=404, detail="Product not found")
-    updated = await db.products.find_one({"id": product_id})
+    updated = await db.products.find_one({"id": product_id}, {"_id": 0})
     return Product(**updated)
 
 @api_router.delete("/products/{product_id}")
-async def delete_product(product_id: str):
-    product = await db.products.find_one({"id": product_id})
+async def delete_product(product_id: str, request: Request):
+    store_id = await get_store_id_from_header(request)
+    product = await db.products.find_one({"id": product_id, "store_id": store_id})
     if not product:
         raise HTTPException(status_code=404, detail="Product not found")
     
     # Update category product count
     if product.get("category_id"):
         await db.categories.update_one(
-            {"id": product["category_id"]},
+            {"id": product["category_id"], "store_id": store_id},
             {"$inc": {"product_count": -1}}
         )
     
-    await db.products.delete_one({"id": product_id})
+    await db.products.delete_one({"id": product_id, "store_id": store_id})
     return {"message": "Product deleted successfully"}
 
 # ==================== ORDER ENDPOINTS ====================
