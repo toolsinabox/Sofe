@@ -210,6 +210,10 @@ const MerchantSidebar = ({ collapsed, setCollapsed, mobileOpen, setMobileOpen })
     navigate('/merchant/login');
   };
 
+  const handleBackToPlatform = () => {
+    navigate('/dashboard');
+  };
+
   const toggleGroup = (groupId) => {
     setExpandedGroups(prev => 
       prev.includes(groupId) 
