@@ -3240,9 +3240,10 @@ async def delete_banner(banner_id: str, request: Request):
 # ==================== CONTENT ZONES ====================
 
 @api_router.get("/content-zones", response_model=List[ContentZone])
-async def get_content_zones(page: Optional[str] = None, include_inactive: bool = False):
+async def get_content_zones(request: Request, page: Optional[str] = None, include_inactive: bool = False):
     """Get all content zones, optionally filtered by page"""
-    query = {}
+    store_id = await get_store_id_from_header(request)
+    query = {"store_id": store_id}
     if page:
         query["page"] = page
     if not include_inactive:
@@ -3252,26 +3253,29 @@ async def get_content_zones(page: Optional[str] = None, include_inactive: bool =
     return [ContentZone(**zone) for zone in zones]
 
 @api_router.get("/content-zones/{zone_id}", response_model=ContentZone)
-async def get_content_zone(zone_id: str):
+async def get_content_zone(zone_id: str, request: Request):
     """Get a specific content zone by ID"""
-    zone = await db.content_zones.find_one({"id": zone_id}, {"_id": 0})
+    store_id = await get_store_id_from_header(request)
+    zone = await db.content_zones.find_one({"id": zone_id, "store_id": store_id}, {"_id": 0})
     if not zone:
         raise HTTPException(status_code=404, detail="Content zone not found")
     return ContentZone(**zone)
 
 @api_router.get("/content-zones/by-name/{zone_name}")
-async def get_content_zone_by_name(zone_name: str):
+async def get_content_zone_by_name(zone_name: str, request: Request):
     """Get a content zone by its unique name"""
-    zone = await db.content_zones.find_one({"name": zone_name}, {"_id": 0})
+    store_id = await get_store_id_from_header(request)
+    zone = await db.content_zones.find_one({"name": zone_name, "store_id": store_id}, {"_id": 0})
     if not zone:
         raise HTTPException(status_code=404, detail="Content zone not found")
     return ContentZone(**zone)
 
 @api_router.post("/content-zones", response_model=ContentZone)
-async def create_content_zone(zone: ContentZoneCreate):
+async def create_content_zone(zone: ContentZoneCreate, request: Request):
     """Create a new content zone"""
-    # Check if name already exists
-    existing = await db.content_zones.find_one({"name": zone.name})
+    store_id = await get_store_id_from_header(request)
+    # Check if name already exists for this store
+    existing = await db.content_zones.find_one({"name": zone.name, "store_id": store_id})
     if existing:
         raise HTTPException(status_code=400, detail="Content zone with this name already exists")
     
@@ -3280,12 +3284,15 @@ async def create_content_zone(zone: ContentZoneCreate):
         created_at=datetime.now(timezone.utc),
         updated_at=datetime.now(timezone.utc)
     )
-    await db.content_zones.insert_one(zone_data.dict())
+    zone_dict = zone_data.dict()
+    zone_dict["store_id"] = store_id
+    await db.content_zones.insert_one(zone_dict)
     return zone_data
 
 @api_router.put("/content-zones/{zone_id}", response_model=ContentZone)
-async def update_content_zone(zone_id: str, zone_update: ContentZoneUpdate):
+async def update_content_zone(zone_id: str, zone_update: ContentZoneUpdate, request: Request):
     """Update a content zone"""
+    store_id = await get_store_id_from_header(request)
     update_data = {k: v for k, v in zone_update.dict().items() if v is not None}
     update_data["updated_at"] = datetime.now(timezone.utc)
     
