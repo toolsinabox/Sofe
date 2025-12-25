@@ -104,25 +104,25 @@ const AdminDashboard = () => {
   const monthlyRevenueData = stats?.monthly_revenue || [];
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-4 sm:space-y-6">
       {/* Header with refresh */}
-      <div className="flex items-center justify-between">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 sm:gap-0">
         <div>
-          <h1 className="text-2xl font-bold text-white">Welcome back, {user?.name || 'Admin'}</h1>
-          <p className="text-gray-400 text-sm">Here&apos;s what&apos;s happening with your platform</p>
+          <h1 className="text-xl sm:text-2xl font-bold text-white">Welcome back, {user?.name || 'Admin'}</h1>
+          <p className="text-gray-400 text-xs sm:text-sm">Here&apos;s what&apos;s happening with your platform</p>
         </div>
         <button 
           onClick={fetchData}
           disabled={loading}
-          className="flex items-center gap-2 px-4 py-2 bg-gray-800/50 hover:bg-gray-700/50 border border-gray-700 rounded-lg text-gray-300 text-sm transition-all disabled:opacity-50"
+          className="flex items-center justify-center gap-2 px-3 sm:px-4 py-2 bg-gray-800/50 hover:bg-gray-700/50 border border-gray-700 rounded-lg text-gray-300 text-xs sm:text-sm transition-all disabled:opacity-50 w-full sm:w-auto"
         >
-          <RefreshCw size={16} className={loading ? 'animate-spin' : ''} />
+          <RefreshCw size={14} className={`sm:w-4 sm:h-4 ${loading ? 'animate-spin' : ''}`} />
           Refresh
         </button>
       </div>
 
       {error && (
-        <div className="bg-red-500/10 border border-red-500/50 text-red-400 px-4 py-3 rounded-lg">
+        <div className="bg-red-500/10 border border-red-500/50 text-red-400 px-3 sm:px-4 py-2 sm:py-3 rounded-lg text-sm">
           {error}
         </div>
       )}
