@@ -174,24 +174,24 @@ const MerchantSidebar = ({ collapsed, setCollapsed, mobileOpen, setMobileOpen })
   const { logout, store } = useAuth();
   const navigate = useNavigate();
   const [expandedGroups, setExpandedGroups] = useState(['sales', 'catalog']);
-  const [storeSettings, setStoreSettings] = useState(() => {
-    // Initialize from localStorage immediately
-    const platformStore = localStorage.getItem('platform_store');
-    if (platformStore) {
-      try {
+  
+  // Get initial store name from localStorage synchronously
+  const getInitialStoreName = () => {
+    try {
+      const platformStore = localStorage.getItem('platform_store');
+      if (platformStore) {
         const storeData = JSON.parse(platformStore);
         if (storeData && storeData.name) {
-          return {
-            store_name: storeData.name,
-            store_logo: storeData.logo || ''
-          };
+          return storeData.name;
         }
-      } catch (e) {}
-    }
-    return {
-      store_name: 'My Store',
-      store_logo: ''
-    };
+      }
+    } catch (e) {}
+    return 'My Store';
+  };
+  
+  const [storeSettings, setStoreSettings] = useState({
+    store_name: getInitialStoreName(),
+    store_logo: ''
   });
 
   useEffect(() => {
