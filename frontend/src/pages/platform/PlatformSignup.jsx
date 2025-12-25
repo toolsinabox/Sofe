@@ -80,7 +80,7 @@ export default function PlatformSignup() {
       localStorage.setItem('platform_owner', JSON.stringify(res.data.owner));
       
       // Navigate to success/dashboard
-      navigate('/platform/dashboard', { 
+      navigate('/dashboard', { 
         state: { 
           newStore: true, 
           store: res.data.store 
@@ -105,7 +105,7 @@ export default function PlatformSignup() {
       <div className="flex-1 flex items-center justify-center p-8">
         <Card className="w-full max-w-md">
           <CardHeader className="text-center">
-            <Link to="/platform" className="flex items-center justify-center gap-2 mb-4">
+            <Link to="/" className="flex items-center justify-center gap-2 mb-4">
               <div className="w-10 h-10 bg-gradient-to-br from-blue-600 to-purple-600 rounded-xl flex items-center justify-center">
                 <Store className="w-6 h-6 text-white" />
               </div>
@@ -274,7 +274,7 @@ export default function PlatformSignup() {
             
             <p className="text-center text-sm text-gray-500 mt-6">
               Already have an account?{' '}
-              <Link to="/platform/login" className="text-blue-600 hover:underline">
+              <Link to="/login" className="text-blue-600 hover:underline">
                 Log in
               </Link>
             </p>

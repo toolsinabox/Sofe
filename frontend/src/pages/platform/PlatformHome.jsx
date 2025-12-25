@@ -17,7 +17,7 @@ export default function PlatformHome() {
   const [email, setEmail] = useState('');
 
   const handleStartFree = () => {
-    navigate(`/platform/signup${email ? `?email=${encodeURIComponent(email)}` : ''}`);
+    navigate(`/signup${email ? `?email=${encodeURIComponent(email)}` : ''}`);
   };
 
   const features = [
@@ -260,7 +260,7 @@ export default function PlatformHome() {
                   <Button 
                     className="w-full" 
                     variant={plan.popular ? "default" : "outline"}
-                    onClick={() => navigate('/platform/signup')}
+                    onClick={() => navigate('/signup')}
                   >
                     {plan.cta}
                   </Button>
@@ -320,7 +320,7 @@ export default function PlatformHome() {
           <Button 
             size="lg" 
             variant="secondary"
-            onClick={() => navigate('/platform/signup')}
+            onClick={() => navigate('/signup')}
           >
             Create Your Store <ArrowRight className="w-4 h-4 ml-2" />
           </Button>

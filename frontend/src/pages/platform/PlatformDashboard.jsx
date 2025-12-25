@@ -46,7 +46,7 @@ export default function PlatformDashboard() {
   const fetchData = async () => {
     const token = localStorage.getItem('platform_token');
     if (!token) {
-      navigate('/platform/login');
+      navigate('/login');
       return;
     }
     
@@ -80,7 +80,7 @@ export default function PlatformDashboard() {
       console.error('Failed to fetch data:', error);
       if (error.response?.status === 401) {
         localStorage.removeItem('platform_token');
-        navigate('/platform/login');
+        navigate('/login');
       }
     } finally {
       setLoading(false);
@@ -155,7 +155,7 @@ export default function PlatformDashboard() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between h-16">
             <div className="flex items-center gap-4">
-              <Link to="/platform" className="flex items-center gap-2">
+              <Link to="/" className="flex items-center gap-2">
                 <div className="w-8 h-8 bg-gradient-to-br from-blue-600 to-purple-600 rounded-lg flex items-center justify-center">
                   <Store className="w-5 h-5 text-white" />
                 </div>
@@ -186,7 +186,7 @@ export default function PlatformDashboard() {
                       </DropdownMenuItem>
                     ))}
                     <DropdownMenuSeparator />
-                    <DropdownMenuItem onClick={() => navigate('/platform/signup')} className="gap-2">
+                    <DropdownMenuItem onClick={() => navigate('/signup')} className="gap-2">
                       <Plus className="w-4 h-4" />
                       Create New Store
                     </DropdownMenuItem>
@@ -220,7 +220,7 @@ export default function PlatformDashboard() {
                     <p className="text-sm text-gray-500">{owner?.email}</p>
                   </div>
                   <DropdownMenuSeparator />
-                  <DropdownMenuItem onClick={() => navigate('/platform/settings')}>
+                  <DropdownMenuItem onClick={() => navigate('/settings')}>
                     <Settings className="w-4 h-4 mr-2" /> Account Settings
                   </DropdownMenuItem>
                   <DropdownMenuItem onClick={handleLogout} className="text-red-600">
@@ -344,7 +344,7 @@ export default function PlatformDashboard() {
             </CardContent>
           </Card>
           
-          <Card className="hover:shadow-lg transition-shadow cursor-pointer" onClick={() => navigate('/platform/billing')}>
+          <Card className="hover:shadow-lg transition-shadow cursor-pointer" onClick={() => navigate('/billing')}>
             <CardContent className="p-6">
               <div className="w-12 h-12 bg-purple-100 rounded-xl flex items-center justify-center mb-4">
                 <CreditCard className="w-6 h-6 text-purple-600" />

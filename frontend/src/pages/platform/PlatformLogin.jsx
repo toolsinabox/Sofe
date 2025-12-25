@@ -39,10 +39,10 @@ export default function PlatformLogin() {
       // If user has stores, go to dashboard
       if (res.data.stores && res.data.stores.length > 0) {
         localStorage.setItem('platform_store', JSON.stringify(res.data.stores[0]));
-        navigate('/platform/dashboard');
+        navigate('/dashboard');
       } else {
         // No stores, redirect to create one
-        navigate('/platform/signup');
+        navigate('/signup');
       }
     } catch (error) {
       setError(error.response?.data?.detail || 'Invalid email or password');
@@ -55,7 +55,7 @@ export default function PlatformLogin() {
     <div className="min-h-screen bg-gradient-to-br from-blue-50 to-purple-50 flex items-center justify-center p-4">
       <Card className="w-full max-w-md">
         <CardHeader className="text-center">
-          <Link to="/platform" className="flex items-center justify-center gap-2 mb-4">
+          <Link to="/" className="flex items-center justify-center gap-2 mb-4">
             <div className="w-10 h-10 bg-gradient-to-br from-blue-600 to-purple-600 rounded-xl flex items-center justify-center">
               <Store className="w-6 h-6 text-white" />
             </div>
@@ -121,7 +121,7 @@ export default function PlatformLogin() {
           
           <p className="text-center text-sm text-gray-500 mt-6">
             Don&apos;t have an account?{' '}
-            <Link to="/platform/signup" className="text-blue-600 hover:underline">
+            <Link to="/signup" className="text-blue-600 hover:underline">
               Create a store
             </Link>
           </p>
