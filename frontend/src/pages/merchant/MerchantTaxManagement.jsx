@@ -11,10 +11,62 @@ import { Label } from '../../components/ui/label';
 import { Switch } from '../../components/ui/switch';
 import { 
   Percent, Plus, Edit, Trash2, Calculator, Globe, MapPin, Save,
-  DollarSign, Settings, CheckCircle
+  DollarSign, Settings, CheckCircle, Loader2, Navigation
 } from 'lucide-react';
 
 const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
+
+// Country and state data
+const COUNTRIES = [
+  { code: 'AU', name: 'Australia', states: [
+    { code: '', name: 'All States' },
+    { code: 'NSW', name: 'New South Wales' },
+    { code: 'VIC', name: 'Victoria' },
+    { code: 'QLD', name: 'Queensland' },
+    { code: 'WA', name: 'Western Australia' },
+    { code: 'SA', name: 'South Australia' },
+    { code: 'TAS', name: 'Tasmania' },
+    { code: 'ACT', name: 'Australian Capital Territory' },
+    { code: 'NT', name: 'Northern Territory' }
+  ]},
+  { code: 'NZ', name: 'New Zealand', states: [
+    { code: '', name: 'All Regions' },
+    { code: 'AUK', name: 'Auckland' },
+    { code: 'WGN', name: 'Wellington' },
+    { code: 'CAN', name: 'Canterbury' },
+    { code: 'WKO', name: 'Waikato' },
+    { code: 'BOP', name: 'Bay of Plenty' },
+    { code: 'OTA', name: 'Otago' }
+  ]},
+  { code: 'US', name: 'United States', states: [
+    { code: '', name: 'All States' },
+    { code: 'CA', name: 'California' },
+    { code: 'TX', name: 'Texas' },
+    { code: 'FL', name: 'Florida' },
+    { code: 'NY', name: 'New York' },
+    { code: 'IL', name: 'Illinois' },
+    { code: 'PA', name: 'Pennsylvania' },
+    { code: 'OH', name: 'Ohio' },
+    { code: 'GA', name: 'Georgia' },
+    { code: 'NC', name: 'North Carolina' },
+    { code: 'MI', name: 'Michigan' },
+    { code: 'WA', name: 'Washington' }
+  ]},
+  { code: 'GB', name: 'United Kingdom', states: [
+    { code: '', name: 'All Regions' },
+    { code: 'ENG', name: 'England' },
+    { code: 'SCT', name: 'Scotland' },
+    { code: 'WLS', name: 'Wales' },
+    { code: 'NIR', name: 'Northern Ireland' }
+  ]},
+  { code: 'CA', name: 'Canada', states: [
+    { code: '', name: 'All Provinces' },
+    { code: 'ON', name: 'Ontario' },
+    { code: 'QC', name: 'Quebec' },
+    { code: 'BC', name: 'British Columbia' },
+    { code: 'AB', name: 'Alberta' }
+  ]}
+];
 
 export default function MerchantTaxManagement() {
   const [activeTab, setActiveTab] = useState('rates');
