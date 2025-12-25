@@ -178,39 +178,34 @@ const MerchantSidebar = ({ collapsed, setCollapsed, mobileOpen, setMobileOpen })
     store_name: 'My Store',
     store_logo: ''
   });
-  const [hasLoadedFromPlatform, setHasLoadedFromPlatform] = useState(false);
 
-  // Load store settings - check platform store first, then API
+  // Load store settings - prioritize platform store data
   useEffect(() => {
     let isMounted = true;
+    let intervalId = null;
     
-    const checkPlatformStore = () => {
+    const checkAndSetPlatformStore = () => {
+      // Check localStorage for platform store (set by platform dashboard)
       const platformStore = localStorage.getItem('platform_store');
       if (platformStore) {
         try {
           const storeData = JSON.parse(platformStore);
-          if (storeData && storeData.name) {
-            if (isMounted) {
-              setStoreSettings({
-                store_name: storeData.name,
-                store_logo: storeData.logo || ''
-              });
-              setHasLoadedFromPlatform(true);
-            }
+          if (storeData && storeData.name && isMounted) {
+            setStoreSettings({
+              store_name: storeData.name,
+              store_logo: storeData.logo || ''
+            });
             return true;
           }
         } catch (e) {}
       }
       
-      // Also check context store
-      if (store && store.name) {
-        if (isMounted) {
-          setStoreSettings({
-            store_name: store.name,
-            store_logo: store.logo || ''
-          });
-          setHasLoadedFromPlatform(true);
-        }
+      // Check auth context store
+      if (store && store.name && isMounted) {
+        setStoreSettings({
+          store_name: store.name,
+          store_logo: store.logo || ''
+        });
         return true;
       }
       
@@ -218,44 +213,48 @@ const MerchantSidebar = ({ collapsed, setCollapsed, mobileOpen, setMobileOpen })
     };
     
     // Check immediately
-    const foundPlatformStore = checkPlatformStore();
-    
-    // If not found, set up an interval to check (in case it's set after navigation)
-    if (!foundPlatformStore) {
-      const interval = setInterval(() => {
-        if (checkPlatformStore()) {
-          clearInterval(interval);
+    if (!checkAndSetPlatformStore()) {
+      // Poll for platform store (in case it's set after navigation)
+      intervalId = setInterval(() => {
+        if (checkAndSetPlatformStore()) {
+          clearInterval(intervalId);
+          intervalId = null;
         }
-      }, 100);
+      }, 50); // Check every 50ms
       
-      // Clear after 2 seconds if still not found
+      // After 500ms, if still no platform store, fall back to API
       setTimeout(() => {
-        clearInterval(interval);
-        // Fallback to API only if platform store was never found
-        if (isMounted && !hasLoadedFromPlatform) {
-          const fetchFromApi = async () => {
-            try {
-              const response = await axios.get(`${BACKEND_URL}/api/store/settings`);
-              if (response.data && isMounted) {
-                setStoreSettings({
-                  store_name: response.data.store_name || 'My Store',
-                  store_logo: response.data.store_logo || ''
-                });
-              }
-            } catch (error) {}
-          };
-          fetchFromApi();
+        if (intervalId) {
+          clearInterval(intervalId);
+          intervalId = null;
         }
-      }, 2000);
-      
-      return () => {
-        isMounted = false;
-        clearInterval(interval);
-      };
+        
+        // Only fetch from API if no platform store was ever found
+        const platformStore = localStorage.getItem('platform_store');
+        if (!platformStore && isMounted) {
+          axios.get(`${BACKEND_URL}/api/store/settings`)
+            .then(response => {
+              if (response.data && isMounted) {
+                // Double-check platform store hasn't been set in the meantime
+                const recheck = localStorage.getItem('platform_store');
+                if (!recheck) {
+                  setStoreSettings({
+                    store_name: response.data.store_name || 'My Store',
+                    store_logo: response.data.store_logo || ''
+                  });
+                }
+              }
+            })
+            .catch(() => {});
+        }
+      }, 500);
     }
     
-    return () => { isMounted = false; };
-  }, [store, hasLoadedFromPlatform]);
+    return () => {
+      isMounted = false;
+      if (intervalId) clearInterval(intervalId);
+    };
+  }, [store]);
 
   const getInitials = (name) => {
     if (!name) return 'MS';
