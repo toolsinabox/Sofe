@@ -39,6 +39,7 @@ from routes import operations as operations_module
 from routes import customer_management as customer_management_module
 from routes import blog as blog_module
 from routes import abandoned_carts as abandoned_carts_module
+from routes import custom_fields as custom_fields_module
 
 ROOT_DIR = Path(__file__).parent
 load_dotenv(ROOT_DIR / '.env')
