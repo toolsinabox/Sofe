@@ -418,11 +418,11 @@ const AdminMerchants = () => {
                   </div>
                   <div>
                     <p className="text-gray-500 text-xs mb-1">Orders</p>
-                    <p className="text-white font-semibold text-sm">{(merchant.orders || 0).toLocaleString()}</p>
+                    <p className="text-white font-semibold text-sm">{(merchant.order_count || merchant.orders || 0).toLocaleString()}</p>
                   </div>
                   <div>
-                    <p className="text-gray-500 text-xs mb-1">Products</p>
-                    <p className="text-white font-semibold text-sm">{(merchant.products || 0).toLocaleString()}</p>
+                    <p className="text-gray-500 text-xs mb-1">Customers</p>
+                    <p className="text-white font-semibold text-sm">{(merchant.customer_count || merchant.customers || 0).toLocaleString()}</p>
                   </div>
                 </div>
               </CardContent>
