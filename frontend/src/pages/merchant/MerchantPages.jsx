@@ -421,7 +421,7 @@ const MerchantPages = () => {
             {pages.length === 0 && !loading && (
               <tr>
                 <td colSpan="7" className="p-8 text-center text-gray-500">
-                  No pages found. Click "Add Page" to create your first page.
+                  No pages found. Click &quot;Add Page&quot; to create your first page.
                 </td>
               </tr>
             )}
