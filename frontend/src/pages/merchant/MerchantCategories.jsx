@@ -289,6 +289,15 @@ const MerchantCategories = () => {
                   onCheckedChange={(checked) => setFormData(prev => ({ ...prev, is_active: checked }))}
                 />
               </div>
+              
+              {/* Custom Fields */}
+              <CustomFieldsEditor
+                section="categories"
+                values={formData.custom_fields}
+                onChange={(values) => setFormData(prev => ({ ...prev, custom_fields: values }))}
+                compact={true}
+              />
+              
               <div className="flex gap-2 pt-4">
                 <Button type="button" variant="outline" onClick={closeModal} className="flex-1 border-gray-200 text-gray-700">
                   Cancel
