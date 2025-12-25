@@ -63,6 +63,12 @@ import MerchantImportExport from "./pages/merchant/MerchantImportExport";
 import MerchantCustomFields from "./pages/merchant/MerchantCustomFields";
 import MerchantTemplateTags from "./pages/merchant/MerchantTemplateTags";
 
+// Platform Pages (Multi-Tenant Hosting)
+import PlatformHome from "./pages/platform/PlatformHome";
+import PlatformSignup from "./pages/platform/PlatformSignup";
+import PlatformLogin from "./pages/platform/PlatformLogin";
+import PlatformDashboard from "./pages/platform/PlatformDashboard";
+
 // Live Storefront (Theme-rendered)
 import LiveThemeStorefront from "./pages/store/LiveThemeStorefront";
 
