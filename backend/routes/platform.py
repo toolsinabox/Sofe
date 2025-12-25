@@ -646,3 +646,241 @@ async def resolve_domain(domain: str):
     if not store:
         raise HTTPException(status_code=404, detail="Store not found for this domain")
     return {"store_id": store["id"], "store": store}
+
+
+# ==================== STRIPE BILLING ====================
+
+import stripe
+import os
+
+stripe.api_key = os.environ.get("STRIPE_API_KEY", "sk_test_emergent")
+
+# Stripe Price IDs for each plan (in production, these would be real Stripe price IDs)
+# For testing, we'll create them dynamically or use placeholders
+STRIPE_PRICE_IDS = {
+    "starter": os.environ.get("STRIPE_PRICE_STARTER", "price_starter_monthly"),
+    "professional": os.environ.get("STRIPE_PRICE_PROFESSIONAL", "price_professional_monthly"),
+    "enterprise": os.environ.get("STRIPE_PRICE_ENTERPRISE", "price_enterprise_monthly"),
+}
+
+@router.post("/billing/create-checkout")
+async def create_checkout_session(
+    store_id: str,
+    plan_id: str,
+    success_url: str = None,
+    cancel_url: str = None
+):
+    """Create a Stripe checkout session for plan upgrade"""
+    
+    # Validate plan
+    if plan_id not in ["starter", "professional", "enterprise"]:
+        raise HTTPException(status_code=400, detail="Invalid plan")
+    
+    # Get store
+    store = await db.platform_stores.find_one({"id": store_id})
+    if not store:
+        raise HTTPException(status_code=404, detail="Store not found")
+    
+    # Get owner
+    owner = await db.platform_owners.find_one({"id": store["owner_id"]})
+    if not owner:
+        raise HTTPException(status_code=404, detail="Store owner not found")
+    
+    # Get or create Stripe customer
+    customer_id = owner.get("stripe_customer_id")
+    if not customer_id:
+        try:
+            customer = stripe.Customer.create(
+                email=owner["email"],
+                name=owner["name"],
+                metadata={"owner_id": owner["id"], "store_id": store_id}
+            )
+            customer_id = customer.id
+            await db.platform_owners.update_one(
+                {"id": owner["id"]},
+                {"$set": {"stripe_customer_id": customer_id}}
+            )
+        except stripe.error.StripeError as e:
+            raise HTTPException(status_code=500, detail=f"Failed to create customer: {str(e)}")
+    
+    # Create checkout session
+    frontend_url = os.environ.get("FRONTEND_URL", "http://localhost:3000")
+    
+    try:
+        session = stripe.checkout.Session.create(
+            customer=customer_id,
+            payment_method_types=["card"],
+            line_items=[{
+                "price_data": {
+                    "currency": "aud",
+                    "product_data": {
+                        "name": f"StoreBuilder {plan_id.title()} Plan",
+                        "description": f"Monthly subscription to {plan_id.title()} plan",
+                    },
+                    "unit_amount": PLANS[plan_id].price * 100,  # Convert to cents
+                    "recurring": {"interval": "month"},
+                },
+                "quantity": 1,
+            }],
+            mode="subscription",
+            success_url=success_url or f"{frontend_url}/dashboard?upgrade=success&plan={plan_id}",
+            cancel_url=cancel_url or f"{frontend_url}/dashboard?upgrade=cancelled",
+            metadata={
+                "store_id": store_id,
+                "plan_id": plan_id,
+                "owner_id": owner["id"]
+            }
+        )
+        
+        return {
+            "checkout_url": session.url,
+            "session_id": session.id
+        }
+        
+    except stripe.error.StripeError as e:
+        raise HTTPException(status_code=500, detail=f"Failed to create checkout: {str(e)}")
+
+
+@router.post("/billing/create-portal")
+async def create_billing_portal(store_id: str, return_url: str = None):
+    """Create a Stripe billing portal session for subscription management"""
+    
+    # Get store and owner
+    store = await db.platform_stores.find_one({"id": store_id})
+    if not store:
+        raise HTTPException(status_code=404, detail="Store not found")
+    
+    owner = await db.platform_owners.find_one({"id": store["owner_id"]})
+    if not owner:
+        raise HTTPException(status_code=404, detail="Store owner not found")
+    
+    customer_id = owner.get("stripe_customer_id")
+    if not customer_id:
+        raise HTTPException(status_code=400, detail="No billing account found. Please upgrade first.")
+    
+    frontend_url = os.environ.get("FRONTEND_URL", "http://localhost:3000")
+    
+    try:
+        session = stripe.billing_portal.Session.create(
+            customer=customer_id,
+            return_url=return_url or f"{frontend_url}/dashboard"
+        )
+        
+        return {"portal_url": session.url}
+        
+    except stripe.error.StripeError as e:
+        raise HTTPException(status_code=500, detail=f"Failed to create portal: {str(e)}")
+
+
+@router.post("/billing/webhook")
+async def stripe_webhook(request: Request):
+    """Handle Stripe webhook events"""
+    
+    payload = await request.body()
+    sig_header = request.headers.get("stripe-signature")
+    webhook_secret = os.environ.get("STRIPE_WEBHOOK_SECRET")
+    
+    try:
+        if webhook_secret and sig_header:
+            event = stripe.Webhook.construct_event(payload, sig_header, webhook_secret)
+        else:
+            # For testing without webhook signature
+            import json
+            event = json.loads(payload)
+    except ValueError:
+        raise HTTPException(status_code=400, detail="Invalid payload")
+    except stripe.error.SignatureVerificationError:
+        raise HTTPException(status_code=400, detail="Invalid signature")
+    
+    event_type = event.get("type", event.get("data", {}).get("object", {}).get("type"))
+    
+    # Handle subscription events
+    if event_type == "checkout.session.completed":
+        session = event["data"]["object"]
+        metadata = session.get("metadata", {})
+        store_id = metadata.get("store_id")
+        plan_id = metadata.get("plan_id")
+        subscription_id = session.get("subscription")
+        
+        if store_id and plan_id:
+            await db.platform_stores.update_one(
+                {"id": store_id},
+                {
+                    "$set": {
+                        "plan_id": plan_id,
+                        "subscription_id": subscription_id,
+                        "status": "active",
+                        "updated_at": datetime.now(timezone.utc)
+                    }
+                }
+            )
+            
+    elif event_type == "customer.subscription.updated":
+        subscription = event["data"]["object"]
+        subscription_id = subscription["id"]
+        status = subscription["status"]
+        
+        # Find and update store
+        store = await db.platform_stores.find_one({"subscription_id": subscription_id})
+        if store:
+            new_status = "active" if status == "active" else "suspended" if status in ["past_due", "unpaid"] else store["status"]
+            await db.platform_stores.update_one(
+                {"id": store["id"]},
+                {"$set": {"status": new_status, "updated_at": datetime.now(timezone.utc)}}
+            )
+            
+    elif event_type == "customer.subscription.deleted":
+        subscription = event["data"]["object"]
+        subscription_id = subscription["id"]
+        
+        # Downgrade to free plan
+        store = await db.platform_stores.find_one({"subscription_id": subscription_id})
+        if store:
+            await db.platform_stores.update_one(
+                {"id": store["id"]},
+                {
+                    "$set": {
+                        "plan_id": "free",
+                        "subscription_id": None,
+                        "status": "active",
+                        "updated_at": datetime.now(timezone.utc)
+                    }
+                }
+            )
+    
+    return {"received": True}
+
+
+@router.get("/billing/subscription/{store_id}")
+async def get_subscription_details(store_id: str):
+    """Get subscription details for a store"""
+    
+    store = await db.platform_stores.find_one({"id": store_id})
+    if not store:
+        raise HTTPException(status_code=404, detail="Store not found")
+    
+    owner = await db.platform_owners.find_one({"id": store["owner_id"]})
+    
+    plan = PLANS.get(store.get("plan_id", "free"))
+    
+    subscription_details = {
+        "plan_id": store.get("plan_id", "free"),
+        "plan_name": plan.name if plan else "Free",
+        "plan_price": plan.price if plan else 0,
+        "status": store.get("status", "active"),
+        "subscription_id": store.get("subscription_id"),
+        "has_billing_account": bool(owner and owner.get("stripe_customer_id")),
+        "features": plan.features.dict() if plan else {}
+    }
+    
+    # If there's an active subscription, get details from Stripe
+    if store.get("subscription_id") and stripe.api_key:
+        try:
+            subscription = stripe.Subscription.retrieve(store["subscription_id"])
+            subscription_details["current_period_end"] = datetime.fromtimestamp(subscription.current_period_end).isoformat()
+            subscription_details["cancel_at_period_end"] = subscription.cancel_at_period_end
+        except:
+            pass
+    
+    return subscription_details
+
