@@ -127,6 +127,7 @@ export default function PlatformHome() {
               <span className="text-xl font-bold">Celora</span>
             </Link>
             
+            {/* Desktop Navigation */}
             <div className="hidden md:flex items-center gap-8">
               <a href="#features" className="text-gray-600 hover:text-gray-900">Features</a>
               <a href="#pricing" className="text-gray-600 hover:text-gray-900">Pricing</a>
@@ -136,49 +137,72 @@ export default function PlatformHome() {
                 Start Free <ArrowRight className="w-4 h-4 ml-2" />
               </Button>
             </div>
+
+            {/* Mobile Menu Button */}
+            <button 
+              className="md:hidden p-2 rounded-lg hover:bg-gray-100"
+              onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+            >
+              {mobileMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
+            </button>
           </div>
         </div>
+
+        {/* Mobile Menu */}
+        {mobileMenuOpen && (
+          <div className="md:hidden bg-white border-t">
+            <div className="px-4 py-4 space-y-3">
+              <a href="#features" className="block py-2 text-gray-600 hover:text-gray-900" onClick={() => setMobileMenuOpen(false)}>Features</a>
+              <a href="#pricing" className="block py-2 text-gray-600 hover:text-gray-900" onClick={() => setMobileMenuOpen(false)}>Pricing</a>
+              <a href="#testimonials" className="block py-2 text-gray-600 hover:text-gray-900" onClick={() => setMobileMenuOpen(false)}>Testimonials</a>
+              <Link to="/login" className="block py-2 text-gray-600 hover:text-gray-900" onClick={() => setMobileMenuOpen(false)}>Login</Link>
+              <Button className="w-full" onClick={() => { setMobileMenuOpen(false); navigate('/signup'); }}>
+                Start Free <ArrowRight className="w-4 h-4 ml-2" />
+              </Button>
+            </div>
+          </div>
+        )}
       </nav>
 
       {/* Hero Section */}
-      <section className="pt-32 pb-20 px-4 bg-gradient-to-b from-blue-50 to-white">
+      <section className="pt-24 sm:pt-32 pb-12 sm:pb-20 px-4 bg-gradient-to-b from-blue-50 to-white">
         <div className="max-w-7xl mx-auto text-center">
           <Badge className="mb-4 bg-blue-100 text-blue-700 hover:bg-blue-100">
             <Sparkles className="w-3 h-3 mr-1" /> Trusted by 10,000+ stores
           </Badge>
-          <h1 className="text-5xl md:text-6xl font-bold text-gray-900 mb-6">
+          <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold text-gray-900 mb-4 sm:mb-6">
             Build Your Online Store
             <br />
             <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-purple-600">
               In Minutes, Not Months
             </span>
           </h1>
-          <p className="text-xl text-gray-600 mb-8 max-w-2xl mx-auto">
+          <p className="text-base sm:text-lg md:text-xl text-gray-600 mb-6 sm:mb-8 max-w-2xl mx-auto px-4">
             Everything you need to start, run, and grow your online business. 
             No coding required. Free to start.
           </p>
           
-          <div className="flex flex-col sm:flex-row gap-4 justify-center items-center max-w-md mx-auto">
+          <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 justify-center items-center max-w-md mx-auto px-4">
             <Input
               type="email"
               placeholder="Enter your email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              className="h-12"
+              className="h-12 w-full"
             />
-            <Button size="lg" onClick={handleStartFree} className="w-full sm:w-auto">
+            <Button size="lg" onClick={handleStartFree} className="w-full sm:w-auto whitespace-nowrap">
               Start Free <ArrowRight className="w-4 h-4 ml-2" />
             </Button>
           </div>
           
-          <p className="text-sm text-gray-500 mt-4">
+          <p className="text-xs sm:text-sm text-gray-500 mt-4">
             No credit card required • Free forever plan available
           </p>
 
           {/* Hero Image */}
-          <div className="mt-16 relative">
-            <div className="bg-gradient-to-r from-blue-600 to-purple-600 rounded-2xl p-1">
-              <div className="bg-white rounded-xl overflow-hidden shadow-2xl">
+          <div className="mt-8 sm:mt-16 relative px-2 sm:px-0">
+            <div className="bg-gradient-to-r from-blue-600 to-purple-600 rounded-xl sm:rounded-2xl p-1">
+              <div className="bg-white rounded-lg sm:rounded-xl overflow-hidden shadow-2xl">
                 <img 
                   src="https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=1200&h=600&fit=crop"
                   alt="Dashboard Preview"
