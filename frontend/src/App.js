@@ -295,6 +295,7 @@ function App() {
               <Route path="tax" element={<MerchantTaxManagement />} />
               <Route path="import-export" element={<MerchantImportExport />} />
               <Route path="custom-fields" element={<MerchantCustomFields />} />
+              <Route path="template-tags" element={<MerchantTemplateTags />} />
             </Route>
 
             {/* Live Theme Storefront - Main customer-facing store */}
