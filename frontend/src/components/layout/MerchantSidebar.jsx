@@ -178,66 +178,84 @@ const MerchantSidebar = ({ collapsed, setCollapsed, mobileOpen, setMobileOpen })
     store_name: 'My Store',
     store_logo: ''
   });
+  const [hasLoadedFromPlatform, setHasLoadedFromPlatform] = useState(false);
 
-  // Load store settings on mount and when store changes
+  // Load store settings - check platform store first, then API
   useEffect(() => {
-    const loadStoreSettings = () => {
-      // Priority 1: Check localStorage first (set by platform dashboard)
+    let isMounted = true;
+    
+    const checkPlatformStore = () => {
       const platformStore = localStorage.getItem('platform_store');
       if (platformStore) {
         try {
           const storeData = JSON.parse(platformStore);
           if (storeData && storeData.name) {
-            setStoreSettings({
-              store_name: storeData.name,
-              store_logo: storeData.logo || ''
-            });
+            if (isMounted) {
+              setStoreSettings({
+                store_name: storeData.name,
+                store_logo: storeData.logo || ''
+              });
+              setHasLoadedFromPlatform(true);
+            }
             return true;
           }
-        } catch (e) {
-          console.error('Failed to parse platform store data');
-        }
+        } catch (e) {}
       }
       
-      // Priority 2: Use store from context
+      // Also check context store
       if (store && store.name) {
-        setStoreSettings({
-          store_name: store.name,
-          store_logo: store.logo || ''
-        });
+        if (isMounted) {
+          setStoreSettings({
+            store_name: store.name,
+            store_logo: store.logo || ''
+          });
+          setHasLoadedFromPlatform(true);
+        }
         return true;
       }
       
       return false;
     };
     
-    // Try to load from localStorage/context first
-    if (!loadStoreSettings()) {
-      // Fallback to API only if no store context found
-      const fetchStoreSettings = async () => {
-        try {
-          const response = await axios.get(`${BACKEND_URL}/api/store/settings`);
-          if (response.data) {
-            setStoreSettings({
-              store_name: response.data.store_name || 'My Store',
-              store_logo: response.data.store_logo || ''
-            });
-          }
-        } catch (error) {
-          console.error('Error fetching store settings:', error);
+    // Check immediately
+    const foundPlatformStore = checkPlatformStore();
+    
+    // If not found, set up an interval to check (in case it's set after navigation)
+    if (!foundPlatformStore) {
+      const interval = setInterval(() => {
+        if (checkPlatformStore()) {
+          clearInterval(interval);
         }
+      }, 100);
+      
+      // Clear after 2 seconds if still not found
+      setTimeout(() => {
+        clearInterval(interval);
+        // Fallback to API only if platform store was never found
+        if (isMounted && !hasLoadedFromPlatform) {
+          const fetchFromApi = async () => {
+            try {
+              const response = await axios.get(`${BACKEND_URL}/api/store/settings`);
+              if (response.data && isMounted) {
+                setStoreSettings({
+                  store_name: response.data.store_name || 'My Store',
+                  store_logo: response.data.store_logo || ''
+                });
+              }
+            } catch (error) {}
+          };
+          fetchFromApi();
+        }
+      }, 2000);
+      
+      return () => {
+        isMounted = false;
+        clearInterval(interval);
       };
-      fetchStoreSettings();
     }
-  }, [store]);
-  
-  // Also check on every render in case localStorage changed
-  useEffect(() => {
-    const platformStore = localStorage.getItem('platform_store');
-    if (platformStore) {
-      try {
-        const storeData = JSON.parse(platformStore);
-        if (storeData && storeData.name && storeData.name !== storeSettings.store_name) {
+    
+    return () => { isMounted = false; };
+  }, [store, hasLoadedFromPlatform]);
           setStoreSettings({
             store_name: storeData.name,
             store_logo: storeData.logo || ''
