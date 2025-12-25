@@ -297,33 +297,33 @@ export default function PlatformHome() {
       </section>
 
       {/* Testimonials */}
-      <section id="testimonials" className="py-20 px-4">
+      <section id="testimonials" className="py-12 sm:py-20 px-4">
         <div className="max-w-7xl mx-auto">
-          <div className="text-center mb-16">
-            <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
+          <div className="text-center mb-10 sm:mb-16">
+            <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-gray-900 mb-4">
               Loved by Thousands of Merchants
             </h2>
           </div>
           
-          <div className="grid md:grid-cols-3 gap-8">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 sm:gap-6 lg:gap-8">
             {testimonials.map((testimonial, index) => (
               <Card key={index} className="border-0 shadow-lg">
-                <CardContent className="p-6">
-                  <div className="flex items-center gap-1 mb-4">
+                <CardContent className="p-4 sm:p-6">
+                  <div className="flex items-center gap-1 mb-3 sm:mb-4">
                     {[...Array(5)].map((_, i) => (
                       <Star key={i} className="w-4 h-4 fill-yellow-400 text-yellow-400" />
                     ))}
                   </div>
-                  <p className="text-gray-600 mb-6">&ldquo;{testimonial.quote}&rdquo;</p>
+                  <p className="text-sm sm:text-base text-gray-600 mb-4 sm:mb-6">&ldquo;{testimonial.quote}&rdquo;</p>
                   <div className="flex items-center gap-3">
                     <img 
                       src={testimonial.image} 
                       alt={testimonial.name}
-                      className="w-12 h-12 rounded-full"
+                      className="w-10 h-10 sm:w-12 sm:h-12 rounded-full"
                     />
                     <div>
-                      <div className="font-semibold">{testimonial.name}</div>
-                      <div className="text-sm text-gray-500">{testimonial.company}</div>
+                      <div className="font-semibold text-sm sm:text-base">{testimonial.name}</div>
+                      <div className="text-xs sm:text-sm text-gray-500">{testimonial.company}</div>
                     </div>
                   </div>
                 </CardContent>
@@ -334,12 +334,12 @@ export default function PlatformHome() {
       </section>
 
       {/* CTA Section */}
-      <section className="py-20 px-4 bg-gradient-to-r from-blue-600 to-purple-600">
+      <section className="py-12 sm:py-20 px-4 bg-gradient-to-r from-blue-600 to-purple-600">
         <div className="max-w-4xl mx-auto text-center text-white">
-          <h2 className="text-3xl md:text-4xl font-bold mb-6">
+          <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold mb-4 sm:mb-6">
             Ready to Start Your Store?
           </h2>
-          <p className="text-xl opacity-90 mb-8">
+          <p className="text-base sm:text-lg md:text-xl opacity-90 mb-6 sm:mb-8 px-4">
             Join thousands of successful merchants. Start for free today.
           </p>
           <Button 
@@ -353,10 +353,10 @@ export default function PlatformHome() {
       </section>
 
       {/* Footer */}
-      <footer className="py-12 px-4 bg-gray-900 text-gray-400">
+      <footer className="py-8 sm:py-12 px-4 bg-gray-900 text-gray-400">
         <div className="max-w-7xl mx-auto">
-          <div className="grid md:grid-cols-4 gap-8">
-            <div>
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-6 sm:gap-8">
+            <div className="col-span-2 md:col-span-1">
               <div className="flex items-center gap-2 mb-4">
                 <div className="w-8 h-8 bg-white rounded-lg flex items-center justify-center">
                   <Store className="w-5 h-5 text-gray-900" />
@@ -366,8 +366,8 @@ export default function PlatformHome() {
               <p className="text-sm">The easiest way to build and grow your online store.</p>
             </div>
             <div>
-              <h4 className="font-semibold text-white mb-4">Product</h4>
-              <ul className="space-y-2 text-sm">
+              <h4 className="font-semibold text-white mb-3 sm:mb-4 text-sm sm:text-base">Product</h4>
+              <ul className="space-y-2 text-xs sm:text-sm">
                 <li><a href="#features" className="hover:text-white">Features</a></li>
                 <li><a href="#pricing" className="hover:text-white">Pricing</a></li>
                 <li><a href="#" className="hover:text-white">Themes</a></li>
@@ -375,8 +375,8 @@ export default function PlatformHome() {
               </ul>
             </div>
             <div>
-              <h4 className="font-semibold text-white mb-4">Company</h4>
-              <ul className="space-y-2 text-sm">
+              <h4 className="font-semibold text-white mb-3 sm:mb-4 text-sm sm:text-base">Company</h4>
+              <ul className="space-y-2 text-xs sm:text-sm">
                 <li><a href="#" className="hover:text-white">About</a></li>
                 <li><a href="#" className="hover:text-white">Blog</a></li>
                 <li><a href="#" className="hover:text-white">Careers</a></li>
@@ -384,15 +384,15 @@ export default function PlatformHome() {
               </ul>
             </div>
             <div>
-              <h4 className="font-semibold text-white mb-4">Legal</h4>
-              <ul className="space-y-2 text-sm">
+              <h4 className="font-semibold text-white mb-3 sm:mb-4 text-sm sm:text-base">Legal</h4>
+              <ul className="space-y-2 text-xs sm:text-sm">
                 <li><a href="#" className="hover:text-white">Privacy Policy</a></li>
                 <li><a href="#" className="hover:text-white">Terms of Service</a></li>
                 <li><a href="#" className="hover:text-white">Cookie Policy</a></li>
               </ul>
             </div>
           </div>
-          <div className="border-t border-gray-800 mt-12 pt-8 text-sm text-center">
+          <div className="border-t border-gray-800 mt-8 sm:mt-12 pt-6 sm:pt-8 text-xs sm:text-sm text-center">
             © {new Date().getFullYear()} Celora. All rights reserved.
           </div>
         </div>
