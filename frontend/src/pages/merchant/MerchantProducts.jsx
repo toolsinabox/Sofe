@@ -488,6 +488,7 @@ const ProductEditor = ({ product, categories, onSave, onClose, templateTags }) =
     { id: 'shipping', label: 'Shipping', icon: Truck },
     { id: 'seo', label: 'SEO', icon: Globe },
     { id: 'visibility', label: 'Visibility', icon: Eye },
+    { id: 'custom', label: 'Custom Fields', icon: Bookmark },
   ];
 
   return (
