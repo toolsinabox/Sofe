@@ -3618,6 +3618,108 @@ async def upload_review_image(file: UploadFile = File(...)):
     # Return URL
     return {"url": f"{BACKEND_URL}/uploads/reviews/{filename}"}
 
+# ==================== MERCHANT NOTIFICATIONS ====================
+
+class MerchantNotification(BaseModel):
+    id: str = Field(default_factory=lambda: str(uuid.uuid4()))
+    type: str  # order, return, review, stock, system, payment
+    title: str
+    message: str
+    link: Optional[str] = None  # Link to related resource
+    priority: str = "normal"  # low, normal, high, urgent
+    is_read: bool = False
+    created_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
+    read_at: Optional[datetime] = None
+
+@api_router.get("/notifications")
+async def get_merchant_notifications(
+    is_read: Optional[bool] = None,
+    type: Optional[str] = None,
+    limit: int = 50
+):
+    """Get merchant notifications"""
+    query = {}
+    if is_read is not None:
+        query["is_read"] = is_read
+    if type:
+        query["type"] = type
+    
+    notifications = await db.merchant_notifications.find(query, {"_id": 0}).sort("created_at", -1).limit(limit).to_list(limit)
+    unread_count = await db.merchant_notifications.count_documents({"is_read": False})
+    
+    return {"notifications": notifications, "unread_count": unread_count}
+
+@api_router.get("/notifications/stats")
+async def get_notifications_stats():
+    """Get notification statistics"""
+    total = await db.merchant_notifications.count_documents({})
+    unread = await db.merchant_notifications.count_documents({"is_read": False})
+    
+    # Count by type
+    pipeline = [
+        {"$group": {"_id": "$type", "count": {"$sum": 1}}}
+    ]
+    by_type = await db.merchant_notifications.aggregate(pipeline).to_list(20)
+    type_counts = {item["_id"]: item["count"] for item in by_type}
+    
+    return {
+        "total": total,
+        "unread": unread,
+        "by_type": type_counts
+    }
+
+@api_router.post("/notifications/{notification_id}/read")
+async def mark_notification_read(notification_id: str):
+    """Mark a notification as read"""
+    result = await db.merchant_notifications.update_one(
+        {"id": notification_id},
+        {"$set": {"is_read": True, "read_at": datetime.now(timezone.utc).isoformat()}}
+    )
+    if result.modified_count == 0:
+        raise HTTPException(status_code=404, detail="Notification not found")
+    return {"success": True}
+
+@api_router.post("/notifications/mark-all-read")
+async def mark_all_notifications_read():
+    """Mark all notifications as read"""
+    await db.merchant_notifications.update_many(
+        {"is_read": False},
+        {"$set": {"is_read": True, "read_at": datetime.now(timezone.utc).isoformat()}}
+    )
+    return {"success": True}
+
+@api_router.delete("/notifications/{notification_id}")
+async def delete_notification(notification_id: str):
+    """Delete a notification"""
+    result = await db.merchant_notifications.delete_one({"id": notification_id})
+    if result.deleted_count == 0:
+        raise HTTPException(status_code=404, detail="Notification not found")
+    return {"success": True}
+
+@api_router.delete("/notifications/clear-all")
+async def clear_all_notifications():
+    """Clear all read notifications"""
+    await db.merchant_notifications.delete_many({"is_read": True})
+    return {"success": True}
+
+# Helper function to create notifications (used internally)
+async def create_merchant_notification(
+    type: str,
+    title: str,
+    message: str,
+    link: Optional[str] = None,
+    priority: str = "normal"
+):
+    notification = MerchantNotification(
+        type=type,
+        title=title,
+        message=message,
+        link=link,
+        priority=priority
+    )
+    await db.merchant_notifications.insert_one(notification.dict())
+    return notification
+
 # ==================== STOCK NOTIFICATIONS ====================
 
 @api_router.post("/stock-notifications")
