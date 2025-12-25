@@ -49,12 +49,13 @@ export default function PlatformDashboard() {
         store_id: currentStore.id
       };
       
-      // Login to merchant context
-      login(token, merchantUser, currentStore);
-      
-      // Store the store context for API calls
+      // IMPORTANT: Set localStorage BEFORE login to ensure sidebar picks it up
+      localStorage.setItem('platform_store', JSON.stringify(currentStore));
       localStorage.setItem('store_id', currentStore.id);
       axios.defaults.headers.common['X-Store-ID'] = currentStore.id;
+      
+      // Login to merchant context
+      login(token, merchantUser, currentStore);
       
       // Navigate to merchant dashboard
       navigate('/merchant');
