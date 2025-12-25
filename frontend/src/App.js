@@ -60,6 +60,7 @@ import MerchantNotifications from "./pages/merchant/MerchantNotifications";
 import MerchantActivityLog from "./pages/merchant/MerchantActivityLog";
 import MerchantTaxManagement from "./pages/merchant/MerchantTaxManagement";
 import MerchantImportExport from "./pages/merchant/MerchantImportExport";
+import MerchantCustomFields from "./pages/merchant/MerchantCustomFields";
 
 // Live Storefront (Theme-rendered)
 import LiveThemeStorefront from "./pages/store/LiveThemeStorefront";
