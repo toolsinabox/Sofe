@@ -215,26 +215,26 @@ export default function PlatformHome() {
       </section>
 
       {/* Features Section */}
-      <section id="features" className="py-20 px-4">
+      <section id="features" className="py-12 sm:py-20 px-4">
         <div className="max-w-7xl mx-auto">
-          <div className="text-center mb-16">
-            <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
+          <div className="text-center mb-10 sm:mb-16">
+            <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-gray-900 mb-3 sm:mb-4">
               Everything You Need to Succeed
             </h2>
-            <p className="text-xl text-gray-600 max-w-2xl mx-auto">
+            <p className="text-base sm:text-lg md:text-xl text-gray-600 max-w-2xl mx-auto px-4">
               Powerful features to help you build, launch, and scale your online store
             </p>
           </div>
           
-          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 lg:gap-8">
             {features.map((feature, index) => (
               <Card key={index} className="border-0 shadow-lg hover:shadow-xl transition-shadow">
-                <CardContent className="p-6">
-                  <div className="w-12 h-12 bg-blue-100 rounded-xl flex items-center justify-center mb-4">
-                    <feature.icon className="w-6 h-6 text-blue-600" />
+                <CardContent className="p-4 sm:p-6">
+                  <div className="w-10 h-10 sm:w-12 sm:h-12 bg-blue-100 rounded-xl flex items-center justify-center mb-3 sm:mb-4">
+                    <feature.icon className="w-5 h-5 sm:w-6 sm:h-6 text-blue-600" />
                   </div>
-                  <h3 className="text-xl font-semibold mb-2">{feature.title}</h3>
-                  <p className="text-gray-600">{feature.description}</p>
+                  <h3 className="text-lg sm:text-xl font-semibold mb-2">{feature.title}</h3>
+                  <p className="text-sm sm:text-base text-gray-600">{feature.description}</p>
                 </CardContent>
               </Card>
             ))}
@@ -243,18 +243,18 @@ export default function PlatformHome() {
       </section>
 
       {/* Pricing Section */}
-      <section id="pricing" className="py-20 px-4 bg-gray-50">
+      <section id="pricing" className="py-12 sm:py-20 px-4 bg-gray-50">
         <div className="max-w-7xl mx-auto">
-          <div className="text-center mb-16">
-            <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
+          <div className="text-center mb-10 sm:mb-16">
+            <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-gray-900 mb-3 sm:mb-4">
               Simple, Transparent Pricing
             </h2>
-            <p className="text-xl text-gray-600">
+            <p className="text-base sm:text-lg md:text-xl text-gray-600">
               Start free, upgrade when you&apos;re ready
             </p>
           </div>
           
-          <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6 lg:gap-8">
             {plans.map((plan, index) => (
               <Card 
                 key={index} 
@@ -265,18 +265,18 @@ export default function PlatformHome() {
                     <Badge className="bg-blue-600">Most Popular</Badge>
                   </div>
                 )}
-                <CardContent className="p-6">
-                  <h3 className="text-xl font-semibold mb-2">{plan.name}</h3>
-                  <div className="mb-4">
-                    <span className="text-4xl font-bold">{plan.price}</span>
-                    <span className="text-gray-500">{plan.period}</span>
+                <CardContent className="p-4 sm:p-6">
+                  <h3 className="text-lg sm:text-xl font-semibold mb-2">{plan.name}</h3>
+                  <div className="mb-3 sm:mb-4">
+                    <span className="text-3xl sm:text-4xl font-bold">{plan.price}</span>
+                    <span className="text-gray-500 text-sm sm:text-base">{plan.period}</span>
                   </div>
-                  <p className="text-gray-600 mb-6">{plan.description}</p>
+                  <p className="text-sm sm:text-base text-gray-600 mb-4 sm:mb-6">{plan.description}</p>
                   
-                  <ul className="space-y-3 mb-6">
+                  <ul className="space-y-2 sm:space-y-3 mb-4 sm:mb-6">
                     {plan.features.map((feature, i) => (
-                      <li key={i} className="flex items-center gap-2 text-sm">
-                        <Check className="w-4 h-4 text-green-500" />
+                      <li key={i} className="flex items-center gap-2 text-xs sm:text-sm">
+                        <Check className="w-4 h-4 text-green-500 flex-shrink-0" />
                         {feature}
                       </li>
                     ))}
