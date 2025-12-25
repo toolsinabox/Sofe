@@ -703,9 +703,14 @@ async def resolve_store_from_request(request: Request) -> str:
     """
     Resolve store_id from multiple sources in priority order:
     1. X-Store-ID header (explicit)
-    2. Subdomain from Host header (e.g., mystore.storebuilder.com)
-    3. Custom domain lookup
+    2. Subdomain from Host header (e.g., toolsinabox.getcelora.com)
+    3. Custom domain lookup (e.g., www.mystore.com)
     4. Default store (fallback)
+    
+    Supported domain patterns for getcelora.com:
+    - toolsinabox.getcelora.com -> subdomain = "toolsinabox"
+    - www.getcelora.com -> main platform (default store)
+    - getcelora.com -> main platform (default store)
     """
     # Priority 1: Explicit header
     store_id = request.headers.get("X-Store-ID")
@@ -715,20 +720,33 @@ async def resolve_store_from_request(request: Request) -> str:
             return store_id
     
     # Priority 2: Subdomain from Host header
-    host = request.headers.get("Host", "")
+    host = request.headers.get("Host", "").lower()
     if host:
-        # Extract subdomain (e.g., "mystore" from "mystore.storebuilder.com")
-        parts = host.split(".")
-        if len(parts) >= 3:
+        # Remove port if present (for local development)
+        host_without_port = host.split(":")[0]
+        
+        # Check if this is a getcelora.com subdomain
+        if host_without_port.endswith(".getcelora.com"):
+            # Extract subdomain (e.g., "toolsinabox" from "toolsinabox.getcelora.com")
+            subdomain = host_without_port.replace(".getcelora.com", "")
+            # Skip www, api, admin - these are reserved
+            if subdomain and subdomain not in ["www", "api", "admin", "store", "app"]:
+                store = await db.platform_stores.find_one({"subdomain": subdomain})
+                if store:
+                    return store["id"]
+        
+        # Generic subdomain check for other domains (legacy support)
+        parts = host_without_port.split(".")
+        if len(parts) >= 3 and not host_without_port.endswith(".getcelora.com"):
             subdomain = parts[0]
             if subdomain not in ["www", "api", "admin"]:
                 store = await db.platform_stores.find_one({"subdomain": subdomain})
                 if store:
                     return store["id"]
         
-        # Priority 3: Custom domain lookup
+        # Priority 3: Custom domain lookup (e.g., www.customstore.com)
         store = await db.platform_stores.find_one({
-            "custom_domain": host,
+            "custom_domain": host_without_port,
             "custom_domain_verified": True
         })
         if store:
