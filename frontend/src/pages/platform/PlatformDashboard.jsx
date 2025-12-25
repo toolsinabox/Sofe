@@ -24,6 +24,7 @@ const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
 export default function PlatformDashboard() {
   const navigate = useNavigate();
   const location = useLocation();
+  const { login, setCurrentStore: setAuthStore } = useAuth();
   
   const [loading, setLoading] = useState(true);
   const [owner, setOwner] = useState(null);
@@ -34,6 +35,31 @@ export default function PlatformDashboard() {
   const [domainInput, setDomainInput] = useState('');
   const [domainLoading, setDomainLoading] = useState(false);
   const [domainResult, setDomainResult] = useState(null);
+
+  // Handle "Manage Store" click - log user into merchant dashboard
+  const handleManageStore = () => {
+    const token = localStorage.getItem('platform_token');
+    if (currentStore && owner && token) {
+      // Set up the auth context with store data
+      const merchantUser = {
+        id: owner.id,
+        email: owner.email,
+        name: owner.name,
+        role: 'merchant',
+        store_id: currentStore.id
+      };
+      
+      // Login to merchant context
+      login(token, merchantUser, currentStore);
+      
+      // Store the store context for API calls
+      localStorage.setItem('store_id', currentStore.id);
+      axios.defaults.headers.common['X-Store-ID'] = currentStore.id;
+      
+      // Navigate to merchant dashboard
+      navigate('/merchant');
+    }
+  };
 
   useEffect(() => {
     fetchData();
