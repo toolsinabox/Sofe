@@ -2134,20 +2134,22 @@ async def get_orders_stats(request: Request):
         return {"totalOrders": 0, "pendingOrders": 0, "totalRevenue": 0, "avgOrderValue": 0, "todayOrders": 0, "todayRevenue": 0}
 
 @api_router.get("/orders/{order_id}")
-async def get_order(order_id: str):
-    order = await db.orders.find_one({"id": order_id}, {"_id": 0})
+async def get_order(order_id: str, request: Request):
+    store_id = await get_store_id_from_header(request)
+    order = await db.orders.find_one({"id": order_id, "store_id": store_id}, {"_id": 0})
     if not order:
         raise HTTPException(status_code=404, detail="Order not found")
     return order
 
 @api_router.patch("/orders/{order_id}/status")
-async def update_order_status(order_id: str, status: str, notify: bool = False):
+async def update_order_status(order_id: str, status: str, request: Request, notify: bool = False):
+    store_id = await get_store_id_from_header(request)
     valid_statuses = ["pending", "processing", "shipped", "delivered", "cancelled", "refunded"]
     if status not in valid_statuses:
         raise HTTPException(status_code=400, detail=f"Invalid status. Must be one of: {valid_statuses}")
     
     result = await db.orders.update_one(
-        {"id": order_id},
+        {"id": order_id, "store_id": store_id},
         {"$set": {"status": status, "updated_at": datetime.now(timezone.utc)}}
     )
     if result.matched_count == 0:
