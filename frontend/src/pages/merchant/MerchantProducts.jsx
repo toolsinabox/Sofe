@@ -80,6 +80,7 @@ import {
 import { useDropzone } from 'react-dropzone';
 import { HelpCircle } from 'lucide-react';
 import { ImportExportButtons } from '../../components/ImportExport';
+import CustomFieldsEditor from '../../components/common/CustomFieldsEditor';
 
 const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
 const API = `${BACKEND_URL}/api`;
