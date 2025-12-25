@@ -191,23 +191,23 @@ export default function PlatformDashboard() {
       {/* Header */}
       <header className="bg-white border-b sticky top-0 z-50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex items-center justify-between h-16">
-            <div className="flex items-center gap-4">
+          <div className="flex items-center justify-between h-14 sm:h-16">
+            <div className="flex items-center gap-2 sm:gap-4">
               <Link to="/" className="flex items-center gap-2">
-                <div className="w-8 h-8 bg-gradient-to-br from-blue-600 to-purple-600 rounded-lg flex items-center justify-center">
-                  <Store className="w-5 h-5 text-white" />
+                <div className="w-7 h-7 sm:w-8 sm:h-8 bg-gradient-to-br from-blue-600 to-purple-600 rounded-lg flex items-center justify-center">
+                  <Store className="w-4 h-4 sm:w-5 sm:h-5 text-white" />
                 </div>
-                <span className="font-bold">Celora</span>
+                <span className="font-bold text-sm sm:text-base hidden sm:inline">Celora</span>
               </Link>
               
               {/* Store Switcher */}
               {stores.length > 0 && (
                 <DropdownMenu>
                   <DropdownMenuTrigger asChild>
-                    <Button variant="outline" className="gap-2">
-                      <Store className="w-4 h-4" />
-                      {currentStore?.store_name || 'Select Store'}
-                      <ChevronDown className="w-4 h-4" />
+                    <Button variant="outline" className="gap-1 sm:gap-2 text-xs sm:text-sm h-8 sm:h-9 px-2 sm:px-3">
+                      <Store className="w-3 h-3 sm:w-4 sm:h-4" />
+                      <span className="max-w-[80px] sm:max-w-[150px] truncate">{currentStore?.store_name || 'Select Store'}</span>
+                      <ChevronDown className="w-3 h-3 sm:w-4 sm:h-4" />
                     </Button>
                   </DropdownMenuTrigger>
                   <DropdownMenuContent align="start">
@@ -233,20 +233,20 @@ export default function PlatformDashboard() {
               )}
             </div>
             
-            <div className="flex items-center gap-4">
+            <div className="flex items-center gap-2 sm:gap-4">
               {currentStore && (
-                <Button variant="outline" asChild>
+                <Button variant="outline" asChild className="hidden sm:flex h-8 sm:h-9 text-xs sm:text-sm">
                   <a href={storeUrl} target="_blank" rel="noopener noreferrer">
-                    View Store <ExternalLink className="w-4 h-4 ml-2" />
+                    View Store <ExternalLink className="w-3 h-3 sm:w-4 sm:h-4 ml-1 sm:ml-2" />
                   </a>
                 </Button>
               )}
               
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
-                  <Button variant="ghost" className="gap-2">
-                    <div className="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center">
-                      <span className="text-blue-700 font-medium">
+                  <Button variant="ghost" className="gap-2 p-1 sm:p-2">
+                    <div className="w-7 h-7 sm:w-8 sm:h-8 bg-blue-100 rounded-full flex items-center justify-center">
+                      <span className="text-blue-700 font-medium text-xs sm:text-sm">
                         {owner?.name?.charAt(0) || 'U'}
                       </span>
                     </div>
@@ -254,10 +254,17 @@ export default function PlatformDashboard() {
                 </DropdownMenuTrigger>
                 <DropdownMenuContent align="end">
                   <div className="px-3 py-2">
-                    <p className="font-medium">{owner?.name}</p>
-                    <p className="text-sm text-gray-500">{owner?.email}</p>
+                    <p className="font-medium text-sm">{owner?.name}</p>
+                    <p className="text-xs text-gray-500">{owner?.email}</p>
                   </div>
                   <DropdownMenuSeparator />
+                  {currentStore && (
+                    <DropdownMenuItem asChild className="sm:hidden">
+                      <a href={storeUrl} target="_blank" rel="noopener noreferrer">
+                        <ExternalLink className="w-4 h-4 mr-2" /> View Store
+                      </a>
+                    </DropdownMenuItem>
+                  )}
                   <DropdownMenuItem onClick={() => navigate('/settings')}>
                     <Settings className="w-4 h-4 mr-2" /> Account Settings
                   </DropdownMenuItem>
@@ -272,12 +279,12 @@ export default function PlatformDashboard() {
       </header>
 
       {/* Main Content */}
-      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 sm:py-8">
         {/* Welcome Banner for New Users */}
         {location.state?.newStore && (
-          <Card className="mb-6 bg-gradient-to-r from-blue-600 to-purple-600 text-white border-0">
-            <CardContent className="p-6">
-              <h2 className="text-2xl font-bold mb-2">🎉 Your store is ready!</h2>
+          <Card className="mb-4 sm:mb-6 bg-gradient-to-r from-blue-600 to-purple-600 text-white border-0">
+            <CardContent className="p-4 sm:p-6">
+              <h2 className="text-xl sm:text-2xl font-bold mb-2">🎉 Your store is ready!</h2>
               <p className="opacity-90 mb-4">
                 Your store is live at {storeUrl}. Start adding products and customizing your theme.
               </p>
