@@ -77,7 +77,8 @@ const MerchantCategories = () => {
         description: category.description || '',
         image: category.image || '',
         is_active: category.is_active,
-        sort_order: category.sort_order
+        sort_order: category.sort_order,
+        custom_fields: category.custom_fields || {}
       });
     } else {
       setEditingCategory(null);
@@ -86,7 +87,8 @@ const MerchantCategories = () => {
         description: '',
         image: '',
         is_active: true,
-        sort_order: categories.length
+        sort_order: categories.length,
+        custom_fields: {}
       });
     }
     setShowModal(true);
