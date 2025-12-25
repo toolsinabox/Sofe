@@ -285,6 +285,7 @@ function App() {
               <Route path="blog" element={<MerchantBlog />} />
               <Route path="warehouses" element={<MerchantWarehouses />} />
               <Route path="returns" element={<MerchantReturns />} />
+              <Route path="notifications" element={<MerchantNotifications />} />
             </Route>
 
             {/* Live Theme Storefront - Main customer-facing store */}
