@@ -311,7 +311,7 @@ const AdminDashboard = () => {
                           </div>
                           <div>
                             <p className="text-white font-medium">{store.store_name || store.name}</p>
-                            <p className="text-gray-500 text-sm">{store.subdomain}.storebuilder.com</p>
+                            <p className="text-gray-500 text-sm">{store.subdomain}.getcelora.com</p>
                           </div>
                         </div>
                       </td>

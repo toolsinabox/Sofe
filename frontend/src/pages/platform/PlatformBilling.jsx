@@ -167,7 +167,7 @@ export default function PlatformBilling() {
                 <div className="w-8 h-8 bg-gradient-to-br from-blue-600 to-purple-600 rounded-lg flex items-center justify-center">
                   <Store className="w-5 h-5 text-white" />
                 </div>
-                <span className="font-bold">StoreBuilder</span>
+                <span className="font-bold">Celora</span>
               </Link>
             </div>
             <Button variant="ghost" onClick={() => navigate('/dashboard')}>

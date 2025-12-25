@@ -205,7 +205,7 @@ export default function PlatformSignup() {
                         required
                       />
                       <div className="px-3 bg-gray-100 border border-l-0 rounded-r-md flex items-center text-sm text-gray-500">
-                        .storebuilder.com
+                        .getcelora.com
                       </div>
                     </div>
                     {formData.subdomain && (

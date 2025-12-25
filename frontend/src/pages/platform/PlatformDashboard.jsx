@@ -184,7 +184,7 @@ export default function PlatformDashboard() {
 
   const storeUrl = currentStore?.custom_domain_verified && currentStore?.custom_domain
     ? `https://${currentStore.custom_domain}`
-    : `https://${currentStore?.subdomain}.storebuilder.com`;
+    : `https://${currentStore?.subdomain}.getcelora.com`;
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -197,7 +197,7 @@ export default function PlatformDashboard() {
                 <div className="w-8 h-8 bg-gradient-to-br from-blue-600 to-purple-600 rounded-lg flex items-center justify-center">
                   <Store className="w-5 h-5 text-white" />
                 </div>
-                <span className="font-bold">StoreBuilder</span>
+                <span className="font-bold">Celora</span>
               </Link>
               
               {/* Store Switcher */}
