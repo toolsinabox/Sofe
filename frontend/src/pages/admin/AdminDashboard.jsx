@@ -321,8 +321,8 @@ const AdminDashboard = () => {
                           <p className="text-gray-500 text-xs">{store.owner_email}</p>
                         </div>
                       </td>
-                      <td className="py-4 px-4">
-                        <span className={`px-2.5 py-1 rounded-full text-xs font-medium ${
+                      <td className="py-3 sm:py-4 px-3 sm:px-4">
+                        <span className={`px-2 sm:px-2.5 py-0.5 sm:py-1 rounded-full text-xs font-medium ${
                           store.plan_id === 'enterprise'
                             ? 'bg-purple-500/20 text-purple-400'
                             : store.plan_id === 'professional'
@@ -334,14 +334,14 @@ const AdminDashboard = () => {
                           {store.plan_id?.charAt(0).toUpperCase() + store.plan_id?.slice(1) || 'Free'}
                         </span>
                       </td>
-                      <td className="py-4 px-4 text-gray-300">
+                      <td className="py-3 sm:py-4 px-3 sm:px-4 text-gray-300 text-sm hidden md:table-cell">
                         {(store.product_count || 0).toLocaleString()}
                       </td>
-                      <td className="py-4 px-4 text-gray-300">
+                      <td className="py-3 sm:py-4 px-3 sm:px-4 text-gray-300 text-sm hidden md:table-cell">
                         {(store.order_count || 0).toLocaleString()}
                       </td>
-                      <td className="py-4 px-4">
-                        <span className={`px-2.5 py-1 rounded-full text-xs font-medium ${
+                      <td className="py-3 sm:py-4 px-3 sm:px-4">
+                        <span className={`px-2 sm:px-2.5 py-0.5 sm:py-1 rounded-full text-xs font-medium ${
                           store.status === 'active'
                             ? 'bg-emerald-500/20 text-emerald-400'
                             : store.status === 'trial'
@@ -357,12 +357,12 @@ const AdminDashboard = () => {
               </table>
             </div>
           ) : (
-            <div className="text-center py-12">
-              <Store size={48} className="mx-auto text-gray-600 mb-4" />
-              <p className="text-gray-400 mb-2">No merchants yet</p>
+            <div className="text-center py-8 sm:py-12">
+              <Store size={40} className="sm:w-12 sm:h-12 mx-auto text-gray-600 mb-3 sm:mb-4" />
+              <p className="text-gray-400 mb-2 text-sm">No merchants yet</p>
               <Link 
                 to="/admin/merchants" 
-                className="text-cyan-400 hover:text-cyan-300 text-sm"
+                className="text-cyan-400 hover:text-cyan-300 text-xs sm:text-sm"
               >
                 Add your first merchant →
               </Link>
