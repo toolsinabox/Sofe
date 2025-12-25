@@ -70,14 +70,14 @@ const AdminDashboard = () => {
     try {
       const headers = { Authorization: `Bearer ${token}` };
       
-      // Fetch platform stats and merchants in parallel
-      const [statsRes, merchantsRes] = await Promise.all([
-        axios.get(`${API_URL}/api/admin/stats`, { headers }),
-        axios.get(`${API_URL}/api/admin/websites?limit=5`, { headers })
+      // Fetch platform stats and stores in parallel
+      const [statsRes, storesRes] = await Promise.all([
+        axios.get(`${API_URL}/api/admin/platform-stats`, { headers }),
+        axios.get(`${API_URL}/api/admin/platform-stores?limit=5`, { headers })
       ]);
       
       setStats(statsRes.data);
-      setMerchants(merchantsRes.data);
+      setMerchants(storesRes.data);
     } catch (err) {
       console.error('Error fetching admin data:', err);
       setError(err.response?.data?.detail || 'Failed to load dashboard data');
