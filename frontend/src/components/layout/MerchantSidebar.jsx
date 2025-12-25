@@ -174,13 +174,37 @@ const MerchantSidebar = ({ collapsed, setCollapsed, mobileOpen, setMobileOpen })
   const { logout, store } = useAuth();
   const navigate = useNavigate();
   const [expandedGroups, setExpandedGroups] = useState(['sales', 'catalog']);
-  const [storeSettings, setStoreSettings] = useState({
-    store_name: 'My Store',
-    store_logo: ''
+  const [storeSettings, setStoreSettings] = useState(() => {
+    // Initialize from localStorage immediately
+    const platformStore = localStorage.getItem('platform_store');
+    if (platformStore) {
+      try {
+        const storeData = JSON.parse(platformStore);
+        if (storeData && storeData.name) {
+          return {
+            store_name: storeData.name,
+            store_logo: storeData.logo || ''
+          };
+        }
+      } catch (e) {}
+    }
+    return {
+      store_name: 'My Store',
+      store_logo: ''
+    };
   });
 
   useEffect(() => {
-    // First check for platform store in localStorage (highest priority)
+    // Update when store changes from context
+    if (store && store.name) {
+      setStoreSettings({
+        store_name: store.name,
+        store_logo: store.logo || ''
+      });
+      return;
+    }
+    
+    // Check localStorage again in case it was just set
     const platformStore = localStorage.getItem('platform_store');
     if (platformStore) {
       try {
@@ -190,23 +214,14 @@ const MerchantSidebar = ({ collapsed, setCollapsed, mobileOpen, setMobileOpen })
             store_name: storeData.name,
             store_logo: storeData.logo || ''
           });
-          return; // Don't fetch from API if we have platform store data
+          return;
         }
       } catch (e) {
         console.error('Failed to parse platform store data');
       }
     }
     
-    // Then try auth context store
-    if (store && store.name) {
-      setStoreSettings({
-        store_name: store.name,
-        store_logo: store.logo || ''
-      });
-      return;
-    }
-    
-    // Only fetch from API if no platform store context
+    // Fallback to API only if no store context
     const fetchStoreSettings = async () => {
       try {
         const response = await axios.get(`${BACKEND_URL}/api/store/settings`);
