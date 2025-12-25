@@ -158,7 +158,8 @@ const MerchantBlog = () => {
       allow_comments: post.allow_comments ?? true,
       featured: post.featured || false,
       seo_title: post.seo_title || '',
-      seo_description: post.seo_description || ''
+      seo_description: post.seo_description || '',
+      custom_fields: post.custom_fields || {}
     });
     setIsPostModalOpen(true);
   };
@@ -178,7 +179,8 @@ const MerchantBlog = () => {
       allow_comments: true,
       featured: false,
       seo_title: '',
-      seo_description: ''
+      seo_description: '',
+      custom_fields: {}
     });
   };
 
