@@ -199,7 +199,9 @@ const MerchantSidebar = ({ collapsed, setCollapsed, mobileOpen, setMobileOpen })
             });
             return true;
           }
-        } catch (e) {}
+        } catch (e) {
+          console.error('Error parsing platform store:', e);
+        }
       }
       
       // Check auth context store
