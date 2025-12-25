@@ -304,6 +304,12 @@ function App() {
               <Route path="template-tags" element={<MerchantTemplateTags />} />
             </Route>
 
+            {/* Platform Routes (Multi-Tenant Hosting) */}
+            <Route path="/platform" element={<PlatformHome />} />
+            <Route path="/platform/signup" element={<PlatformSignup />} />
+            <Route path="/platform/login" element={<PlatformLogin />} />
+            <Route path="/platform/dashboard" element={<PlatformDashboard />} />
+
             {/* Live Theme Storefront - Main customer-facing store */}
             <Route path="/live" element={<LiveThemeStorefront />} />
             <Route path="/live/*" element={<LiveThemeStorefront />} />
