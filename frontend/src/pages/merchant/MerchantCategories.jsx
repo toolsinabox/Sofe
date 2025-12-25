@@ -7,6 +7,7 @@ import { Input } from '../../components/ui/input';
 import { Label } from '../../components/ui/label';
 import { Switch } from '../../components/ui/switch';
 import { ImportExportButtons } from '../../components/ImportExport';
+import CustomFieldsEditor from '../../components/common/CustomFieldsEditor';
 
 const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
 const API = `${BACKEND_URL}/api`;
@@ -21,7 +22,8 @@ const MerchantCategories = () => {
     description: '',
     image: '',
     is_active: true,
-    sort_order: 0
+    sort_order: 0,
+    custom_fields: {}
   });
   const [uploading, setUploading] = useState(false);
 
