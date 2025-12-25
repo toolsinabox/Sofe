@@ -182,7 +182,20 @@ const MerchantSidebar = ({ collapsed, setCollapsed, mobileOpen, setMobileOpen })
   useEffect(() => {
     const fetchStoreSettings = async () => {
       try {
-        // First try to use the platform store data from context
+        // First try to use the platform store data from localStorage
+        const platformStore = localStorage.getItem('platform_store');
+        if (platformStore) {
+          const storeData = JSON.parse(platformStore);
+          if (storeData && storeData.name) {
+            setStoreSettings({
+              store_name: storeData.name,
+              store_logo: storeData.logo || ''
+            });
+            return;
+          }
+        }
+        
+        // Then try auth context store
         if (store && store.name) {
           setStoreSettings({
             store_name: store.name,
