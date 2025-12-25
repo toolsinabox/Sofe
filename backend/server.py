@@ -3618,8 +3618,8 @@ async def upload_review_image(file: UploadFile = File(...)):
     with open(file_path, "wb") as f:
         f.write(contents)
     
-    # Return URL
-    return {"url": f"{BACKEND_URL}/uploads/reviews/{filename}"}
+    # Return URL using the API route format
+    return {"url": f"/api/uploads/reviews/{filename}"}
 
 # ==================== MERCHANT NOTIFICATIONS ====================
 
