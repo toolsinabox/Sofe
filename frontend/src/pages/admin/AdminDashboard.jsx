@@ -130,8 +130,8 @@ const AdminDashboard = () => {
       {/* Stats Grid */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
         <StatCard
-          title="Total Merchants"
-          value={stats?.total_merchants?.toLocaleString() || '0'}
+          title="Total Stores"
+          value={stats?.total_stores?.toLocaleString() || '0'}
           change={8.2}
           changeType="positive"
           icon={Store}
@@ -139,8 +139,8 @@ const AdminDashboard = () => {
           loading={loading}
         />
         <StatCard
-          title="Active Merchants"
-          value={stats?.active_merchants?.toLocaleString() || '0'}
+          title="Active Stores"
+          value={stats?.active_stores?.toLocaleString() || '0'}
           change={5.4}
           changeType="positive"
           icon={Users}
@@ -148,7 +148,7 @@ const AdminDashboard = () => {
           loading={loading}
         />
         <StatCard
-          title="Platform Revenue"
+          title="Total Revenue"
           value={formatCurrency(stats?.total_revenue)}
           change={12.5}
           changeType="positive"
@@ -157,8 +157,8 @@ const AdminDashboard = () => {
           loading={loading}
         />
         <StatCard
-          title="Total Orders"
-          value={stats?.total_orders?.toLocaleString() || '0'}
+          title="Monthly Recurring"
+          value={formatCurrency(stats?.mrr)}
           change={3.8}
           changeType="positive"
           icon={ShoppingCart}
