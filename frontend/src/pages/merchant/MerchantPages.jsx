@@ -154,7 +154,8 @@ const MerchantPages = () => {
     template: 'default',
     main_image: '',
     alt_image: '',
-    sort_order: 0
+    sort_order: 0,
+    custom_fields: {}
   });
 
   useEffect(() => {
