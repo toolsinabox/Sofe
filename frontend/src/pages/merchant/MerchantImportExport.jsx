@@ -41,12 +41,7 @@ export default function MerchantImportExport() {
     { id: 'categories', name: 'Categories', icon: FolderTree, description: 'Export/import category hierarchy' },
   ];
 
-  // Fetch available fields when resource changes
-  useEffect(() => {
-    fetchFields();
-  }, [selectedResource]);
-
-  const fetchFields = async () => {
+  const fetchFields = useCallback(async () => {
     try {
       const res = await axios.get(`${BACKEND_URL}/api/import-export/${selectedResource}/fields`);
       setAvailableFields(res.data.fields || []);
@@ -55,7 +50,12 @@ export default function MerchantImportExport() {
     } catch (error) {
       console.error('Failed to fetch fields:', error);
     }
-  };
+  }, [selectedResource]);
+
+  // Fetch available fields when resource changes
+  useEffect(() => {
+    fetchFields();
+  }, [fetchFields]);
 
   const handleExport = async () => {
     try {
