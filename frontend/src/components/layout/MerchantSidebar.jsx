@@ -171,7 +171,7 @@ const navGroups = [
 ];
 
 const MerchantSidebar = ({ collapsed, setCollapsed, mobileOpen, setMobileOpen }) => {
-  const { logout } = useAuth();
+  const { logout, store } = useAuth();
   const navigate = useNavigate();
   const [expandedGroups, setExpandedGroups] = useState(['sales', 'catalog']);
   const [storeSettings, setStoreSettings] = useState({
@@ -182,6 +182,16 @@ const MerchantSidebar = ({ collapsed, setCollapsed, mobileOpen, setMobileOpen })
   useEffect(() => {
     const fetchStoreSettings = async () => {
       try {
+        // First try to use the platform store data from context
+        if (store && store.name) {
+          setStoreSettings({
+            store_name: store.name,
+            store_logo: store.logo || ''
+          });
+          return;
+        }
+        
+        // Fallback to store settings API
         const response = await axios.get(`${BACKEND_URL}/api/store/settings`);
         if (response.data) {
           setStoreSettings({
@@ -194,7 +204,7 @@ const MerchantSidebar = ({ collapsed, setCollapsed, mobileOpen, setMobileOpen })
       }
     };
     fetchStoreSettings();
-  }, []);
+  }, [store]);
 
   const getInitials = (name) => {
     if (!name) return 'MS';
