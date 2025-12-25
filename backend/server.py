@@ -699,18 +699,49 @@ async def get_admin_user(current_user: dict = Depends(get_current_user)) -> dict
 # Default store ID for backward compatibility (Tools In A Box)
 DEFAULT_STORE_ID = "675b5810-f110-42f0-9cac-00cf353f04a5"
 
-async def get_store_id_from_header(request: Request) -> str:
+async def resolve_store_from_request(request: Request) -> str:
     """
-    Extract store_id from X-Store-ID header or return default.
-    In production, this would also check the Host header for custom domains.
+    Resolve store_id from multiple sources in priority order:
+    1. X-Store-ID header (explicit)
+    2. Subdomain from Host header (e.g., mystore.storebuilder.com)
+    3. Custom domain lookup
+    4. Default store (fallback)
     """
+    # Priority 1: Explicit header
     store_id = request.headers.get("X-Store-ID")
     if store_id:
-        # Verify store exists
         store = await db.platform_stores.find_one({"id": store_id})
         if store:
             return store_id
+    
+    # Priority 2: Subdomain from Host header
+    host = request.headers.get("Host", "")
+    if host:
+        # Extract subdomain (e.g., "mystore" from "mystore.storebuilder.com")
+        parts = host.split(".")
+        if len(parts) >= 3:
+            subdomain = parts[0]
+            if subdomain not in ["www", "api", "admin"]:
+                store = await db.platform_stores.find_one({"subdomain": subdomain})
+                if store:
+                    return store["id"]
+        
+        # Priority 3: Custom domain lookup
+        store = await db.platform_stores.find_one({
+            "custom_domain": host,
+            "custom_domain_verified": True
+        })
+        if store:
+            return store["id"]
+    
+    # Priority 4: Default store
     return DEFAULT_STORE_ID
+
+async def get_store_id_from_header(request: Request) -> str:
+    """
+    Extract store_id from X-Store-ID header or resolve from subdomain/domain.
+    """
+    return await resolve_store_from_request(request)
 
 async def get_store_context(request: Request) -> dict:
     """
