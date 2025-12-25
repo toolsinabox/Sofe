@@ -119,7 +119,7 @@ export default function PlatformHome() {
       <nav className="fixed top-0 left-0 right-0 z-50 bg-white/80 backdrop-blur-md border-b">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between h-16">
-            <Link to="/platform" className="flex items-center gap-2">
+            <Link to="/" className="flex items-center gap-2">
               <div className="w-8 h-8 bg-gradient-to-br from-blue-600 to-purple-600 rounded-lg flex items-center justify-center">
                 <Store className="w-5 h-5 text-white" />
               </div>
@@ -130,8 +130,8 @@ export default function PlatformHome() {
               <a href="#features" className="text-gray-600 hover:text-gray-900">Features</a>
               <a href="#pricing" className="text-gray-600 hover:text-gray-900">Pricing</a>
               <a href="#testimonials" className="text-gray-600 hover:text-gray-900">Testimonials</a>
-              <Link to="/platform/login" className="text-gray-600 hover:text-gray-900">Login</Link>
-              <Button onClick={() => navigate('/platform/signup')}>
+              <Link to="/login" className="text-gray-600 hover:text-gray-900">Login</Link>
+              <Button onClick={() => navigate('/signup')}>
                 Start Free <ArrowRight className="w-4 h-4 ml-2" />
               </Button>
             </div>
