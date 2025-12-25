@@ -107,6 +107,47 @@ export default function MerchantTaxManagement() {
     postcode: ''
   });
 
+  const [detectingLocation, setDetectingLocation] = useState(false);
+  const [detectedLocation, setDetectedLocation] = useState(null);
+
+  // Get states for selected country
+  const getStatesForCountry = (countryCode) => {
+    const country = COUNTRIES.find(c => c.code === countryCode);
+    return country?.states || [];
+  };
+
+  // Auto-detect region from IP
+  const detectRegion = async () => {
+    setDetectingLocation(true);
+    try {
+      // Use free IP geolocation service
+      const res = await fetch('https://ipapi.co/json/');
+      const data = await res.json();
+      
+      if (data.country_code) {
+        const location = {
+          country: data.country_code,
+          state: data.region_code || '',
+          postcode: data.postal || '',
+          city: data.city || '',
+          ip: data.ip
+        };
+        setDetectedLocation(location);
+        setCalcForm(prev => ({
+          ...prev,
+          country: location.country,
+          state: location.state,
+          postcode: location.postcode
+        }));
+      }
+    } catch (error) {
+      console.error('Failed to detect location:', error);
+      alert('Could not detect location. Please enter manually.');
+    } finally {
+      setDetectingLocation(false);
+    }
+  };
+
   const fetchData = useCallback(async () => {
     try {
       setLoading(true);
