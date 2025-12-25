@@ -68,6 +68,7 @@ import PlatformHome from "./pages/platform/PlatformHome";
 import PlatformSignup from "./pages/platform/PlatformSignup";
 import PlatformLogin from "./pages/platform/PlatformLogin";
 import PlatformDashboard from "./pages/platform/PlatformDashboard";
+import PlatformBilling from "./pages/platform/PlatformBilling";
 
 // Live Storefront (Theme-rendered customer store)
 import LiveThemeStorefront from "./pages/store/LiveThemeStorefront";
@@ -86,6 +87,7 @@ function App() {
             <Route path="/signup" element={<PlatformSignup />} />
             <Route path="/login" element={<PlatformLogin />} />
             <Route path="/dashboard" element={<PlatformDashboard />} />
+            <Route path="/billing" element={<PlatformBilling />} />
             
             {/* Legacy /platform routes redirect to new paths */}
             <Route path="/platform" element={<Navigate to="/" replace />} />
