@@ -23,6 +23,9 @@ Use REACT_APP_BACKEND_URL from /app/frontend/.env
 | Abandoned Carts | ✅ | ✅ | ✅ | WORKING |
 | Advanced Analytics | ✅ | ✅ | ✅ | WORKING |
 | eBay Theme Editor | ✅ | ✅ | ✅ | WORKING |
+| Tax Management | ✅ | ✅ | ✅ | WORKING |
+| Import/Export Center | ✅ | ✅ | ✅ | WORKING |
+| Activity Log | ✅ | ✅ | ✅ | WORKING |
 
 ## eBay Theme Editor - Conditional Image Logic VERIFIED ✅
 
