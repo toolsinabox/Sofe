@@ -3497,6 +3497,7 @@ async def render_content_zone(zone_name: str):
 
 @api_router.get("/reviews")
 async def get_all_reviews(
+    request: Request,
     status: Optional[str] = None,
     product_id: Optional[str] = None,
     rating: Optional[int] = None,
@@ -3504,7 +3505,8 @@ async def get_all_reviews(
     limit: int = 100
 ):
     """Get all reviews with optional filters"""
-    query = {}
+    store_id = await get_store_id_from_header(request)
+    query = {"store_id": store_id}
     if status:
         query["status"] = status
     if product_id:
@@ -3519,7 +3521,7 @@ async def get_all_reviews(
     # Enrich with product info if missing
     for review in reviews:
         if not review.get("product_name") and review.get("product_id"):
-            product = await db.products.find_one({"id": review["product_id"]}, {"_id": 0, "name": 1, "sku": 1})
+            product = await db.products.find_one({"id": review["product_id"], "store_id": store_id}, {"_id": 0, "name": 1, "sku": 1})
             if product:
                 review["product_name"] = product.get("name")
                 review["product_sku"] = product.get("sku")
@@ -3527,9 +3529,10 @@ async def get_all_reviews(
     return reviews
 
 @api_router.get("/reviews/stats")
-async def get_review_stats():
+async def get_review_stats(request: Request):
     """Get review statistics for dashboard"""
-    all_reviews = await db.reviews.find({}, {"_id": 0, "rating": 1, "status": 1}).to_list(10000)
+    store_id = await get_store_id_from_header(request)
+    all_reviews = await db.reviews.find({"store_id": store_id}, {"_id": 0, "rating": 1, "status": 1}).to_list(10000)
     
     total = len(all_reviews)
     pending = sum(1 for r in all_reviews if r.get("status") == "pending")
