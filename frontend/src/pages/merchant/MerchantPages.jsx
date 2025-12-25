@@ -716,6 +716,14 @@ const MerchantPages = () => {
                       onCheckedChange={(checked) => setFormData({ ...formData, is_active: checked })}
                     />
                   </div>
+                  
+                  {/* Custom Fields */}
+                  <CustomFieldsEditor
+                    section="pages"
+                    values={formData.custom_fields}
+                    onChange={(values) => setFormData({ ...formData, custom_fields: values })}
+                    compact={false}
+                  />
                 </div>
               )}
             </div>
