@@ -258,9 +258,9 @@ const AdminDashboard = () => {
                 </div>
                 <div className="text-right">
                   {loading ? (
-                    <div className="h-8 w-16 bg-gray-700 animate-pulse rounded"></div>
+                    <div className="h-6 sm:h-8 w-14 sm:w-16 bg-gray-700 animate-pulse rounded"></div>
                   ) : (
-                    <p className="text-2xl font-bold text-purple-400">{stats?.total_users?.toLocaleString() || '0'}</p>
+                    <p className="text-xl sm:text-2xl font-bold text-purple-400">{stats?.total_users?.toLocaleString() || '0'}</p>
                   )}
                 </div>
               </div>
@@ -271,51 +271,51 @@ const AdminDashboard = () => {
 
       {/* Recent Merchants */}
       <Card className="bg-[#151b28] border-gray-800">
-        <CardHeader className="pb-2">
+        <CardHeader className="pb-2 px-4 sm:px-6">
           <div className="flex items-center justify-between">
-            <CardTitle className="text-white text-lg font-semibold">Recent Merchants</CardTitle>
-            <Link to="/admin/merchants" className="text-cyan-400 text-sm hover:text-cyan-300 flex items-center gap-1">
-              View All <ArrowRight size={14} />
+            <CardTitle className="text-white text-base sm:text-lg font-semibold">Recent Merchants</CardTitle>
+            <Link to="/admin/merchants" className="text-cyan-400 text-xs sm:text-sm hover:text-cyan-300 flex items-center gap-1">
+              View All <ArrowRight size={12} className="sm:w-3.5 sm:h-3.5" />
             </Link>
           </div>
         </CardHeader>
-        <CardContent>
+        <CardContent className="px-4 sm:px-6">
           {loading ? (
-            <div className="space-y-4">
+            <div className="space-y-3 sm:space-y-4">
               {[1, 2, 3].map(i => (
-                <div key={i} className="h-16 bg-gray-800/50 animate-pulse rounded-lg"></div>
+                <div key={i} className="h-14 sm:h-16 bg-gray-800/50 animate-pulse rounded-lg"></div>
               ))}
             </div>
           ) : merchants.length > 0 ? (
-            <div className="overflow-x-auto">
-              <table className="w-full">
+            <div className="overflow-x-auto -mx-4 sm:mx-0">
+              <table className="w-full min-w-[600px] sm:min-w-0">
                 <thead>
                   <tr className="border-b border-gray-800">
-                    <th className="text-left py-3 px-4 text-gray-400 font-medium text-sm">Store</th>
-                    <th className="text-left py-3 px-4 text-gray-400 font-medium text-sm">Owner</th>
-                    <th className="text-left py-3 px-4 text-gray-400 font-medium text-sm">Plan</th>
-                    <th className="text-left py-3 px-4 text-gray-400 font-medium text-sm">Products</th>
-                    <th className="text-left py-3 px-4 text-gray-400 font-medium text-sm">Orders</th>
-                    <th className="text-left py-3 px-4 text-gray-400 font-medium text-sm">Status</th>
+                    <th className="text-left py-2 sm:py-3 px-3 sm:px-4 text-gray-400 font-medium text-xs sm:text-sm">Store</th>
+                    <th className="text-left py-2 sm:py-3 px-3 sm:px-4 text-gray-400 font-medium text-xs sm:text-sm hidden sm:table-cell">Owner</th>
+                    <th className="text-left py-2 sm:py-3 px-3 sm:px-4 text-gray-400 font-medium text-xs sm:text-sm">Plan</th>
+                    <th className="text-left py-2 sm:py-3 px-3 sm:px-4 text-gray-400 font-medium text-xs sm:text-sm hidden md:table-cell">Products</th>
+                    <th className="text-left py-2 sm:py-3 px-3 sm:px-4 text-gray-400 font-medium text-xs sm:text-sm hidden md:table-cell">Orders</th>
+                    <th className="text-left py-2 sm:py-3 px-3 sm:px-4 text-gray-400 font-medium text-xs sm:text-sm">Status</th>
                   </tr>
                 </thead>
                 <tbody>
                   {merchants.map((store) => (
                     <tr key={store.id} className="border-b border-gray-800/50 hover:bg-gray-800/30 transition-colors">
-                      <td className="py-4 px-4">
-                        <div className="flex items-center gap-3">
-                          <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-cyan-500 to-blue-600 flex items-center justify-center">
-                            <span className="text-white font-bold text-sm">
+                      <td className="py-3 sm:py-4 px-3 sm:px-4">
+                        <div className="flex items-center gap-2 sm:gap-3">
+                          <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-lg bg-gradient-to-br from-cyan-500 to-blue-600 flex items-center justify-center flex-shrink-0">
+                            <span className="text-white font-bold text-xs sm:text-sm">
                               {(store.store_name || store.name || 'S').substring(0, 2).toUpperCase()}
                             </span>
                           </div>
-                          <div>
-                            <p className="text-white font-medium">{store.store_name || store.name}</p>
-                            <p className="text-gray-500 text-sm">{store.subdomain}.getcelora.com</p>
+                          <div className="min-w-0">
+                            <p className="text-white font-medium text-sm truncate">{store.store_name || store.name}</p>
+                            <p className="text-gray-500 text-xs truncate">{store.subdomain}.getcelora.com</p>
                           </div>
                         </div>
                       </td>
-                      <td className="py-4 px-4">
+                      <td className="py-3 sm:py-4 px-3 sm:px-4 hidden sm:table-cell">
                         <div>
                           <p className="text-white text-sm">{store.owner_name}</p>
                           <p className="text-gray-500 text-xs">{store.owner_email}</p>
