@@ -4524,16 +4524,17 @@ async def get_robots_txt():
 # ==================== CMS PAGES ====================
 
 @api_router.get("/pages")
-async def get_all_pages():
+async def get_all_pages(request: Request):
     """Get all CMS pages"""
-    pages = await db.cms_pages.find({}, {"_id": 0}).sort("name", 1).to_list(100)
+    store_id = await get_store_id_from_header(request)
+    pages = await db.cms_pages.find({"store_id": store_id}, {"_id": 0}).sort("name", 1).to_list(100)
     
-    # Ensure homepage exists
+    # Ensure homepage exists for this store
     homepage_exists = any(p.get("is_homepage") for p in pages)
     if not homepage_exists:
         # Create default homepage
         homepage = CMSPage(
-            id="homepage",
+            id=f"homepage-{store_id[:8]}",
             name="Homepage",
             slug="home",
             is_homepage=True,
@@ -4543,36 +4544,43 @@ async def get_all_pages():
             seo_description="Welcome to our store",
             seo_heading="Welcome"
         )
-        await db.cms_pages.insert_one(homepage.dict())
-        pages.insert(0, homepage.dict())
+        homepage_dict = homepage.dict()
+        homepage_dict["store_id"] = store_id
+        await db.cms_pages.insert_one(homepage_dict)
+        pages.insert(0, homepage_dict)
     
     return pages
 
 @api_router.get("/pages/{page_id}")
-async def get_page(page_id: str):
+async def get_page(page_id: str, request: Request):
     """Get a single CMS page"""
-    page = await db.cms_pages.find_one({"id": page_id}, {"_id": 0})
+    store_id = await get_store_id_from_header(request)
+    page = await db.cms_pages.find_one({"id": page_id, "store_id": store_id}, {"_id": 0})
     if not page:
         raise HTTPException(status_code=404, detail="Page not found")
     return page
 
 @api_router.post("/pages", response_model=CMSPage)
-async def create_page(page: CMSPageCreate):
+async def create_page(page: CMSPageCreate, request: Request):
     """Create a new CMS page"""
-    # Check if slug already exists
-    existing = await db.cms_pages.find_one({"slug": page.slug})
+    store_id = await get_store_id_from_header(request)
+    # Check if slug already exists for this store
+    existing = await db.cms_pages.find_one({"slug": page.slug, "store_id": store_id})
     if existing:
         raise HTTPException(status_code=400, detail="Page with this slug already exists")
     
     new_page = CMSPage(**page.dict())
-    await db.cms_pages.insert_one(new_page.dict())
+    page_dict = new_page.dict()
+    page_dict["store_id"] = store_id
+    await db.cms_pages.insert_one(page_dict)
     return new_page
 
 @api_router.put("/pages/{page_id}")
-async def update_page(page_id: str, update: CMSPageUpdate):
+async def update_page(page_id: str, update: CMSPageUpdate, request: Request):
     """Update a CMS page"""
+    store_id = await get_store_id_from_header(request)
     # Check if page exists
-    page = await db.cms_pages.find_one({"id": page_id})
+    page = await db.cms_pages.find_one({"id": page_id, "store_id": store_id})
     if not page:
         raise HTTPException(status_code=404, detail="Page not found")
     
