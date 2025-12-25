@@ -126,9 +126,14 @@ const ProductDetail = () => {
         const response = await axios.post(`${API}/reviews/upload-image`, formData, {
           headers: { 'Content-Type': 'multipart/form-data' }
         });
-        newImages.push(response.data.url);
+        // Prepend BACKEND_URL if the URL is relative
+        const imageUrl = response.data.url.startsWith('http') 
+          ? response.data.url 
+          : `${BACKEND_URL}${response.data.url}`;
+        newImages.push(imageUrl);
       } catch (error) {
         console.error('Error uploading image:', error);
+        alert('Failed to upload image. Please try again.');
       }
     }
     
