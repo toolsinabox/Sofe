@@ -543,16 +543,14 @@ export default function MerchantTaxManagement() {
             <div className="grid grid-cols-2 gap-4">
               <div>
                 <Label>Country</Label>
-                <Select value={rateForm.country} onValueChange={(v) => setRateForm({...rateForm, country: v})}>
+                <Select value={rateForm.country} onValueChange={(v) => setRateForm({...rateForm, country: v, state: ''})}>
                   <SelectTrigger>
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="AU">Australia</SelectItem>
-                    <SelectItem value="NZ">New Zealand</SelectItem>
-                    <SelectItem value="US">United States</SelectItem>
-                    <SelectItem value="GB">United Kingdom</SelectItem>
-                    <SelectItem value="CA">Canada</SelectItem>
+                    {COUNTRIES.map(c => (
+                      <SelectItem key={c.code} value={c.code}>{c.name}</SelectItem>
+                    ))}
                   </SelectContent>
                 </Select>
               </div>
@@ -563,7 +561,7 @@ export default function MerchantTaxManagement() {
                     <SelectValue placeholder="All states" />
                   </SelectTrigger>
                   <SelectContent>
-                    {australianStates.map(s => (
+                    {getStatesForCountry(rateForm.country).map(s => (
                       <SelectItem key={s.code} value={s.code}>{s.name}</SelectItem>
                     ))}
                   </SelectContent>
