@@ -193,11 +193,13 @@ class SuburbEntry(BaseModel):
 
 @router.get("/zones")
 async def get_shipping_zones(
+    request: Request,
     country: Optional[str] = None,
     is_active: Optional[bool] = None
 ):
     """Get all shipping zones"""
-    query = {}
+    store_id = await get_store_id(request)
+    query = {"store_id": store_id}
     if country:
         query["country"] = country
     if is_active is not None:
@@ -207,42 +209,48 @@ async def get_shipping_zones(
     return zones
 
 @router.get("/zones/{zone_id}")
-async def get_shipping_zone(zone_id: str):
+async def get_shipping_zone(zone_id: str, request: Request):
     """Get a specific shipping zone"""
-    zone = await db.shipping_zones.find_one({"id": zone_id}, {"_id": 0})
+    store_id = await get_store_id(request)
+    zone = await db.shipping_zones.find_one({"id": zone_id, "store_id": store_id}, {"_id": 0})
     if not zone:
         raise HTTPException(status_code=404, detail="Zone not found")
     return zone
 
 @router.post("/zones")
-async def create_shipping_zone(zone: ShippingZone):
+async def create_shipping_zone(zone: ShippingZone, request: Request):
     """Create a new shipping zone"""
-    # Check for duplicate code
-    existing = await db.shipping_zones.find_one({"code": zone.code})
+    store_id = await get_store_id(request)
+    # Check for duplicate code in this store
+    existing = await db.shipping_zones.find_one({"code": zone.code, "store_id": store_id})
     if existing:
         raise HTTPException(status_code=400, detail="Zone code already exists")
     
     zone_data = zone.dict()
+    zone_data["store_id"] = store_id
     await db.shipping_zones.insert_one(zone_data)
     zone_data.pop("_id", None)
     return zone_data
 
 @router.put("/zones/{zone_id}")
-async def update_shipping_zone(zone_id: str, zone: ShippingZone):
+async def update_shipping_zone(zone_id: str, zone: ShippingZone, request: Request):
     """Update a shipping zone"""
-    existing = await db.shipping_zones.find_one({"id": zone_id})
+    store_id = await get_store_id(request)
+    existing = await db.shipping_zones.find_one({"id": zone_id, "store_id": store_id})
     if not existing:
         raise HTTPException(status_code=404, detail="Zone not found")
     
     zone_data = zone.dict()
     zone_data["id"] = zone_id
-    await db.shipping_zones.update_one({"id": zone_id}, {"$set": zone_data})
+    zone_data["store_id"] = store_id
+    await db.shipping_zones.update_one({"id": zone_id, "store_id": store_id}, {"$set": zone_data})
     return {"message": "Zone updated successfully"}
 
 @router.delete("/zones/{zone_id}")
-async def delete_shipping_zone(zone_id: str):
+async def delete_shipping_zone(zone_id: str, request: Request):
     """Delete a shipping zone"""
-    result = await db.shipping_zones.delete_one({"id": zone_id})
+    store_id = await get_store_id(request)
+    result = await db.shipping_zones.delete_one({"id": zone_id, "store_id": store_id})
     if result.deleted_count == 0:
         raise HTTPException(status_code=404, detail="Zone not found")
     return {"message": "Zone deleted successfully"}
