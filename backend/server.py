@@ -4744,20 +4744,25 @@ async def generate_mega_menu_from_categories():
 # ==================== STORE SETTINGS ====================
 
 @api_router.get("/store/settings", response_model=StoreSettings)
-async def get_store_settings():
-    settings = await db.store_settings.find_one({"id": "store_settings"})
+async def get_store_settings(request: Request):
+    store_id = await get_store_id_from_header(request)
+    settings = await db.store_settings.find_one({"store_id": store_id})
+    if not settings:
+        # Try legacy settings without store_id
+        settings = await db.store_settings.find_one({"id": "store_settings", "store_id": store_id})
     if not settings:
         # Return default settings
         return StoreSettings()
     return StoreSettings(**settings)
 
 @api_router.get("/store/logo-base64")
-async def get_store_logo_base64():
+async def get_store_logo_base64(request: Request):
     """Get store logo as base64 data URL to avoid CORS issues in iframe preview"""
     import httpx
     import base64
     
-    settings = await db.store_settings.find_one({"id": "store_settings"})
+    store_id = await get_store_id_from_header(request)
+    settings = await db.store_settings.find_one({"store_id": store_id})
     if not settings or not settings.get("store_logo"):
         raise HTTPException(status_code=404, detail="No store logo found")
     
@@ -4782,17 +4787,19 @@ async def get_store_logo_base64():
         raise HTTPException(status_code=500, detail=f"Failed to fetch logo: {str(e)}")
 
 @api_router.put("/store/settings", response_model=StoreSettings)
-async def update_store_settings(settings: StoreSettingsUpdate):
+async def update_store_settings(settings: StoreSettingsUpdate, request: Request):
+    store_id = await get_store_id_from_header(request)
     update_data = {k: v for k, v in settings.dict().items() if v is not None}
     update_data["updated_at"] = datetime.now(timezone.utc)
+    update_data["store_id"] = store_id
     
     result = await db.store_settings.update_one(
-        {"id": "store_settings"},
+        {"store_id": store_id},
         {"$set": update_data},
         upsert=True
     )
     
-    updated = await db.store_settings.find_one({"id": "store_settings"})
+    updated = await db.store_settings.find_one({"store_id": store_id})
     return StoreSettings(**updated)
 
 # ==================== INVOICE SETTINGS ====================
