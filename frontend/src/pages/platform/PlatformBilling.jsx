@@ -247,22 +247,22 @@ export default function PlatformBilling() {
               >
                 {plan.popular && (
                   <div className="absolute -top-3 left-1/2 -translate-x-1/2">
-                    <Badge className="bg-blue-600">Most Popular</Badge>
+                    <Badge className="bg-blue-600 text-xs">Most Popular</Badge>
                   </div>
                 )}
-                <CardHeader>
-                  <CardTitle>{plan.name}</CardTitle>
-                  <CardDescription>{plan.description}</CardDescription>
+                <CardHeader className="px-4 sm:px-6 py-4 sm:py-6">
+                  <CardTitle className="text-base sm:text-lg">{plan.name}</CardTitle>
+                  <CardDescription className="text-xs sm:text-sm">{plan.description}</CardDescription>
                   <div className="mt-2">
-                    <span className="text-3xl font-bold">${plan.price}</span>
-                    <span className="text-gray-500">/month</span>
+                    <span className="text-2xl sm:text-3xl font-bold">${plan.price}</span>
+                    <span className="text-gray-500 text-sm">/month</span>
                   </div>
                 </CardHeader>
-                <CardContent>
-                  <ul className="space-y-2 mb-6">
+                <CardContent className="px-4 sm:px-6 pb-4 sm:pb-6">
+                  <ul className="space-y-1.5 sm:space-y-2 mb-4 sm:mb-6">
                     {plan.features.map((feature, i) => (
-                      <li key={i} className="flex items-center gap-2 text-sm">
-                        <Check className="w-4 h-4 text-green-500" />
+                      <li key={i} className="flex items-center gap-2 text-xs sm:text-sm">
+                        <Check className="w-3 h-3 sm:w-4 sm:h-4 text-green-500 flex-shrink-0" />
                         {feature}
                       </li>
                     ))}
