@@ -190,10 +190,12 @@ const MerchantSidebar = ({ collapsed, setCollapsed, mobileOpen, setMobileOpen })
       if (platformStore) {
         try {
           const storeData = JSON.parse(platformStore);
-          if (storeData && storeData.name && isMounted) {
+          // Support both 'name' and 'store_name' fields
+          const storeName = storeData.name || storeData.store_name;
+          if (storeName && isMounted) {
             setStoreSettings({
-              store_name: storeData.name,
-              store_logo: storeData.logo || ''
+              store_name: storeName,
+              store_logo: storeData.logo || storeData.store_logo || ''
             });
             return true;
           }
@@ -201,10 +203,10 @@ const MerchantSidebar = ({ collapsed, setCollapsed, mobileOpen, setMobileOpen })
       }
       
       // Check auth context store
-      if (store && store.name && isMounted) {
+      if (store && (store.name || store.store_name) && isMounted) {
         setStoreSettings({
-          store_name: store.name,
-          store_logo: store.logo || ''
+          store_name: store.name || store.store_name,
+          store_logo: store.logo || store.store_logo || ''
         });
         return true;
       }
