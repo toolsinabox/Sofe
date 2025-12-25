@@ -56,6 +56,7 @@ import MerchantCustomerGroups from "./pages/merchant/MerchantCustomerGroups";
 import MerchantBlog from "./pages/merchant/MerchantBlog";
 import MerchantWarehouses from "./pages/merchant/MerchantWarehouses";
 import MerchantReturns from "./pages/merchant/MerchantReturns";
+import MerchantNotifications from "./pages/merchant/MerchantNotifications";
 
 // Live Storefront (Theme-rendered)
 import LiveThemeStorefront from "./pages/store/LiveThemeStorefront";
