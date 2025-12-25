@@ -1990,27 +1990,30 @@ async def generate_order_number():
     return f"{prefix}-{order_number}"
 
 @api_router.post("/orders", response_model=Order)
-async def create_order(order: OrderCreate):
+async def create_order(order: OrderCreate, request: Request):
+    store_id = await get_store_id_from_header(request)
     new_order = Order(**order.dict())
     
     # Generate custom order number
     new_order.order_number = await generate_order_number()
     
     new_order.payment_status = "paid"  # For demo purposes
-    await db.orders.insert_one(new_order.dict())
+    order_dict = new_order.dict()
+    order_dict["store_id"] = store_id
+    await db.orders.insert_one(order_dict)
     
     # Update product sales count
     for item in order.items:
         await db.products.update_one(
-            {"id": item.product_id},
+            {"id": item.product_id, "store_id": store_id},
             {"$inc": {"sales_count": item.quantity, "stock": -item.quantity}}
         )
     
     # Update or create customer
-    customer = await db.customers.find_one({"email": order.customer_email})
+    customer = await db.customers.find_one({"email": order.customer_email, "store_id": store_id})
     if customer:
         await db.customers.update_one(
-            {"email": order.customer_email},
+            {"email": order.customer_email, "store_id": store_id},
             {
                 "$inc": {"total_orders": 1, "total_spent": order.total},
                 "$set": {"updated_at": datetime.now(timezone.utc)}
@@ -2024,18 +2027,22 @@ async def create_order(order: OrderCreate):
             total_orders=1,
             total_spent=order.total
         )
-        await db.customers.insert_one(new_customer.dict())
+        cust_dict = new_customer.dict()
+        cust_dict["store_id"] = store_id
+        await db.customers.insert_one(cust_dict)
     
     return new_order
 
 @api_router.get("/orders", response_model=List[Order])
 async def get_orders(
+    request: Request,
     status: Optional[str] = None,
     payment_status: Optional[str] = None,
     limit: int = Query(default=50, le=100),
     skip: int = 0
 ):
-    query = {}
+    store_id = await get_store_id_from_header(request)
+    query = {"store_id": store_id}
     if status:
         query["status"] = status
     if payment_status:
@@ -2044,24 +2051,26 @@ async def get_orders(
     return orders
 
 @api_router.get("/orders/count")
-async def get_orders_count(status: Optional[str] = None):
-    query = {}
+async def get_orders_count(request: Request, status: Optional[str] = None):
+    store_id = await get_store_id_from_header(request)
+    query = {"store_id": store_id}
     if status:
         query["status"] = status
     count = await db.orders.count_documents(query)
     return {"count": count}
 
 @api_router.get("/orders/stats")
-async def get_orders_stats():
+async def get_orders_stats(request: Request):
     """Get order statistics for dashboard"""
+    store_id = await get_store_id_from_header(request)
     try:
         # Total orders
-        total_orders = await db.orders.count_documents({})
-        pending_orders = await db.orders.count_documents({"status": "pending"})
+        total_orders = await db.orders.count_documents({"store_id": store_id})
+        pending_orders = await db.orders.count_documents({"status": "pending", "store_id": store_id})
         
         # Total revenue from delivered orders
         pipeline = [
-            {"$match": {"payment_status": "paid"}},
+            {"$match": {"payment_status": "paid", "store_id": store_id}},
             {"$group": {"_id": None, "total": {"$sum": "$total"}}}
         ]
         revenue_result = await db.orders.aggregate(pipeline).to_list(1)
@@ -2072,11 +2081,11 @@ async def get_orders_stats():
         
         # Today's orders
         today = datetime.now(timezone.utc).replace(hour=0, minute=0, second=0, microsecond=0)
-        today_orders = await db.orders.count_documents({"created_at": {"$gte": today}})
+        today_orders = await db.orders.count_documents({"created_at": {"$gte": today}, "store_id": store_id})
         
         # Today's revenue
         today_pipeline = [
-            {"$match": {"created_at": {"$gte": today}, "payment_status": "paid"}},
+            {"$match": {"created_at": {"$gte": today}, "payment_status": "paid", "store_id": store_id}},
             {"$group": {"_id": None, "total": {"$sum": "$total"}}}
         ]
         today_revenue_result = await db.orders.aggregate(today_pipeline).to_list(1)
