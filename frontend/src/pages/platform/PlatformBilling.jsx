@@ -161,36 +161,37 @@ export default function PlatformBilling() {
       {/* Header */}
       <header className="bg-white border-b">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex items-center justify-between h-16">
-            <div className="flex items-center gap-4">
+          <div className="flex items-center justify-between h-14 sm:h-16">
+            <div className="flex items-center gap-2 sm:gap-4">
               <Link to="/" className="flex items-center gap-2">
-                <div className="w-8 h-8 bg-gradient-to-br from-blue-600 to-purple-600 rounded-lg flex items-center justify-center">
-                  <Store className="w-5 h-5 text-white" />
+                <div className="w-7 h-7 sm:w-8 sm:h-8 bg-gradient-to-br from-blue-600 to-purple-600 rounded-lg flex items-center justify-center">
+                  <Store className="w-4 h-4 sm:w-5 sm:h-5 text-white" />
                 </div>
-                <span className="font-bold">Celora</span>
+                <span className="font-bold text-sm sm:text-base">Celora</span>
               </Link>
             </div>
-            <Button variant="ghost" onClick={() => navigate('/dashboard')}>
-              <ArrowLeft className="w-4 h-4 mr-2" />
-              Back to Dashboard
+            <Button variant="ghost" onClick={() => navigate('/dashboard')} className="text-xs sm:text-sm h-8 sm:h-9 px-2 sm:px-3">
+              <ArrowLeft className="w-3 h-3 sm:w-4 sm:h-4 mr-1 sm:mr-2" />
+              <span className="hidden sm:inline">Back to Dashboard</span>
+              <span className="sm:hidden">Back</span>
             </Button>
           </div>
         </div>
       </header>
 
-      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 sm:py-8">
         {/* Success Message */}
         {successMessage && (
-          <div className="mb-6 p-4 bg-green-50 border border-green-200 rounded-lg flex items-center gap-3">
-            <Check className="w-5 h-5 text-green-600" />
-            <span className="text-green-800">{successMessage}</span>
+          <div className="mb-4 sm:mb-6 p-3 sm:p-4 bg-green-50 border border-green-200 rounded-lg flex items-center gap-2 sm:gap-3">
+            <Check className="w-4 h-4 sm:w-5 sm:h-5 text-green-600 flex-shrink-0" />
+            <span className="text-green-800 text-sm sm:text-base">{successMessage}</span>
           </div>
         )}
 
         {/* Current Plan */}
-        <div className="mb-8">
-          <h1 className="text-2xl font-bold mb-2">Billing & Plans</h1>
-          <p className="text-gray-600">Manage your subscription and billing</p>
+        <div className="mb-6 sm:mb-8">
+          <h1 className="text-xl sm:text-2xl font-bold mb-1 sm:mb-2">Billing & Plans</h1>
+          <p className="text-gray-600 text-sm sm:text-base">Manage your subscription and billing</p>
         </div>
 
         {subscription && (
