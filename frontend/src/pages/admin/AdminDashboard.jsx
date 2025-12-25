@@ -28,27 +28,27 @@ const StatCard = ({ title, value, change, changeType, icon: Icon, color, loading
 
   return (
     <Card className="bg-[#151b28] border-gray-800 hover:border-gray-700 transition-all duration-300">
-      <CardContent className="p-6">
+      <CardContent className="p-4 sm:p-6">
         <div className="flex items-start justify-between">
           <div>
-            <p className="text-gray-400 text-sm font-medium mb-1">{title}</p>
+            <p className="text-gray-400 text-xs sm:text-sm font-medium mb-1">{title}</p>
             {loading ? (
-              <div className="h-8 w-24 bg-gray-700 animate-pulse rounded"></div>
+              <div className="h-6 sm:h-8 w-20 sm:w-24 bg-gray-700 animate-pulse rounded"></div>
             ) : (
-              <p className="text-2xl font-bold text-white">{value}</p>
+              <p className="text-xl sm:text-2xl font-bold text-white">{value}</p>
             )}
             {change !== undefined && !loading && (
-              <div className={`flex items-center gap-1 mt-2 text-sm ${
+              <div className={`flex items-center gap-1 mt-1.5 sm:mt-2 text-xs sm:text-sm ${
                 changeType === 'positive' ? 'text-emerald-400' : 'text-red-400'
               }`}>
-                {changeType === 'positive' ? <TrendingUp size={16} /> : <TrendingDown size={16} />}
+                {changeType === 'positive' ? <TrendingUp size={14} /> : <TrendingDown size={14} />}
                 <span>{change}%</span>
-                <span className="text-gray-500">vs last month</span>
+                <span className="text-gray-500 hidden sm:inline">vs last month</span>
               </div>
             )}
           </div>
-          <div className={`w-12 h-12 rounded-xl bg-gradient-to-br ${colors[color]} flex items-center justify-center`}>
-            <Icon size={24} className="text-white" />
+          <div className={`w-10 h-10 sm:w-12 sm:h-12 rounded-xl bg-gradient-to-br ${colors[color]} flex items-center justify-center`}>
+            <Icon size={20} className="sm:w-6 sm:h-6 text-white" />
           </div>
         </div>
       </CardContent>
