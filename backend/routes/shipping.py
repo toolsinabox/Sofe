@@ -3,7 +3,7 @@ Comprehensive Shipping System - Maropost Style
 Handles zones, categories, services, rates, and shipping calculation
 """
 
-from fastapi import APIRouter, HTTPException, Query, UploadFile, File
+from fastapi import APIRouter, HTTPException, Query, UploadFile, File, Request
 from fastapi.responses import StreamingResponse
 from pydantic import BaseModel, Field
 from typing import List, Optional, Dict, Any
@@ -21,6 +21,18 @@ MONGO_URL = os.environ.get('MONGO_URL', 'mongodb://localhost:27017')
 DB_NAME = os.environ.get('DB_NAME', 'test_database')
 client = AsyncIOMotorClient(MONGO_URL)
 db = client[DB_NAME]
+
+# Default store ID for backward compatibility
+DEFAULT_STORE_ID = "675b5810-f110-42f0-9cac-00cf353f04a5"
+
+async def get_store_id(request: Request) -> str:
+    """Get store_id from request header or return default"""
+    store_id = request.headers.get("X-Store-ID")
+    if store_id:
+        store = await db.platform_stores.find_one({"id": store_id})
+        if store:
+            return store_id
+    return DEFAULT_STORE_ID
 
 
 # ============== HELPER FUNCTIONS ==============
