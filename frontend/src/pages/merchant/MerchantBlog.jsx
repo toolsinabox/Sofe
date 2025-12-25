@@ -22,6 +22,7 @@ import { Textarea } from '../../components/ui/textarea';
 import { Switch } from '../../components/ui/switch';
 import { Label } from '../../components/ui/label';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '../../components/ui/tabs';
+import CustomFieldsEditor from '../../components/common/CustomFieldsEditor';
 
 const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
 
@@ -52,7 +53,8 @@ const MerchantBlog = () => {
     allow_comments: true,
     featured: false,
     seo_title: '',
-    seo_description: ''
+    seo_description: '',
+    custom_fields: {}
   });
 
   const [categoryForm, setCategoryForm] = useState({
