@@ -884,7 +884,7 @@ class MaropostTemplateEngine:
             'stock_status': 'In Stock' if product.get('stock', 0) > 0 else 'Out of Stock',
             'on_sale': 'y' if (product.get('compare_price') or 0) > (product.get('price') or 0) else 'n',
             'id': product.get('id', page.get('id', '')),
-            'url': f"/live/product/{product.get('id', '')}" if product else f"/live/{page.get('slug', '')}",
+            'url': f"/store/product/{product.get('id', '')}" if product else f"/store/{page.get('slug', '')}",
             'add_to_cart_url': f"/live/cart/add/{product.get('id', '')}" if product else '',
             'weight': product.get('weight', '') if product else '',
             'dimensions': product.get('dimensions', '') if product else '',
