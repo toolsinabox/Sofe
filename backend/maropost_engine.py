@@ -1396,7 +1396,7 @@ class MaropostTemplateEngine:
             '[@product_compare_price@]': f"{compare_price:.2f}" if compare_price else '',
             '[@product_compare_price_formatted@]': f"{currency}{compare_price:.2f}" if compare_price else '',
             '[@product_image@]': product.get('images', [''])[0] if product.get('images') else '',
-            '[@product_url@]': f"/live/product/{product.get('id', '')}",
+            '[@product_url@]': f"/store/product/{product.get('id', '')}",
             '[@product_category@]': product.get('category_name', ''),
             '[@product_sku@]': product.get('sku', ''),
             '[@product_stock@]': str(product.get('stock', 0)),
