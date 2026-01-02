@@ -1348,7 +1348,7 @@ class MaropostTemplateEngine:
                 cid = c.get('id', '')
                 
                 grid_html += f'''
-                <a href="/live/category/{cid}" class="category-card-mini" style="display:block;text-align:center">
+                <a href="/store/category/{cid}" class="category-card-mini" style="display:block;text-align:center">
                     <img src="{img}" alt="{name}" style="width:100%;aspect-ratio:1;object-fit:cover;border-radius:8px" onerror="this.style.display='none'">
                     <h4 style="margin:0.5rem 0;font-size:0.9rem">{name}</h4>
                 </a>
