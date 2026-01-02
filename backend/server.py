@@ -4740,7 +4740,7 @@ async def generate_mega_menu_from_categories():
                     items=[
                         MegaMenuItem(
                             title=f"View All {cat.get('name', 'Products')}",
-                            url=f"/live/category/{cat.get('id')}",
+                            url=f"/store/category/{cat.get('id')}",
                             type="category"
                         )
                     ]
