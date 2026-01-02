@@ -7747,3 +7747,13 @@ import os
 static_path = os.path.join(os.path.dirname(__file__), "static")
 if os.path.exists(static_path):
     app.mount("/static", StaticFiles(directory=static_path), name="static")
+
+@app.get("/download/backup")
+async def download_backup():
+    import os
+    backup_path = "/app/backend/celora_backup.tar.gz"
+    if os.path.exists(backup_path):
+        with open(backup_path, "rb") as f:
+            content = f.read()
+        return Response(content=content, media_type="application/gzip", headers={"Content-Disposition": "attachment; filename=celora_backup.tar.gz"})
+    return {"error": "Backup not found"}
