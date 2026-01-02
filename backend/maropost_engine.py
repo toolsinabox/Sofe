@@ -1478,7 +1478,7 @@ class MaropostTemplateEngine:
             '[@item_total_formatted@]': f"{currency}{line_total:.2f}",
             '[@item_line_total@]': f"{line_total:.2f}",
             '[@item_line_total_formatted@]': f"{currency}{line_total:.2f}",
-            '[@item_url@]': f"/live/product/{item.get('product_id', item.get('id', ''))}",
+            '[@item_url@]': f"/store/product/{item.get('product_id', item.get('id', ''))}",
         }
         
         for tag, value in replacements.items():
