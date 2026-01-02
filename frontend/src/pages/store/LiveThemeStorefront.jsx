@@ -14,9 +14,18 @@ const LiveThemeStorefront = () => {
     // Determine page path from URL
     const getPagePath = () => {
       const path = location.pathname;
+      
+      // Handle /store paths
+      if (path === '/store' || path === '/store/') return 'home';
+      const storeMatch = path.match(/\/store\/(.+)/);
+      if (storeMatch) return storeMatch[1];
+      
+      // Handle /live paths (legacy)
       if (path === '/live' || path === '/live/') return 'home';
-      const match = path.match(/\/live\/(.+)/);
-      return match ? match[1] : 'home';
+      const liveMatch = path.match(/\/live\/(.+)/);
+      if (liveMatch) return liveMatch[1];
+      
+      return 'home';
     };
 
     const pagePath = getPagePath();
