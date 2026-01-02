@@ -2,10 +2,10 @@
             <!-- Breadcrumb -->
             <div class="max-w-7xl mx-auto px-4 py-3">
                 <nav class="breadcrumb text-sm flex items-center flex-wrap gap-1">
-                    <a href="/live" class="text-gray-500 hover:text-red-600 transition-colors">Home</a>
+                    <a href="/store" class="text-gray-500 hover:text-red-600 transition-colors">Home</a>
                     <span class="text-gray-400">/</span>
                     [%if [@category_name@] ne ''%]
-                    <a href="/live/category/[@category_id@]" class="text-gray-500 hover:text-red-600 transition-colors">[@category_name@]</a>
+                    <a href="/store/category/[@category_id@]" class="text-gray-500 hover:text-red-600 transition-colors">[@category_name@]</a>
                     <span class="text-gray-400">/</span>
                     [%/if%]
                     <span class="text-gray-800 font-medium">[@name@]</span>
@@ -498,7 +498,7 @@
                     <h2>More From This Category</h2>
                     <div class="products-grid">
                         [%product_list limit:'4'%]
-                        <a href="/live/product/[@product_id@]" class="product-card">
+                        <a href="/store/product/[@product_id@]" class="product-card">
                             <div class="product-image">
                                 [%if [@product_sale@] == 'y'%]
                                 <span class="sale-badge">SALE</span>
