@@ -33,12 +33,12 @@
                             </svg>
                             <h3 style="font-size: 18px; font-weight: 600; color: #333; margin-bottom: 10px;">Your cart is empty</h3>
                             <p style="color: #666; margin-bottom: 20px;">Looks like you haven't added any items yet.</p>
-                            <a href="/store" style="display: inline-block; background: #c41e3a; color: #fff; padding: 12px 30px; border-radius: 4px; text-decoration: none; font-weight: 600;">Continue Shopping</a>
+                            <a href="/api/maropost/home" style="display: inline-block; background: #c41e3a; color: #fff; padding: 12px 30px; border-radius: 4px; text-decoration: none; font-weight: 600;">Continue Shopping</a>
                         </div>
                         
                         <!-- Cart Actions -->
                         <div id="cart-actions" style="display: flex; justify-content: space-between; padding: 20px; border-top: 1px solid #e5e5e5;">
-                            <a href="/store" style="display: inline-flex; align-items: center; gap: 8px; padding: 12px 24px; border: 1px solid #ddd; border-radius: 4px; color: #333; text-decoration: none; font-weight: 500; background: #fff;">
+                            <a href="/api/maropost/home" style="display: inline-flex; align-items: center; gap: 8px; padding: 12px 24px; border: 1px solid #ddd; border-radius: 4px; color: #333; text-decoration: none; font-weight: 500; background: #fff;">
                                 <svg style="width: 16px; height: 16px;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/>
                                 </svg>
@@ -372,14 +372,14 @@
             const itemsHtml = cartData.items.map(item => `
                 <div class="cart-item-row" data-product-id="${item.product_id}">
                     <div class="cart-item-info">
-                        <a href="/store/product/${item.product_id}">
+                        <a href="/api/maropost/product/${item.product_id}">
                             <img src="${item.image || 'https://placehold.co/80x80?text=Product'}" 
                                  alt="${item.name}" 
                                  class="cart-item-image"
                                  onerror="this.src='https://placehold.co/80x80?text=Product'">
                         </a>
                         <div class="cart-item-details">
-                            <h3><a href="/store/product/${item.product_id}">${item.name}</a></h3>
+                            <h3><a href="/api/maropost/product/${item.product_id}">${item.name}</a></h3>
                             <div class="cart-item-price">$${(item.price || 0).toFixed(2)}</div>
                             <div class="cart-item-remove" onclick="removeCartItem('${item.product_id}')">
                                 <span style="color: #c41e3a;">×</span> Remove
@@ -835,6 +835,6 @@
                 alert('Your cart is empty');
                 return;
             }
-            window.location.href = '/store/checkout';
+            window.location.href = '/api/maropost/checkout';
         }
         </script>
