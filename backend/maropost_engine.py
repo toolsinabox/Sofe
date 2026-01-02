@@ -1319,7 +1319,7 @@ class MaropostTemplateEngine:
                 
                 grid_html += f'''
                 <div class="product-card-mini">
-                    <a href="/live/product/{pid}">
+                    <a href="/store/product/{pid}">
                         <img src="{img}" alt="{name}" style="width:100%;aspect-ratio:1;object-fit:cover;border-radius:8px">
                         <h4 style="margin:0.5rem 0 0.25rem;font-size:0.9rem">{name}</h4>
                         {'<p style="font-weight:bold;color:#dc2626">' + currency + f'{price:.2f}</p>' if show_price else ''}
