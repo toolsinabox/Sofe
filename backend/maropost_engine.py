@@ -1415,7 +1415,7 @@ class MaropostTemplateEngine:
             '[@category_name@]': category.get('name', ''),
             '[@category_description@]': category.get('description', ''),
             '[@category_image@]': category.get('image', ''),
-            '[@category_url@]': f"/live/category/{category.get('id', '')}",
+            '[@category_url@]': f"/store/category/{category.get('id', '')}",
             '[@category_product_count@]': str(category.get('product_count', 0)),
         }
         
