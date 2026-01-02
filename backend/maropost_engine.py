@@ -885,7 +885,7 @@ class MaropostTemplateEngine:
             'on_sale': 'y' if (product.get('compare_price') or 0) > (product.get('price') or 0) else 'n',
             'id': product.get('id', page.get('id', '')),
             'url': f"/store/product/{product.get('id', '')}" if product else f"/store/{page.get('slug', '')}",
-            'add_to_cart_url': f"/live/cart/add/{product.get('id', '')}" if product else '',
+            'add_to_cart_url': f"/store/cart/add/{product.get('id', '')}" if product else '',
             'weight': product.get('weight', '') if product else '',
             'dimensions': product.get('dimensions', '') if product else '',
             'brand': product.get('brand', store.get('store_name', '')) if product else '',
