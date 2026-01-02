@@ -100,6 +100,19 @@ function App() {
                 Store owners manage their stores here
             ============================================ */}
             <Route path="/merchant/login" element={<MerchantLogin />} />
+            <Route path="/_cpanel/login" element={<MerchantLogin />} />
+            <Route path="/_cpanel/*" element={<Navigate to="/merchant" replace />} />
+            <Route path="/_cpanel" element={
+              <ProtectedRoute>
+                <MerchantLayout />
+              </ProtectedRoute>
+            }>
+              <Route index element={<MerchantDashboard />} />
+              <Route path="orders" element={<MerchantOrders />} />
+              <Route path="products" element={<MerchantProducts />} />
+              <Route path="theme-editor" element={<MerchantThemeEditor />} />
+              <Route path="*" element={<Navigate to="/_cpanel" replace />} />
+            </Route>
             <Route path="/merchant" element={
               <ProtectedRoute>
                 <MerchantLayout />
