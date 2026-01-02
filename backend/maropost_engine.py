@@ -928,7 +928,7 @@ class MaropostTemplateEngine:
             'shipping_height': str(product.get('shipping_height', 0) or 0) if product else '0',
             'product_rating': str(product.get('rating', 0)) if product else '0',
             'product_reviews_count': str(product.get('reviews_count', 0)) if product else '0',
-            'product_url': f"/live/product/{product.get('id', '')}" if product else '',
+            'product_url': f"/store/product/{product.get('id', '')}" if product else '',
             'product_slug': product.get('url_slug', '') if product else '',
             'product_active': 'y' if product.get('is_active', True) else 'n',
             'product_featured': 'y' if product.get('is_featured', False) else 'n',
