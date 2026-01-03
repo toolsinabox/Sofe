@@ -9,6 +9,9 @@ import AdminDashboard from "./pages/admin/AdminDashboard";
 import AdminMerchants from "./pages/admin/AdminMerchants";
 import AdminUsers from "./pages/admin/AdminUsers";
 import AdminLogin from "./pages/admin/AdminLogin";
+import AdminAnalytics from "./pages/admin/AdminAnalytics";
+import AdminSettings from "./pages/admin/AdminSettings";
+import AdminActivityLog from "./pages/admin/AdminActivityLog";
 
 // Merchant Pages
 import MerchantLayout from "./pages/merchant/MerchantLayout";
