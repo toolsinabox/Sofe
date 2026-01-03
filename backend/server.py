@@ -8711,22 +8711,51 @@ async def get_cpanel_store_info(subdomain: str):
     return store
 
 
+@api_router.get("/cpanel/store-info-by-domain")
+async def get_cpanel_store_info_by_domain(domain: str):
+    """Get store info for CPanel login page branding by custom domain"""
+    domain = domain.lower().strip()
+    # Remove protocol if present
+    domain = domain.replace("http://", "").replace("https://", "").rstrip("/")
+    
+    store = await db.platform_stores.find_one(
+        {"custom_domain": domain, "custom_domain_verified": True},
+        {"_id": 0, "id": 1, "store_name": 1, "subdomain": 1, "custom_domain": 1, "logo": 1, "status": 1}
+    )
+    
+    if not store:
+        raise HTTPException(status_code=404, detail="Store not found for this domain")
+    
+    if store.get("status") == "suspended":
+        raise HTTPException(status_code=403, detail="This store has been suspended")
+    
+    return store
+
+
 @api_router.post("/cpanel/login")
 async def cpanel_login(login_data: dict):
-    """Login to merchant CPanel with subdomain context"""
+    """Login to merchant CPanel with subdomain or custom domain context"""
     email = login_data.get("email", "").lower()
     password = login_data.get("password", "")
-    subdomain = login_data.get("subdomain", "").lower()
+    subdomain = login_data.get("subdomain", "").lower() if login_data.get("subdomain") else None
+    custom_domain = login_data.get("custom_domain", "").lower() if login_data.get("custom_domain") else None
     
     if not email or not password:
         raise HTTPException(status_code=400, detail="Email and password required")
     
-    # Find the store by subdomain
+    # Find the store by subdomain OR custom domain
     store = None
     if subdomain:
         store = await db.platform_stores.find_one({"subdomain": subdomain})
-        if not store:
-            raise HTTPException(status_code=404, detail="Store not found")
+    elif custom_domain:
+        # Clean up domain
+        custom_domain = custom_domain.replace("http://", "").replace("https://", "").rstrip("/")
+        store = await db.platform_stores.find_one({
+            "custom_domain": custom_domain,
+            "custom_domain_verified": True
+        })
+    
+    if store:
         if store.get("status") == "suspended":
             raise HTTPException(status_code=403, detail="This store has been suspended")
     
