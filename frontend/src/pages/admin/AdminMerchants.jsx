@@ -16,7 +16,13 @@ import {
   Key,
   ExternalLink,
   Copy,
-  Check
+  Check,
+  Download,
+  CheckSquare,
+  Square,
+  Pause,
+  Play,
+  FileText
 } from 'lucide-react';
 import { Card, CardContent } from '../../components/ui/card';
 import { Button } from '../../components/ui/button';
@@ -56,6 +62,10 @@ const AdminMerchants = () => {
   const [searchQuery, setSearchQuery] = useState('');
   const [statusFilter, setStatusFilter] = useState('all');
   const [planFilter, setPlanFilter] = useState('all');
+  
+  // Bulk selection state
+  const [selectedStores, setSelectedStores] = useState([]);
+  const [bulkActionLoading, setBulkActionLoading] = useState(false);
   
   // Modal states
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
