@@ -127,16 +127,46 @@ Collections:
 
 ## Pending/Future Tasks
 
+### P0 - Immediate (Deploy to VPS)
+- [ ] Push changes to GitHub
+- [ ] Deploy to VPS: `git pull && cd frontend && yarn build && pm2 restart celora-backend`
+- [ ] Update nginx config to pass X-Subdomain header (see nginx config in PRD)
+
 ### P1 - High Priority
-- [ ] SSL Certificate setup (Certbot)
-- [ ] Self-service custom domain connection (Shopify-style)
+- [ ] SSL Certificate setup (Certbot) - waiting for DNS propagation
+- [ ] Self-service custom domain connection (UI complete, needs DNS setup guide)
 - [ ] Email integration for transactional emails
 
 ### P2 - Medium Priority
-- [ ] Stripe production keys
-- [ ] eBay integration fix (credential issue)
-- [ ] Full API scoping audit
+- [ ] Stripe production keys (test keys currently in use)
+- [ ] eBay integration fix (credential issue - user needs to verify on eBay dev portal)
+- [ ] Refactor server.py (duplicate app.include_router call)
 
 ### P3 - Backlog
-- [ ] Auto-deployment from GitHub
-- [ ] CI/CD pipeline
+- [ ] Auto-deployment from GitHub (CI/CD)
+- [ ] Unify user models (platform_owners vs users with different password hashing)
+- [ ] Full API scoping audit
+
+## Nginx Configuration (for VPS)
+
+**IMPORTANT:** Update `/etc/nginx/sites-available/celora` to pass subdomain header:
+
+```nginx
+# In the *.getcelora.com server block, add:
+set $subdomain "";
+if ($host ~* ^([^.]+)\.getcelora\.com$) {
+    set $subdomain $1;
+}
+
+# In location blocks that proxy to backend, add:
+proxy_set_header X-Subdomain $subdomain;
+
+# For storefront location /, enable error handling:
+proxy_intercept_errors on;
+error_page 404 = @store_not_found;
+
+location @store_not_found {
+    root /var/www/celora/frontend/build;
+    try_files /store-not-found.html /index.html;
+}
+```
