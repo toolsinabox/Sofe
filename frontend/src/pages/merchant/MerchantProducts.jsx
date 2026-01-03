@@ -553,7 +553,7 @@ const ProductEditor = ({ product, categories, onSave, onClose, templateTags }) =
                   <div className="space-y-2">
                     <Label className="text-gray-700 flex items-center gap-2">
                       Product Name *
-                      <span className="text-xs text-gray-500 font-mono">[@product_name@]</span>
+                      <TemplateTag tag="[@product_name@]" />
                     </Label>
                     <Input
                       className="bg-gray-50 border-gray-200 text-gray-900"
@@ -579,7 +579,7 @@ const ProductEditor = ({ product, categories, onSave, onClose, templateTags }) =
                   <div className="space-y-2">
                     <Label className="text-gray-700 flex items-center gap-2">
                       Short Description
-                      <span className="text-xs text-gray-500 font-mono">[@product_short_description@]</span>
+                      <TemplateTag tag="[@product_short_description@]" />
                     </Label>
                     <Textarea
                       className="bg-gray-50 border-gray-200 text-gray-900 min-h-20"
@@ -594,7 +594,7 @@ const ProductEditor = ({ product, categories, onSave, onClose, templateTags }) =
                     <div className="flex items-center justify-between">
                       <Label className="text-gray-700 flex items-center gap-2">
                         Full Description
-                        <span className="text-xs text-gray-500 font-mono">[@product_description@]</span>
+                        <TemplateTag tag="[@product_description@]" />
                       </Label>
                       {/* Editor Mode Toggle */}
                       <div className="flex bg-gray-100 rounded-lg p-0.5">
