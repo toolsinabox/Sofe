@@ -92,6 +92,8 @@ function App() {
             <Route path="/" element={<PlatformHome />} />
             <Route path="/signup" element={<PlatformSignup />} />
             <Route path="/login" element={<PlatformLogin />} />
+            <Route path="/forgot-password" element={<ForgotPassword />} />
+            <Route path="/reset-password" element={<ResetPassword />} />
             <Route path="/dashboard" element={<PlatformDashboard />} />
             <Route path="/billing" element={<PlatformBilling />} />
             
