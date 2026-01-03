@@ -274,10 +274,12 @@ Auto-detects which environment/platform the app is running on:
 - [x] URL Redirects feature (COMPLETED)
 - [x] Custom Scripts feature (COMPLETED)
 - [x] CPanel access on custom domains (COMPLETED)
+- [x] Fix Domain Settings page UI styling (COMPLETED - January 3, 2026)
 - [ ] Push changes to GitHub
 - [ ] Deploy to VPS with updated nginx config (see `/app/nginx_vps_cpanel.conf`)
 
 ### P1 - High Priority
+- [ ] UI Audit - Continue making tags blue/clickable across merchant dashboard
 - [ ] SSL Certificate setup (Certbot) - waiting for DNS propagation
 - [ ] Email API key configuration (Resend) - user needs to provide API key
 - [ ] Stripe production keys (test keys currently in use)
