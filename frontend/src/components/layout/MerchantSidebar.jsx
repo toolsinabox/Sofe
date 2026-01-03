@@ -362,14 +362,15 @@ const MerchantSidebar = ({ collapsed, setCollapsed, mobileOpen, setMobileOpen })
       {/* View Store Button */}
       {!collapsed && (
         <div className="px-3 py-2 border-t border-slate-700 space-y-2">
-          <NavLink
-            to="/store"
+          <a
+            href={getStoreUrl()}
             target="_blank"
+            rel="noopener noreferrer"
             className="flex items-center justify-center gap-2 w-full px-4 py-2 bg-blue-500 rounded-lg text-white font-medium text-sm hover:bg-blue-600 transition-colors"
           >
             <ExternalLink size={16} />
             View Store
-          </NavLink>
+          </a>
           <button
             onClick={handleBackToPlatform}
             className="flex items-center justify-center gap-2 w-full px-4 py-2 bg-slate-700 rounded-lg text-slate-300 font-medium text-sm hover:bg-slate-600 transition-colors"
