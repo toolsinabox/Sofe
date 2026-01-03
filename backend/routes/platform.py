@@ -178,8 +178,17 @@ def hash_password(password: str) -> str:
     return hashlib.sha256(password.encode()).hexdigest()
 
 def verify_password(password: str, hashed: str) -> bool:
-    """Verify password against hash"""
-    return hash_password(password) == hashed
+    """Verify password against hash - supports both SHA256 and bcrypt"""
+    # First try SHA256
+    if hash_password(password) == hashed:
+        return True
+    
+    # Then try bcrypt
+    try:
+        import bcrypt
+        return bcrypt.checkpw(password.encode('utf-8'), hashed.encode('utf-8'))
+    except:
+        return False
 
 def generate_verification_token() -> str:
     """Generate a random verification token"""
