@@ -100,17 +100,6 @@ class TestAdminImpersonation:
 class TestAdminResetPassword:
     """Test admin reset store owner password functionality"""
     
-    @pytest.fixture
-    def admin_token(self):
-        """Get admin authentication token"""
-        response = requests.post(
-            f"{BASE_URL}/api/auth/login",
-            json={"email": ADMIN_EMAIL, "password": ADMIN_PASSWORD}
-        )
-        if response.status_code == 200:
-            return response.json().get("access_token")
-        pytest.skip("Admin authentication failed")
-    
     def test_reset_password_success(self, admin_token):
         """Test admin can reset store owner password"""
         headers = {"Authorization": f"Bearer {admin_token}"}
