@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useCallback } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { 
   Globe, Check, X, AlertCircle, Copy, ExternalLink, RefreshCw, 
   ChevronRight, Shield, CheckCircle2, Clock, HelpCircle, Trash2,
@@ -15,11 +16,14 @@ import {
   DialogTitle,
   DialogDescription,
 } from '../../components/ui/dialog';
+import { useAuth } from '../../context/AuthContext';
 
 const API_URL = process.env.REACT_APP_BACKEND_URL || '';
 const SERVER_IP = '45.77.239.247';
 
 const MerchantDomains = () => {
+  const navigate = useNavigate();
+  const { logout } = useAuth();
   const [store, setStore] = useState(null);
   const [customDomain, setCustomDomain] = useState('');
   const [loading, setLoading] = useState(true);
