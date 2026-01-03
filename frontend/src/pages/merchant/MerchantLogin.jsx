@@ -26,8 +26,18 @@ const MerchantLogin = () => {
     setError('');
 
     try {
-      const response = await axios.post(`${API}/auth/login`, formData);
-      login(response.data.access_token, response.data.user);
+      // Use platform auth endpoint for merchant login
+      const response = await axios.post(
+        `${API}/platform/auth/login?email=${encodeURIComponent(formData.email)}&password=${encodeURIComponent(formData.password)}`
+      );
+      // Platform login returns token and owner info
+      login(response.data.token, {
+        id: response.data.owner.id,
+        email: response.data.owner.email,
+        name: response.data.owner.name,
+        role: 'merchant',
+        stores: response.data.stores
+      });
       navigate('/merchant');
     } catch (err) {
       console.error('Login error:', err);
