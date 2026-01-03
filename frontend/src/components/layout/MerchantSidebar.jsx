@@ -145,6 +145,7 @@ const navGroups = [
       { path: '/merchant/tax', icon: Percent, label: 'Tax Management' },
       { path: '/merchant/invoice-settings', icon: Receipt, label: 'Invoice Settings' },
       { path: '/merchant/theme-editor', icon: Palette, label: 'Theme Editor' },
+      { path: '/merchant/domains', icon: Globe, label: 'Domains' },
       { path: '/merchant/settings', icon: Settings, label: 'General Settings' },
     ]
   },
