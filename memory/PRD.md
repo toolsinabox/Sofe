@@ -118,6 +118,26 @@ Auto-detects which environment/platform the app is running on:
 ---
 
 
+### January 3, 2026 - Full System Audit & Authentication Fixes (COMPLETED)
+**Critical Fixes Applied:**
+1. **Database Configuration:** Changed DB_NAME from `test_database` to `celora`
+2. **Password Hashes:** Generated fresh bcrypt hashes compatible with the server
+3. **Admin Role:** Fixed user role from `platform_admin` to `admin`
+4. **Merchant Login:** Fixed `/api/platform/auth/login` to generate JWT tokens (was using simple session tokens)
+5. **MerchantLogin.jsx:** Updated to use platform auth endpoint instead of `/api/auth/login`
+
+**Test Results:** 100% pass rate - 12/12 backend tests, all UI flows working
+
+**Login Credentials (test123 for all):**
+- Admin: admin@celora.com → /admin/login
+- Merchant: eddie@toolsinabox.com.au → /merchant/login
+- Merchant: test@test.com → /merchant/login
+
+**Files Modified:**
+- `/app/backend/.env` - DB_NAME changed to celora
+- `/app/backend/routes/platform.py` - JWT token generation
+- `/app/frontend/src/pages/merchant/MerchantLogin.jsx` - Use platform auth endpoint
+
 ### January 3, 2026 - Comprehensive UI Audit (COMPLETED)
 **Full merchant dashboard UI audit:**
 - **Domain Settings Page** - Fixed white-on-white text issue, converted to light mode
