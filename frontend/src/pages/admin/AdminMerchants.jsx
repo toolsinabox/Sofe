@@ -316,6 +316,16 @@ const AdminMerchants = () => {
         </div>
       )}
 
+      {success && (
+        <div className="bg-emerald-500/10 border border-emerald-500/50 text-emerald-400 px-3 sm:px-4 py-2 sm:py-3 rounded-lg flex items-center gap-2 text-sm">
+          <Check size={16} className="flex-shrink-0" />
+          <span className="flex-1">{success}</span>
+          <button onClick={() => setSuccess(null)} className="ml-auto">
+            <X size={16} />
+          </button>
+        </div>
+      )}
+
       {/* Header Actions */}
       <div className="flex flex-col gap-3 sm:gap-4">
         {/* Search and Filters */}
