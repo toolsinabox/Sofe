@@ -398,8 +398,22 @@ async def platform_login(email: str, password: str):
         {"_id": 0}
     ).to_list(100)
     
-    # Generate token
-    token = secrets.token_urlsafe(32)
+    # Generate JWT token (compatible with get_current_user)
+    from jose import jwt
+    import os
+    SECRET_KEY = os.environ.get('JWT_SECRET_KEY', 'maropost-clone-super-secret-key-change-in-production')
+    ALGORITHM = "HS256"
+    
+    token_data = {
+        "sub": owner["id"],
+        "email": owner["email"],
+        "role": "merchant",
+        "store_id": stores[0]["id"] if stores else None,
+        "exp": datetime.now(timezone.utc) + timedelta(days=7)
+    }
+    token = jwt.encode(token_data, SECRET_KEY, algorithm=ALGORITHM)
+    
+    # Also store session for backward compatibility
     await db.platform_sessions.insert_one({
         "token": token,
         "owner_id": owner["id"],
