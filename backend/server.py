@@ -5769,9 +5769,12 @@ async def get_active_theme_name(store_id: str = None):
 
 @api_router.get("/themes")
 async def list_themes(current_user: dict = Depends(get_current_user)):
-    """List all available themes"""
+    """List all available themes - shows which is active for the current store"""
     themes = []
-    active_theme = await get_active_theme_name()
+    
+    # Get the store's active theme if user has a store
+    store_id = await get_store_id_for_current_user(current_user)
+    active_theme = await get_active_theme_name(store_id)
     
     if THEMES_DIR.exists():
         for theme_dir in THEMES_DIR.iterdir():
