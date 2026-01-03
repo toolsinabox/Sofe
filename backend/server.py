@@ -4915,7 +4915,7 @@ async def update_custom_domain(
 @api_router.delete("/store/custom-domain")
 async def remove_custom_domain(current_user: dict = Depends(get_current_user)):
     """Remove store's custom domain"""
-    store_id = current_user.get("store_id")
+    store_id = await get_store_id_for_current_user(current_user)
     if not store_id:
         raise HTTPException(status_code=400, detail="No store associated with user")
     
@@ -4938,7 +4938,7 @@ async def verify_custom_domain(
     """Verify that custom domain points to our server"""
     import socket
     
-    store_id = current_user.get("store_id")
+    store_id = await get_store_id_for_current_user(current_user)
     if not store_id:
         raise HTTPException(status_code=400, detail="No store associated with user")
     
