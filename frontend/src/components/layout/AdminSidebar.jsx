@@ -4,18 +4,19 @@ import {
   LayoutDashboard,
   Store,
   Users,
-  CreditCard,
   Settings,
   BarChart3,
   HelpCircle,
   LogOut,
   ChevronLeft,
-  ChevronRight
+  ChevronRight,
+  Activity,
+  Shield
 } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
 
 const AdminSidebar = ({ collapsed, setCollapsed, onClose }) => {
-  const { logout } = useAuth();
+  const { logout, user } = useAuth();
   const navigate = useNavigate();
 
   const handleLogout = () => {
@@ -30,10 +31,10 @@ const AdminSidebar = ({ collapsed, setCollapsed, onClose }) => {
 
   const navItems = [
     { path: '/admin', icon: LayoutDashboard, label: 'Dashboard', exact: true },
-    { path: '/admin/merchants', icon: Store, label: 'Merchants' },
+    { path: '/admin/merchants', icon: Store, label: 'Stores' },
     { path: '/admin/users', icon: Users, label: 'Users' },
-    { path: '/admin/billing', icon: CreditCard, label: 'Billing' },
     { path: '/admin/analytics', icon: BarChart3, label: 'Analytics' },
+    { path: '/admin/activity', icon: Activity, label: 'Activity Log' },
     { path: '/admin/settings', icon: Settings, label: 'Settings' },
   ];
 
