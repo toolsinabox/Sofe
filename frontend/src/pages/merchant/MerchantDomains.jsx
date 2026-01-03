@@ -256,7 +256,7 @@ const MerchantDomains = () => {
             <Globe className="w-7 h-7 text-blue-600" />
             Domain Settings
           </h1>
-          <p className="text-gray-500 mt-1">Configure your store's domain and custom domain</p>
+          <p className="text-gray-500 mt-1">Configure your store&apos;s domain and custom domain</p>
         </div>
         <Button 
           variant="outline" 
