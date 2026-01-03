@@ -1733,6 +1733,113 @@ async def init_admin():
     
     return {"message": "Admin user created successfully", "initialized": True, "email": admin_user.email}
 
+# ==================== PASSWORD RESET ====================
+
+@api_router.post("/auth/forgot-password")
+async def forgot_password(data: dict):
+    """Request a password reset email"""
+    email = data.get("email", "").lower().strip()
+    if not email:
+        raise HTTPException(status_code=400, detail="Email is required")
+    
+    # Find user in either users or platform_owners collection
+    user = await db.users.find_one({"email": email})
+    owner = await db.platform_owners.find_one({"email": email})
+    
+    if not user and not owner:
+        # Don't reveal if email exists - return success anyway
+        return {"message": "If an account exists with this email, you will receive a password reset link."}
+    
+    # Generate reset token
+    reset_token = secrets.token_urlsafe(32)
+    expires_at = datetime.now(timezone.utc) + timedelta(hours=1)
+    
+    # Store reset token
+    await db.password_reset_tokens.delete_many({"email": email})  # Remove old tokens
+    await db.password_reset_tokens.insert_one({
+        "email": email,
+        "token": reset_token,
+        "expires_at": expires_at,
+        "created_at": datetime.now(timezone.utc)
+    })
+    
+    # Send email
+    name = user.get("name") if user else owner.get("name", email.split("@")[0])
+    email_result = await send_password_reset_email(email, name, reset_token)
+    
+    if email_result.get("mocked"):
+        logger.info(f"Password reset token for {email}: {reset_token}")
+    
+    return {"message": "If an account exists with this email, you will receive a password reset link."}
+
+@api_router.post("/auth/reset-password")
+async def reset_password(data: dict):
+    """Reset password using token from email"""
+    token = data.get("token", "")
+    new_password = data.get("new_password", "")
+    
+    if not token or not new_password:
+        raise HTTPException(status_code=400, detail="Token and new password are required")
+    
+    if len(new_password) < 6:
+        raise HTTPException(status_code=400, detail="Password must be at least 6 characters")
+    
+    # Find and validate token
+    reset_record = await db.password_reset_tokens.find_one({"token": token})
+    if not reset_record:
+        raise HTTPException(status_code=400, detail="Invalid or expired reset token")
+    
+    if reset_record["expires_at"] < datetime.now(timezone.utc):
+        await db.password_reset_tokens.delete_one({"token": token})
+        raise HTTPException(status_code=400, detail="Reset token has expired")
+    
+    email = reset_record["email"]
+    hashed = get_password_hash(new_password)
+    
+    # Update password in users collection
+    user_result = await db.users.update_one(
+        {"email": email},
+        {"$set": {"hashed_password": hashed, "updated_at": datetime.now(timezone.utc)}}
+    )
+    
+    # Also update in platform_owners if exists
+    owner_result = await db.platform_owners.update_one(
+        {"email": email},
+        {"$set": {"hashed_password": hashed, "updated_at": datetime.now(timezone.utc)}}
+    )
+    
+    if user_result.modified_count == 0 and owner_result.modified_count == 0:
+        raise HTTPException(status_code=400, detail="Failed to update password")
+    
+    # Delete the used token
+    await db.password_reset_tokens.delete_one({"token": token})
+    
+    return {"message": "Password has been reset successfully. You can now log in with your new password."}
+
+@api_router.get("/auth/verify-reset-token/{token}")
+async def verify_reset_token(token: str):
+    """Verify if a reset token is valid"""
+    reset_record = await db.password_reset_tokens.find_one({"token": token})
+    
+    if not reset_record:
+        return {"valid": False, "message": "Invalid reset token"}
+    
+    if reset_record["expires_at"] < datetime.now(timezone.utc):
+        await db.password_reset_tokens.delete_one({"token": token})
+        return {"valid": False, "message": "Reset token has expired"}
+    
+    return {"valid": True, "email": reset_record["email"]}
+
+# ==================== EMAIL STATUS ====================
+
+@api_router.get("/system/email-status")
+async def get_email_status():
+    """Check if email service is configured"""
+    return {
+        "configured": is_email_configured(),
+        "provider": "Resend" if is_email_configured() else None
+    }
+
 # ==================== CATEGORY ENDPOINTS ====================
 
 @api_router.get("/")
