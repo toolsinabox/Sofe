@@ -1,54 +1,92 @@
 <analysis>**original_problem_statement:**
-The user's primary goal is to create a multi-tenant hosting platform, similar to Shopify, where customers can sign up to create and manage their own e-commerce stores. The platform should be branded as Celora and operate under the  domain. The user also requested an admin hub to oversee all customer stores, revenue, and platform statistics.
+The user's primary goal is to create a multi-tenant hosting platform, Celora, similar to Shopify, allowing customers to sign up and manage their own e-commerce stores. A key requirement is a Platform Admin Dashboard for the user to oversee all customer stores. After the initial build, the user's main focus shifted to deploying the entire application onto a self-managed Virtual Private Server (VPS) from Vultr for self-sufficiency. Most recently, the user requested a Shopify-like feature for their customers to be able to connect their own custom domains to their storefronts.
 
 **User's preferred language**: English
 
 **what currently exists?**
-A fully functional, multi-tenant e-commerce platform has been built. The application is a React frontend with a FastAPI/MongoDB backend. The platform, now branded Celora, includes a public landing page, a user signup/login system, a platform dashboard for store owners, and a separate merchant dashboard for managing individual store operations (products, orders, etc.).
+A full-stack multi-tenant e-commerce platform (React frontend, FastAPI/MongoDB backend) has been successfully deployed to the user's Vultr VPS (). The application is live and accessible via the server's IP address. It includes a public landing page, a platform dashboard, a merchant dashboard, and a platform admin dashboard.
 
-Crucially, a **Platform Admin Dashboard** has been implemented at , providing a centralized hosting hub to view all tenant stores, platform-wide revenue, and user statistics.
-
-Data isolation is enforced via  on all major database collections, and a backend middleware handles tenant resolution. The system has been pre-configured with three sample stores: Tools In A Box (containing the user's original data), Fashion Hub, and Tech Gadgets Pro. All code has been updated to reference the user's  domain.
+Nginx is configured as a reverse proxy, handling the main domain (), tenant subdomains (), and a custom  URL for merchant login. The backend is managed by PM2, and the database has been seeded with all sample data from the development environment. Several critical bugs related to login, theme rendering, and storefront performance have been fixed directly on the live server. The implementation of a self-service custom domain feature for tenants has begun.
 
 **Last working item**:
--   **Last item agent was working:** The agent completed a comprehensive, end-to-end verification of the entire platform after rebranding it to Celora and configuring it for the  domain. This final double-check involved testing the landing page, signup, platform dashboard, merchant dashboard (for multiple tenants to confirm data isolation), the admin hub, billing page, and custom domain UI.
--   **Status:** USER VERIFICATION PENDING
--   **Agent Testing Done:** Y
--   **Which testing method agent to use?** NA
+-   **Last item agent was working:** The agent was in the middle of deploying a new self-service custom domain feature to the user's live Vultr VPS. This feature allows merchants to connect their own domains via a new Domains page in their dashboard. The agent guided the user to create the new frontend page () on the server, and the user successfully ran the yarn run v1.22.22
+info Visit https://yarnpkg.com/en/docs/cli/run for documentation about this command. command. The deployment is paused, awaiting the next steps to integrate the new page and its corresponding backend logic.
+-   **Status:** IN PROGRESS
+-   **Agent Testing Done:** N
+-   **Which testing method agent to use?** Frontend testing agent. The next agent must guide the user through the remaining deployment steps and then thoroughly test the entire custom domain connection flow.
 -   **User Testing Done:** N
 
 **All Pending/In progress Issue list**:
--   **Issue 1: eBay Connection Authentication Failure (P2)**
-    -   **Attempted fixes:** None in this session; this was de-prioritized. A Skip for Now button exists from a previous session.
+-   **Issue 1: Complete Self-Service Custom Domain Feature Deployment (P0)**
+-   **Issue 2: Finalize and Secure VPS Deployment with SSL (P1)**
+-   **Issue 3: Root Domain DNS Propagation (P1)**
+-   **Issue 4: eBay Connection Authentication Failure (P2)**
+
+**Issues Detail:**
+-   **Issue 1: Complete Self-Service Custom Domain Feature Deployment (P0)**
+    -   **Attempted fixes:** The  file was created on the VPS, and the frontend build was run. The user has the commands for the next steps but hasn't executed them yet.
+    -   **Next debug checklist:**
+        1.  Guide the user to run the  commands to add the new route to  and add a link to .
+        2.  Guide the user to rebuild the frontend with .
+        3.  Guide the user to append the new API endpoints to the end of .
+        4.  Guide the user to restart the backend with .
+        5.  Once deployed, test the feature end-to-end: log in as a merchant, navigate to the Domains page, add a custom domain, and verify it.
+    -   **Why fix this issue and what will be achieved with this?** This is a crucial feature for platform tenants, allowing them to use their own branding and appear professional.
+    -   **Status:** IN PROGRESS
+    -   **Is recurring issue?** N
+    -   **Should Test frontend/backend/both after fix?** Both
+    -   **Blocked on other issue:** None
+
+-   **Issue 2: Finalize and Secure VPS Deployment with SSL (P1)**
+    -   **Attempted fixes:** The application is live over HTTP.
+    -   **Next debug checklist:** Once the root domain  fully propagates, guide the user to install an SSL certificate using Certbot for , , and .
+        - Command: 
+    -   **Why fix this issue and what will be achieved with this?** To secure the entire platform with HTTPS, which is mandatory for any e-commerce application handling user data and payments.
+    -   **Status:** BLOCKED
+    -   **Is recurring issue?** N
+    -   **Should Test frontend/backend/both after fix?** Both
+    -   **Blocked on other issue:** Issue 3: Root Domain DNS Propagation.
+
+-   **Issue 3: Root Domain DNS Propagation (P1)**
+    -   **Attempted fixes:** The user has correctly set the A records for , , and  at their registrar (CrazyDomains).  and  are propagating correctly, but the root domain () is lagging.
+    -   **Next debug checklist:** Periodically check DNS propagation using a public checker like  or by running  on the server. This just requires waiting.
+    -   **Why fix this issue and what will be achieved with this?** Makes the site accessible at  (without ) and is a prerequisite for installing a complete SSL certificate.
+    -   **Status:** IN PROGRESS
+    -   **Is recurring issue?** N
+    -   **Should Test frontend/backend/both after fix?** N/A
+    -   **Blocked on other issue:** None (Time-based).
+
+-   **Issue 4: eBay Connection Authentication Failure (P2)**
+    -   **Attempted fixes:** None in this session.
     -   **Next debug checklist:** Guide the user to re-verify their API credentials and application scopes on the eBay developer portal.
-    -   **Why fix this issue and what will be achieved with this?** This is required to enable live product and order synchronization with eBay.
+    -   **Why fix this issue and what will be achieved with this?** Enables live product and order synchronization with eBay.
     -   **Status:** BLOCKED
     -   **Is recurring issue?** Y
     -   **Should Test frontend/backend/both after fix?** Backend
     -   **Blocked on other issue:** User action required.
 
 **In progress Task List**:
--   None. The primary development task is complete.
+-   None.
 
 **Upcoming and Future Tasks**
-- **Upcoming Tasks (Deployment & Configuration - P0):**
-    -   **Stripe Go-Live:** Replace the test Stripe keys in  with live production keys to enable real payments.
-    -   **Email Integration:** Implement an email service (e.g., Resend, SendGrid) for transactional emails like welcome messages, order confirmations, and password resets.
-    -   **Full API Scoping Audit:** Perform a final audit of all minor API endpoints (e.g., coupons, returns) to ensure every route is correctly scoped by .
+**Upcoming Tasks (P1):**
+*   **Stripe Go-Live:** Guide the user to replace test Stripe keys with live keys in .
+*   **Email Integration:** Implement an email service (e.g., Resend, SendGrid) for transactional emails.
 
-- **Future Tasks (Infrastructure Dependent - P1):**
-    -   **Live Storefront Routing:** The live storefront engine ( Maropost section) needs to be updated to resolve the store based on the request's subdomain. This is a code change required to support the infrastructure setup for .
+**Future Tasks (P2):**
+*   **Full API Scoping Audit:** Perform a final audit of all minor API endpoints to ensure every route is correctly scoped by .
+*   **Automated Deployments (CI/CD):** Propose setting up a GitHub Actions pipeline to automate future deployments to the VPS.
 
 **Completed work in this session**
--   **Multi-Tenant Architecture Implementation:** Transformed the application from single-tenant to a full Shopify-style multi-tenant platform with complete data isolation for products, orders, customers, reviews, shipping, and pages.
--   **Platform & Admin Dashboards:**
-    -   Built the Celora platform frontend for user signup, login, and store management.
-    -   Created the critical **Platform Admin Dashboard** () which acts as the Hosting Hub, allowing the platform owner to view all tenant stores, platform-wide revenue, and user stats.
--   **Data Migration & Scaffolding:** Migrated all of the user's original data into the Tools In A Box store and created two additional empty sample stores for demonstration.
--   **Branding & Domain Reconfiguration:** Rebranded the entire application (frontend and backend) from StoreBuilder to Celora and updated all domain-specific logic to use .
--   **Billing and Custom Domain UI:** Implemented the complete frontend UI for Stripe-based subscription management and for users to connect their custom domains.
--   **Auth & Navigation Flow:** Created a seamless, connected login flow from the platform dashboard directly into the corresponding merchant dashboard with the correct store context.
--   **Comprehensive Verification:** Conducted multiple rounds of end-to-end testing to ensure all features, especially data isolation and the new admin hub, were functioning correctly.
+-   **VPS Deployment:** Fully deployed the application stack (React, FastAPI, PM2, Nginx, MongoDB) to the user's Vultr server.
+-   **Database Migration:** Migrated all user and store data from the development environment to the live server's MongoDB instance.
+-   **Live Server Debugging:** Diagnosed and fixed numerous critical issues on the live server, including:
+    -   User login failures due to inconsistent password hashing (bcrypt vs. SHA256) and mismatched database collections/fields.
+    -   Firewall rules () blocking HTTP/HTTPS traffic.
+    -   DNS misconfigurations at the user's domain registrar.
+-   **Storefront Performance:** Reworked all theme template links ( -> ) to bypass the React Loading... screen, resulting in a much faster storefront experience.
+-   **Advanced Nginx Routing:** Configured Nginx to handle the main domain, wildcard subdomains for tenants, a custom  URL for merchant login, and a catch-all  to prepare for self-service custom domains.
+-   **Sync to Emergent:** Applied all critical fixes and new feature code (self-service domains) from the live session back to the Emergent development environment to maintain parity.
 
 **Earlier issues found/mentioned but not fixed**
 -   **Issue 1: eBay Connection Authentication Failure**
@@ -66,63 +104,116 @@ Data isolation is enforced via  on all major database collections, and a backend
 
 
 **Key Technical Concepts**
--   **Multi-Tenancy (Shared App, Isolated Data):** A single codebase serves all tenants, with data partitioned by a  in the database.
--   **Header-Based Tenant Resolution:** A FastAPI middleware inspects the  header on incoming requests to set the appropriate data scope for all database queries.
--   **Centralized Admin Portal:** A dedicated section () with its own API endpoints () provides a global view of the platform, separate from individual tenant data.
--   **Dynamic Rebranding:** The agent successfully performed a global search-and-replace to change the platform's brand and domain, demonstrating the ability to customize the white-label nature of the application.
+-   **Self-Hosting/DevOps:** Manual deployment and management of a full-stack application on an Ubuntu VPS using Nginx, PM2, Certbot, and .
+-   **DNS Management:** Diagnosing and resolving DNS propagation and configuration issues (A Records, Nameservers) with a third-party registrar (CrazyDomains).
+-   **Advanced Nginx Routing:** Using multiple  blocks,  for catch-all, and  with headers (, ) to handle complex multi-tenant and custom domain routing.
+-   **Database Seeding:** Using Current Mongosh Log ID:	69587a44115baabc693f118b
+Connecting to:		mongodb://127.0.0.1:27017/?directConnection=true&serverSelectionTimeoutMS=2000&appName=mongosh+2.5.10
+Using MongoDB:		7.0.28
+Using Mongosh:		2.5.10
+
+For mongosh info see: https://www.mongodb.com/docs/mongodb-shell/
+
+
+To help improve our products, anonymous usage data is collected and sent to MongoDB periodically (https://www.mongodb.com/legal/privacy-policy).
+You can opt-out by running the disableTelemetry() command.
+
+------
+   The server generated these startup warnings when booting
+   2026-01-03T02:09:04.152+00:00: Using the XFS filesystem is strongly recommended with the WiredTiger storage engine. See http://dochub.mongodb.org/core/prodnotes-filesystem
+   2026-01-03T02:09:05.537+00:00: Access control is not enabled for the database. Read and write access to data and configuration is unrestricted
+   2026-01-03T02:09:05.537+00:00: You are running this process as the root user, which is not recommended
+   2026-01-03T02:09:05.537+00:00: Soft rlimits for open file descriptors too low
+------
+
+test>  commands to manually create users and  to migrate large datasets between environments.
 
 **key DB schema**
--   ****: 
--   ****: 
--   **Other Collections** (, , , , , ): All include a  field for data isolation.
+-   ****: Added  and  fields.
+-   ****: This collection is used for merchant login (). It uses  for .
+-   ****: This collection is used for platform login (). It now uses  for . This inconsistency should be refactored.
+
+**changes in tech stack**
+-   None.
 
 **All files of reference**
--   : Contains the core multi-tenant middleware and admin endpoints.
--   : Logic for user/store creation and management.
--   : The UI for the Hosting Hub.
--   : The main UI for a store owner.
--   : Manages the authentication state and store context.
+-   **/var/www/celora/frontend/src/pages/merchant/MerchantDomains.jsx**: The new page for the custom domain feature.
+-   **/var/www/celora/backend/server.py**: The file to be updated with new API endpoints.
+-   **/var/www/celora/frontend/src/App.js**: The file to be updated with the new route.
+-   **/etc/nginx/sites-available/celora**: The Nginx configuration file, which has been modified extensively.
+-   **/app/memory/PRD.md**: Project documentation file created in the Emergent environment.
+
+**Areas that need refactoring**:
+-   **Unify User Models & Auth:** The system has two separate user tables (, ) with different authentication endpoints and, critically, **different password hashing algorithms (SHA256 vs. bcrypt)**. This caused significant login bugs and is a security risk. These should be merged into a single  table with a unified, secure () authentication flow.
+-   **Improve Data Migration:** The process of migrating data relied on manual  and Current Mongosh Log ID:	69587a45b44d90064f3f118b
+Connecting to:		mongodb://127.0.0.1:27017/?directConnection=true&serverSelectionTimeoutMS=2000&appName=mongosh+2.5.10
+Using MongoDB:		7.0.28
+Using Mongosh:		2.5.10
+
+For mongosh info see: https://www.mongodb.com/docs/mongodb-shell/
+
+------
+   The server generated these startup warnings when booting
+   2026-01-03T02:09:04.152+00:00: Using the XFS filesystem is strongly recommended with the WiredTiger storage engine. See http://dochub.mongodb.org/core/prodnotes-filesystem
+   2026-01-03T02:09:05.537+00:00: Access control is not enabled for the database. Read and write access to data and configuration is unrestricted
+   2026-01-03T02:09:05.537+00:00: You are running this process as the root user, which is not recommended
+   2026-01-03T02:09:05.537+00:00: Soft rlimits for open file descriptors too low
+------
+
+test>  commands. A more robust, automated data seeding or migration script should be created for easier environment setup in the future.
+
+**key api endpoints**
+-   : (New) Fetches domain settings for a store.
+-   : (New) Sets a custom domain for a store.
+-   : (New) Verifies if a custom domain's DNS points to the server.
+-   : (New) Removes a custom domain from a store.
+-   : All storefront URLs were updated to use this prefix for faster loading.
 
 **Critical Info for New Agent**
--   The application's code is **feature-complete** for the multi-tenant goal. Your primary focus should be on assisting the user with deployment configuration, not developing new code features unless explicitly requested.
--   There are three key user roles with different access points: **Platform Admin** (), **Store Owner** ( -> ), and the **end customer** (storefront).
--   The platform is now branded **Celora** and hardcoded for the **** domain. Do not change this.
--   The most critical aspect of the system is **data isolation**. Any future changes must be tested against at least two different store accounts to ensure no data leakage.
+-   **You are working on a LIVE server.** The user's application is deployed on a Vultr VPS (). Be cautious with commands.
+-   The immediate task is to **finish deploying the self-service custom domain feature**. The user has the component file and has run yarn run v1.22.22
+info Visit https://yarnpkg.com/en/docs/cli/run for documentation about this command.. You need to guide them to update , update , and restart services.
+-   **DNS propagation is ongoing.**  works, but the root domain  is still propagating. This is normal and requires patience. SSL installation is blocked until this is complete.
+-   **The user is non-technical.** Provide clear, copy-pasteable commands and explain steps simply.
+
+**documents and test reports created in this job**
+-   /app/memory/PRD.md
 
 **Last 10 User Messages and any pending HUMAN messages**
--   
--   
--   
--   
--   
--   
--   
--   
--   
--   
+1.  **is this correct**: User is asking for confirmation after running the commands to create the  file and rebuild the frontend. (Status: Pending next steps).
+2.  **okay for customer toolsinabox how can they point...**: User asked for a Shopify-like self-service custom domain feature. (Status: In Progress).
+3.  **All the edits we done to the live have you applied to emergent aswel**: User requested to sync all live server changes back to the dev environment. (Status: Completed).
+4.  **can you make the backend login work like toolsinabox.getcelora.com/_cpanel**: User requested a custom URL for the merchant login. (Status: Completed).
+5.  **it worked but theme or style is broken?**: User reported that the subdomain storefront was unstyled. (Status: Completed/Fixed).
+6.  **it worked how can i setup the toolsinabox.getcelora.com**: User asked how to get subdomains working. (Status: Completed).
+7.  **are you sure i dont need to configure vultr?**: User clarifying where DNS is managed. (Status: Answered).
+8.  **when i update github does my live site automaticly update or no?**: User asked about CI/CD. (Status: Answered).
+9.  **are you sure the name server shouldnt be syrahost instead of crazydomains?**: User questioning the DNS strategy. (Status: Answered/Resolved).
+10. **why does it keep saying loading storefront...**: User reported slow storefront loading. (Status: Completed/Fixed).
 
 **Project Health Check:**
--   **Fixed:** The application is a fully functional multi-tenant platform with a dedicated admin hub and has been rebranded as requested.
--   **Broken:** The live storefront () only displays a default store. It requires infrastructure-level subdomain routing to dynamically show the correct tenant's store.
--   **Mocked:** Stripe billing and custom domain verification are functional at the UI level but rely on test keys and backend placeholders. They require production keys and DNS infrastructure to be fully operational.
+-   **Fixed:** Vultr VPS deployment, Nginx configuration for multi-tenancy, PM2 setup, database seeding, multiple critical login bugs, slow storefront loading.
+-   **Broken:** The self-service custom domain feature is mid-deployment. The application is not yet secured with SSL. The root domain DNS is still propagating.
+-   **Mocked:** Stripe functionality is present but uses test keys.
 
 **3rd Party Integrations**
 -   **Stripe (Payments):** UI and backend logic are complete. Requires User API Key (Live keys for production).
--   **eBay API:** Integration exists but is **BLOCKED** due to an authentication error. Requires User API Key.
+-   **eBay API:** Integration exists but is **BLOCKED** due to an  authentication error. Requires user to verify their eBay developer credentials.
 
 **Testing status**
--   **Testing agent used after significant changes:** NO
--   **Troubleshoot agent used after agent stuck in loop:** NO
--   **Test files created:** None
--   **Known regressions:** None
+-   Testing agent used after significant changes: NO
+-   Troubleshoot agent used after agent stuck in loop: NO
+-   Test files created: []
+-   Known regressions: A complex Nginx configuration was briefly implemented and broke styling; it was reverted to a working version.
 
 **Credentials to test flow:**
-| Role/Store | URL Path | Email | Password |
+| Role/Store | URL | Email | Password |
 | :--- | :--- | :--- | :--- |
 | **Platform Admin** |  |  |  |
-| **Tools In A Box** |  |  |  |
+| **Merchant Login** |  or  |  |  |
 | **Fashion Hub** |  |  |  |
-| **Tech Gadgets Pro** |  |  |  |
+| **Tech Gadgets Pro**|  |  |  |
 
 **What agent forgot to execute**
-The agent correctly deferred infrastructure-level tasks (DNS, live Stripe keys) to the deployment phase. However, a code-level change to make the Maropost template engine fully subdomain-aware was identified as necessary for live storefronts but was not implemented. This should be prioritized as an upcoming task to complete the multi-tenant storefront functionality.</analysis>
+- The agent created  but did not fully populate it with the project's details and progress.
+- After providing the commands to create  and build the frontend, the agent did not follow up with the subsequent required steps (updating  and ), leaving the feature half-deployed. The next agent must resume from this point.</analysis>
