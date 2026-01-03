@@ -5897,19 +5897,30 @@ async def delete_theme(theme_name: str, current_user: dict = Depends(get_current
 
 @api_router.put("/themes/{theme_name}/activate")
 async def activate_theme(theme_name: str, current_user: dict = Depends(get_current_user)):
-    """Set a theme as active"""
+    """Set a theme as active for the current store or globally"""
     theme_path = THEMES_DIR / theme_name
     
     if not theme_path.exists():
         raise HTTPException(status_code=404, detail="Theme not found")
     
-    await db.store_settings.update_one(
-        {"id": "store_settings"},
-        {"$set": {"active_theme": theme_name}},
-        upsert=True
-    )
+    # Check if user has a store - if so, set theme for that store
+    store_id = await get_store_id_for_current_user(current_user)
     
-    return {"message": f"Theme '{theme_name}' is now active"}
+    if store_id:
+        # Set theme for this specific store
+        await db.platform_stores.update_one(
+            {"id": store_id},
+            {"$set": {"theme": theme_name, "updated_at": datetime.now(timezone.utc)}}
+        )
+        return {"message": f"Theme '{theme_name}' is now active for your store"}
+    else:
+        # Fall back to global setting (for admin users)
+        await db.store_settings.update_one(
+            {"id": "store_settings"},
+            {"$set": {"active_theme": theme_name}},
+            upsert=True
+        )
+        return {"message": f"Theme '{theme_name}' is now active globally"}
 
 @api_router.get("/themes/{theme_name}/files")
 async def list_theme_files(theme_name: str, current_user: dict = Depends(get_current_user)):
