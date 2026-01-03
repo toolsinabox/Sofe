@@ -11,7 +11,8 @@ import {
   ChevronLeft,
   ChevronRight,
   Activity,
-  Shield
+  Shield,
+  Mail
 } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
 
@@ -37,6 +38,7 @@ const AdminSidebar = ({ collapsed, setCollapsed, onClose }) => {
     { path: '/admin/users', icon: Users, label: 'Users' },
     { path: '/admin/analytics', icon: BarChart3, label: 'Analytics' },
     { path: '/admin/activity', icon: Activity, label: 'Activity Log' },
+    { path: '/admin/email-templates', icon: Mail, label: 'Email Templates' },
     { path: '/admin/settings', icon: Settings, label: 'Settings' },
   ];
 
