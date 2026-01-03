@@ -74,20 +74,48 @@ Collections:
 
 ## Recent Changes (January 2026)
 
-### Performance Improvements
+### January 3, 2026 - Admin Features & Subdomain Validation
+**New Features:**
+- **Admin Impersonation:** Platform admins can now "Login As Owner" for any merchant store
+- **Admin Password Reset:** Platform admins can reset merchant passwords directly
+- **Subdomain CPanel:** Merchants can access `/cpanel` on their subdomain for branded login
+- **Subdomain Validation:** Invalid/non-existent subdomains now return 404 error instead of showing a default store
+- **Store Not Found Page:** Custom 404 page for invalid subdomains (`/public/store-not-found.html`)
+
+**Sidebar Cleanup:**
+- Streamlined merchant sidebar (removed redundant items)
+- Added "Storefront" section with Domains, Theme Editor, SEO
+- "Storefront" section expanded by default for visibility
+
+**Files Modified:**
+- `server.py` - Added subdomain validation logic, impersonate/reset APIs, cpanel APIs
+- `AdminMerchants.jsx` - Added "Login As Owner" and "Reset Password" dropdown options
+- `AdminUsers.jsx` - Added "Login As" and "Reset Password" for users
+- `MerchantSidebar.jsx` - Cleaned up navigation, added Storefront section
+- `SubdomainCPanel.jsx` - Added error page for invalid stores
+- `StoreNotFound.jsx` - New component for 404 store pages
+- `store-not-found.html` - Static 404 page for nginx fallback
+
+**APIs Added:**
+- `POST /api/admin/stores/{store_id}/impersonate` - Generate token to login as store owner
+- `POST /api/admin/stores/{store_id}/reset-owner-password` - Reset store owner's password
+- `GET /api/cpanel/store-info/{subdomain}` - Get store info for CPanel branding
+- `POST /api/cpanel/login` - CPanel login with subdomain context
+
+### Previous Changes
 - Updated theme templates to use direct `/api/maropost/` links instead of `/store/` 
 - Eliminates "Loading storefront..." delay on navigation
 - Applied to all themes: toolsinabox, skeletal, mytheme
 
 ### Routing Updates
-- Added `/_cpanel` route for subdomain backend access
+- Added `/cpanel` route for subdomain backend access
 - Nginx configured for wildcard subdomains
 - Custom domain support via catch-all server block
 
 ### Code Changes Applied
 1. Theme templates: `/store/` → `/api/maropost/`
-2. App.js: Added `/_cpanel` routes
-3. Nginx: Subdomain and custom domain routing
+2. App.js: Added `/cpanel` routes
+3. Nginx: Subdomain and custom domain routing with X-Subdomain header
 
 ## Credentials
 
