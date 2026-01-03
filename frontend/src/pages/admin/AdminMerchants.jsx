@@ -536,14 +536,58 @@ const AdminMerchants = () => {
             </Select>
           </div>
         </div>
-        {/* Add Button */}
-        <Button 
-          onClick={() => { resetForm(); setIsAddModalOpen(true); }}
-          className="w-full sm:w-auto bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-600 hover:to-blue-700 text-white text-sm h-9 sm:h-10"
-        >
-          <Plus size={16} className="mr-1.5" />
-          Add Merchant
-        </Button>
+        {/* Action Buttons */}
+        <div className="flex gap-2">
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button variant="outline" className="border-gray-700 text-gray-300 text-sm h-9 sm:h-10">
+                <Download size={14} className="mr-1.5" />
+                Export
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent className="bg-[#1a1f2e] border-gray-700">
+              <DropdownMenuItem onClick={handleExportCSV} className="text-gray-300 hover:text-white cursor-pointer">
+                <FileText size={14} className="mr-2" />
+                Export All (CSV)
+              </DropdownMenuItem>
+              <DropdownMenuItem onClick={handleExportJSON} className="text-gray-300 hover:text-white cursor-pointer">
+                <FileText size={14} className="mr-2" />
+                Export All (JSON)
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
+          <Button 
+            onClick={() => { resetForm(); setIsAddModalOpen(true); }}
+            className="bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-600 hover:to-blue-700 text-white text-sm h-9 sm:h-10"
+          >
+            <Plus size={16} className="mr-1.5" />
+            Add Merchant
+          </Button>
+        </div>
+      </div>
+
+      {/* Select All / Stats Bar */}
+      <div className="flex items-center justify-between bg-gray-800/30 rounded-lg px-4 py-2">
+        <div className="flex items-center gap-3">
+          <button
+            onClick={toggleSelectAll}
+            className="flex items-center gap-2 text-gray-400 hover:text-white transition-colors"
+          >
+            {selectedStores.length === filteredMerchants.length && filteredMerchants.length > 0 ? (
+              <CheckSquare size={18} className="text-cyan-400" />
+            ) : (
+              <Square size={18} />
+            )}
+            <span className="text-sm">Select All</span>
+          </button>
+          <span className="text-gray-500 text-sm">|</span>
+          <span className="text-gray-400 text-sm">{filteredMerchants.length} stores</span>
+        </div>
+        <div className="text-gray-500 text-sm">
+          Total Revenue: <span className="text-emerald-400 font-medium">
+            ${filteredMerchants.reduce((sum, m) => sum + (m.revenue || 0), 0).toLocaleString()}
+          </span>
+        </div>
       </div>
 
       {/* Loading state */}
