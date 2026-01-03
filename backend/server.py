@@ -6313,35 +6313,76 @@ async def render_page_v2(
     # Detect store from host header (subdomain or custom domain)
     host = request.headers.get("host", "").split(":")[0].lower()
     custom_domain_header = request.headers.get("x-custom-domain", "").lower()
+    x_subdomain_header = request.headers.get("x-subdomain", "").lower()  # Nginx can set this
     
     store = None
     store_id = None
+    subdomain_requested = None
     
-    # Check if it's a custom domain first
-    if custom_domain_header and custom_domain_header not in ["getcelora.com", "www.getcelora.com"]:
+    # Method 1: Check X-Subdomain header (set by Nginx for subdomain routing)
+    if x_subdomain_header and x_subdomain_header not in ["www", "", "api", "admin", "app"]:
+        subdomain_requested = x_subdomain_header
+        store = await db.platform_stores.find_one({
+            "subdomain": subdomain_requested,
+            "status": {"$in": ["active", "trial"]}
+        }, {"_id": 0})
+        if not store:
+            raise HTTPException(
+                status_code=404, 
+                detail=f"Store '{subdomain_requested}' not found or inactive"
+            )
+    
+    # Method 2: Check if it's a custom domain
+    if not store and custom_domain_header and custom_domain_header not in ["getcelora.com", "www.getcelora.com"]:
         store = await db.platform_stores.find_one({
             "custom_domain": custom_domain_header,
             "custom_domain_verified": True
         }, {"_id": 0})
-        # If custom domain specified but store not found, return 404
         if not store:
             raise HTTPException(status_code=404, detail="Store not found for this domain")
     
-    # Check for subdomain on getcelora.com
-    subdomain_requested = None
-    if not store and host and ".getcelora.com" in host:
-        subdomain_requested = host.replace(".getcelora.com", "").strip()
-        if subdomain_requested and subdomain_requested not in ["www", "", "api", "admin", "app"]:
-            store = await db.platform_stores.find_one({
-                "subdomain": subdomain_requested,
-                "status": {"$in": ["active", "trial"]}  # Only active or trial stores
-            }, {"_id": 0})
-            # If subdomain specified but store not found or not active, return 404
-            if not store:
-                raise HTTPException(
-                    status_code=404, 
-                    detail=f"Store '{subdomain_requested}' not found or inactive"
-                )
+    # Method 3: Check for subdomain in Host header (getcelora.com pattern)
+    if not store and host:
+        # Check for getcelora.com subdomain pattern
+        if "getcelora.com" in host or "getcelora" in host:
+            # Extract subdomain from various patterns
+            if ".getcelora.com" in host:
+                subdomain_requested = host.replace(".getcelora.com", "").strip()
+            elif host.endswith(".getcelora"):
+                subdomain_requested = host.replace(".getcelora", "").strip()
+            
+            if subdomain_requested and subdomain_requested not in ["www", "", "api", "admin", "app", "store"]:
+                store = await db.platform_stores.find_one({
+                    "subdomain": {"$regex": f"^{subdomain_requested}$", "$options": "i"},
+                    "status": {"$in": ["active", "trial"]}
+                }, {"_id": 0})
+                if not store:
+                    raise HTTPException(
+                        status_code=404, 
+                        detail=f"Store '{subdomain_requested}' not found or inactive"
+                    )
+        
+        # Check for any other subdomain pattern (e.g., store.example.com)
+        elif "." in host:
+            parts = host.split(".")
+            if len(parts) >= 3:  # subdomain.domain.tld
+                potential_subdomain = parts[0]
+                if potential_subdomain not in ["www", "api", "admin", "app", "store", "mail", "ftp"]:
+                    # Check if this could be a store subdomain
+                    store = await db.platform_stores.find_one({
+                        "subdomain": {"$regex": f"^{potential_subdomain}$", "$options": "i"},
+                        "status": {"$in": ["active", "trial"]}
+                    }, {"_id": 0})
+                    # If subdomain looks like a store but doesn't exist, return 404
+                    if not store:
+                        # Check if ANY store exists with this subdomain (even inactive)
+                        any_store = await db.platform_stores.find_one({"subdomain": {"$regex": f"^{potential_subdomain}$", "$options": "i"}})
+                        if any_store:
+                            raise HTTPException(
+                                status_code=404, 
+                                detail=f"Store '{potential_subdomain}' is not active"
+                            )
+                        # Not a store subdomain, continue without error (might be platform domain)
     
     # If store found, get store-specific settings
     if store:
