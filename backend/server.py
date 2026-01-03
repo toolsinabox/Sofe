@@ -8258,6 +8258,35 @@ async def get_admin_websites(
     websites = await db.websites.find(query, {"_id": 0}).sort("created_at", -1).skip(skip).limit(limit).to_list(limit)
     return [Website(**w) for w in websites]
 
+# ==================== ADMIN AUTHENTICATION ====================
+
+@api_router.post("/admin/auth/login")
+async def admin_login(email: str, password: str):
+    """Admin login endpoint"""
+    import hashlib
+    
+    admin = await db.admins.find_one({"email": email.lower()})
+    if not admin:
+        raise HTTPException(status_code=401, detail="Invalid credentials")
+    
+    # Check password (SHA256)
+    hashed_password = hashlib.sha256(password.encode()).hexdigest()
+    if admin.get("hashed_password") != hashed_password:
+        raise HTTPException(status_code=401, detail="Invalid credentials")
+    
+    # Create token
+    token = create_access_token(data={"sub": admin["id"], "role": "admin", "email": admin["email"]})
+    
+    return {
+        "token": token,
+        "admin": {
+            "id": admin["id"],
+            "email": admin["email"],
+            "name": admin.get("name", "Admin"),
+            "role": admin.get("role", "admin")
+        }
+    }
+
 @api_router.get("/admin/platform-stores")
 async def get_admin_platform_stores(
     status: Optional[str] = None,
