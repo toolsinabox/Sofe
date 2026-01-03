@@ -1114,6 +1114,7 @@ class MaropostTemplateEngine:
             '[@store_phone@]': store.get('store_phone', ''),
             '[@store_url@]': store.get('store_url', ''),
             '[@store_logo@]': store.get('store_logo', ''),
+            '[@store_favicon@]': store.get('store_favicon', ''),
             '[@currency@]': store.get('currency', 'USD'),
             '[@currency_symbol@]': store.get('currency_symbol', '$'),
             '[@store_facebook@]': store.get('store_facebook', ''),
