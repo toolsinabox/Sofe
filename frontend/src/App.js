@@ -63,6 +63,7 @@ import MerchantTaxManagement from "./pages/merchant/MerchantTaxManagement";
 import MerchantImportExport from "./pages/merchant/MerchantImportExport";
 import MerchantCustomFields from "./pages/merchant/MerchantCustomFields";
 import MerchantTemplateTags from "./pages/merchant/MerchantTemplateTags";
+import SubdomainCPanel from "./pages/merchant/SubdomainCPanel";
 
 // Platform Pages (Shopify-style Hosting Frontend)
 import PlatformHome from "./pages/platform/PlatformHome";
