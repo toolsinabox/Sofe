@@ -321,7 +321,10 @@ const SubdomainCPanel = () => {
 
         {/* Footer */}
         <div className="mt-6 text-center text-sm text-gray-500">
-          <a href={`http://${subdomain}.getcelora.com`} className="hover:text-gray-300">
+          <a 
+            href={storeContext.type === 'custom_domain' ? `http://${storeContext.value}` : `http://${storeContext.value}.getcelora.com`} 
+            className="hover:text-gray-300"
+          >
             ← Back to Storefront
           </a>
         </div>
