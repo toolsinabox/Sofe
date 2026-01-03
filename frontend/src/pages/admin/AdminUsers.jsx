@@ -426,12 +426,26 @@ const AdminUsers = () => {
                           <Edit size={16} className="mr-2" /> Edit
                         </DropdownMenuItem>
                         {currentUser?.id !== user.id && (
-                          <DropdownMenuItem 
-                            onClick={() => openDeleteModal(user)}
-                            className="text-red-400 hover:text-red-300 hover:bg-red-500/10 cursor-pointer"
-                          >
-                            <Trash2 size={16} className="mr-2" /> Delete
-                          </DropdownMenuItem>
+                          <>
+                            <DropdownMenuItem 
+                              onClick={() => handleImpersonate(user)}
+                              className="text-cyan-400 hover:text-cyan-300 hover:bg-cyan-500/10 cursor-pointer"
+                            >
+                              <LogIn size={16} className="mr-2" /> Login As
+                            </DropdownMenuItem>
+                            <DropdownMenuItem 
+                              onClick={() => openResetPasswordModal(user)}
+                              className="text-yellow-400 hover:text-yellow-300 hover:bg-yellow-500/10 cursor-pointer"
+                            >
+                              <Key size={16} className="mr-2" /> Reset Password
+                            </DropdownMenuItem>
+                            <DropdownMenuItem 
+                              onClick={() => openDeleteModal(user)}
+                              className="text-red-400 hover:text-red-300 hover:bg-red-500/10 cursor-pointer"
+                            >
+                              <Trash2 size={16} className="mr-2" /> Delete
+                            </DropdownMenuItem>
+                          </>
                         )}
                       </DropdownMenuContent>
                     </DropdownMenu>
