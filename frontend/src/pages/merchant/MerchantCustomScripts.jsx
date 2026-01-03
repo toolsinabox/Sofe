@@ -175,7 +175,7 @@ const MerchantCustomScripts = () => {
           <Button
             onClick={handleSave}
             disabled={saving}
-            className="bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-600 hover:to-blue-700 text-gray-900"
+            className="bg-gradient-to-r from-blue-600 to-blue-700 hover:from-cyan-600 hover:to-blue-700 text-gray-900"
           >
             {saving ? (
               <>
