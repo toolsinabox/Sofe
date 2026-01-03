@@ -819,12 +819,12 @@ async def get_store_id_for_request(request: Request, current_user: dict = None) 
     # Fall back to request-based resolution
     return await resolve_store_from_request(request)
 
-async def get_store_context(request: Request) -> dict:
+async def get_store_context(request: Request, user: dict = None) -> dict:
     """
     Get the current store context including store_id and store details.
     Used by endpoints that need store-specific data.
     """
-    store_id = await get_store_id_for_request(request, current_user)
+    store_id = await get_store_id_for_request(request, user)
     store = await db.platform_stores.find_one({"id": store_id}, {"_id": 0})
     return {
         "store_id": store_id,
@@ -3324,7 +3324,8 @@ async def get_customers(
     status: Optional[str] = None,
     search: Optional[str] = None,
     limit: int = Query(default=50, le=100),
-    skip: int = 0
+    skip: int = 0,
+    current_user: dict = Depends(get_current_user)
 ):
     store_id = await get_store_id_for_request(request, current_user)
     query = {"store_id": store_id}
