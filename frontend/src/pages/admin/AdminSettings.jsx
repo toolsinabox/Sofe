@@ -122,7 +122,7 @@ const AdminSettings = () => {
 
   const tabs = [
     { id: 'general', label: 'General', icon: Settings },
-    { id: 'features', label: 'Feature Flags', icon: Toggle },
+    { id: 'features', label: 'Feature Flags', icon: ToggleLeft },
     { id: 'announcements', label: 'Announcements', icon: Megaphone },
     { id: 'security', label: 'Security', icon: Shield },
   ];
