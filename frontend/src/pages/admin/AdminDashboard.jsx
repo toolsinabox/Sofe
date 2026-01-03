@@ -312,7 +312,11 @@ const AdminDashboard = () => {
                           </div>
                           <div className="min-w-0">
                             <p className="text-white font-medium text-sm truncate">{store.store_name || store.name}</p>
-                            <p className="text-gray-500 text-xs truncate">{store.subdomain}.getcelora.com</p>
+                            <p className="text-gray-500 text-xs truncate">
+                              {store.custom_domain_verified && store.custom_domain 
+                                ? store.custom_domain 
+                                : `${store.subdomain}.getcelora.com`}
+                            </p>
                           </div>
                         </div>
                       </td>
