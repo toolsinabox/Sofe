@@ -455,6 +455,28 @@ const MerchantDomains = () => {
                       </tr>
                     </thead>
                     <tbody className="divide-y divide-gray-700">
+                      {/* TXT Record for Verification - REQUIRED */}
+                      <tr className="bg-purple-500/10 border-l-2 border-purple-500">
+                        <td className="px-4 py-3">
+                          <span className="px-2 py-1 rounded bg-purple-500/20 text-purple-400 font-mono text-xs">TXT</span>
+                        </td>
+                        <td className="px-4 py-3 font-mono text-white">@</td>
+                        <td className="px-4 py-3 font-mono text-purple-400 break-all max-w-xs">
+                          {store?.domain_verification_token || 'Save domain to get token'}
+                        </td>
+                        <td className="px-4 py-3 text-gray-400">Auto</td>
+                        <td className="px-4 py-3">
+                          <button 
+                            onClick={() => copyToClipboard(store?.domain_verification_token || '', 'txt')}
+                            className="p-1.5 rounded hover:bg-gray-700 text-gray-400 hover:text-white"
+                            title="Copy verification token"
+                            disabled={!store?.domain_verification_token}
+                          >
+                            {copied === 'txt' ? <Check className="w-4 h-4 text-emerald-400" /> : <Copy className="w-4 h-4" />}
+                          </button>
+                        </td>
+                      </tr>
+                      {/* A Records for Routing */}
                       <tr className="bg-gray-800/30">
                         <td className="px-4 py-3">
                           <span className="px-2 py-1 rounded bg-blue-500/20 text-blue-400 font-mono text-xs">A</span>
@@ -491,6 +513,20 @@ const MerchantDomains = () => {
                       </tr>
                     </tbody>
                   </table>
+                </div>
+
+                {/* Important note about TXT verification */}
+                <div className="p-3 bg-purple-500/10 border border-purple-500/30 rounded-lg">
+                  <div className="flex items-start gap-2">
+                    <Shield className="w-4 h-4 text-purple-400 mt-0.5 flex-shrink-0" />
+                    <div className="text-sm text-purple-300">
+                      <p className="font-medium">Domain Ownership Verification Required</p>
+                      <p className="text-purple-300/80 mt-1">
+                        The TXT record proves you own this domain. This prevents others from claiming your domain on our platform.
+                        Both the TXT record (for verification) and A records (for routing) must be configured.
+                      </p>
+                    </div>
+                  </div>
                 </div>
 
                 {/* Help with specific registrars */}
