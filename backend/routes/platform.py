@@ -62,11 +62,13 @@ class Store(BaseModel):
     subdomain: str  # mystore.getcelora.com
     custom_domain: Optional[str] = None  # www.mystore.com
     custom_domain_verified: bool = False
+    domain_verification_token: Optional[str] = None  # Unique token for TXT record verification
     owner_id: str
     plan_id: str = "free"
     status: str = "active"  # active, suspended, cancelled, trial
     trial_ends_at: Optional[datetime] = None
     subscription_id: Optional[str] = None  # Stripe subscription ID
+    theme: str = "toolsinabox"  # Default theme, can be customized per store
     
     # Store settings
     business_type: Optional[str] = None
