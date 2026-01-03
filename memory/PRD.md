@@ -74,6 +74,40 @@ Collections:
 
 ## Recent Changes (January 2026)
 
+### January 3, 2026 - URL Redirects & Custom Scripts (COMPLETED)
+**New Features:**
+- **URL Redirects:** Complete CRUD for managing 301/302 redirects
+  - Add, edit, delete individual redirects
+  - Bulk import via CSV format
+  - Export redirects to CSV
+  - Toggle active/inactive status
+  - Track hit counts
+- **Custom Scripts:** Comprehensive script injection management
+  - Tracking pixels (Google Analytics, GTM, Facebook, TikTok, Snapchat, Pinterest)
+  - Custom head/body scripts with placement control
+  - Page-specific scripts (checkout, thank you page)
+  - Custom CSS injection
+  - Script templates library
+  - Global enable/disable toggle
+
+**Files Added:**
+- `MerchantRedirects.jsx` - URL Redirects management page
+- `MerchantCustomScripts.jsx` - Custom Scripts management page
+
+**Files Modified:**
+- `MerchantSidebar.jsx` - Added navigation links under Storefront section
+- `App.js` - Added routes for /merchant/redirects and /merchant/custom-scripts
+- `server.py` - Added CRUD API endpoints for redirects and custom scripts
+
+**APIs Added:**
+- `GET /api/store/redirects` - List all redirects
+- `POST /api/store/redirects` - Create redirect
+- `PUT /api/store/redirects/{id}` - Update redirect
+- `DELETE /api/store/redirects/{id}` - Delete redirect
+- `POST /api/store/redirects/bulk` - Bulk import redirects
+- `GET /api/store/custom-scripts` - Get script settings
+- `PUT /api/store/custom-scripts` - Update script settings
+
 ### January 3, 2026 - Favicon Uploader
 **New Features:**
 - **Favicon Upload:** Store owners can upload custom favicons in Store Settings
