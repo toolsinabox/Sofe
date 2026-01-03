@@ -5074,8 +5074,9 @@ async def verify_custom_domain(
     domain_data: dict,
     current_user: dict = Depends(get_current_user)
 ):
-    """Verify that custom domain points to our server"""
+    """Verify custom domain ownership via TXT record AND routing via A record"""
     import socket
+    import subprocess
     
     store_id = await get_store_id_for_current_user(current_user)
     if not store_id:
@@ -5085,38 +5086,90 @@ async def verify_custom_domain(
     if not domain:
         raise HTTPException(status_code=400, detail="Domain is required")
     
+    # Get store's verification token
+    store = await db.platform_stores.find_one({"id": store_id})
+    if not store:
+        raise HTTPException(status_code=404, detail="Store not found")
+    
+    verification_token = store.get("domain_verification_token")
+    if not verification_token:
+        raise HTTPException(status_code=400, detail="Please save the domain first to get a verification token")
+    
     # Our server IP
     SERVER_IP = "45.77.239.247"
     
+    # Clean domain for verification
+    root_domain = domain.replace("www.", "") if domain.startswith("www.") else domain
+    
+    # Step 1: Verify TXT record (proves ownership)
+    txt_verified = False
+    txt_error = None
     try:
-        # Resolve domain
-        resolved_ip = socket.gethostbyname(domain)
+        result = subprocess.run(
+            ["dig", "+short", "TXT", root_domain],
+            capture_output=True,
+            text=True,
+            timeout=10
+        )
+        txt_records = result.stdout.strip().replace('"', '').split('\n')
         
-        if resolved_ip == SERVER_IP:
-            # Domain points to our server - mark as verified
-            await db.platform_stores.update_one(
-                {"id": store_id},
-                {"$set": {
-                    "custom_domain": domain,
-                    "custom_domain_verified": True,
-                    "updated_at": datetime.now(timezone.utc)
-                }}
-            )
-            return {"verified": True, "message": "Domain verified successfully!"}
-        else:
-            return {
-                "verified": False, 
-                "message": f"Domain points to {resolved_ip}, expected {SERVER_IP}. Please update your DNS settings."
-            }
-    except socket.gaierror:
-        return {
-            "verified": False,
-            "message": "Could not resolve domain. Please check your DNS settings and try again."
-        }
+        # Check if our verification token is in the TXT records
+        for record in txt_records:
+            if verification_token in record:
+                txt_verified = True
+                break
+        
+        if not txt_verified:
+            txt_error = f"TXT record not found. Please add: {verification_token}"
+    except subprocess.TimeoutExpired:
+        txt_error = "DNS lookup timed out"
     except Exception as e:
+        txt_error = f"Could not check TXT records: {str(e)}"
+    
+    # Step 2: Verify A record (proves routing)
+    a_verified = False
+    a_error = None
+    try:
+        resolved_ip = socket.gethostbyname(domain)
+        if resolved_ip == SERVER_IP:
+            a_verified = True
+        else:
+            a_error = f"Domain points to {resolved_ip}, expected {SERVER_IP}"
+    except socket.gaierror:
+        a_error = "Could not resolve domain. Check your A record."
+    except Exception as e:
+        a_error = f"A record check failed: {str(e)}"
+    
+    # Both checks must pass
+    if txt_verified and a_verified:
+        # Domain ownership verified AND points to our server
+        await db.platform_stores.update_one(
+            {"id": store_id},
+            {"$set": {
+                "custom_domain": domain,
+                "custom_domain_verified": True,
+                "domain_verified_at": datetime.now(timezone.utc),
+                "updated_at": datetime.now(timezone.utc)
+            }}
+        )
+        return {
+            "verified": True, 
+            "message": "Domain verified successfully! Your custom domain is now active."
+        }
+    else:
+        errors = []
+        if not txt_verified:
+            errors.append(f"TXT verification failed: {txt_error}")
+        if not a_verified:
+            errors.append(f"A record failed: {a_error}")
+        
         return {
             "verified": False,
-            "message": f"Verification failed: {str(e)}"
+            "txt_verified": txt_verified,
+            "a_verified": a_verified,
+            "message": " | ".join(errors),
+            "required_txt": verification_token,
+            "required_ip": SERVER_IP
         }
 
 @api_router.post("/store/check-dns")
