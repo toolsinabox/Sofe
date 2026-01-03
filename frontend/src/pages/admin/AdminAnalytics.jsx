@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import {
   TrendingUp, TrendingDown, DollarSign, Store, Users, Package,
   ShoppingCart, RefreshCw, ArrowUpRight, Award, Target, Zap
@@ -15,7 +15,7 @@ const AdminAnalytics = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
-  const fetchAnalytics = async () => {
+  const fetchAnalytics = useCallback(async () => {
     setLoading(true);
     setError(null);
     
@@ -29,11 +29,11 @@ const AdminAnalytics = () => {
     } finally {
       setLoading(false);
     }
-  };
+  }, [token]);
 
   useEffect(() => {
     if (token) fetchAnalytics();
-  }, [token]);
+  }, [token, fetchAnalytics]);
 
   const formatCurrency = (value) => {
     return new Intl.NumberFormat('en-US', {
