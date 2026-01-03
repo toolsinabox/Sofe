@@ -361,7 +361,7 @@ export default function PlatformDashboard() {
             </CardContent>
           </Card>
           
-          <Card className="hover:shadow-lg transition-shadow cursor-pointer" onClick={() => setShowDomainModal(true)}>
+          <Card className="hover:shadow-lg transition-shadow cursor-pointer" onClick={handleDomainManagement}>
             <CardContent className="p-6">
               <div className="w-12 h-12 bg-green-100 rounded-xl flex items-center justify-center mb-4">
                 <Globe className="w-6 h-6 text-green-600" />
