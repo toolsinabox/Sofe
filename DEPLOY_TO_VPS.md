@@ -56,7 +56,30 @@ pm2 status
 
 ---
 
-## Step 3: Verify Deployment
+## Step 3: Update Nginx Configuration (IMPORTANT!)
+
+Replace your Nginx configuration with the new one that supports `/cpanel` on custom domains:
+
+```bash
+# Backup existing config
+sudo cp /etc/nginx/sites-available/celora /etc/nginx/sites-available/celora.backup
+
+# Download new config from this repo (nginx_vps_cpanel.conf)
+# Or manually copy the content from /app/nginx_vps_cpanel.conf
+
+# Test and reload
+sudo nginx -t
+sudo systemctl reload nginx
+```
+
+**Key Changes in New Nginx Config:**
+- `/cpanel` route on subdomains (`storename.getcelora.com/cpanel`) → Serves React app
+- `/cpanel` route on custom domains (`www.mystore.com/cpanel`) → Serves React app
+- The React app automatically detects whether it's on a subdomain or custom domain
+
+---
+
+## Step 4: Verify Deployment
 
 ```bash
 # Check backend is running
@@ -64,6 +87,9 @@ curl http://localhost:8001/api/health
 
 # Check logs if issues
 pm2 logs celora-backend --lines 50
+
+# Test /cpanel route
+curl -I http://toolsinabox.getcelora.com/cpanel
 ```
 
 ---
@@ -84,7 +110,13 @@ pm2 logs celora-backend --lines 50
 3. **Secure Custom Domain Verification**
    - TXT record verification (proves ownership)
    - A record verification (proves routing)
-   - Unique token per store: `celora-verify=<store_id>-<random>`
+   - Unique token per store: `celora-site=<subdomain>:<unique_code>`
+
+4. **CPanel Access on Custom Domains** (NEW!)
+   - Merchants can now access `/cpanel` on their custom domain
+   - Example: `www.toolsinabox.com.au/cpanel`
+   - No redirects - fully white-label experience
+   - React app automatically detects subdomain vs custom domain
 
 ---
 
@@ -104,6 +136,27 @@ RESEND_API_KEY=re_xxxxx  # Get from resend.com (free tier available)
 
 | Role | URL | Email | Password |
 |------|-----|-------|----------|
+| Platform Admin | /admin/login | admin@celora.com | test123 |
 | Platform Login | /login | test@test.com | test123 |
 | Merchant | /merchant | test@test.com | test123 |
+| Subdomain CPanel | toolsinabox.getcelora.com/cpanel | eddie@toolsinabox.com.au | Yealink1991% |
+| Custom Domain CPanel | www.toolsinabox.com.au/cpanel | eddie@toolsinabox.com.au | Yealink1991% |
+
+---
+
+## How CPanel Works
+
+### Subdomain Access
+1. Merchant visits `storename.getcelora.com/cpanel`
+2. React app loads and detects subdomain `storename`
+3. App fetches store info from `/api/cpanel/store-info/{subdomain}`
+4. Login uses subdomain context to authenticate
+
+### Custom Domain Access (NEW!)
+1. Merchant visits `www.customdomain.com/cpanel`
+2. React app loads and detects it's NOT on getcelora.com
+3. App treats hostname as custom domain
+4. Fetches store info from `/api/cpanel/store-info-by-domain?domain=www.customdomain.com`
+5. Login uses custom_domain context to authenticate
+6. Merchant gets full dashboard access branded with their domain!
 
