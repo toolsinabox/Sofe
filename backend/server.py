@@ -6813,7 +6813,8 @@ async def render_page_v2(
     print: Optional[bool] = None,
     embed: Optional[bool] = None,
     debug: Optional[bool] = None,
-    q: Optional[str] = None
+    q: Optional[str] = None,
+    subdomain: Optional[str] = None  # Query param for Emergent preview
 ):
     """
     Render a page using the new Maropost-style template engine.
@@ -6832,6 +6833,7 @@ async def render_page_v2(
         print: Enable print wrapper
         embed: Enable minimal/empty wrapper
         debug: Enable debug headers
+        subdomain: Optional subdomain for Emergent preview environment
     """
     # Detect store from host header (subdomain or custom domain)
     host = request.headers.get("host", "").split(":")[0].lower()
@@ -6842,8 +6844,21 @@ async def render_page_v2(
     store_id = None
     subdomain_requested = None
     
+    # Method 0: Check subdomain query parameter (for Emergent preview environment)
+    if subdomain and subdomain not in ["www", "", "api", "admin", "app"]:
+        subdomain_requested = subdomain.lower()
+        store = await db.platform_stores.find_one({
+            "subdomain": subdomain_requested,
+            "status": {"$in": ["active", "trial"]}
+        }, {"_id": 0})
+        if not store:
+            raise HTTPException(
+                status_code=404, 
+                detail=f"Store '{subdomain_requested}' not found or inactive"
+            )
+    
     # Method 1: Check X-Subdomain header (set by Nginx for subdomain routing)
-    if x_subdomain_header and x_subdomain_header not in ["www", "", "api", "admin", "app"]:
+    if not store and x_subdomain_header and x_subdomain_header not in ["www", "", "api", "admin", "app"]:
         subdomain_requested = x_subdomain_header
         store = await db.platform_stores.find_one({
             "subdomain": subdomain_requested,
