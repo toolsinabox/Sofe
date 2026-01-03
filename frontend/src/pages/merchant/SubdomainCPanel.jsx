@@ -123,6 +123,38 @@ const SubdomainCPanel = () => {
     );
   }
 
+  // If store not found or error occurred, show error page
+  if (error || !storeInfo) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-slate-900 to-slate-800 flex items-center justify-center p-4">
+        <div className="text-center max-w-md">
+          <div className="inline-flex items-center justify-center w-20 h-20 rounded-2xl bg-red-500/20 mb-6">
+            <AlertCircle className="w-10 h-10 text-red-400" />
+          </div>
+          <h1 className="text-2xl font-bold text-white mb-2">Store Not Found</h1>
+          <p className="text-gray-400 mb-6">
+            The store <span className="text-cyan-400 font-mono">{subdomain}.getcelora.com</span> doesn&apos;t exist or has been deactivated.
+          </p>
+          <div className="space-y-3">
+            <Button
+              onClick={() => window.location.href = 'https://www.getcelora.com'}
+              className="w-full bg-cyan-500 hover:bg-cyan-600"
+            >
+              Go to Celora Homepage
+            </Button>
+            <Button
+              onClick={() => window.location.href = 'https://www.getcelora.com/signup'}
+              variant="outline"
+              className="w-full border-slate-600 text-slate-300 hover:bg-slate-700"
+            >
+              Create Your Own Store
+            </Button>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-900 to-slate-800 flex items-center justify-center p-4">
       <div className="w-full max-w-md">
