@@ -184,6 +184,8 @@ function App() {
               <Route path="import-export" element={<MerchantImportExport />} />
               <Route path="custom-fields" element={<MerchantCustomFields />} />
               <Route path="template-tags" element={<MerchantTemplateTags />} />
+              <Route path="redirects" element={<MerchantRedirects />} />
+              <Route path="custom-scripts" element={<MerchantCustomScripts />} />
             </Route>
 
             {/* ============================================

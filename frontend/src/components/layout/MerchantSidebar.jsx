@@ -38,7 +38,9 @@ import {
   Bell,
   Users2,
   RotateCcw,
-  Percent
+  Percent,
+  ArrowRightLeft,
+  Code
 } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
 
@@ -117,6 +119,8 @@ const navGroups = [
       { path: '/merchant/domains', icon: Globe, label: 'Domains' },
       { path: '/merchant/theme-editor', icon: Palette, label: 'Theme Editor' },
       { path: '/merchant/seo', icon: Search, label: 'SEO' },
+      { path: '/merchant/redirects', icon: ArrowRightLeft, label: 'URL Redirects' },
+      { path: '/merchant/custom-scripts', icon: Code, label: 'Custom Scripts' },
     ]
   },
   {
