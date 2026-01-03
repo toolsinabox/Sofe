@@ -105,7 +105,8 @@ const AdminSidebar = ({ collapsed, setCollapsed, onClose }) => {
         </NavLink>
         <button 
           onClick={handleLogout}
-          className="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-gray-400 hover:text-red-400 hover:bg-red-500/10 transition-all"
+          data-testid="admin-logout-btn"
+          className="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg bg-red-500/10 text-red-400 hover:text-white hover:bg-red-500 transition-all border border-red-500/30"
         >
           <LogOut size={20} />
           {!collapsed && <span className="font-medium text-sm">Logout</span>}
