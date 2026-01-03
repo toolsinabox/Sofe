@@ -253,9 +253,9 @@ Collections:
 - [x] Self-service custom domain feature (COMPLETED)
 - [x] URL Redirects feature (COMPLETED)
 - [x] Custom Scripts feature (COMPLETED)
+- [x] CPanel access on custom domains (COMPLETED)
 - [ ] Push changes to GitHub
-- [ ] Deploy to VPS: `git pull && cd frontend && yarn build && pm2 restart celora-backend`
-- [ ] Update nginx config to pass X-Subdomain header
+- [ ] Deploy to VPS with updated nginx config (see `/app/nginx_vps_cpanel.conf`)
 
 ### P1 - High Priority
 - [ ] SSL Certificate setup (Certbot) - waiting for DNS propagation
@@ -273,7 +273,14 @@ Collections:
 
 ## Nginx Configuration (for VPS)
 
-**IMPORTANT:** Update `/etc/nginx/sites-available/celora` to pass subdomain header:
+**IMPORTANT:** Replace `/etc/nginx/sites-available/celora` with `/app/nginx_vps_cpanel.conf`
+
+Key features in new config:
+- `/cpanel` route on subdomains serves React app
+- `/cpanel` route on custom domains serves React app (white-label!)
+- X-Subdomain header for subdomain requests
+- X-Custom-Domain header for custom domain requests
+- Error handling for non-existent stores
 
 ```nginx
 # In the *.getcelora.com server block, add:
