@@ -43,6 +43,8 @@ import MerchantPOS from "./pages/merchant/MerchantPOS";
 import MerchantPOSReports from "./pages/merchant/MerchantPOSReports";
 import MerchantAddons from "./pages/merchant/MerchantAddons";
 import EbayIntegration from "./pages/merchant/EbayIntegration";
+import MerchantRedirects from "./pages/merchant/MerchantRedirects";
+import MerchantCustomScripts from "./pages/merchant/MerchantCustomScripts";
 
 // Feature Pages
 import MerchantCoupons from "./pages/merchant/MerchantCoupons";
