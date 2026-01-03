@@ -5229,7 +5229,8 @@ async def create_redirect(
     }
     
     await db.url_redirects.insert_one(redirect)
-    del redirect["_id"] if "_id" in redirect else None
+    if "_id" in redirect:
+        del redirect["_id"]
     
     return redirect
 
