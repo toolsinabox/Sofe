@@ -125,6 +125,19 @@ const AdminMerchants = () => {
     return () => clearTimeout(timer);
   }, [searchQuery]);
 
+  // Filtered merchants for display
+  const filteredMerchants = merchants.filter(m => {
+    const matchesSearch = !searchQuery || 
+      (m.store_name || m.name || '').toLowerCase().includes(searchQuery.toLowerCase()) ||
+      (m.email || m.owner_email || '').toLowerCase().includes(searchQuery.toLowerCase()) ||
+      (m.subdomain || '').toLowerCase().includes(searchQuery.toLowerCase());
+    
+    const matchesStatus = statusFilter === 'all' || m.status === statusFilter;
+    const matchesPlan = planFilter === 'all' || (m.plan_id || m.plan) === planFilter;
+    
+    return matchesSearch && matchesStatus && matchesPlan;
+  });
+
   const formatCurrency = (value) => {
     return new Intl.NumberFormat('en-US', {
       style: 'currency',
