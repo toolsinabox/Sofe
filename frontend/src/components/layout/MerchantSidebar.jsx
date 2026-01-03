@@ -137,7 +137,7 @@ const navGroups = [
 const MerchantSidebar = ({ collapsed, setCollapsed, mobileOpen, setMobileOpen }) => {
   const { logout, store } = useAuth();
   const navigate = useNavigate();
-  const [expandedGroups, setExpandedGroups] = useState(['sales', 'catalog']);
+  const [expandedGroups, setExpandedGroups] = useState(['sales', 'catalog', 'storefront']);
   const [storeSettings, setStoreSettings] = useState({
     store_name: 'My Store',
     store_logo: ''
