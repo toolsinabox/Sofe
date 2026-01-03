@@ -840,3 +840,191 @@ async def update_platform_settings(data: dict, admin: dict = Depends(get_current
     })
     
     return {"success": True}
+
+
+
+# ==================== PROFILE & ACCOUNT ====================
+
+class ProfileUpdate(BaseModel):
+    name: Optional[str] = None
+    email: Optional[str] = None
+    phone: Optional[str] = None
+    company: Optional[str] = None
+    position: Optional[str] = None
+    location: Optional[str] = None
+    timezone: Optional[str] = None
+    bio: Optional[str] = None
+    avatar: Optional[str] = None
+    website: Optional[str] = None
+
+class PasswordChange(BaseModel):
+    current_password: str
+    new_password: str
+
+class EmailChange(BaseModel):
+    new_email: str
+    password: str
+
+
+@router.get("/profile")
+async def get_admin_profile(admin: dict = Depends(get_current_admin)):
+    """Get admin profile"""
+    return {
+        "id": admin.get("id"),
+        "name": admin.get("name", "Admin"),
+        "email": admin.get("email"),
+        "phone": admin.get("phone", ""),
+        "company": admin.get("company", "Celora Platform"),
+        "position": admin.get("position", "Platform Administrator"),
+        "location": admin.get("location", ""),
+        "timezone": admin.get("timezone", "UTC"),
+        "bio": admin.get("bio", ""),
+        "avatar": admin.get("avatar", ""),
+        "website": admin.get("website", ""),
+        "role": admin.get("role", "admin"),
+        "created_at": admin.get("created_at")
+    }
+
+
+@router.put("/profile")
+async def update_admin_profile(data: ProfileUpdate, admin: dict = Depends(get_current_admin)):
+    """Update admin profile"""
+    
+    update_data = {k: v for k, v in data.dict().items() if v is not None}
+    update_data["updated_at"] = datetime.now(timezone.utc)
+    
+    # Update in admins collection
+    await db.admins.update_one(
+        {"id": admin.get("id")},
+        {"$set": update_data}
+    )
+    
+    # Also update in users collection if exists
+    await db.users.update_one(
+        {"id": admin.get("id")},
+        {"$set": update_data}
+    )
+    
+    await db.admin_activity_log.insert_one({
+        "id": str(uuid.uuid4()),
+        "admin_id": admin.get("id"),
+        "admin_email": admin.get("email"),
+        "action": "update_profile",
+        "details": {"fields_updated": list(update_data.keys())},
+        "timestamp": datetime.now(timezone.utc)
+    })
+    
+    return {"success": True, "message": "Profile updated"}
+
+
+@router.put("/change-password")
+async def change_admin_password(data: PasswordChange, admin: dict = Depends(get_current_admin)):
+    """Change admin password"""
+    
+    # Verify current password
+    stored_hash = admin.get("hashed_password", "")
+    if not verify_password(data.current_password, stored_hash):
+        raise HTTPException(status_code=400, detail="Current password is incorrect")
+    
+    # Validate new password
+    if len(data.new_password) < 8:
+        raise HTTPException(status_code=400, detail="Password must be at least 8 characters")
+    
+    # Hash new password
+    new_hash = pwd_context.hash(data.new_password)
+    
+    # Update in admins collection
+    await db.admins.update_one(
+        {"id": admin.get("id")},
+        {"$set": {"hashed_password": new_hash, "password_changed_at": datetime.now(timezone.utc)}}
+    )
+    
+    # Also update in users collection if exists
+    await db.users.update_one(
+        {"id": admin.get("id")},
+        {"$set": {"hashed_password": new_hash, "password_changed_at": datetime.now(timezone.utc)}}
+    )
+    
+    await db.admin_activity_log.insert_one({
+        "id": str(uuid.uuid4()),
+        "admin_id": admin.get("id"),
+        "admin_email": admin.get("email"),
+        "action": "change_password",
+        "details": {},
+        "timestamp": datetime.now(timezone.utc)
+    })
+    
+    return {"success": True, "message": "Password changed successfully"}
+
+
+@router.put("/change-email")
+async def change_admin_email(data: EmailChange, admin: dict = Depends(get_current_admin)):
+    """Change admin email"""
+    
+    # Verify password
+    stored_hash = admin.get("hashed_password", "")
+    if not verify_password(data.password, stored_hash):
+        raise HTTPException(status_code=400, detail="Password is incorrect")
+    
+    # Check if email already exists
+    existing = await db.admins.find_one({"email": data.new_email.lower()})
+    if existing:
+        raise HTTPException(status_code=400, detail="Email already in use")
+    
+    # Update email
+    old_email = admin.get("email")
+    
+    await db.admins.update_one(
+        {"id": admin.get("id")},
+        {"$set": {"email": data.new_email.lower(), "email_changed_at": datetime.now(timezone.utc)}}
+    )
+    
+    await db.users.update_one(
+        {"id": admin.get("id")},
+        {"$set": {"email": data.new_email.lower()}}
+    )
+    
+    await db.admin_activity_log.insert_one({
+        "id": str(uuid.uuid4()),
+        "admin_id": admin.get("id"),
+        "admin_email": data.new_email.lower(),
+        "action": "change_email",
+        "details": {"old_email": old_email, "new_email": data.new_email.lower()},
+        "timestamp": datetime.now(timezone.utc)
+    })
+    
+    return {"success": True, "message": "Email changed successfully"}
+
+
+@router.get("/sessions")
+async def get_admin_sessions(admin: dict = Depends(get_current_admin)):
+    """Get admin active sessions"""
+    
+    sessions = await db.admin_sessions.find(
+        {"admin_id": admin.get("id")},
+        {"_id": 0}
+    ).sort("last_active", -1).to_list(10)
+    
+    return sessions
+
+
+@router.delete("/sessions/{session_id}")
+async def revoke_session(session_id: str, admin: dict = Depends(get_current_admin)):
+    """Revoke a specific session"""
+    
+    await db.admin_sessions.delete_one({"id": session_id, "admin_id": admin.get("id")})
+    
+    return {"success": True, "message": "Session revoked"}
+
+
+@router.post("/sessions/revoke-all")
+async def revoke_all_sessions(admin: dict = Depends(get_current_admin)):
+    """Revoke all sessions except current"""
+    
+    # In production, keep current session and delete others
+    await db.admin_sessions.delete_many({
+        "admin_id": admin.get("id"),
+        "current": {"$ne": True}
+    })
+    
+    return {"success": True, "message": "All other sessions revoked"}
