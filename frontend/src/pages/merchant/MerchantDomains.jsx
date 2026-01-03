@@ -396,21 +396,21 @@ const MerchantDomains = () => {
 
       {/* DNS Configuration - Only show when there's a domain saved */}
       {hasCustomDomain && !isVerified && (
-        <Card className="bg-gray-900/50 border-gray-800">
+        <Card className="bg-white border border-gray-200 shadow-sm">
           <CardHeader className="pb-3">
-            <CardTitle className="text-lg text-white flex items-center gap-2">
+            <CardTitle className="text-lg text-gray-900 flex items-center gap-2">
               <Shield className="w-5 h-5 text-amber-500" />
               DNS Configuration Required
             </CardTitle>
           </CardHeader>
           <CardContent className="space-y-6">
             {/* Info Banner */}
-            <div className="bg-blue-500/10 border border-blue-500/30 rounded-lg p-4">
+            <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
               <div className="flex items-start gap-3">
-                <Info className="w-5 h-5 text-blue-400 mt-0.5 flex-shrink-0" />
+                <Info className="w-5 h-5 text-blue-600 mt-0.5 flex-shrink-0" />
                 <div>
-                  <p className="text-blue-300 font-medium">Domain Ownership Verification</p>
-                  <p className="text-blue-200/70 text-sm mt-1">
+                  <p className="text-blue-800 font-medium">Domain Ownership Verification</p>
+                  <p className="text-blue-600 text-sm mt-1">
                     Add these DNS records to verify ownership. Your domain will connect to:{' '}
                     <CopyTag value={`${subdomain}.getcelora.com`} variant="info" size="sm" className="inline-flex ml-1" />
                   </p>
@@ -420,11 +420,11 @@ const MerchantDomains = () => {
 
             {/* Step 1: TXT Record */}
             <div className="space-y-3">
-              <h3 className="text-white font-medium flex items-center gap-2">
-                <span className="w-6 h-6 bg-blue-600 rounded-full flex items-center justify-center text-sm font-bold">1</span>
+              <h3 className="text-gray-900 font-medium flex items-center gap-2">
+                <span className="w-6 h-6 bg-blue-600 text-white rounded-full flex items-center justify-center text-sm font-bold">1</span>
                 Add TXT Record (Ownership Verification)
               </h3>
-              <div className="bg-gray-800/50 rounded-lg p-4 space-y-4 border border-gray-700">
+              <div className="bg-gray-50 rounded-lg p-4 space-y-4 border border-gray-200">
                 <div className="grid grid-cols-3 gap-4 text-sm">
                   <div>
                     <span className="text-gray-500 block mb-1">Type</span>
@@ -436,7 +436,7 @@ const MerchantDomains = () => {
                   </div>
                   <div>
                     <span className="text-gray-500 block mb-1">TTL</span>
-                    <span className="text-gray-300 font-mono text-sm">3600 (or Auto)</span>
+                    <span className="text-gray-700 font-mono text-sm">3600 (or Auto)</span>
                   </div>
                 </div>
                 <div>
@@ -453,14 +453,14 @@ const MerchantDomains = () => {
 
             {/* Step 2: A Records */}
             <div className="space-y-3">
-              <h3 className="text-white font-medium flex items-center gap-2">
-                <span className="w-6 h-6 bg-blue-600 rounded-full flex items-center justify-center text-sm font-bold">2</span>
+              <h3 className="text-gray-900 font-medium flex items-center gap-2">
+                <span className="w-6 h-6 bg-blue-600 text-white rounded-full flex items-center justify-center text-sm font-bold">2</span>
                 Add A Records (Point to Server)
               </h3>
-              <div className="bg-gray-800/50 rounded-lg p-4 space-y-4 border border-gray-700">
+              <div className="bg-gray-50 rounded-lg p-4 space-y-4 border border-gray-200">
                 {/* Root A Record */}
                 <div>
-                  <span className="text-gray-400 text-xs uppercase tracking-wide">Root Domain</span>
+                  <span className="text-gray-500 text-xs uppercase tracking-wide">Root Domain</span>
                   <div className="grid grid-cols-3 gap-4 text-sm mt-2">
                     <div>
                       <span className="text-gray-500 block mb-1">Type</span>
@@ -478,8 +478,8 @@ const MerchantDomains = () => {
                 </div>
                 
                 {/* WWW A Record */}
-                <div className="pt-4 border-t border-gray-700">
-                  <span className="text-gray-400 text-xs uppercase tracking-wide">WWW Subdomain</span>
+                <div className="pt-4 border-t border-gray-200">
+                  <span className="text-gray-500 text-xs uppercase tracking-wide">WWW Subdomain</span>
                   <div className="grid grid-cols-3 gap-4 text-sm mt-2">
                     <div>
                       <span className="text-gray-500 block mb-1">Type</span>
@@ -499,7 +499,7 @@ const MerchantDomains = () => {
             </div>
 
             {/* Verify Button */}
-            <div className="pt-4 border-t border-gray-800">
+            <div className="pt-4 border-t border-gray-200">
               <Button
                 onClick={verifyDomain}
                 disabled={verifying || !verificationToken}
@@ -527,15 +527,15 @@ const MerchantDomains = () => {
 
       {/* Verified Success Card */}
       {isVerified && (
-        <Card className="bg-emerald-500/10 border-emerald-500/30">
+        <Card className="bg-emerald-50 border border-emerald-200">
           <CardContent className="p-6">
             <div className="flex items-center gap-4">
-              <div className="w-12 h-12 bg-emerald-500/20 rounded-full flex items-center justify-center">
-                <CheckCircle2 className="w-6 h-6 text-emerald-400" />
+              <div className="w-12 h-12 bg-emerald-100 rounded-full flex items-center justify-center">
+                <CheckCircle2 className="w-6 h-6 text-emerald-600" />
               </div>
               <div className="flex-1">
-                <h3 className="text-emerald-400 font-semibold text-lg">Domain Verified & Active</h3>
-                <p className="text-emerald-300/70 text-sm mt-1">
+                <h3 className="text-emerald-700 font-semibold text-lg">Domain Verified & Active</h3>
+                <p className="text-emerald-600 text-sm mt-1">
                   Your store is now accessible at{' '}
                   <CopyTag value={store?.custom_domain} variant="success" size="sm" className="inline-flex ml-1" />
                 </p>
@@ -544,7 +544,7 @@ const MerchantDomains = () => {
                 variant="outline"
                 size="sm"
                 onClick={() => window.open(`https://${store?.custom_domain}`, '_blank')}
-                className="border-emerald-500/30 text-emerald-400 hover:bg-emerald-500/10"
+                className="border-emerald-300 text-emerald-700 hover:bg-emerald-100"
               >
                 <ExternalLink className="w-4 h-4 mr-2" />
                 Visit
@@ -556,11 +556,11 @@ const MerchantDomains = () => {
 
       {/* Remove Domain Confirmation Dialog */}
       <Dialog open={showRemoveConfirm} onOpenChange={setShowRemoveConfirm}>
-        <DialogContent className="bg-gray-900 border-gray-800">
+        <DialogContent className="bg-white border-gray-200">
           <DialogHeader>
-            <DialogTitle className="text-white">Remove Custom Domain?</DialogTitle>
-            <DialogDescription className="text-gray-400">
-              This will disconnect <strong className="text-blue-400">{store?.custom_domain}</strong> from your store.
+            <DialogTitle className="text-gray-900">Remove Custom Domain?</DialogTitle>
+            <DialogDescription className="text-gray-600">
+              This will disconnect <strong className="text-blue-600">{store?.custom_domain}</strong> from your store.
               Visitors to this domain will no longer see your store.
             </DialogDescription>
           </DialogHeader>
@@ -568,7 +568,7 @@ const MerchantDomains = () => {
             <Button
               variant="outline"
               onClick={() => setShowRemoveConfirm(false)}
-              className="border-gray-700 text-gray-300"
+              className="border-gray-300 text-gray-700"
             >
               Cancel
             </Button>
