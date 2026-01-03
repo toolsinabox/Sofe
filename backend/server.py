@@ -66,6 +66,7 @@ UPLOADS_DIR.mkdir(exist_ok=True)
 (UPLOADS_DIR / "logos").mkdir(exist_ok=True)
 (UPLOADS_DIR / "banners").mkdir(exist_ok=True)
 (UPLOADS_DIR / "products").mkdir(exist_ok=True)
+(UPLOADS_DIR / "favicons").mkdir(exist_ok=True)
 
 # Create theme directory
 THEME_DIR = ROOT_DIR / "theme"
