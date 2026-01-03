@@ -10,7 +10,10 @@ import {
   ShieldCheck,
   RefreshCw,
   X,
-  AlertCircle
+  AlertCircle,
+  Key,
+  LogIn,
+  Check
 } from 'lucide-react';
 import { Card, CardContent } from '../../components/ui/card';
 import { Button } from '../../components/ui/button';
