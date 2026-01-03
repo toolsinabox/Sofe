@@ -189,8 +189,9 @@ const SubdomainCPanel = () => {
     return storeContext.value;
   };
 
-  // If store not found or error occurred, show error page
-  if (error || !storeInfo) {
+  // If store not found (storeError is true and no storeInfo), show error page
+  // NOTE: This should NOT trigger for login errors - only for store loading errors
+  if (storeError || (!storeInfo && storeContext.type)) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-slate-900 to-slate-800 flex items-center justify-center p-4">
         <div className="text-center max-w-md">
