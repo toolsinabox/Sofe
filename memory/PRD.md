@@ -74,6 +74,29 @@ Collections:
 
 ## Recent Changes (January 2026)
 
+### January 3, 2026 - Email Integration & SSL Setup
+**New Features:**
+- **Email Service (Resend):** Complete email infrastructure with templates for:
+  - Welcome emails for new store owners
+  - Password reset emails
+  - Order confirmation emails
+  - Shipping notification emails
+  - Domain verification emails
+- **Password Reset Flow:** Full forgot/reset password functionality with email verification
+- **SSL Setup Script:** Automated Certbot configuration for HTTPS
+
+**Files Added:**
+- `email_service.py` - Email templates and send functions
+- `ForgotPassword.jsx` - Forgot password page
+- `ResetPassword.jsx` - Reset password page with token validation
+- `setup_ssl.sh` - SSL auto-setup script for VPS
+
+**APIs Added:**
+- `POST /api/auth/forgot-password` - Request password reset email
+- `POST /api/auth/reset-password` - Reset password with token
+- `GET /api/auth/verify-reset-token/{token}` - Verify reset token validity
+- `GET /api/system/email-status` - Check if email is configured
+
 ### January 3, 2026 - Admin Features & Subdomain Validation
 **New Features:**
 - **Admin Impersonation:** Platform admins can now "Login As Owner" for any merchant store
