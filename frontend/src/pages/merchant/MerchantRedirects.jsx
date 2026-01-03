@@ -256,14 +256,14 @@ const MerchantRedirects = () => {
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-bold text-white">URL Redirects</h1>
-          <p className="text-gray-400 mt-1">Manage URL redirects for SEO and broken link handling</p>
+          <h1 className="text-2xl font-bold text-gray-900">URL Redirects</h1>
+          <p className="text-gray-500 mt-1">Manage URL redirects for SEO and broken link handling</p>
         </div>
         <div className="flex gap-2">
           <Button
             variant="outline"
             onClick={() => setIsBulkImportOpen(true)}
-            className="border-gray-700 text-gray-300 hover:bg-gray-800"
+            className="border-gray-300 text-gray-700 hover:bg-gray-100"
           >
             <Upload className="w-4 h-4 mr-2" />
             Import
@@ -272,14 +272,14 @@ const MerchantRedirects = () => {
             variant="outline"
             onClick={handleExport}
             disabled={redirects.length === 0}
-            className="border-gray-700 text-gray-300 hover:bg-gray-800"
+            className="border-gray-300 text-gray-700 hover:bg-gray-100"
           >
             <Download className="w-4 h-4 mr-2" />
             Export
           </Button>
           <Button
             onClick={() => { resetForm(); setIsAddModalOpen(true); }}
-            className="bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-600 hover:to-blue-700 text-white"
+            className="bg-blue-600 hover:bg-blue-700 text-white"
           >
             <Plus className="w-4 h-4 mr-2" />
             Add Redirect
@@ -291,8 +291,8 @@ const MerchantRedirects = () => {
       {message && (
         <div className={`p-4 rounded-lg flex items-center gap-3 ${
           message.type === 'success' 
-            ? 'bg-emerald-500/10 border border-emerald-500/30 text-emerald-400' 
-            : 'bg-red-500/10 border border-red-500/30 text-red-400'
+            ? 'bg-emerald-50 border border-emerald-200 text-emerald-700' 
+            : 'bg-red-50 border border-red-200 text-red-700'
         }`}>
           {message.type === 'success' ? <Check className="w-5 h-5" /> : <AlertCircle className="w-5 h-5" />}
           <span>{message.text}</span>
@@ -303,13 +303,13 @@ const MerchantRedirects = () => {
       )}
 
       {/* Info Card */}
-      <Card className="bg-blue-500/10 border-blue-500/30">
+      <Card className="bg-blue-50 border-blue-200">
         <CardContent className="p-4">
           <div className="flex items-start gap-3">
-            <Info className="w-5 h-5 text-blue-400 flex-shrink-0 mt-0.5" />
-            <div className="text-sm text-blue-300">
+            <Info className="w-5 h-5 text-blue-600 flex-shrink-0 mt-0.5" />
+            <div className="text-sm text-blue-800">
               <p className="font-medium mb-1">How Redirects Work</p>
-              <ul className="list-disc list-inside space-y-1 text-blue-300/80">
+              <ul className="list-disc list-inside space-y-1 text-blue-700">
                 <li><strong>301 (Permanent)</strong> - Best for SEO. Tells search engines the page has permanently moved.</li>
                 <li><strong>302 (Temporary)</strong> - For temporary redirects. Search engines keep the original URL indexed.</li>
                 <li>Source paths are relative to your store (e.g., /old-page → /new-page)</li>
@@ -323,53 +323,53 @@ const MerchantRedirects = () => {
       {/* Filters */}
       <div className="flex items-center gap-4">
         <div className="relative flex-1 max-w-md">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500 w-4 h-4" />
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 w-4 h-4" />
           <Input
             type="text"
             placeholder="Search redirects..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            className="bg-gray-800/50 border-gray-700 text-white pl-10"
+            className="bg-white border-gray-300 text-gray-900 pl-10"
           />
         </div>
         <Select value={typeFilter} onValueChange={setTypeFilter}>
-          <SelectTrigger className="w-40 bg-gray-800/50 border-gray-700 text-gray-300">
+          <SelectTrigger className="w-40 bg-white border-gray-300 text-gray-700">
             <Filter className="w-4 h-4 mr-2" />
             <SelectValue placeholder="Type" />
           </SelectTrigger>
-          <SelectContent className="bg-[#1a1f2e] border-gray-700">
-            <SelectItem value="all" className="text-gray-300">All Types</SelectItem>
-            <SelectItem value="301" className="text-gray-300">301 Permanent</SelectItem>
-            <SelectItem value="302" className="text-gray-300">302 Temporary</SelectItem>
+          <SelectContent className="bg-white border-gray-200">
+            <SelectItem value="all" className="text-gray-700">All Types</SelectItem>
+            <SelectItem value="301" className="text-gray-700">301 Permanent</SelectItem>
+            <SelectItem value="302" className="text-gray-700">302 Temporary</SelectItem>
           </SelectContent>
         </Select>
         <Button
           variant="ghost"
           onClick={fetchRedirects}
-          className="text-gray-400 hover:text-white"
+          className="text-gray-500 hover:text-gray-900"
         >
           <RefreshCw className={`w-4 h-4 ${loading ? 'animate-spin' : ''}`} />
         </Button>
       </div>
 
       {/* Redirects Table */}
-      <Card className="bg-[#151b28] border-gray-800">
+      <Card className="bg-white border-gray-200 shadow-sm">
         <CardContent className="p-0">
           {loading ? (
             <div className="flex items-center justify-center py-16">
-              <RefreshCw className="w-8 h-8 text-cyan-400 animate-spin" />
+              <RefreshCw className="w-8 h-8 text-blue-600 animate-spin" />
             </div>
           ) : filteredRedirects.length === 0 ? (
             <div className="text-center py-16">
-              <ArrowUpRight className="w-12 h-12 text-gray-600 mx-auto mb-4" />
-              <h3 className="text-lg font-semibold text-white mb-2">No redirects found</h3>
-              <p className="text-gray-400 mb-4">
+              <ArrowUpRight className="w-12 h-12 text-gray-300 mx-auto mb-4" />
+              <h3 className="text-lg font-semibold text-gray-900 mb-2">No redirects found</h3>
+              <p className="text-gray-500 mb-4">
                 {searchQuery ? 'Try adjusting your search' : 'Create your first redirect to get started'}
               </p>
               {!searchQuery && (
                 <Button
                   onClick={() => { resetForm(); setIsAddModalOpen(true); }}
-                  className="bg-cyan-500 hover:bg-cyan-600"
+                  className="bg-blue-600 hover:bg-blue-700 text-white"
                 >
                   <Plus className="w-4 h-4 mr-2" />
                   Add Redirect
@@ -379,35 +379,35 @@ const MerchantRedirects = () => {
           ) : (
             <Table>
               <TableHeader>
-                <TableRow className="border-gray-800 hover:bg-transparent">
-                  <TableHead className="text-gray-400">Source Path</TableHead>
-                  <TableHead className="text-gray-400">Target URL</TableHead>
-                  <TableHead className="text-gray-400 w-24">Type</TableHead>
-                  <TableHead className="text-gray-400 w-24">Status</TableHead>
-                  <TableHead className="text-gray-400 w-24">Hits</TableHead>
-                  <TableHead className="text-gray-400 w-32 text-right">Actions</TableHead>
+                <TableRow className="border-gray-200 hover:bg-transparent">
+                  <TableHead className="text-gray-600">Source Path</TableHead>
+                  <TableHead className="text-gray-600">Target URL</TableHead>
+                  <TableHead className="text-gray-600 w-24">Type</TableHead>
+                  <TableHead className="text-gray-600 w-24">Status</TableHead>
+                  <TableHead className="text-gray-600 w-24">Hits</TableHead>
+                  <TableHead className="text-gray-600 w-32 text-right">Actions</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
                 {filteredRedirects.map((redirect) => (
-                  <TableRow key={redirect.id} className="border-gray-800">
-                    <TableCell className="font-mono text-cyan-400 text-sm">
+                  <TableRow key={redirect.id} className="border-gray-200">
+                    <TableCell className="font-mono text-blue-600 text-sm">
                       {redirect.source_path}
                     </TableCell>
                     <TableCell>
-                      <div className="flex items-center gap-2 text-gray-300 text-sm">
-                        <ArrowRight className="w-4 h-4 text-gray-500 flex-shrink-0" />
+                      <div className="flex items-center gap-2 text-gray-700 text-sm">
+                        <ArrowRight className="w-4 h-4 text-gray-400 flex-shrink-0" />
                         <span className="truncate max-w-xs">{redirect.target_url}</span>
                         {redirect.target_url.startsWith('http') && (
-                          <ExternalLink className="w-3 h-3 text-gray-500 flex-shrink-0" />
+                          <ExternalLink className="w-3 h-3 text-gray-400 flex-shrink-0" />
                         )}
                       </div>
                     </TableCell>
                     <TableCell>
                       <Badge variant={redirect.redirect_type === '301' ? 'default' : 'secondary'} 
                              className={redirect.redirect_type === '301' 
-                               ? 'bg-purple-500/20 text-purple-400' 
-                               : 'bg-yellow-500/20 text-yellow-400'}>
+                               ? 'bg-purple-100 text-purple-700 border-purple-200' 
+                               : 'bg-yellow-100 text-yellow-700 border-yellow-200'}>
                         {redirect.redirect_type}
                       </Badge>
                     </TableCell>
@@ -416,28 +416,28 @@ const MerchantRedirects = () => {
                         onClick={() => handleToggleActive(redirect)}
                         className={`px-2 py-1 rounded text-xs font-medium ${
                           redirect.is_active 
-                            ? 'bg-emerald-500/20 text-emerald-400' 
-                            : 'bg-gray-500/20 text-gray-400'
+                            ? 'bg-emerald-100 text-emerald-700' 
+                            : 'bg-gray-100 text-gray-500'
                         }`}
                       >
                         {redirect.is_active ? 'Active' : 'Inactive'}
                       </button>
                     </TableCell>
-                    <TableCell className="text-gray-400 text-sm">
+                    <TableCell className="text-gray-500 text-sm">
                       {redirect.hit_count || 0}
                     </TableCell>
                     <TableCell className="text-right">
                       <div className="flex items-center justify-end gap-1">
                         <button
                           onClick={() => handleEdit(redirect)}
-                          className="p-1.5 rounded hover:bg-gray-700 text-gray-400 hover:text-white"
+                          className="p-1.5 rounded hover:bg-gray-100 text-gray-500 hover:text-gray-900"
                           title="Edit"
                         >
                           <Edit2 className="w-4 h-4" />
                         </button>
                         <button
                           onClick={() => handleDelete(redirect.id)}
-                          className="p-1.5 rounded hover:bg-red-500/20 text-gray-400 hover:text-red-400"
+                          className="p-1.5 rounded hover:bg-red-50 text-gray-500 hover:text-red-600"
                           title="Delete"
                         >
                           <Trash2 className="w-4 h-4" />
@@ -461,12 +461,12 @@ const MerchantRedirects = () => {
           resetForm();
         }
       }}>
-        <DialogContent className="bg-[#151b28] border-gray-800 text-white max-w-lg">
+        <DialogContent className="bg-white border-gray-200 text-gray-900 max-w-lg">
           <DialogHeader>
-            <DialogTitle className="text-xl font-semibold">
+            <DialogTitle className="text-xl font-semibold text-gray-900">
               {selectedRedirect ? 'Edit Redirect' : 'Add New Redirect'}
             </DialogTitle>
-            <DialogDescription className="text-gray-400">
+            <DialogDescription className="text-gray-500">
               {selectedRedirect 
                 ? 'Update the redirect settings below'
                 : 'Create a new URL redirect for your store'}
@@ -475,50 +475,50 @@ const MerchantRedirects = () => {
           
           <div className="space-y-4 mt-4">
             <div className="space-y-2">
-              <Label className="text-gray-300">Source Path *</Label>
+              <Label className="text-gray-700">Source Path *</Label>
               <div className="flex items-center gap-2">
-                <span className="text-gray-500 text-sm">yourstore.com</span>
+                <span className="text-gray-400 text-sm">yourstore.com</span>
                 <Input
                   value={formData.source_path}
                   onChange={(e) => setFormData({ ...formData, source_path: e.target.value })}
                   placeholder="/old-page"
-                  className="bg-gray-800/50 border-gray-700 text-white font-mono"
+                  className="bg-white border-gray-300 text-gray-900 font-mono"
                 />
               </div>
               <p className="text-xs text-gray-500">The URL path that will be redirected (e.g., /old-product)</p>
             </div>
 
             <div className="space-y-2">
-              <Label className="text-gray-300">Target URL *</Label>
+              <Label className="text-gray-700">Target URL *</Label>
               <Input
                 value={formData.target_url}
                 onChange={(e) => setFormData({ ...formData, target_url: e.target.value })}
                 placeholder="/new-page or https://example.com/page"
-                className="bg-gray-800/50 border-gray-700 text-white font-mono"
+                className="bg-white border-gray-300 text-gray-900 font-mono"
               />
               <p className="text-xs text-gray-500">Where visitors will be redirected to</p>
             </div>
 
             <div className="grid grid-cols-2 gap-4">
               <div className="space-y-2">
-                <Label className="text-gray-300">Redirect Type</Label>
+                <Label className="text-gray-700">Redirect Type</Label>
                 <Select 
                   value={formData.redirect_type} 
                   onValueChange={(v) => setFormData({ ...formData, redirect_type: v })}
                 >
-                  <SelectTrigger className="bg-gray-800/50 border-gray-700 text-gray-300">
+                  <SelectTrigger className="bg-white border-gray-300 text-gray-700">
                     <SelectValue />
                   </SelectTrigger>
-                  <SelectContent className="bg-[#1a1f2e] border-gray-700">
-                    <SelectItem value="301" className="text-gray-300">
+                  <SelectContent className="bg-white border-gray-200">
+                    <SelectItem value="301" className="text-gray-700">
                       <div className="flex items-center gap-2">
-                        <Badge className="bg-purple-500/20 text-purple-400">301</Badge>
+                        <Badge className="bg-purple-100 text-purple-700">301</Badge>
                         Permanent
                       </div>
                     </SelectItem>
-                    <SelectItem value="302" className="text-gray-300">
+                    <SelectItem value="302" className="text-gray-700">
                       <div className="flex items-center gap-2">
-                        <Badge className="bg-yellow-500/20 text-yellow-400">302</Badge>
+                        <Badge className="bg-yellow-100 text-yellow-700">302</Badge>
                         Temporary
                       </div>
                     </SelectItem>
@@ -527,29 +527,29 @@ const MerchantRedirects = () => {
               </div>
 
               <div className="space-y-2">
-                <Label className="text-gray-300">Status</Label>
+                <Label className="text-gray-700">Status</Label>
                 <Select 
                   value={formData.is_active ? 'active' : 'inactive'} 
                   onValueChange={(v) => setFormData({ ...formData, is_active: v === 'active' })}
                 >
-                  <SelectTrigger className="bg-gray-800/50 border-gray-700 text-gray-300">
+                  <SelectTrigger className="bg-white border-gray-300 text-gray-700">
                     <SelectValue />
                   </SelectTrigger>
-                  <SelectContent className="bg-[#1a1f2e] border-gray-700">
-                    <SelectItem value="active" className="text-gray-300">Active</SelectItem>
-                    <SelectItem value="inactive" className="text-gray-300">Inactive</SelectItem>
+                  <SelectContent className="bg-white border-gray-200">
+                    <SelectItem value="active" className="text-gray-700">Active</SelectItem>
+                    <SelectItem value="inactive" className="text-gray-700">Inactive</SelectItem>
                   </SelectContent>
                 </Select>
               </div>
             </div>
 
             <div className="space-y-2">
-              <Label className="text-gray-300">Notes (Optional)</Label>
+              <Label className="text-gray-700">Notes (Optional)</Label>
               <Textarea
                 value={formData.notes}
                 onChange={(e) => setFormData({ ...formData, notes: e.target.value })}
                 placeholder="Why this redirect was created..."
-                className="bg-gray-800/50 border-gray-700 text-white resize-none"
+                className="bg-white border-gray-300 text-gray-900 resize-none"
                 rows={2}
               />
             </div>
@@ -563,14 +563,14 @@ const MerchantRedirects = () => {
                   setSelectedRedirect(null);
                   resetForm();
                 }}
-                className="text-gray-400 hover:text-white"
+                className="text-gray-500 hover:text-gray-900"
               >
                 Cancel
               </Button>
               <Button
                 onClick={handleSave}
                 disabled={saving}
-                className="bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-600 hover:to-blue-700 text-white"
+                className="bg-blue-600 hover:bg-blue-700 text-white"
               >
                 {saving ? 'Saving...' : (selectedRedirect ? 'Update Redirect' : 'Create Redirect')}
               </Button>
@@ -581,32 +581,32 @@ const MerchantRedirects = () => {
 
       {/* Bulk Import Modal */}
       <Dialog open={isBulkImportOpen} onOpenChange={setIsBulkImportOpen}>
-        <DialogContent className="bg-[#151b28] border-gray-800 text-white max-w-xl">
+        <DialogContent className="bg-white border-gray-200 text-gray-900 max-w-xl">
           <DialogHeader>
-            <DialogTitle className="text-xl font-semibold">Bulk Import Redirects</DialogTitle>
-            <DialogDescription className="text-gray-400">
+            <DialogTitle className="text-xl font-semibold text-gray-900">Bulk Import Redirects</DialogTitle>
+            <DialogDescription className="text-gray-500">
               Import multiple redirects at once using CSV format
             </DialogDescription>
           </DialogHeader>
           
           <div className="space-y-4 mt-4">
-            <div className="p-3 bg-gray-800/50 rounded-lg">
-              <p className="text-sm text-gray-300 mb-2">Format: <code className="text-cyan-400">source_path,target_url,type</code></p>
+            <div className="p-3 bg-gray-50 rounded-lg border border-gray-200">
+              <p className="text-sm text-gray-700 mb-2">Format: <code className="text-blue-600 bg-blue-50 px-1 rounded">source_path,target_url,type</code></p>
               <p className="text-xs text-gray-500">Example:</p>
-              <pre className="text-xs text-gray-400 mt-1 font-mono">
-/old-page,/new-page,301{'\n'}
-/blog/old-post,/blog/new-post,301{'\n'}
-/promo,https://external.com/offer,302
+              <pre className="text-xs text-gray-600 mt-1 font-mono bg-gray-100 p-2 rounded">
+{`/old-page,/new-page,301
+/blog/old-post,/blog/new-post,301
+/promo,https://external.com/offer,302`}
               </pre>
             </div>
 
             <div className="space-y-2">
-              <Label className="text-gray-300">Paste redirects (one per line)</Label>
+              <Label className="text-gray-700">Paste redirects (one per line)</Label>
               <Textarea
                 value={bulkImportText}
                 onChange={(e) => setBulkImportText(e.target.value)}
                 placeholder="/old-path,/new-path,301"
-                className="bg-gray-800/50 border-gray-700 text-white font-mono resize-none"
+                className="bg-white border-gray-300 text-gray-900 font-mono resize-none"
                 rows={8}
               />
             </div>
@@ -615,14 +615,14 @@ const MerchantRedirects = () => {
               <Button
                 variant="ghost"
                 onClick={() => { setIsBulkImportOpen(false); setBulkImportText(''); }}
-                className="text-gray-400 hover:text-white"
+                className="text-gray-500 hover:text-gray-900"
               >
                 Cancel
               </Button>
               <Button
                 onClick={handleBulkImport}
                 disabled={saving || !bulkImportText.trim()}
-                className="bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-600 hover:to-blue-700 text-white"
+                className="bg-blue-600 hover:bg-blue-700 text-white"
               >
                 {saving ? 'Importing...' : 'Import Redirects'}
               </Button>
