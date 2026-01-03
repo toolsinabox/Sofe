@@ -5077,7 +5077,7 @@ async def verify_custom_domain(
 ):
     """Verify custom domain ownership via TXT record AND routing via A record"""
     import socket
-    import subprocess
+    import dns.resolver
     
     store_id = await get_store_id_for_current_user(current_user)
     if not store_id:
@@ -5106,15 +5106,14 @@ async def verify_custom_domain(
     txt_verified = False
     txt_error = None
     try:
-        result = subprocess.run(
-            ["dig", "+short", "TXT", root_domain],
-            capture_output=True,
-            text=True,
-            timeout=10
-        )
-        txt_records = result.stdout.strip().replace('"', '').split('\n')
+        resolver = dns.resolver.Resolver()
+        resolver.timeout = 10
+        resolver.lifetime = 10
         
-        # Check if our verification token is in the TXT records
+        answers = resolver.resolve(root_domain, 'TXT')
+        txt_records = [str(rdata).strip('"') for rdata in answers]
+        
+        # Check if our verification token is in any TXT record
         for record in txt_records:
             if verification_token in record:
                 txt_verified = True
@@ -5122,8 +5121,12 @@ async def verify_custom_domain(
         
         if not txt_verified:
             txt_error = f"TXT record not found. Please add: {verification_token}"
-    except subprocess.TimeoutExpired:
-        txt_error = "DNS lookup timed out"
+    except dns.resolver.NXDOMAIN:
+        txt_error = "Domain not found. Please check your domain name."
+    except dns.resolver.NoAnswer:
+        txt_error = f"No TXT records found. Please add: {verification_token}"
+    except dns.resolver.Timeout:
+        txt_error = "DNS lookup timed out. Please try again."
     except Exception as e:
         txt_error = f"Could not check TXT records: {str(e)}"
     
