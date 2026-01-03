@@ -460,6 +460,26 @@ const AdminMerchants = () => {
                         <Eye size={16} className="mr-2" /> View Details
                       </DropdownMenuItem>
                       <DropdownMenuItem 
+                        onClick={() => handleImpersonate(merchant)}
+                        className="text-cyan-400 hover:text-cyan-300 hover:bg-cyan-500/10 cursor-pointer"
+                      >
+                        <LogIn size={16} className="mr-2" /> Login As Owner
+                      </DropdownMenuItem>
+                      <DropdownMenuItem 
+                        onClick={() => openResetPasswordModal(merchant)}
+                        className="text-yellow-400 hover:text-yellow-300 hover:bg-yellow-500/10 cursor-pointer"
+                      >
+                        <Key size={16} className="mr-2" /> Reset Password
+                      </DropdownMenuItem>
+                      {merchant.subdomain && (
+                        <DropdownMenuItem 
+                          onClick={() => window.open(`http://${merchant.subdomain}.getcelora.com`, '_blank')}
+                          className="text-gray-300 hover:text-white hover:bg-gray-700/50 cursor-pointer"
+                        >
+                          <ExternalLink size={16} className="mr-2" /> Visit Store
+                        </DropdownMenuItem>
+                      )}
+                      <DropdownMenuItem 
                         onClick={() => openEditModal(merchant)}
                         className="text-gray-300 hover:text-white hover:bg-gray-700/50 cursor-pointer"
                       >
