@@ -201,10 +201,11 @@ const MerchantDomains = () => {
       steps: [
         'Log in to your GoDaddy account',
         'Go to "My Products" → Find your domain → Click "DNS"',
-        'Find existing A records and delete them (or edit them)',
-        'Click "Add" to create new records',
-        'Add an A record: Type = A, Name = @, Value = ' + SERVER_IP,
-        'Add another A record: Type = A, Name = www, Value = ' + SERVER_IP,
+        '📌 First, add TXT record for verification:',
+        '   - Type = TXT, Name = @, Value = ' + (store?.domain_verification_token || '[your verification token]'),
+        'Then add A records for routing:',
+        '   - Type = A, Name = @, Value = ' + SERVER_IP,
+        '   - Type = A, Name = www, Value = ' + SERVER_IP,
         'Save changes and wait 15-30 minutes for propagation'
       ]
     },
@@ -214,10 +215,11 @@ const MerchantDomains = () => {
         'Log in to your Namecheap account',
         'Go to "Domain List" → Click "Manage" on your domain',
         'Click "Advanced DNS" tab',
-        'Delete any existing A or CNAME records for @ and www',
-        'Click "Add New Record"',
-        'Add A Record: Host = @, Value = ' + SERVER_IP + ', TTL = Automatic',
-        'Add A Record: Host = www, Value = ' + SERVER_IP + ', TTL = Automatic',
+        '📌 Add TXT record for verification:',
+        '   - Type = TXT Record, Host = @, Value = ' + (store?.domain_verification_token || '[your verification token]'),
+        'Add A records for routing:',
+        '   - Type = A Record, Host = @, Value = ' + SERVER_IP,
+        '   - Type = A Record, Host = www, Value = ' + SERVER_IP,
         'Save all changes'
       ]
     },
@@ -225,24 +227,25 @@ const MerchantDomains = () => {
       name: 'Cloudflare',
       steps: [
         'Log in to your Cloudflare dashboard',
-        'Select your domain',
-        'Go to "DNS" in the left sidebar',
-        'Delete any conflicting A or CNAME records',
-        'Click "Add record"',
-        'Add A Record: Name = @, IPv4 = ' + SERVER_IP + ', Proxy status = DNS only (gray cloud)',
-        'Add A Record: Name = www, IPv4 = ' + SERVER_IP + ', Proxy status = DNS only (gray cloud)',
-        '⚠️ Important: Set proxy to "DNS only" (gray cloud) for SSL to work correctly'
+        'Select your domain → Go to "DNS"',
+        '📌 Add TXT record for verification:',
+        '   - Type = TXT, Name = @, Content = ' + (store?.domain_verification_token || '[your verification token]'),
+        'Add A records for routing:',
+        '   - Type = A, Name = @, IPv4 = ' + SERVER_IP + ' (Proxy: DNS only)',
+        '   - Type = A, Name = www, IPv4 = ' + SERVER_IP + ' (Proxy: DNS only)',
+        '⚠️ Important: Set proxy to "DNS only" (gray cloud) for SSL'
       ]
     },
     googledomains: {
       name: 'Google Domains / Squarespace',
       steps: [
         'Go to domains.google.com (now Squarespace Domains)',
-        'Click on your domain',
-        'Go to "DNS" in the left menu',
-        'Scroll to "Custom records"',
-        'Add A record: Host name = (leave blank), Type = A, Data = ' + SERVER_IP,
-        'Add A record: Host name = www, Type = A, Data = ' + SERVER_IP,
+        'Click on your domain → Go to "DNS"',
+        '📌 Add TXT record for verification:',
+        '   - Type = TXT, Host name = (blank), Data = ' + (store?.domain_verification_token || '[your verification token]'),
+        'Add A records for routing:',
+        '   - Type = A, Host name = (blank), Data = ' + SERVER_IP,
+        '   - Type = A, Host name = www, Data = ' + SERVER_IP,
         'Save changes'
       ]
     },
@@ -250,11 +253,12 @@ const MerchantDomains = () => {
       name: 'Hostinger',
       steps: [
         'Log in to Hostinger hPanel',
-        'Go to "Domains" → Select your domain',
-        'Click "DNS / Nameservers"',
-        'Under "DNS Records", delete existing A records',
-        'Add new A record: Type = A, Name = @, Points to = ' + SERVER_IP,
-        'Add new A record: Type = A, Name = www, Points to = ' + SERVER_IP,
+        'Go to "Domains" → Select your domain → "DNS / Nameservers"',
+        '📌 Add TXT record for verification:',
+        '   - Type = TXT, Name = @, TXT Value = ' + (store?.domain_verification_token || '[your verification token]'),
+        'Add A records for routing:',
+        '   - Type = A, Name = @, Points to = ' + SERVER_IP,
+        '   - Type = A, Name = www, Points to = ' + SERVER_IP,
         'Save changes'
       ]
     }
