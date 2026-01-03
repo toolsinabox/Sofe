@@ -6286,6 +6286,7 @@ async def get_render_v2_info():
 @api_router.get("/maropost/{path:path}")
 async def render_page_v2(
     path: str,
+    request: Request,
     print: Optional[bool] = None,
     embed: Optional[bool] = None,
     debug: Optional[bool] = None,
@@ -6309,6 +6310,30 @@ async def render_page_v2(
         embed: Enable minimal/empty wrapper
         debug: Enable debug headers
     """
+    # Detect store from host header (subdomain or custom domain)
+    host = request.headers.get("host", "").split(":")[0].lower()
+    custom_domain_header = request.headers.get("x-custom-domain", "").lower()
+    
+    store = None
+    store_id = None
+    
+    # Check if it's a custom domain first
+    if custom_domain_header and custom_domain_header not in ["getcelora.com", "www.getcelora.com"]:
+        store = await db.platform_stores.find_one({
+            "custom_domain": custom_domain_header,
+            "custom_domain_verified": True
+        }, {"_id": 0})
+    
+    # If not found, check for subdomain
+    if not store and host and ".getcelora.com" in host:
+        subdomain = host.replace(".getcelora.com", "").strip()
+        if subdomain and subdomain not in ["www", ""]:
+            store = await db.platform_stores.find_one({"subdomain": subdomain}, {"_id": 0})
+    
+    # If store found, get store-specific settings
+    if store:
+        store_id = store.get("id")
+    
     active_theme = await get_active_theme_name()
     theme_path = THEMES_DIR / active_theme
     
