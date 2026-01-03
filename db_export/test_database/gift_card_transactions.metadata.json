@@ -1,0 +1,1 @@
+{"indexes":[{"v":{"$numberInt":"2"},"key":{"_id":{"$numberInt":"1"}},"name":"_id_"}],"uuid":"45831fceba014aa0bfeea700ee1d327e","collectionName":"gift_card_transactions","type":"collection"}

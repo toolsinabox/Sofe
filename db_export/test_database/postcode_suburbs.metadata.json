@@ -1,0 +1,1 @@
+{"indexes":[{"v":{"$numberInt":"2"},"key":{"_id":{"$numberInt":"1"}},"name":"_id_"},{"v":{"$numberInt":"2"},"key":{"postcode":{"$numberInt":"1"}},"name":"postcode_1"}],"uuid":"9ee4b3b7f627447bb76f8ff16ce51d5a","collectionName":"postcode_suburbs","type":"collection"}
