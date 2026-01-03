@@ -524,10 +524,14 @@ const MerchantDomains = () => {
                   <div className="flex items-start gap-2">
                     <Shield className="w-4 h-4 text-purple-400 mt-0.5 flex-shrink-0" />
                     <div className="text-sm text-purple-300">
-                      <p className="font-medium">Domain Ownership Verification Required</p>
+                      <p className="font-medium">Domain Ownership Verification</p>
                       <p className="text-purple-300/80 mt-1">
-                        The TXT record proves you own this domain. This prevents others from claiming your domain on our platform.
-                        Both the TXT record (for verification) and A records (for routing) must be configured.
+                        The TXT record proves you own this domain and shows exactly which store it connects to.
+                        {store?.domain_verification_token && (
+                          <span className="block mt-2 text-purple-200">
+                            Your domain will connect to: <strong>{store?.subdomain}.getcelora.com</strong>
+                          </span>
+                        )}
                       </p>
                     </div>
                   </div>
