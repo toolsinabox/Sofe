@@ -1,0 +1,69 @@
+{
+  "summary": "Completed testing of URL Redirects and Custom Scripts features for Celora e-commerce platform. All backend API tests pass (15/15). Frontend pages load correctly with proper UI components.",
+  "backend_issues": {
+    "critical": [],
+    "minor": []
+  },
+  "frontend_issues": {
+    "ui_bugs": [],
+    "integration_issues": [],
+    "design_issues": [
+      {
+        "screen": "Sidebar - Storefront section",
+        "issues": ["URL Redirects and Custom Scripts links are present but may require scrolling to see on smaller viewports - they appear below SEO link"]
+      }
+    ]
+  },
+  "test_report_links": [
+    "/app/tests/test_redirects_custom_scripts.py",
+    "/app/test_reports/pytest/pytest_redirects_results.xml"
+  ],
+  "action_items": [],
+  "critical_code_review_comments": [],
+  "updated_files": [
+    "/app/tests/test_redirects_custom_scripts.py"
+  ],
+  "success_rate": {
+    "backend": "100% (15/15 tests passed)",
+    "frontend": "100% (all pages load correctly)"
+  },
+  "test_credentials": {
+    "email": "test@test.com",
+    "password": "test123",
+    "subdomain": "teststore"
+  },
+  "seed_data_creation": "Test redirects created during testing were cleaned up automatically",
+  "retest_needed": false,
+  "main_agent_can_self_test": true,
+  "context_for_next_testing_agent": "URL Redirects and Custom Scripts features are fully functional. Backend APIs tested: GET/POST/PUT/DELETE /api/store/redirects, POST /api/store/redirects/bulk, GET/PUT /api/store/custom-scripts. Frontend pages at /merchant/redirects and /merchant/custom-scripts load correctly. Sidebar navigation includes both links under Storefront section.",
+  "features_tested": {
+    "sidebar_navigation": {
+      "url_redirects_link": "PASS - Present under Storefront section",
+      "custom_scripts_link": "PASS - Present under Storefront section"
+    },
+    "url_redirects_page": {
+      "page_loads": "PASS - /merchant/redirects loads correctly",
+      "data_testid": "PASS - merchant-redirects data-testid present",
+      "add_redirect_button": "PASS - Button present and clickable",
+      "add_redirect_modal": "PASS - Modal opens with all form fields",
+      "import_export_buttons": "PASS - Import and Export buttons present"
+    },
+    "custom_scripts_page": {
+      "page_loads": "PASS - /merchant/custom-scripts loads correctly",
+      "data_testid": "PASS - merchant-custom-scripts data-testid present",
+      "save_button": "PASS - Save All Changes button present",
+      "tabs": "PASS - Tracking Pixels, Custom Scripts, Custom CSS, Templates tabs present",
+      "tracking_fields": "PASS - Google Analytics, GTM, Facebook, TikTok, Snapchat, Pinterest fields present"
+    },
+    "backend_apis": {
+      "GET /api/store/redirects": "PASS",
+      "POST /api/store/redirects": "PASS",
+      "PUT /api/store/redirects/{id}": "PASS",
+      "DELETE /api/store/redirects/{id}": "PASS",
+      "POST /api/store/redirects/bulk": "PASS",
+      "GET /api/store/custom-scripts": "PASS",
+      "PUT /api/store/custom-scripts": "PASS",
+      "authentication_required": "PASS - All endpoints require auth"
+    }
+  }
+}
