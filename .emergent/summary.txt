@@ -1,82 +1,77 @@
 <analysis>**original_problem_statement:**
-The user's objective is to build a multi-tenant e-commerce platform named Celora, where customers can sign up and create their own online stores. The user requires a Platform Admin Dashboard to manage all customer stores. The primary workflow has shifted to developing and testing all features within the Emergent environment first, with the user managing deployment to a live Vultr VPS via GitHub.
+The user's goal is to create Celora, a multi-tenant e-commerce platform similar to Shopify or Maropost. Key requirements include a Platform Admin Dashboard for managing all stores, robust multi-tenant architecture, and a seamless experience for merchants.
 
-Recent user requests include:
-1.  **Subdomain Validation:** Fix a critical bug where any non-existent subdomain (e.g., ) renders a default store theme instead of a Not Found error.
-2.  **UI/UX Enhancements:**
-    *   Clean up the  by removing redundant items and improving organization.
-    *   Ensure the Domains link is prominently visible.
-    *   Remove the redundant Custom Domain modal from the  and link directly to the dedicated feature page.
-3.  **Feature Implementation:**
-    *   **Self-Service Custom Domains:** Build a complete, self-service feature for merchants to connect their own domains (e.g., ).
-    *   **Email Integration & Password Reset:** Integrate an email service (Resend) and implement a full Forgot Password flow for users.
-    *   **Favicon Uploader:** Allow merchants to upload a custom favicon for their store.
-    *   **Redirects & Custom Scripts:** Implement comprehensive pages for merchants to manage URL redirects and add custom scripts (e.g., Google Analytics, chat widgets), similar to Maropost.
+Recent user requests have focused on perfecting the system's architecture and user experience:
+1.  **Custom Domain Security & Clarity:** The initial implementation for connecting custom domains was insecure and confusing. The user requested a more robust, obvious, and secure method for domain verification.
+2.  **Data Isolation:** A critical flaw was discovered where merchants could see data from other stores. The user demanded a full audit to ensure strict data separation between tenants.
+3.  **Correct Subdomain/Domain Routing:** The user reported multiple issues with routing, including fake subdomains showing a default store instead of a 404 error, and custom domains not correctly displaying the associated store.
+4.  **Seamless Merchant Control Panel Access:** The user wants merchants to access their control panel () directly via their subdomain () and their custom domain () without any redirects.
+5.  **Per-Store Theming:** Each merchant's store should be able to have its own unique theme.
 
 **User's preferred language**: English
 
 **what currently exists?**
-The project is a full-stack multi-tenant e-commerce platform using React, FastAPI, and MongoDB. The development focus is now entirely within the Emergent environment.
+The application is a full-stack platform using React, FastAPI, and MongoDB. The development process is Emergent-first, with all features being built and audited within the Emergent environment before deployment instructions are provided for the user's live VPS.
 
-The following features have been fully implemented and tested in this session:
-*   A robust backend fix that returns a 404 error for invalid or inactive subdomains.
-*   A revamped merchant sidebar with a cleaner structure.
-*   A comprehensive self-service page for merchants to add, verify, and manage custom domains, including DNS checking.
-*   Full Forgot Password and Reset Password functionality, integrated with the Resend email service (pending user API key).
-*   A favicon uploader in the merchant's store settings.
-
-The initial pages and backend APIs for Redirect URLs and Custom Scripts have been created but are not yet fully integrated into the UI.
+A comprehensive system audit and refactoring session were just completed. Key successes include:
+*   **Secure Domain Verification:** A new, secure, and user-friendly TXT record verification system has been implemented. Merchants are now provided a token in the format , making ownership verification both clear and secure.
+*   **Full Data Isolation:** A critical flaw was fixed by refactoring dozens of backend API endpoints. All data access is now strictly scoped to the authenticated merchant's  from their JWT, preventing any data leakage between tenants.
+*   **Robust Routing Logic:** The backend now correctly identifies stores from subdomains or custom domains and returns a 404 error for any non-existent store, resolving a major bug.
+*   **Per-Store Themes:** The backend was updated to support assigning a unique theme to each individual store.
+*   **Admin Functionality:** A dedicated admin login and impersonation feature are fully functional, allowing platform administrators to manage and view all stores.
+*   **Completed Features:** URL Redirects and Custom Scripts pages are fully implemented and tested.
 
 **Last working item**:
--   **Last item agent was working:** Implementing the Redirect URLs and Custom Scripts features for merchants. The agent successfully created the frontend pages (, ), added the CRUD API endpoints to , and included the new pages in the  router.
--   **Status:** IN PROGRESS
--   **Agent Testing Done:** N
--   **Which testing method agent to use?** Both. The agent needs to use the frontend testing agent to verify the new pages render correctly and are usable. The backend testing agent (or ) should be used to test the new CRUD API endpoints for redirects and custom scripts.
+-   **Last item agent was working:** The agent had just completed a comprehensive audit and fix for the entire system, focusing on data isolation and implementing a secure and clear custom domain verification process (). The user then immediately requested the next enhancement: making the merchant control panel available at  on custom domains (e.g., ).
+-   **Status:** USER VERIFICATION PENDING
+-   **Agent Testing Done:** Y
+-   **Which testing method agent to use?** both. The next task requires modifying Nginx routing on the live server and potentially React Router logic. The frontend testing agent should be used to verify the  route works on a custom domain, and the backend agent (or curl) must verify that API calls from that page are correctly authenticated and scoped to the right store.
 -   **User Testing Done:** N
 
 **All Pending/In progress Issue list**:
-There are no outstanding bugs. The focus is on completing the features in progress.
+There are no outstanding bugs from the previous work. The following is a new task based on the user's latest request.
 
-**Issues Detail:**
-N/A
+-   **Issue 1: Implement  Access on Custom Domains (P0)**
+    -   **Attempted fixes:** None yet.
+    -   **Next debug checklist:**
+        1.  **Nginx Configuration:** The primary task is to create a new Nginx configuration that can serve the React application from the  path when a request comes from a custom domain, while still proxying all other paths for that domain to the backend store renderer. This involves complex  block logic.
+        2.  **Backend Store Resolution:** Verify that when API calls are made from , the backend correctly identifies the store from the  header and uses the merchant's JWT for data scoping.
+        3.  **Frontend Routing:** Ensure the React Router in  correctly handles being loaded at the  path when on a custom domain.
+    -   **Why fix this issue and what will be achieved with the fix?** This will provide a professional, white-label experience for merchants, allowing them to manage their store from their own branded domain, which is a standard feature for platforms like Shopify.
+    -   **Status:** NOT STARTED
+    -   **Is recurring issue?** N
+    -   **Should Test frontend/backend/both after fix?** Both
+    -   **Blocked on other issue:** None.
 
 **In progress Task List**:
--   **Task 1: Complete Redirect URLs and Custom Scripts Features (P0)**
-    -   **Where to resume:**
-        1.  Edit  to add navigation links for URL Redirects and Custom Scripts. A good location would be under the Storefront or Settings group.
-        2.  Thoroughly test the full CRUD functionality for both features. This includes creating, reading, updating, and deleting redirects and scripts via the UI and verifying the changes persist through API calls.
-    -   **What will be achieved with this?** Merchants will gain the ability to manage their site's SEO with URL redirects and enhance functionality with custom third-party scripts.
-    -   **Status:** IN PROGRESS
-    -   **Should Test frontend/backend/both after fix?** Both
-    -   **Blocked on something:** Nothing.
+No tasks are currently in progress.
 
 **Upcoming and Future Tasks**
-**Upcoming Tasks:**
-*   **Finalize VPS Deployment Plan (P1):** Once all features are complete, provide the user with a consolidated set of files and commands for deployment. This includes the new  script and the updated Nginx configuration for subdomain handling.
-*   **Email API Key Configuration (P1):** Remind the user to acquire a free Resend API key and provide clear instructions on how to add it to the  file on their live server to enable email functionality.
-*   **Stripe Go-Live (P1):** Guide the user to switch from test to live Stripe keys on their production server.
 
-**Future Tasks:**
-*   **Refactor  (P2):** The main backend file has become a monolith. It should be refactored into smaller, domain-specific router files (e.g., , ).
-*   **Unify User Authentication (P2):** Address the technical debt of having two separate user tables (, ) with inconsistent password hashing (bcrypt vs. sha256).
-*   **Automated Deployments (CI/CD) (P2):** Propose setting up a GitHub Actions pipeline to automate deployments to the Vultr VPS.
-*   **Fix eBay Integration (P2):** This long-standing issue is blocked on the user verifying their API credentials with eBay.
+*   **Upcoming Tasks:**
+    *   **Finalize VPS Deployment Plan (P1):** Provide the user with a final, consolidated set of files (, ) and commands to deploy the perfected Emergent environment to their live VPS. This must include the new, correct Nginx configuration for  routing.
+    *   **Email API Key Configuration (P1):** Instruct the user on acquiring and setting up their Resend API key on the live server.
+    *   **Stripe Go-Live (P1):** Guide the user on switching from test to live Stripe keys.
+
+*   **Future Tasks:**
+    *   **Refactor  (P2):** Break down the monolithic backend file into domain-specific router files.
+    *   **Unify User Authentication (P2):** Migrate the two user tables (, ) with inconsistent hashing (bcrypt vs. sha256) into a single, secure system.
+    *   **Automated Deployments (CI/CD) (P2):** Propose a GitHub Actions pipeline for automated deployments.
+    *   **Fix eBay Integration (P2):** This remains blocked, pending user verification of their eBay API credentials.
 
 **Completed work in this session**
-- **Subdomain Validation Fix:** Resolved the critical bug where invalid subdomains rendered a default store theme; they now correctly result in a 404 error (, ).
-- **Self-Service Custom Domains:** Implemented a full-featured page for merchants to add, verify, and manage their custom domains (, ).
-- **Email & Password Reset Flow:** Integrated the Resend email service and built a complete Forgot Password journey with new pages and APIs (, , ).
-- **Favicon Uploader:** Added functionality for merchants to upload a custom favicon for their store branding (, ).
-- **UI/UX Cleanup:**
-    - Reorganized and streamlined the .
-    - Removed the redundant Custom Domain modal from , replacing it with a direct navigation link.
-- **SSL Setup Script:** Created a  script to help the user automate Certbot installation on their VPS.
-- **Initial Implementation of Redirects & Scripts:** Created the foundational files and API endpoints for the URL Redirects and Custom Scripts features.
+-   **Comprehensive System Audit & Data Isolation:** Refactored over 30 API endpoints to enforce strict data scoping by  from the user's JWT, fixing a critical data leakage vulnerability.
+-   **Secure & Clear Custom Domain Verification:** Re-architected the domain verification flow to use a secure and user-friendly TXT record format: .
+-   **Robust Subdomain/Domain Routing:** Fixed backend logic to return a 404 error for non-existent stores and correctly resolve stores from both subdomains and custom domains.
+-   **Per-Store Theme Functionality:** Implemented the ability for each store to have its own theme setting stored in the database.
+-   **Admin Auth & Impersonation:** Created a dedicated admin login and verified that admins can list all stores and impersonate store owners to access their dashboards.
+-   **Corrected View Store Links:** Updated frontend components to use conditional logic, ensuring View Store links work correctly in both the Emergent preview environment and on the live domain.
+-   **Completed Redirects and Custom Scripts Features:** Added the final UI links to the merchant sidebar and confirmed full CRUD functionality.
 
 **Earlier issues found/mentioned but not fixed**
 -   **Issue 1: eBay Connection Authentication Failure**
-    -   **Debug checklist:** The user needs to re-verify their API credentials and application scopes on the eBay developer portal, as the current error is .
-    -   **Why to solve this issue and what will be achieved with this?** This will enable live product and order synchronization between the platform and eBay.
+    -   **Debug checklist:** The user must re-verify their API credentials and application scopes on the eBay developer portal, as the current error is .
+    -   **Why to solve this issue and what will be achieved with this?** This will enable live product and order synchronization with eBay.
     -   **Should Test frontend/backend/both after fix:** Backend
     -   **Is recurring issue?** Y
 
@@ -89,89 +84,88 @@ N/A
 
 
 **Key Technical Concepts**
-- **Emergent-First Workflow:** All development and testing are now done in the Emergent environment before providing deployment instructions.
-- **Dynamic Store Resolution:** The backend can now identify a store based on subdomain, custom domain, or a request header, with a robust fallback to a 404 error.
-- **DNS Verification:** A backend service was implemented to programmatically check DNS  records to verify custom domain ownership.
-- **Modular Email Service:** A dedicated  was created to handle all transactional emails, making the system ready for an API key.
-- **File Uploads & Serving:** Implemented favicon uploads to a persistent volume and created a dynamic endpoint () to serve the correct icon per store.
+-   **Multi-Tenant Data Isolation:** The core achievement of this session. All authenticated merchant API endpoints were refactored to derive the  exclusively from the user's JWT, preventing data leakage. A new  helper was created.
+-   **Secure Domain Verification:** The system now uses a robust TXT record verification method with a unique, two-part token () to prove domain ownership securely and clearly.
+-   **Dynamic Store Resolution:** The backend resolves the store to serve based on a strict hierarchy: (1) an authenticated user's JWT , (2) a verified  from the request's  header, or (3) a  from the  header. If a domain is provided but no store matches, it correctly returns a 404.
+-   **Conditional Environment Logic:** Frontend components now detect the environment () to generate the correct View Store URL, whether it's a preview link or a live domain.
 
 **key DB schema**
-- **platform_stores:** This collection now has active usage of , , and  fields. The agent fixed data inconsistencies to link the test user to their store.
-- **redirects / custom_scripts:** New collections managed by the backend, linked to stores via .
-- **users / platform_owners:** The underlying issue of two user tables with different password hashing (bcrypt vs. sha256) persists and remains a significant piece of technical debt.
+-   **platform_stores:**
+    -   : **New Format.** Now stores a string like .
+    -   : **New field.** Stores the name of the active theme for a specific store.
+-   **admins:** A new collection for platform administrators, containing  and .
 
 **changes in tech stack**
-- **Added:**  Python library for email integration.
+-   **Added:**  library to the backend for programmatic DNS lookups.
 
 **All files of reference**
--   **/app/backend/server.py**: The monolithic backend file containing most of the business logic.
--   **/app/frontend/src/pages/merchant/MerchantDomains.jsx**: The comprehensive UI for the self-service custom domain feature.
--   **/app/frontend/src/components/layout/MerchantSidebar.jsx**: The primary navigation component for merchants.
--   **/app/frontend/src/pages/merchant/MerchantRedirects.jsx**: The new, in-progress page for URL Redirects.
--   **/app/frontend/src/pages/merchant/MerchantCustomScripts.jsx**: The new, in-progress page for Custom Scripts.
--   **/app/backend/email_service.py**: The new module for handling emails.
--   **/app/setup_ssl.sh**: A new utility script for automating SSL setup on the user's VPS.
+-   : The monolithic backend file where the bulk of the data isolation and routing logic was implemented.
+-   : The UI for the enhanced, secure custom domain feature.
+-   : Contains the updated store registration logic with the new token format.
+-   : The merchant navigation component.
+-   : The deployment guide created for the user.
 
 **Areas that need refactoring**:
--   ** Monolith:** This file is critically large (over 8,000 lines) and should be broken into smaller, dedicated router files for better maintainability and separation of concerns.
--   **User Authentication System:** The parallel  and  tables with different hashing algorithms is a security and maintenance liability that should be unified into a single, consistent system.
+-   ** Monolith:** Remains the largest piece of technical debt and is critically oversized.
+-   **User Authentication System:** The patch to handle two different password hashing algorithms (bcrypt and sha256) is a temporary fix. The system should be migrated to use a single, strong hashing method.
 
 **key api endpoints**
--   
--   
--   
--   
--   
--   
--    (New)
--    (New)
+-   : **New.** Allows platform administrators to log in.
+-   : Allows an admin to get a JWT to act as a store owner.
+-   : Updated to validate the new, more secure TXT record format.
+-   : Updated to set the active theme on a per-store basis.
+-   **All Merchant-facing Endpoints** (e.g., , , ): Refactored to derive  from the authenticated user's JWT, not from request headers.
 
 **Critical Info for New Agent**
--   The user's workflow is now **Emergent-first**. Complete all features and testing here before suggesting deployment steps.
--   The immediate task is to **finish the Redirect URLs and Custom Scripts features**. This requires adding them to the merchant sidebar and performing full CRUD testing.
--   The  file is extremely large; be cautious with edits and consider opportunities for future refactoring.
--   The email system is implemented but non-functional until the user provides a .
+-   **User's Top Priority:** The immediate task is to make the merchant control panel accessible via  on custom domains (e.g., ) without redirects. This will primarily involve complex Nginx configuration.
+-   **Data Isolation is Paramount:** The previous agent spent significant effort fixing data leakage. Any new or modified API endpoint for merchants **must** derive the  from the authenticated user's JWT using the  helper function. Do not trust request headers for authenticated routes.
+-   **Live vs. Emergent:** Remember that Nginx configurations apply only to the user's live VPS, not the Emergent environment. Any changes must be documented in a file like  for the user to apply.
+-   The  file is extremely large and complex. Be cautious with edits.
 
 **documents and test reports created in this job**
 -   
 -   
--    (Updated with new features and backlog)
+-   
+-    (Updated multiple times with completed work and new requirements)
 
 **Last 10 User Messages and any pending HUMAN messages**
-1.  **User:** Asks to add redirect URL and custom script sections, making them comprehensive like Maropost. (Status: In Progress)
-2.  **User:** Asks to add a favicon uploader that shows the icon on the live site. (Status: Completed)
-3.  **User:** Asks to add email integrations and SSL setup before deployment. (Status: Completed)
-4.  **User:** Clarifies they do not have an email API key yet. (Status: Acknowledged, agent proceeded with mock implementation)
-5.  **User:** Points out a duplicate Domains feature in the dashboard and asks to remove redundant UI elements. Also requests verification that the multi-tenant domain connection logic is correct, referencing a Maropost example image. (Status: Completed)
-6.  **User:** Repeats that *any* fake subdomain shows a live theme, not just . (Status: Completed, fix was made more robust)
-7.  **User:** After seeing the updated sidebar screenshot, expresses concern that the Domains section isn't there and that fake subdomains still work on their live server. (Status: Acknowledged, agent clarified the fix is in Emergent and not yet deployed)
-8.  **User:** Requests a 100% working, fully audited app before they deploy. (Status: Acknowledged)
-9.  **User:** Agrees with the plan to finish development on Emergent first before moving to the live server. (Status: Acknowledged)
-10. **User:** Initial report of build failure on the live server due to file corruption. (Status: Resolved earlier in session)
+1.  **User:** Requests  to work on custom domains () and a full audit. (Status: Audit is done,  is the next task).
+2.  **User:** Asks if the domain verification is common/obvious. (Status: Resolved, agent implemented a clearer, more secure TXT record).
+3.  **User:** Asks how DNS knows which store to link to. (Status: Resolved, agent explained server-side lookup).
+4.  **User:** Requests everything to be perfected in Emergent. (Status: In Progress, agent performed a major audit and fixes).
+5.  **User:** Asks to test subdomain routing. (Status: Completed and Verified).
+6.  **User:** Demands a full audit to make the system work like Maropost. (Status: Completed, major data isolation fixes were made).
+7.  **User:** Reports the view store button points to the wrong URL and requests per-store themes. (Status: Completed).
+8.  **User:** Frustrated that fake subdomains show a storefront. (Status: Completed, backend now returns 404).
+9.  **User:** Reports the main website shows instead of the store on a subdomain. (Status: Resolved, agent provided Nginx fix).
+10. **User:** Asks for the fastest way to apply the Nginx fix after terminal closed. (Status: Resolved).
 
 **Project Health Check:**
--   **Broken:** The live Vultr VPS is several versions behind the Emergent environment. No features are broken within Emergent.
+-   **Broken:**
+    -   The live Vultr VPS has an outdated and incorrect Nginx configuration.
+    -   The merchant control panel () is not accessible via custom domains.
 -   **Mocked:**
-    *   **Email System:** Fully implemented but requires a  to send actual emails.
-    *   **Stripe Integration:** Uses test keys.
-    *   **eBay Integration:** Remains non-functional and blocked.
+    -   **Email System:** Implemented but needs a  to be functional.
+    -   **Stripe Integration:** Uses test keys.
+    -   **eBay Integration:** Blocked due to an authentication error on the user's end.
 
 **3rd Party Integrations**
--   **Resend (Email):** Integrated via the  Python library. Requires a User API Key.
--   **Stripe (Payments):** UI and backend logic are complete. Requires a User API Key for live transactions.
--   **eBay API:** Integration exists but is **BLOCKED** due to an  authentication error. Requires user action.
+-   **Resend (Email):** Integrated via  library. Requires a User API Key.
+-   **Stripe (Payments):** UI and backend logic are complete. Requires User API Keys for live mode.
+-   **eBay API:** Exists but is **BLOCKED** due to an  error. Requires user action to fix credentials.
 
 **Testing status**
--   **Testing agent used after significant changes:** YES (used once to verify backend APIs).
+-   **Testing agent used after significant changes:** YES. It was used to validate the Redirects and Custom Scripts features.
 -   **Troubleshoot agent used after agent stuck in loop:** NO
--   **Test files created:** []
--   **Known regressions:** None.
+-   **Test files created:** [] (Extensive ad-hoc testing was done via  and bash scripts).
+-   **Known regressions:** None. The data isolation fix resolved a major regression from previous versions.
 
 **Credentials to test flow:**
-| Role/Store | Login URL | Email | Password |
-| :--- | :--- | :--- | :--- |
-| **Platform Admin** |  |  |  |
-| **Merchant Login** |  or  |  |  |
+| Role | Login URL | Email | Password | Store |
+| :--- | :--- | :--- | :--- | :--- |
+| **Platform Admin** |  |  |  | N/A |
+| **Test Merchant** |  |  |  |  |
+| **Original Merchant** |  |  | |  |
 
 **What agent forgot to execute**
--   The agent created the pages and API endpoints for Redirect URLs and Custom Scripts but did not add the corresponding navigation links to the . As a result, these new pages are currently inaccessible through the UI. This is the immediate next step.</analysis>
+The agent has successfully addressed all of the user's requests from this session. The immediate next task ( on custom domains) was requested in the user's very last message and has been correctly identified as the P0 priority for the next session.</analysis>
