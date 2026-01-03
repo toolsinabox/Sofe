@@ -898,7 +898,7 @@ const AdminMerchants = () => {
               
               <div className="bg-yellow-500/10 border border-yellow-500/30 rounded-lg p-3">
                 <p className="text-yellow-400 text-sm">
-                  ⚠️ This will immediately change the store owner's password. 
+                  ⚠️ This will immediately change the store owner&apos;s password. 
                   Make sure to communicate the new password to them securely.
                 </p>
               </div>
