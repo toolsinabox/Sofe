@@ -36,11 +36,14 @@ All merchant API endpoints use `get_store_id_for_request()` which prioritizes:
 
 ### Custom Domain Verification System
 1. Store owner enters custom domain (e.g., www.mystore.com)
-2. System generates unique TXT verification token: `celora-verify={subdomain_prefix}-{random_hex}`
+2. System generates unique TXT verification token: `celora-site={subdomain}.getcelora.com:{unique_hex}`
+   - Example: `celora-site=toolsinabox.getcelora.com:abc123def456`
+   - This makes it OBVIOUS which store the domain will connect to
 3. Store owner adds TXT record to their DNS
 4. Store owner adds A record pointing to server IP (45.77.239.247)
 5. System verifies BOTH TXT (ownership) and A record (routing)
 6. Domain marked as verified only when both pass
+7. Once verified, `/cpanel` on the custom domain serves the merchant dashboard
 
 ## Technical Architecture
 
