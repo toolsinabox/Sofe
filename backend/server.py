@@ -804,6 +804,21 @@ async def get_store_id_from_header(request: Request) -> str:
     """
     return await resolve_store_from_request(request)
 
+async def get_store_id_for_request(request: Request, current_user: dict = None) -> str:
+    """
+    Get store_id with priority:
+    1. From current_user (JWT token) - for authenticated merchant APIs
+    2. From X-Store-ID header
+    3. From subdomain/custom domain
+    4. Default store (fallback)
+    """
+    # If authenticated user has a store_id, use that
+    if current_user and current_user.get("store_id"):
+        return current_user["store_id"]
+    
+    # Fall back to request-based resolution
+    return await resolve_store_from_request(request)
+
 async def get_store_context(request: Request) -> dict:
     """
     Get the current store context including store_id and store details.
