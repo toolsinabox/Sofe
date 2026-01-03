@@ -6907,6 +6907,36 @@ async def render_page_v2(
                             )
                         # Not a store subdomain, continue without error (might be platform domain)
     
+    # CRITICAL: If a subdomain was explicitly requested but no store found, return 404
+    if subdomain_requested and not store:
+        # Return a proper 404 page
+        return HTMLResponse(
+            content="""<!DOCTYPE html>
+<html>
+<head>
+    <title>Store Not Found</title>
+    <style>
+        body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; 
+               display: flex; justify-content: center; align-items: center; 
+               min-height: 100vh; margin: 0; background: #f5f5f5; }
+        .container { text-align: center; padding: 40px; }
+        h1 { color: #333; font-size: 48px; margin-bottom: 10px; }
+        p { color: #666; font-size: 18px; }
+        a { color: #4F46E5; text-decoration: none; }
+        a:hover { text-decoration: underline; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>404</h1>
+        <p>Store not found</p>
+        <p><a href="https://getcelora.com">Go to Celora</a></p>
+    </div>
+</body>
+</html>""",
+            status_code=404
+        )
+    
     # If store found, get store-specific settings
     if store:
         store_id = store.get("id")
