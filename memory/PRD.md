@@ -100,6 +100,23 @@ Collections:
 - `users` - Store staff users
 - `products`, `orders`, `customers`, `categories`, etc.
 
+## Utility Files
+
+### Platform Detection (`/app/frontend/src/utils/platformDetect.js`)
+Auto-detects which environment/platform the app is running on:
+- **EMERGENT**: Emergent preview environment (preview.emergentagent.com)
+- **SUBDOMAIN**: Store subdomain (store.getcelora.com)
+- **CUSTOM_DOMAIN**: Merchant's custom domain (www.mystore.com)
+- **MAIN_PLATFORM**: Main Celora site (getcelora.com)
+
+**Functions:**
+- `detectPlatform()` - Returns platform type, hostname, subdomain info
+- `getStoreUrl(storeData)` - Returns correct store URL based on platform
+- `getCPanelUrl(storeData)` - Returns correct CPanel URL based on platform
+- `isPreviewEnvironment()` - Checks if in preview/dev mode
+
+---
+
 ## Recent Changes (January 2026)
 
 ### January 3, 2026 - CPanel Access on Custom Domains (COMPLETED)
