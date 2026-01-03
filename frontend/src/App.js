@@ -72,6 +72,10 @@ import PlatformLogin from "./pages/platform/PlatformLogin";
 import PlatformDashboard from "./pages/platform/PlatformDashboard";
 import PlatformBilling from "./pages/platform/PlatformBilling";
 
+// Auth Pages
+import ForgotPassword from "./pages/ForgotPassword";
+import ResetPassword from "./pages/ResetPassword";
+
 // Live Storefront (Theme-rendered customer store)
 import LiveThemeStorefront from "./pages/store/LiveThemeStorefront";
 
