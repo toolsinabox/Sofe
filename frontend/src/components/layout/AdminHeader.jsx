@@ -1,6 +1,6 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Bell, Search, User, ChevronDown, Menu, LogOut } from 'lucide-react';
+import { Bell, Search, User, ChevronDown, Menu, LogOut, Settings, UserCircle } from 'lucide-react';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -56,15 +56,29 @@ const AdminHeader = ({ title, onMenuClick }) => {
               <div className="w-7 h-7 sm:w-8 sm:h-8 bg-gradient-to-br from-cyan-500 to-blue-600 rounded-full flex items-center justify-center">
                 <User size={14} className="sm:w-4 sm:h-4 text-white" />
               </div>
-              <span className="text-sm text-white font-medium hidden sm:inline">Admin</span>
+              <span className="text-sm text-white font-medium hidden sm:inline">
+                {user?.name?.split(' ')[0] || 'Admin'}
+              </span>
               <ChevronDown size={14} className="sm:w-4 sm:h-4 text-gray-400 hidden sm:inline" />
             </button>
           </DropdownMenuTrigger>
-          <DropdownMenuContent align="end" className="w-48 bg-[#1a1f2e] border-gray-700">
-            <DropdownMenuItem className="text-gray-300 hover:text-white hover:bg-gray-700/50 cursor-pointer">
+          <DropdownMenuContent align="end" className="w-56 bg-[#1a1f2e] border-gray-700">
+            <div className="px-3 py-2 border-b border-gray-700">
+              <p className="text-white font-medium">{user?.name || 'Admin'}</p>
+              <p className="text-gray-400 text-sm">{user?.email || 'admin@celora.com'}</p>
+            </div>
+            <DropdownMenuItem 
+              onClick={() => navigate('/admin/profile')}
+              className="text-gray-300 hover:text-white hover:bg-gray-700/50 cursor-pointer"
+            >
+              <UserCircle size={16} className="mr-2" />
               Profile Settings
             </DropdownMenuItem>
-            <DropdownMenuItem className="text-gray-300 hover:text-white hover:bg-gray-700/50 cursor-pointer">
+            <DropdownMenuItem 
+              onClick={() => navigate('/admin/account')}
+              className="text-gray-300 hover:text-white hover:bg-gray-700/50 cursor-pointer"
+            >
+              <Settings size={16} className="mr-2" />
               Account Settings
             </DropdownMenuItem>
             <DropdownMenuSeparator className="bg-gray-700" />
