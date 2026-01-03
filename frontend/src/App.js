@@ -204,9 +204,9 @@ function App() {
               <Route index element={<AdminDashboard />} />
               <Route path="merchants" element={<AdminMerchants />} />
               <Route path="users" element={<AdminUsers />} />
-              <Route path="billing" element={<AdminDashboard />} />
-              <Route path="analytics" element={<AdminDashboard />} />
-              <Route path="settings" element={<AdminDashboard />} />
+              <Route path="analytics" element={<AdminAnalytics />} />
+              <Route path="settings" element={<AdminSettings />} />
+              <Route path="activity" element={<AdminActivityLog />} />
             </Route>
 
             {/* ============================================
