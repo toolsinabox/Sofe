@@ -179,17 +179,6 @@ class TestCPanelStoreInfo:
 class TestPlatformStoresEndpoint:
     """Test platform stores endpoint used by AdminMerchants page"""
     
-    @pytest.fixture
-    def admin_token(self):
-        """Get admin authentication token"""
-        response = requests.post(
-            f"{BASE_URL}/api/auth/login",
-            json={"email": ADMIN_EMAIL, "password": ADMIN_PASSWORD}
-        )
-        if response.status_code == 200:
-            return response.json().get("access_token")
-        pytest.skip("Admin authentication failed")
-    
     def test_get_platform_stores(self, admin_token):
         """Test admin can fetch platform stores list"""
         headers = {"Authorization": f"Bearer {admin_token}"}
