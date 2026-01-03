@@ -99,6 +99,35 @@ Collections:
 
 ## Recent Changes (January 2026)
 
+### January 3, 2026 - CPanel Access on Custom Domains (COMPLETED)
+**New Feature:**
+- **CPanel on Custom Domains:** Merchants can now access their control panel via their custom domain
+  - Example: `www.toolsinabox.com.au/cpanel` instead of `toolsinabox.getcelora.com/cpanel`
+  - Provides a fully white-label merchant experience
+  - No redirects - the URL stays on the merchant's custom domain
+  - React app auto-detects whether it's on a subdomain or custom domain
+
+**How it works:**
+1. When user visits `/cpanel` on a custom domain (e.g., `www.mystore.com/cpanel`)
+2. React app detects it's NOT on `*.getcelora.com`
+3. Fetches store info using `GET /api/cpanel/store-info-by-domain?domain=www.mystore.com`
+4. Displays branded login page with the custom domain
+5. Login sends `custom_domain` parameter to authenticate
+6. Merchant accesses full dashboard from their own domain
+
+**Backend APIs Added:**
+- `GET /api/cpanel/store-info-by-domain?domain=xxx` - Get store info by verified custom domain
+- `POST /api/cpanel/login` - Now accepts `custom_domain` parameter (in addition to `subdomain`)
+
+**Files Modified:**
+- `SubdomainCPanel.jsx` - Updated to detect and handle custom domains
+- `server.py` - Added new store-info-by-domain endpoint, updated cpanel login
+
+**Nginx Configuration:**
+- Created `/app/nginx_vps_cpanel.conf` - Complete Nginx config for VPS with /cpanel routing
+- Custom domains catch-all server block serves React app at /cpanel
+- Subdomains also support /cpanel route
+
 ### January 3, 2026 - URL Redirects & Custom Scripts (COMPLETED)
 **New Features:**
 - **URL Redirects:** Complete CRUD for managing 301/302 redirects
