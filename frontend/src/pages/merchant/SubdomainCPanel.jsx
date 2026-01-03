@@ -20,26 +20,65 @@ const SubdomainCPanel = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
+  
+  // Detect store context type: subdomain or custom domain
+  const [storeContext, setStoreContext] = useState({ type: null, value: null });
 
-  // Extract subdomain from current hostname
-  const getSubdomain = () => {
+  // Extract subdomain or detect custom domain from current hostname
+  const detectStoreContext = () => {
     const hostname = window.location.hostname;
-    // Handle localhost/development
+    
+    // Handle localhost/development - check for query param for testing
     if (hostname === 'localhost' || hostname === '127.0.0.1') {
-      return null;
+      const params = new URLSearchParams(window.location.search);
+      const testSubdomain = params.get('subdomain');
+      const testDomain = params.get('domain');
+      if (testSubdomain) {
+        return { type: 'subdomain', value: testSubdomain };
+      }
+      if (testDomain) {
+        return { type: 'custom_domain', value: testDomain };
+      }
+      return { type: null, value: null };
     }
+    
+    // Handle Emergent preview environment
+    if (hostname.includes('preview.emergentagent.com')) {
+      const params = new URLSearchParams(window.location.search);
+      const testSubdomain = params.get('subdomain');
+      const testDomain = params.get('domain');
+      if (testSubdomain) {
+        return { type: 'subdomain', value: testSubdomain };
+      }
+      if (testDomain) {
+        return { type: 'custom_domain', value: testDomain };
+      }
+      return { type: null, value: null };
+    }
+    
     // Handle getcelora.com subdomains
     if (hostname.endsWith('.getcelora.com')) {
       const subdomain = hostname.replace('.getcelora.com', '');
-      if (subdomain !== 'www' && subdomain !== 'api') {
-        return subdomain;
+      if (subdomain !== 'www' && subdomain !== 'api' && subdomain !== 'app') {
+        return { type: 'subdomain', value: subdomain };
       }
+      return { type: null, value: null };
     }
-    // Handle direct IP or custom domain
-    return null;
+    
+    // Handle getcelora.com main domain (no subdomain)
+    if (hostname === 'getcelora.com' || hostname === 'www.getcelora.com') {
+      return { type: null, value: null };
+    }
+    
+    // Any other domain is treated as a custom domain
+    // This includes: mystore.com, www.mystore.com.au, shop.mybusiness.com, etc.
+    return { type: 'custom_domain', value: hostname };
   };
 
-  const subdomain = getSubdomain();
+  useEffect(() => {
+    const context = detectStoreContext();
+    setStoreContext(context);
+  }, []);
 
   useEffect(() => {
     const fetchStoreInfo = async () => {
