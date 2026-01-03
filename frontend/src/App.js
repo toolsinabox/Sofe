@@ -212,6 +212,7 @@ function App() {
               <Route path="activity" element={<AdminActivityLog />} />
               <Route path="profile" element={<AdminProfile />} />
               <Route path="account" element={<AdminAccountSettings />} />
+              <Route path="email-templates" element={<AdminEmailTemplates />} />
             </Route>
 
             {/* ============================================
