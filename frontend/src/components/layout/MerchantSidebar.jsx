@@ -259,6 +259,17 @@ const MerchantSidebar = ({ collapsed, setCollapsed, mobileOpen, setMobileOpen })
       storeData = store;
     }
     
+    // If no store data, try to get subdomain from storeSettings
+    if (!storeData && storeSettings?.subdomain) {
+      storeData = { subdomain: storeSettings.subdomain };
+    }
+    
+    // Last resort: try to fetch from user context
+    if (!storeData && user?.store_id) {
+      // Return placeholder, will be updated when store loads
+      return '#';
+    }
+    
     return getStoreUrlUtil(storeData);
   };
 
