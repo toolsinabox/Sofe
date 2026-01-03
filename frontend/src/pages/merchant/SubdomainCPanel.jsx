@@ -19,7 +19,8 @@ const SubdomainCPanel = () => {
   const [formData, setFormData] = useState({ email: '', password: '' });
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState('');
+  const [loginError, setLoginError] = useState('');
+  const [storeError, setStoreError] = useState(false);
   
   // Detect store context type: subdomain or custom domain
   const [storeContext, setStoreContext] = useState({ type: null, value: null });
