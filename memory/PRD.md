@@ -118,23 +118,44 @@ Auto-detects which environment/platform the app is running on:
 ---
 
 
-### January 3, 2026 - Full System Audit & Authentication Fixes (COMPLETED)
-**Critical Fixes Applied:**
-1. **Database Configuration:** Changed DB_NAME from `test_database` to `celora`
-2. **Password Hashes:** Generated fresh bcrypt hashes compatible with the server
-3. **Admin Role:** Fixed user role from `platform_admin` to `admin`
-4. **Merchant Login:** Fixed `/api/platform/auth/login` to generate JWT tokens (was using simple session tokens)
-5. **MerchantLogin.jsx:** Updated to use platform auth endpoint instead of `/api/auth/login`
+### January 3, 2026 - System Cleanup & Dead Code Removal (COMPLETED)
+**Cleanup Performed:**
+1. **Removed PlatformDashboard.jsx** - Multi-store dashboard no longer needed with "one email, one store" model
+2. **Removed Orphaned Shipping Files:**
+   - `ShippingServices.jsx` - Never imported anywhere
+   - `ShippingSettings.jsx` - Never imported anywhere  
+   - `ShippingZones.jsx` - Never imported anywhere
+3. **User Flow Simplified:** All `/dashboard` routes now redirect directly to `/merchant`
+4. **Created admin@celora.com** - Dedicated admin account with bcrypt password
 
-**Test Results:** 100% pass rate - 12/12 backend tests, all UI flows working
+**Test Results:** 100% pass rate - 10/10 backend tests, all UI flows working (iteration_8.json)
 
-**Login Credentials (test123 for all):**
-- Admin: admin@celora.com → /admin/login
-- Merchant: eddie@toolsinabox.com.au → /merchant/login
-- Merchant: test@test.com → /merchant/login
+**Login Credentials:**
+| Role | Email | Password | Login URL | Redirects To |
+|------|-------|----------|-----------|--------------|
+| Admin | admin@celora.com | test123 | /admin/login | /admin |
+| Merchant (Eddie) | eddie@toolsinabox.com.au | Yealink1991% | /merchant/login | /merchant |
+| Merchant (Test) | test@test.com | test123 | /merchant/login | /merchant |
+| CPanel | (any merchant) | (password) | /cpanel?subdomain=xxx | /merchant |
+
+**Files Removed:**
+- `/app/frontend/src/pages/platform/PlatformDashboard.jsx`
+- `/app/frontend/src/pages/merchant/ShippingServices.jsx`
+- `/app/frontend/src/pages/merchant/ShippingSettings.jsx`
+- `/app/frontend/src/pages/merchant/ShippingZones.jsx`
 
 **Files Modified:**
-- `/app/backend/.env` - DB_NAME changed to celora
+- `/app/frontend/src/App.js` - Removed PlatformDashboard import
+
+### January 3, 2026 - Full System Audit & Authentication Fixes (COMPLETED)
+**Critical Fixes Applied:**
+1. **Database Configuration:** DB_NAME set to `test_database` (user's original database)
+2. **Password Hashes:** System supports both bcrypt (new users) and SHA256 (legacy users)
+3. **Merchant Login:** `/api/platform/auth/login` generates JWT tokens
+4. **MerchantLogin.jsx:** Uses platform auth endpoint
+
+**Files Modified:**
+- `/app/backend/.env` - DB_NAME=test_database
 - `/app/backend/routes/platform.py` - JWT token generation
 - `/app/frontend/src/pages/merchant/MerchantLogin.jsx` - Use platform auth endpoint
 
@@ -330,7 +351,8 @@ Auto-detects which environment/platform the app is running on:
 ### P2 - Medium Priority
 - [ ] eBay integration fix (credential issue - user needs to verify on eBay dev portal)
 - [ ] Refactor server.py into smaller route files (api/routes/*.py)
-- [ ] Unify user models (platform_owners vs users with different password hashing)
+- [ ] **IMPORTANT:** Unify user models - `platform_owners` and `users` tables have different schemas and password hashing (bcrypt vs SHA256). This caused login bugs and should be merged.
+- [ ] Fix ESLint warnings (`react-hooks/exhaustive-deps`) in MerchantReviews, MerchantThemeEditor, PlatformSignup
 
 ### P3 - Backlog
 - [ ] Auto-deployment from GitHub (CI/CD)
