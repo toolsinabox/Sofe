@@ -8326,22 +8326,42 @@ async def get_admin_websites(
 
 @api_router.post("/admin/auth/login")
 async def admin_login(email: str, password: str):
-    """Admin login endpoint"""
+    """Admin login endpoint - supports both bcrypt and SHA256 passwords"""
     import hashlib
     
     admin = await db.admins.find_one({"email": email.lower()})
     if not admin:
-        raise HTTPException(status_code=401, detail="Invalid credentials")
+        # Also check users collection for super_admin
+        admin = await db.users.find_one(
+            {"email": email.lower(), "role": {"$in": ["admin", "super_admin"]}},
+            {"_id": 0}
+        )
     
-    # Check password (SHA256)
-    hashed_password = hashlib.sha256(password.encode()).hexdigest()
-    if admin.get("hashed_password") != hashed_password:
+    if not admin:
+        raise HTTPException(status_code=401, detail="Invalid credentials - Admin access denied")
+    
+    stored_hash = admin.get("hashed_password", "")
+    
+    # Try bcrypt first
+    password_valid = False
+    try:
+        if stored_hash.startswith("$2"):
+            password_valid = pwd_context.verify(password, stored_hash)
+    except:
+        pass
+    
+    # Try SHA256 if bcrypt failed
+    if not password_valid:
+        sha256_hash = hashlib.sha256(password.encode()).hexdigest()
+        password_valid = (sha256_hash == stored_hash)
+    
+    if not password_valid:
         raise HTTPException(status_code=401, detail="Invalid credentials")
     
     # Create token with admin role
     token = create_access_token(data={
         "sub": admin["id"], 
-        "role": "admin", 
+        "role": admin.get("role", "admin"), 
         "email": admin["email"],
         "is_admin": True
     })
