@@ -1,14 +1,19 @@
-# 🚀 Celora Go-Live Checklist
+# 🚀 Celora Go-Live Deployment Guide
 
-## Pre-Deployment: Download Files from Emergent
-
-**Download these files from Emergent before starting:**
-1. `db_export.tar.gz` - Database with all your data
-2. `nginx_vps_cpanel.conf` - Nginx configuration for custom domains
+## Quick Summary
+This will deploy Celora with sample data to your Vultr VPS at 45.77.239.247
 
 ---
 
-## Step 1: SSH into VPS
+## STEP 1: Push Code to GitHub (Do this in Emergent)
+
+1. In the Emergent chat, look for the **"Save to Github"** button
+2. Click it to push all latest changes to your GitHub repository
+3. Wait for the push to complete
+
+---
+
+## STEP 2: SSH into your VPS
 
 ```bash
 ssh root@45.77.239.247
@@ -16,47 +21,68 @@ ssh root@45.77.239.247
 
 ---
 
-## Step 2: Upload & Import Database
+## STEP 3: Download Database Export
 
-### On your LOCAL machine:
-```bash
-# Upload database export to VPS
-scp db_export.tar.gz root@45.77.239.247:/root/
-```
+On your VPS, download the database export from this Emergent session:
 
-### On VPS:
 ```bash
+# Navigate to home
 cd /root
-tar -xzvf db_export.tar.gz
 
-# Import to MongoDB (use 'celora' as the database name)
-mongorestore --db celora --drop db_export/test_database/
-
-# Verify import
-mongo celora --eval "db.platform_stores.find({}, {store_name:1, subdomain:1}).pretty()"
+# Download the database export (you'll need to download db_export.tar.gz from Emergent files first)
+# Or if you have the file locally, upload it:
+# scp db_export.tar.gz root@45.77.239.247:/root/
 ```
 
 ---
 
-## Step 3: Pull Latest Code from GitHub
+## STEP 4: Pull Latest Code from GitHub
 
 ```bash
 cd /var/www/celora
 
-# Save GitHub, then pull
+# Stash any local changes
+git stash
+
+# Pull latest from GitHub
 git pull origin main
+
+# Check for updates
+git log --oneline -5
 ```
 
 ---
 
-## Step 4: Install Dependencies
+## STEP 5: Import Database
+
+```bash
+cd /root
+
+# Extract the database export
+tar -xzvf db_export.tar.gz
+
+# Import to MongoDB (this will REPLACE existing data)
+mongorestore --db celora --drop celora_export/celora/
+
+# Verify import
+mongosh celora --eval "
+  print('Stores: ' + db.platform_stores.countDocuments());
+  print('Products: ' + db.products.countDocuments());
+  print('Orders: ' + db.orders.countDocuments());
+  print('Users: ' + db.users.countDocuments());
+"
+```
+
+---
+
+## STEP 6: Install Dependencies
 
 ### Backend:
 ```bash
 cd /var/www/celora/backend
 source venv/bin/activate
 pip install -r requirements.txt
-pip install dnspython  # Required for domain verification
+pip install dnspython bcrypt python-jose passlib
 deactivate
 ```
 
@@ -69,136 +95,195 @@ yarn build
 
 ---
 
-## Step 5: Update Nginx Configuration
+## STEP 7: Update Backend .env
+
+```bash
+nano /var/www/celora/backend/.env
+```
+
+Make sure it contains:
+```env
+MONGO_URL=mongodb://localhost:27017
+DB_NAME=celora
+JWT_SECRET_KEY=your-secure-secret-key-at-least-32-characters-long
+RESEND_API_KEY=re_xxxxx
+STRIPE_SECRET_KEY=sk_test_xxxxx
+STRIPE_PUBLISHABLE_KEY=pk_test_xxxxx
+```
+
+---
+
+## STEP 8: Update Nginx Config
 
 ```bash
 # Backup existing config
 sudo cp /etc/nginx/sites-available/celora /etc/nginx/sites-available/celora.backup
 
-# Upload new config (from your local machine)
-# scp nginx_vps_cpanel.conf root@45.77.239.247:/etc/nginx/sites-available/celora
-
-# Or manually edit on VPS:
+# Edit Nginx config
 sudo nano /etc/nginx/sites-available/celora
-# Paste content from nginx_vps_cpanel.conf
+```
 
-# Test and reload
+Use this config (supports custom domains + /cpanel):
+
+```nginx
+# Main Celora API & Frontend
+server {
+    listen 80;
+    server_name getcelora.com www.getcelora.com;
+    
+    # Frontend
+    location / {
+        root /var/www/celora/frontend/build;
+        try_files $uri $uri/ /index.html;
+    }
+    
+    # API
+    location /api {
+        proxy_pass http://127.0.0.1:8001;
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
+    }
+}
+
+# Wildcard for subdomains (*.getcelora.com)
+server {
+    listen 80;
+    server_name ~^(?<subdomain>.+)\.getcelora\.com$;
+    
+    # Frontend (serves stores and /cpanel)
+    location / {
+        root /var/www/celora/frontend/build;
+        try_files $uri $uri/ /index.html;
+    }
+    
+    # API
+    location /api {
+        proxy_pass http://127.0.0.1:8001;
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
+    }
+}
+
+# Custom domains (merchants' own domains)
+server {
+    listen 80 default_server;
+    server_name _;
+    
+    # Frontend (serves stores and /cpanel on custom domains)
+    location / {
+        root /var/www/celora/frontend/build;
+        try_files $uri $uri/ /index.html;
+    }
+    
+    # API
+    location /api {
+        proxy_pass http://127.0.0.1:8001;
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
+    }
+}
+```
+
+Test and reload:
+```bash
 sudo nginx -t
 sudo systemctl reload nginx
 ```
 
 ---
 
-## Step 6: Update Environment Variables
-
-```bash
-# Edit backend .env
-nano /var/www/celora/backend/.env
-```
-
-**Required variables:**
-```env
-MONGO_URL=mongodb://localhost:27017
-DB_NAME=celora
-SECRET_KEY=your-secure-secret-key-change-this
-RESEND_API_KEY=re_xxxxx  # Get from resend.com
-```
-
----
-
-## Step 7: Restart Services
+## STEP 9: Restart Backend
 
 ```bash
 pm2 restart celora-backend
 pm2 status
-
-# Check logs for any errors
-pm2 logs celora-backend --lines 50
+pm2 logs celora-backend --lines 20
 ```
 
 ---
 
-## Step 8: Verify Deployment
+## STEP 10: Verify Deployment
 
 ```bash
-# Test backend health
+# Test health endpoint
 curl http://localhost:8001/api/health
 
 # Test store API
 curl http://localhost:8001/api/maropost/home -H "Host: toolsinabox.getcelora.com"
+
+# Test from outside (replace with your domain)
+curl https://getcelora.com/api/health
 ```
 
 ---
 
-## Step 9: SSL Setup (Certbot)
+## Sample Data Included
+
+### Stores:
+| Store | Subdomain | Email | Password |
+|-------|-----------|-------|----------|
+| Tools In A Box | toolsinabox | eddie@toolsinabox.com.au | Yealink1991% |
+| Test Store | teststore | test@test.com | test123 |
+| Fashion Hub | fashionhub | demo@fashionhub.com | test123 |
+
+### Platform Admin:
+| URL | Email | Password |
+|-----|-------|----------|
+| /admin/login | admin@celora.com | test123 |
+
+### Data Counts:
+- **Stores**: 3
+- **Products**: 8 (tools, electronics)
+- **Categories**: 7
+- **Customers**: 3
+- **Orders**: 3
+- **Reviews**: 2
+
+---
+
+## Post-Deployment: SSL Setup
 
 ```bash
-# Install certbot if not installed
+# Install certbot if needed
 sudo apt install certbot python3-certbot-nginx
 
 # Get SSL for main domain
 sudo certbot --nginx -d getcelora.com -d www.getcelora.com
 
-# For wildcard (requires DNS challenge)
+# For wildcard subdomains (requires DNS challenge)
 sudo certbot certonly --manual --preferred-challenges dns -d "*.getcelora.com"
-
-# Follow prompts to add TXT record to DNS
+# Follow prompts to add TXT record
 ```
 
 ---
 
-## Current Data Summary
+## Custom Domain Setup (for toolsinabox.com.au)
 
-| Item | Count |
-|------|-------|
-| Stores | 5 |
-| Products | 8 |
-| Orders | 5 |
-| Customers | 4 |
-| Categories | 9 |
-| Shipping Zones | 1,153 |
-| Postcodes | 18,519 |
-
-### Stores:
-| Store Name | Subdomain | Status | Custom Domain |
-|------------|-----------|--------|---------------|
-| Tools In A Box | toolsinabox | trial | www.toolsinabox.com.au (pending) |
-| Demo Fashion Store | demofashion | active | - |
-| Fashion Hub | fashionhub | trial | - |
-| Tech Gadgets Pro | techgadgetspro | trial | - |
-| Test Store | teststore | active | - |
-
-### Login Credentials:
-| Role | URL | Email | Password |
-|------|-----|-------|----------|
-| **Platform Admin** | /admin/login | admin@celora.com | test123 |
-| **Tools In A Box** | /merchant/login | eddie@toolsinabox.com.au | Yealink1991% |
-| **Test Store** | /merchant/login | test@test.com | test123 |
-
----
-
-## Post-Deployment: Custom Domain Setup
-
-To connect **www.toolsinabox.com.au**:
-
-### 1. Add TXT Record to DNS:
+### DNS Records to Add:
 ```
 Type: TXT
-Host: @ (or toolsinabox.com.au)
+Host: @
 Value: celora-site=toolsinabox.getcelora.com:cb32965d1387
-```
 
-### 2. Update A Record:
-```
 Type: A
+Host: @
+Value: 45.77.239.247
+
+Type: A  
 Host: www
 Value: 45.77.239.247
 ```
 
-### 3. Verify in Celora:
-- Login to merchant dashboard
-- Go to Settings → Domains
-- Click "Verify Domain"
+### Then verify in Celora:
+1. Login at toolsinabox.getcelora.com/cpanel
+2. Go to Settings → Domains
+3. Click "Verify Domain"
 
 ---
 
@@ -209,35 +294,34 @@ Value: 45.77.239.247
 pm2 logs celora-backend --lines 100
 ```
 
-### Nginx errors:
+### Check MongoDB:
+```bash
+mongosh celora --eval "db.platform_stores.find({}).pretty()"
+```
+
+### Nginx issues:
 ```bash
 sudo nginx -t
 sudo tail -f /var/log/nginx/error.log
 ```
 
-### MongoDB issues:
-```bash
-sudo systemctl status mongod
-mongo celora --eval "db.stats()"
-```
-
 ---
 
-## What's Working
+## ✅ What's Working
 
-✅ Multi-tenant store management  
-✅ Product, order, customer management  
-✅ Custom domain verification (TXT record)  
-✅ CPanel on custom domains (`mystore.com/cpanel`)  
-✅ Platform admin dashboard  
-✅ URL redirects & custom scripts  
-✅ Shipping zones & rates  
-✅ POS system  
-✅ Theme management  
+- Multi-tenant store management
+- Product, order, customer CRUD
+- Custom domain verification
+- CPanel on custom domains (/cpanel)
+- Platform admin dashboard
+- URL redirects & custom scripts
+- Theme management
+- POS system
+- Light mode UI throughout
 
-## What Needs Setup
+## ⚠️ Needs Setup
 
-⚠️ **Resend API Key** - For email functionality  
-⚠️ **Stripe Live Keys** - Currently using test keys  
-⚠️ **SSL Certificates** - For HTTPS  
-⚠️ **DNS Records** - For custom domains  
+- **Resend API Key** - For email notifications
+- **Stripe Live Keys** - Currently using test keys
+- **SSL Certificates** - For HTTPS
+- **DNS Records** - For custom domains
