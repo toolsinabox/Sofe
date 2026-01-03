@@ -145,7 +145,10 @@ const MerchantSidebar = ({ collapsed, setCollapsed, mobileOpen, setMobileOpen })
   const [expandedGroups, setExpandedGroups] = useState(['sales', 'catalog', 'storefront']);
   const [storeSettings, setStoreSettings] = useState({
     store_name: 'My Store',
-    store_logo: ''
+    store_logo: '',
+    subdomain: '',
+    custom_domain: '',
+    custom_domain_verified: false
   });
 
   // Load store settings - prioritize platform store data
@@ -164,7 +167,10 @@ const MerchantSidebar = ({ collapsed, setCollapsed, mobileOpen, setMobileOpen })
           if (storeName && isMounted) {
             setStoreSettings({
               store_name: storeName,
-              store_logo: storeData.logo || storeData.store_logo || ''
+              store_logo: storeData.logo || storeData.store_logo || '',
+              subdomain: storeData.subdomain || '',
+              custom_domain: storeData.custom_domain || '',
+              custom_domain_verified: storeData.custom_domain_verified || false
             });
             return true;
           }
@@ -177,7 +183,10 @@ const MerchantSidebar = ({ collapsed, setCollapsed, mobileOpen, setMobileOpen })
       if (store && (store.name || store.store_name) && isMounted) {
         setStoreSettings({
           store_name: store.name || store.store_name,
-          store_logo: store.logo || store.store_logo || ''
+          store_logo: store.logo || store.store_logo || '',
+          subdomain: store.subdomain || '',
+          custom_domain: store.custom_domain || '',
+          custom_domain_verified: store.custom_domain_verified || false
         });
         return true;
       }
