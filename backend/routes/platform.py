@@ -288,7 +288,10 @@ async def register_store(store_data: StoreCreate):
     )
     
     # Generate unique domain verification token
-    verification_token = f"celora-verify={subdomain[:8]}-{secrets.token_hex(8)}"
+    # Format: celora-site={subdomain}.getcelora.com:{unique_code}
+    # This makes it OBVIOUS which store a custom domain connects to
+    unique_code = secrets.token_hex(6)
+    verification_token = f"celora-site={subdomain}.getcelora.com:{unique_code}"
     
     # Create store with 14-day trial
     store = Store(
