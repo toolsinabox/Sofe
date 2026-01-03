@@ -566,7 +566,7 @@ const ProductEditor = ({ product, categories, onSave, onClose, templateTags }) =
                   <div className="space-y-2">
                     <Label className="text-gray-700 flex items-center gap-2">
                       Subtitle
-                      <span className="text-xs text-gray-500 font-mono">[@product_subtitle@]</span>
+                      <TemplateTag tag="[@product_subtitle@]" />
                     </Label>
                     <Input
                       className="bg-gray-50 border-gray-200 text-gray-900"
