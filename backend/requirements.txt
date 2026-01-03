@@ -1,3 +1,5 @@
+PyJWT==2.10.1
+Pygments==2.19.2
 aiofiles==25.1.0
 annotated-types==0.7.0
 anyio==4.12.0
@@ -45,8 +47,6 @@ pycparser==2.23
 pydantic==2.12.5
 pydantic_core==2.41.5
 pyflakes==3.4.0
-Pygments==2.19.2
-PyJWT==2.10.1
 pymongo==4.5.0
 pytest==9.0.2
 python-dateutil==2.9.0.post0
@@ -56,8 +56,9 @@ python-multipart==0.0.20
 pytokens==0.3.0
 pytz==2025.2
 reportlab==4.4.7
-requests==2.32.5
 requests-oauthlib==2.0.0
+requests==2.32.5
+resend>=2.0.0
 rich==14.2.0
 rsa==4.9.1
 s3transfer==0.16.0
