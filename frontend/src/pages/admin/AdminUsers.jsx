@@ -281,6 +281,16 @@ const AdminUsers = () => {
         </div>
       )}
 
+      {success && (
+        <div className="bg-emerald-500/10 border border-emerald-500/50 text-emerald-400 px-4 py-3 rounded-lg flex items-center gap-2">
+          <Check size={18} />
+          {success}
+          <button onClick={() => setSuccess(null)} className="ml-auto">
+            <X size={18} />
+          </button>
+        </div>
+      )}
+
       {/* Header Actions */}
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div className="flex items-center gap-3 flex-1">
