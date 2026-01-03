@@ -1921,8 +1921,8 @@ async def get_category(category_id: str, request: Request, current_user: dict = 
     return Category(**category)
 
 @api_router.put("/categories/{category_id}", response_model=Category)
-async def update_category(category_id: str, category: CategoryCreate, request: Request):
-    store_id = await get_store_id_from_header(request)
+async def update_category(category_id: str, category: CategoryCreate, request: Request, current_user: dict = Depends(get_current_user)):
+    store_id = await get_store_id_for_request(request, current_user)
     update_data = category.dict()
     update_data["updated_at"] = datetime.now(timezone.utc)
     result = await db.categories.update_one(
@@ -1935,8 +1935,8 @@ async def update_category(category_id: str, category: CategoryCreate, request: R
     return Category(**updated)
 
 @api_router.delete("/categories/{category_id}")
-async def delete_category(category_id: str, request: Request):
-    store_id = await get_store_id_from_header(request)
+async def delete_category(category_id: str, request: Request, current_user: dict = Depends(get_current_user)):
+    store_id = await get_store_id_for_request(request, current_user)
     result = await db.categories.delete_one({"id": category_id, "store_id": store_id})
     if result.deleted_count == 0:
         raise HTTPException(status_code=404, detail="Category not found")
@@ -1945,8 +1945,8 @@ async def delete_category(category_id: str, request: Request):
 # ==================== PRODUCT ENDPOINTS ====================
 
 @api_router.post("/products", response_model=Product)
-async def create_product(product: ProductCreate, request: Request):
-    store_id = await get_store_id_from_header(request)
+async def create_product(product: ProductCreate, request: Request, current_user: dict = Depends(get_current_user)):
+    store_id = await get_store_id_for_request(request, current_user)
     new_product = Product(**product.dict())
     prod_dict = new_product.dict()
     prod_dict["store_id"] = store_id
