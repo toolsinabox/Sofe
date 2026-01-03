@@ -43,6 +43,7 @@ import {
   Code
 } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
+import { getStoreUrl as getStoreUrlUtil } from '../../utils/platformDetect';
 
 const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
 
