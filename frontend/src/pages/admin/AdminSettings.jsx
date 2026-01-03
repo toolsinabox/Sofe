@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import {
   Settings, Bell, Shield, Globe, Mail, CreditCard, Save, RefreshCw,
-  Toggle, AlertTriangle, Check, X, Info, Megaphone, Trash2, Plus, Edit
+  ToggleLeft, AlertTriangle, Check, X, Info, Megaphone, Trash2, Plus, Edit
 } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '../../components/ui/card';
 import { Button } from '../../components/ui/button';
