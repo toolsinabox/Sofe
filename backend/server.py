@@ -5000,7 +5000,9 @@ async def update_custom_domain(
     domain_data: dict,
     current_user: dict = Depends(get_current_user)
 ):
-    """Update store's custom domain"""
+    """Update store's custom domain and generate verification token"""
+    import secrets
+    
     store_id = await get_store_id_for_current_user(current_user)
     if not store_id:
         raise HTTPException(status_code=400, detail="No store associated with user")
@@ -5016,21 +5018,38 @@ async def update_custom_domain(
         # Check if domain is already in use by another store
         existing = await db.platform_stores.find_one({
             "custom_domain": custom_domain,
+            "custom_domain_verified": True,
             "id": {"$ne": store_id}
         })
         if existing:
-            raise HTTPException(status_code=400, detail="Domain is already in use by another store")
+            raise HTTPException(status_code=400, detail="Domain is already verified by another store")
+    
+    # Get current store to check if we need a new verification token
+    store = await db.platform_stores.find_one({"id": store_id})
+    current_domain = store.get("custom_domain") if store else None
+    
+    # Generate new verification token if domain changed or doesn't have one
+    verification_token = store.get("domain_verification_token") if store else None
+    if not verification_token or custom_domain != current_domain:
+        # Generate unique token: celora-verify=<store_id_prefix>-<random>
+        token_suffix = secrets.token_hex(8)
+        verification_token = f"celora-verify={store_id[:8]}-{token_suffix}"
     
     await db.platform_stores.update_one(
         {"id": store_id},
         {"$set": {
             "custom_domain": custom_domain,
             "custom_domain_verified": False,
+            "domain_verification_token": verification_token,
             "updated_at": datetime.now(timezone.utc)
         }}
     )
     
-    return {"message": "Domain saved", "custom_domain": custom_domain}
+    return {
+        "message": "Domain saved. Please add the TXT record to verify ownership.",
+        "custom_domain": custom_domain,
+        "verification_token": verification_token
+    }
 
 @api_router.delete("/store/custom-domain")
 async def remove_custom_domain(current_user: dict = Depends(get_current_user)):
