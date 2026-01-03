@@ -4974,7 +4974,8 @@ async def get_domain_settings(current_user: dict = Depends(get_current_user)):
         "store_name": store.get("store_name"),
         "subdomain": store.get("subdomain"),
         "custom_domain": store.get("custom_domain"),
-        "custom_domain_verified": store.get("custom_domain_verified", False)
+        "custom_domain_verified": store.get("custom_domain_verified", False),
+        "domain_verification_token": store.get("domain_verification_token")
     }
 
 async def get_store_id_for_current_user(current_user: dict) -> str:
