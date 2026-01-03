@@ -168,9 +168,13 @@ export default function PlatformDashboard() {
     );
   }
 
+  // Get store URL - works in both Emergent (preview) and Live environments
+  const isEmergent = BACKEND_URL?.includes('preview.emergentagent.com');
   const storeUrl = currentStore?.custom_domain_verified && currentStore?.custom_domain
     ? `https://${currentStore.custom_domain}`
-    : `https://${currentStore?.subdomain}.getcelora.com`;
+    : isEmergent 
+      ? `${BACKEND_URL}/api/maropost/home?subdomain=${currentStore?.subdomain}`
+      : `https://${currentStore?.subdomain}.getcelora.com`;
 
   return (
     <div className="min-h-screen bg-gray-50">
