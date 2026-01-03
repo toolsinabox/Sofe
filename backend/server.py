@@ -2151,16 +2151,16 @@ async def get_sale_products(limit: int = 8):
     return [Product(**prod) for prod in products]
 
 @api_router.get("/products/{product_id}", response_model=Product)
-async def get_product(product_id: str, request: Request):
-    store_id = await get_store_id_from_header(request)
+async def get_product(product_id: str, request: Request, current_user: dict = Depends(get_current_user)):
+    store_id = await get_store_id_for_request(request, current_user)
     product = await db.products.find_one({"id": product_id, "store_id": store_id}, {"_id": 0})
     if not product:
         raise HTTPException(status_code=404, detail="Product not found")
     return Product(**product)
 
 @api_router.put("/products/{product_id}", response_model=Product)
-async def update_product(product_id: str, product: ProductUpdate, request: Request):
-    store_id = await get_store_id_from_header(request)
+async def update_product(product_id: str, product: ProductUpdate, request: Request, current_user: dict = Depends(get_current_user)):
+    store_id = await get_store_id_for_request(request, current_user)
     update_data = {k: v for k, v in product.dict().items() if v is not None}
     update_data["updated_at"] = datetime.now(timezone.utc)
     result = await db.products.update_one(
@@ -2173,8 +2173,8 @@ async def update_product(product_id: str, product: ProductUpdate, request: Reque
     return Product(**updated)
 
 @api_router.delete("/products/{product_id}")
-async def delete_product(product_id: str, request: Request):
-    store_id = await get_store_id_from_header(request)
+async def delete_product(product_id: str, request: Request, current_user: dict = Depends(get_current_user)):
+    store_id = await get_store_id_for_request(request, current_user)
     product = await db.products.find_one({"id": product_id, "store_id": store_id})
     if not product:
         raise HTTPException(status_code=404, detail="Product not found")
@@ -2207,8 +2207,8 @@ async def generate_order_number():
     return f"{prefix}-{order_number}"
 
 @api_router.post("/orders", response_model=Order)
-async def create_order(order: OrderCreate, request: Request):
-    store_id = await get_store_id_from_header(request)
+async def create_order(order: OrderCreate, request: Request, current_user: dict = Depends(get_current_user)):
+    store_id = await get_store_id_for_request(request, current_user)
     new_order = Order(**order.dict())
     
     # Generate custom order number
@@ -2320,8 +2320,8 @@ async def get_orders_stats(request: Request):
         return {"totalOrders": 0, "pendingOrders": 0, "totalRevenue": 0, "avgOrderValue": 0, "todayOrders": 0, "todayRevenue": 0}
 
 @api_router.get("/orders/{order_id}")
-async def get_order(order_id: str, request: Request):
-    store_id = await get_store_id_from_header(request)
+async def get_order(order_id: str, request: Request, current_user: dict = Depends(get_current_user)):
+    store_id = await get_store_id_for_request(request, current_user)
     order = await db.orders.find_one({"id": order_id, "store_id": store_id}, {"_id": 0})
     if not order:
         raise HTTPException(status_code=404, detail="Order not found")
@@ -3304,8 +3304,8 @@ async def delete_quote(quote_id: str):
 # ==================== CUSTOMER ENDPOINTS ====================
 
 @api_router.post("/customers", response_model=Customer)
-async def create_customer(customer: CustomerCreate, request: Request):
-    store_id = await get_store_id_from_header(request)
+async def create_customer(customer: CustomerCreate, request: Request, current_user: dict = Depends(get_current_user)):
+    store_id = await get_store_id_for_request(request, current_user)
     # Check if customer with email exists in this store
     existing = await db.customers.find_one({"email": customer.email, "store_id": store_id})
     if existing:
@@ -3340,16 +3340,16 @@ async def get_customers(
     return [Customer(**cust) for cust in customers]
 
 @api_router.get("/customers/{customer_id}", response_model=Customer)
-async def get_customer(customer_id: str, request: Request):
-    store_id = await get_store_id_from_header(request)
+async def get_customer(customer_id: str, request: Request, current_user: dict = Depends(get_current_user)):
+    store_id = await get_store_id_for_request(request, current_user)
     customer = await db.customers.find_one({"id": customer_id, "store_id": store_id}, {"_id": 0})
     if not customer:
         raise HTTPException(status_code=404, detail="Customer not found")
     return Customer(**customer)
 
 @api_router.put("/customers/{customer_id}", response_model=Customer)
-async def update_customer(customer_id: str, customer: CustomerUpdate, request: Request):
-    store_id = await get_store_id_from_header(request)
+async def update_customer(customer_id: str, customer: CustomerUpdate, request: Request, current_user: dict = Depends(get_current_user)):
+    store_id = await get_store_id_for_request(request, current_user)
     update_data = {k: v for k, v in customer.dict().items() if v is not None}
     update_data["updated_at"] = datetime.now(timezone.utc)
     
@@ -3364,8 +3364,8 @@ async def update_customer(customer_id: str, customer: CustomerUpdate, request: R
     return Customer(**updated)
 
 @api_router.delete("/customers/{customer_id}")
-async def delete_customer(customer_id: str, request: Request):
-    store_id = await get_store_id_from_header(request)
+async def delete_customer(customer_id: str, request: Request, current_user: dict = Depends(get_current_user)):
+    store_id = await get_store_id_for_request(request, current_user)
     result = await db.customers.delete_one({"id": customer_id, "store_id": store_id})
     if result.deleted_count == 0:
         raise HTTPException(status_code=404, detail="Customer not found")
@@ -3423,8 +3423,8 @@ async def get_banners(request: Request, include_inactive: bool = False):
     return result
 
 @api_router.post("/banners", response_model=HeroBanner)
-async def create_banner(banner: HeroBanner, request: Request):
-    store_id = await get_store_id_from_header(request)
+async def create_banner(banner: HeroBanner, request: Request, current_user: dict = Depends(get_current_user)):
+    store_id = await get_store_id_for_request(request, current_user)
     banner_data = banner.dict()
     banner_data["store_id"] = store_id
     # Ensure name is set
@@ -3434,8 +3434,8 @@ async def create_banner(banner: HeroBanner, request: Request):
     return HeroBanner(**banner_data)
 
 @api_router.put("/banners/{banner_id}", response_model=HeroBanner)
-async def update_banner(banner_id: str, banner: BannerUpdate, request: Request):
-    store_id = await get_store_id_from_header(request)
+async def update_banner(banner_id: str, banner: BannerUpdate, request: Request, current_user: dict = Depends(get_current_user)):
+    store_id = await get_store_id_for_request(request, current_user)
     update_data = {k: v for k, v in banner.dict().items() if v is not None}
     result = await db.banners.update_one(
         {"id": banner_id, "store_id": store_id},
@@ -3449,8 +3449,8 @@ async def update_banner(banner_id: str, banner: BannerUpdate, request: Request):
     return HeroBanner(**updated)
 
 @api_router.delete("/banners/{banner_id}")
-async def delete_banner(banner_id: str, request: Request):
-    store_id = await get_store_id_from_header(request)
+async def delete_banner(banner_id: str, request: Request, current_user: dict = Depends(get_current_user)):
+    store_id = await get_store_id_for_request(request, current_user)
     result = await db.banners.delete_one({"id": banner_id, "store_id": store_id})
     if result.deleted_count == 0:
         raise HTTPException(status_code=404, detail="Banner not found")
@@ -4930,8 +4930,8 @@ async def generate_mega_menu_from_categories():
 # ==================== STORE SETTINGS ====================
 
 @api_router.get("/store/settings", response_model=StoreSettings)
-async def get_store_settings(request: Request):
-    store_id = await get_store_id_from_header(request)
+async def get_store_settings(request: Request, current_user: dict = Depends(get_current_user)):
+    store_id = await get_store_id_for_request(request, current_user)
     settings = await db.store_settings.find_one({"store_id": store_id})
     if not settings:
         # Try legacy settings without store_id
@@ -4973,8 +4973,8 @@ async def get_store_logo_base64(request: Request):
         raise HTTPException(status_code=500, detail=f"Failed to fetch logo: {str(e)}")
 
 @api_router.put("/store/settings", response_model=StoreSettings)
-async def update_store_settings(settings: StoreSettingsUpdate, request: Request):
-    store_id = await get_store_id_from_header(request)
+async def update_store_settings(settings: StoreSettingsUpdate, request: Request, current_user: dict = Depends(get_current_user)):
+    store_id = await get_store_id_for_request(request, current_user)
     update_data = {k: v for k, v in settings.dict().items() if v is not None}
     update_data["updated_at"] = datetime.now(timezone.utc)
     update_data["store_id"] = store_id
