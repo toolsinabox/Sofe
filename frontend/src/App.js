@@ -130,6 +130,7 @@ function App() {
               <Route path="customers" element={<MerchantCustomers />} />
               <Route path="banners" element={<MerchantBanners />} />
               <Route path="theme-editor" element={<MerchantThemeEditor />} />
+              <Route path="domains" element={<MerchantDomains />} />
               <Route path="store-settings" element={<MerchantStoreSettings />} />
               <Route path="content-zones" element={<MerchantContentZones />} />
               <Route path="discounts" element={<MerchantDiscounts />} />
