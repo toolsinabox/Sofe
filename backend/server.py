@@ -1972,9 +1972,11 @@ async def get_products(
     sort_by: str = "created_at",
     sort_order: str = "desc",
     limit: int = Query(default=50, le=100),
-    skip: int = 0
+    skip: int = 0,
+    current_user: dict = Depends(get_current_user)
 ):
-    store_id = await get_store_id_from_header(request)
+    # Use the authenticated user's store_id
+    store_id = await get_store_id_for_request(request, current_user)
     query = {"store_id": store_id}
     if category_id:
         # Support both single category_id and multiple category_ids array
