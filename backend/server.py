@@ -6940,14 +6940,20 @@ async def render_page_v2(
                 detail=f"Store '{subdomain_requested}' not found or inactive"
             )
     
-    # Method 2: Check if it's a custom domain
-    if not store and custom_domain_header and custom_domain_header not in ["getcelora.com", "www.getcelora.com"]:
-        store = await db.platform_stores.find_one({
-            "custom_domain": custom_domain_header,
-            "custom_domain_verified": True
-        }, {"_id": 0})
-        if not store:
-            raise HTTPException(status_code=404, detail="Store not found for this domain")
+    # Method 2: Check if it's a custom domain (from header or host)
+    if not store:
+        # Check x-custom-domain header first
+        domain_to_check = custom_domain_header if custom_domain_header else host
+        
+        # Skip if it's a getcelora domain
+        if domain_to_check and domain_to_check not in ["getcelora.com", "www.getcelora.com"] and "getcelora" not in domain_to_check:
+            store = await db.platform_stores.find_one({
+                "custom_domain": domain_to_check,
+                "custom_domain_verified": True,
+                "status": {"$in": ["active", "trial"]}
+            }, {"_id": 0})
+            if store:
+                subdomain_requested = store.get("subdomain")  # Track for later use
     
     # Method 3: Check for subdomain in Host header (getcelora.com pattern)
     if not store and host:
