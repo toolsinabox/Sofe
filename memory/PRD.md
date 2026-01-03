@@ -6,17 +6,18 @@ Celora is a Shopify/Maropost-style multi-tenant e-commerce platform that allows 
 ## Core Features
 
 ### Platform Features
-- **Multi-Tenancy:** Single codebase serves multiple stores with data isolation via `store_id`
+- **Multi-Tenancy:** Single codebase serves multiple stores with complete data isolation via `store_id`
 - **Subdomain Routing:** Each store gets `storename.getcelora.com`
 - **Custom Domain Support:** Stores can connect their own domains with TXT record verification
 - **Per-Store Themes:** Each store can have its own unique theme
 - **Platform Admin Dashboard:** `/admin` for managing all stores and users
 - **Merchant Dashboard:** `/merchant` for store owners to manage products, orders, etc.
 - **Admin Impersonation:** Platform admins can log in as any store owner
+- **Environment Agnostic:** Works in both Emergent preview and Live production environments
 
 ### Store Features
 - Product management with categories
-- Order management
+- Order management  
 - Customer management
 - Theme Editor for customizing storefront
 - URL Redirects (301/302) management
@@ -25,6 +26,13 @@ Celora is a Shopify/Maropost-style multi-tenant e-commerce platform that allows 
 - Payment integration (Stripe)
 - Reviews and ratings
 - Favicon uploader
+
+### Data Isolation (CRITICAL)
+All merchant API endpoints use `get_store_id_for_request()` which prioritizes:
+1. JWT token's `store_id` (for authenticated merchant requests)
+2. X-Store-ID header
+3. Subdomain from host/header
+4. Default store (fallback only for public storefront)
 
 ### Custom Domain Verification System
 1. Store owner enters custom domain (e.g., www.mystore.com)
