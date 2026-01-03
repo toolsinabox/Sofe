@@ -301,6 +301,152 @@ const MerchantDashboard = () => {
           </div>
         </div>
       </div>
+
+      {/* Revenue Overview & Activity */}
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
+        {/* Revenue Chart */}
+        <div className="lg:col-span-2 bg-white rounded-lg border border-gray-200">
+          <div className="px-4 py-3 border-b border-gray-100 flex items-center justify-between">
+            <h2 className="font-semibold text-gray-900 text-sm flex items-center gap-2">
+              <BarChart3 size={16} className="text-blue-600" />
+              Revenue Overview
+            </h2>
+            <select className="text-xs border border-gray-200 rounded-lg px-2 py-1 text-gray-600 bg-white">
+              <option>Last 7 days</option>
+              <option>Last 30 days</option>
+              <option>Last 90 days</option>
+            </select>
+          </div>
+          <div className="p-4">
+            {/* Simple bar chart representation */}
+            <div className="h-40 flex items-end gap-2">
+              {[65, 40, 80, 55, 90, 70, 85].map((height, i) => (
+                <div key={i} className="flex-1 flex flex-col items-center gap-1">
+                  <div 
+                    className="w-full bg-gradient-to-t from-blue-500 to-blue-400 rounded-t-lg hover:from-blue-600 hover:to-blue-500 transition-all cursor-pointer"
+                    style={{ height: `${height}%` }}
+                  />
+                  <span className="text-xs text-gray-400">
+                    {['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'][i]}
+                  </span>
+                </div>
+              ))}
+            </div>
+            <div className="mt-4 pt-4 border-t border-gray-100 grid grid-cols-3 gap-4 text-center">
+              <div>
+                <p className="text-gray-400 text-xs">This Week</p>
+                <p className="text-lg font-bold text-gray-900">{stats ? formatCurrency(stats.total_revenue * 0.3) : '$0'}</p>
+              </div>
+              <div>
+                <p className="text-gray-400 text-xs">Avg. Order</p>
+                <p className="text-lg font-bold text-gray-900">
+                  {stats && stats.total_orders > 0 ? formatCurrency(stats.total_revenue / stats.total_orders) : '$0'}
+                </p>
+              </div>
+              <div>
+                <p className="text-gray-400 text-xs">Conversion</p>
+                <p className="text-lg font-bold text-green-600">3.2%</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Recent Activity */}
+        <div className="bg-white rounded-lg border border-gray-200">
+          <div className="px-4 py-3 border-b border-gray-100">
+            <h2 className="font-semibold text-gray-900 text-sm flex items-center gap-2">
+              <Clock size={16} className="text-gray-400" />
+              Recent Activity
+            </h2>
+          </div>
+          <div className="p-3">
+            <div className="space-y-3">
+              {orders.slice(0, 4).map((order, i) => (
+                <div key={order.id || i} className="flex items-start gap-3">
+                  <div className={`w-2 h-2 rounded-full mt-1.5 ${
+                    order.status === 'pending' ? 'bg-yellow-400' :
+                    order.status === 'processing' ? 'bg-blue-400' :
+                    order.status === 'shipped' ? 'bg-purple-400' :
+                    order.status === 'delivered' ? 'bg-green-400' : 'bg-gray-400'
+                  }`} />
+                  <div className="flex-1 min-w-0">
+                    <p className="text-xs text-gray-900 font-medium">
+                      New order #{order.order_number || order.id?.slice(0, 8)}
+                    </p>
+                    <p className="text-xs text-gray-400">
+                      {formatCurrency(order.total)} • {order.status}
+                    </p>
+                  </div>
+                  <span className="text-xs text-gray-400 whitespace-nowrap">
+                    {order.created_at ? new Date(order.created_at).toLocaleDateString() : 'Today'}
+                  </span>
+                </div>
+              ))}
+              {orders.length === 0 && (
+                <div className="text-center py-4 text-gray-400">
+                  <Clock className="w-6 h-6 mx-auto mb-2 opacity-50" />
+                  <p className="text-xs">No recent activity</p>
+                </div>
+              )}
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Store Performance Tips */}
+      <div className="bg-gradient-to-r from-indigo-500 to-purple-600 rounded-xl p-4 text-white">
+        <div className="flex items-center justify-between">
+          <div>
+            <h3 className="font-semibold text-lg">Boost Your Store Performance</h3>
+            <p className="text-indigo-100 text-sm mt-1">Complete your store setup to increase visibility and sales.</p>
+          </div>
+          <Link 
+            to="/merchant/settings"
+            className="px-4 py-2 bg-white/20 hover:bg-white/30 rounded-lg text-sm font-medium transition-colors flex items-center gap-2"
+          >
+            <Settings size={16} />
+            Store Settings
+          </Link>
+        </div>
+        <div className="mt-4 grid grid-cols-2 sm:grid-cols-4 gap-3">
+          <div className="bg-white/10 rounded-lg p-3">
+            <div className="flex items-center gap-2 mb-1">
+              <Eye size={14} />
+              <span className="text-xs font-medium">Add Logo</span>
+            </div>
+            <div className="w-full h-1 bg-white/20 rounded-full">
+              <div className="w-1/2 h-full bg-white rounded-full" />
+            </div>
+          </div>
+          <div className="bg-white/10 rounded-lg p-3">
+            <div className="flex items-center gap-2 mb-1">
+              <Package size={14} />
+              <span className="text-xs font-medium">Add Products</span>
+            </div>
+            <div className="w-full h-1 bg-white/20 rounded-full">
+              <div className="w-3/4 h-full bg-white rounded-full" />
+            </div>
+          </div>
+          <div className="bg-white/10 rounded-lg p-3">
+            <div className="flex items-center gap-2 mb-1">
+              <FileText size={14} />
+              <span className="text-xs font-medium">Add Pages</span>
+            </div>
+            <div className="w-full h-1 bg-white/20 rounded-full">
+              <div className="w-1/4 h-full bg-white rounded-full" />
+            </div>
+          </div>
+          <div className="bg-white/10 rounded-lg p-3">
+            <div className="flex items-center gap-2 mb-1">
+              <Settings size={14} />
+              <span className="text-xs font-medium">Configure</span>
+            </div>
+            <div className="w-full h-1 bg-white/20 rounded-full">
+              <div className="w-full h-full bg-white rounded-full" />
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
   );
 };
