@@ -209,6 +209,8 @@ function App() {
               <Route path="analytics" element={<AdminAnalytics />} />
               <Route path="settings" element={<AdminSettings />} />
               <Route path="activity" element={<AdminActivityLog />} />
+              <Route path="profile" element={<AdminProfile />} />
+              <Route path="account" element={<AdminAccountSettings />} />
             </Route>
 
             {/* ============================================
