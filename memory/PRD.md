@@ -361,9 +361,12 @@ Auto-detects which environment/platform the app is running on:
 
 | Role | URL | Email | Password |
 |------|-----|-------|----------|
-| Platform Admin | `/admin/login` | eddie@toolsinabox.com.au | Yealink1991% |
-| Store Owner | `/login` | eddie@toolsinabox.com.au | Yealink1991% |
-| Merchant | `/merchant` | eddie@toolsinabox.com.au | Yealink1991% |
+| **Super Admin** | `/admin/login` | eddie@toolsinabox.com.au | Yealink1991% |
+| Platform Owner | `/login` | eddie@toolsinabox.com.au | Yealink1991% |
+| Merchant | `/merchant/login` | eddie@toolsinabox.com.au | Yealink1991% |
+| Test Merchant | `/merchant/login` | test@test.com | test123 |
+
+**Note:** Only eddie@toolsinabox.com.au has admin access. All other admin accounts have been removed.
 
 ## Pending/Future Tasks
 
