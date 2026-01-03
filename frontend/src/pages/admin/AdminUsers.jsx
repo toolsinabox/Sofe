@@ -200,6 +200,60 @@ const AdminUsers = () => {
     setIsDeleteModalOpen(true);
   };
 
+  const openResetPasswordModal = (user) => {
+    setSelectedUser(user);
+    setNewPassword('');
+    setIsResetPasswordModalOpen(true);
+  };
+
+  const handleResetPassword = async () => {
+    if (!newPassword || newPassword.length < 6) {
+      setError('Password must be at least 6 characters');
+      return;
+    }
+    
+    setSaving(true);
+    setError(null);
+    
+    try {
+      const headers = { Authorization: `Bearer ${token}` };
+      await axios.post(
+        `${API_URL}/api/admin/users/${selectedUser.id}/reset-password`,
+        { new_password: newPassword },
+        { headers }
+      );
+      
+      setSuccess(`Password reset successfully for ${selectedUser.email}`);
+      setIsResetPasswordModalOpen(false);
+      setNewPassword('');
+      setSelectedUser(null);
+    } catch (err) {
+      setError(err.response?.data?.detail || 'Failed to reset password');
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  const handleImpersonate = async (user) => {
+    setSaving(true);
+    setError(null);
+    
+    try {
+      const headers = { Authorization: `Bearer ${token}` };
+      const res = await axios.post(`${API_URL}/api/admin/users/${user.id}/impersonate`, {}, { headers });
+      
+      // Copy token to clipboard
+      navigator.clipboard.writeText(res.data.access_token);
+      
+      setSuccess(`Login token copied for ${user.email}! Use it to login as this user.`);
+      
+    } catch (err) {
+      setError(err.response?.data?.detail || 'Failed to impersonate user');
+    } finally {
+      setSaving(false);
+    }
+  };
+
   return (
     <div className="space-y-6">
       {/* Header */}
