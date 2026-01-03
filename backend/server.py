@@ -5181,6 +5181,190 @@ async def check_dns_status(
         "server_ip": SERVER_IP
     }
 
+# ==================== URL REDIRECTS ====================
+
+@api_router.get("/store/redirects")
+async def get_redirects(current_user: dict = Depends(get_current_user)):
+    """Get all URL redirects for the store"""
+    store_id = await get_store_id_for_current_user(current_user)
+    if not store_id:
+        return []
+    
+    redirects = await db.url_redirects.find(
+        {"store_id": store_id},
+        {"_id": 0}
+    ).sort("created_at", -1).to_list(1000)
+    
+    return redirects
+
+@api_router.post("/store/redirects")
+async def create_redirect(
+    redirect_data: dict,
+    current_user: dict = Depends(get_current_user)
+):
+    """Create a new URL redirect"""
+    store_id = await get_store_id_for_current_user(current_user)
+    if not store_id:
+        raise HTTPException(status_code=400, detail="No store associated with user")
+    
+    # Check for duplicate source path
+    existing = await db.url_redirects.find_one({
+        "store_id": store_id,
+        "source_path": redirect_data.get("source_path")
+    })
+    if existing:
+        raise HTTPException(status_code=400, detail="A redirect for this source path already exists")
+    
+    redirect = {
+        "id": str(uuid.uuid4()),
+        "store_id": store_id,
+        "source_path": redirect_data.get("source_path", "").strip(),
+        "target_url": redirect_data.get("target_url", "").strip(),
+        "redirect_type": redirect_data.get("redirect_type", "301"),
+        "is_active": redirect_data.get("is_active", True),
+        "notes": redirect_data.get("notes", ""),
+        "hit_count": 0,
+        "created_at": datetime.now(timezone.utc),
+        "updated_at": datetime.now(timezone.utc)
+    }
+    
+    await db.url_redirects.insert_one(redirect)
+    del redirect["_id"] if "_id" in redirect else None
+    
+    return redirect
+
+@api_router.put("/store/redirects/{redirect_id}")
+async def update_redirect(
+    redirect_id: str,
+    redirect_data: dict,
+    current_user: dict = Depends(get_current_user)
+):
+    """Update a URL redirect"""
+    store_id = await get_store_id_for_current_user(current_user)
+    if not store_id:
+        raise HTTPException(status_code=400, detail="No store associated with user")
+    
+    result = await db.url_redirects.update_one(
+        {"id": redirect_id, "store_id": store_id},
+        {"$set": {
+            "source_path": redirect_data.get("source_path"),
+            "target_url": redirect_data.get("target_url"),
+            "redirect_type": redirect_data.get("redirect_type", "301"),
+            "is_active": redirect_data.get("is_active", True),
+            "notes": redirect_data.get("notes", ""),
+            "updated_at": datetime.now(timezone.utc)
+        }}
+    )
+    
+    if result.modified_count == 0:
+        raise HTTPException(status_code=404, detail="Redirect not found")
+    
+    return {"message": "Redirect updated"}
+
+@api_router.delete("/store/redirects/{redirect_id}")
+async def delete_redirect(
+    redirect_id: str,
+    current_user: dict = Depends(get_current_user)
+):
+    """Delete a URL redirect"""
+    store_id = await get_store_id_for_current_user(current_user)
+    if not store_id:
+        raise HTTPException(status_code=400, detail="No store associated with user")
+    
+    result = await db.url_redirects.delete_one({"id": redirect_id, "store_id": store_id})
+    
+    if result.deleted_count == 0:
+        raise HTTPException(status_code=404, detail="Redirect not found")
+    
+    return {"message": "Redirect deleted"}
+
+@api_router.post("/store/redirects/bulk")
+async def bulk_import_redirects(
+    data: dict,
+    current_user: dict = Depends(get_current_user)
+):
+    """Bulk import URL redirects"""
+    store_id = await get_store_id_for_current_user(current_user)
+    if not store_id:
+        raise HTTPException(status_code=400, detail="No store associated with user")
+    
+    redirects_to_import = data.get("redirects", [])
+    imported = 0
+    
+    for r in redirects_to_import:
+        # Skip if redirect already exists
+        existing = await db.url_redirects.find_one({
+            "store_id": store_id,
+            "source_path": r.get("source_path")
+        })
+        if existing:
+            continue
+        
+        redirect = {
+            "id": str(uuid.uuid4()),
+            "store_id": store_id,
+            "source_path": r.get("source_path", "").strip(),
+            "target_url": r.get("target_url", "").strip(),
+            "redirect_type": r.get("redirect_type", "301"),
+            "is_active": r.get("is_active", True),
+            "notes": "",
+            "hit_count": 0,
+            "created_at": datetime.now(timezone.utc),
+            "updated_at": datetime.now(timezone.utc)
+        }
+        
+        await db.url_redirects.insert_one(redirect)
+        imported += 1
+    
+    return {"imported": imported, "total": len(redirects_to_import)}
+
+# ==================== CUSTOM SCRIPTS ====================
+
+@api_router.get("/store/custom-scripts")
+async def get_custom_scripts(current_user: dict = Depends(get_current_user)):
+    """Get custom scripts settings for the store"""
+    store_id = await get_store_id_for_current_user(current_user)
+    if not store_id:
+        return {}
+    
+    scripts = await db.custom_scripts.find_one({"store_id": store_id}, {"_id": 0})
+    return scripts or {
+        "head_scripts": "",
+        "body_start_scripts": "",
+        "body_end_scripts": "",
+        "custom_css": "",
+        "google_analytics_id": "",
+        "google_tag_manager_id": "",
+        "facebook_pixel_id": "",
+        "tiktok_pixel_id": "",
+        "snapchat_pixel_id": "",
+        "pinterest_tag_id": "",
+        "custom_checkout_scripts": "",
+        "custom_thankyou_scripts": "",
+        "scripts_enabled": True
+    }
+
+@api_router.put("/store/custom-scripts")
+async def update_custom_scripts(
+    scripts_data: dict,
+    current_user: dict = Depends(get_current_user)
+):
+    """Update custom scripts settings"""
+    store_id = await get_store_id_for_current_user(current_user)
+    if not store_id:
+        raise HTTPException(status_code=400, detail="No store associated with user")
+    
+    scripts_data["store_id"] = store_id
+    scripts_data["updated_at"] = datetime.now(timezone.utc)
+    
+    await db.custom_scripts.update_one(
+        {"store_id": store_id},
+        {"$set": scripts_data},
+        upsert=True
+    )
+    
+    return {"message": "Scripts saved successfully"}
+
 # ==================== INVOICE SETTINGS ====================
 
 @api_router.get("/settings/invoice-template")
