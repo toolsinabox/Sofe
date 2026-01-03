@@ -824,7 +824,7 @@ async def get_store_context(request: Request) -> dict:
     Get the current store context including store_id and store details.
     Used by endpoints that need store-specific data.
     """
-    store_id = await get_store_id_from_header(request)
+    store_id = await get_store_id_for_request(request, current_user)
     store = await db.platform_stores.find_one({"id": store_id}, {"_id": 0})
     return {
         "store_id": store_id,
@@ -2258,7 +2258,7 @@ async def get_orders(
     limit: int = Query(default=50, le=100),
     skip: int = 0
 ):
-    store_id = await get_store_id_from_header(request)
+    store_id = await get_store_id_for_request(request, current_user)
     query = {"store_id": store_id}
     if status:
         query["status"] = status
@@ -2268,8 +2268,8 @@ async def get_orders(
     return orders
 
 @api_router.get("/orders/count")
-async def get_orders_count(request: Request, status: Optional[str] = None):
-    store_id = await get_store_id_from_header(request)
+async def get_orders_count(request: Request, status: Optional[str] = None, current_user: dict = Depends(get_current_user)):
+    store_id = await get_store_id_for_request(request, current_user)
     query = {"store_id": store_id}
     if status:
         query["status"] = status
@@ -2277,9 +2277,9 @@ async def get_orders_count(request: Request, status: Optional[str] = None):
     return {"count": count}
 
 @api_router.get("/orders/stats")
-async def get_orders_stats(request: Request):
+async def get_orders_stats(request: Request, current_user: dict = Depends(get_current_user)):
     """Get order statistics for dashboard"""
-    store_id = await get_store_id_from_header(request)
+    store_id = await get_store_id_for_request(request, current_user)
     try:
         # Total orders
         total_orders = await db.orders.count_documents({"store_id": store_id})
@@ -2328,8 +2328,8 @@ async def get_order(order_id: str, request: Request, current_user: dict = Depend
     return order
 
 @api_router.patch("/orders/{order_id}/status")
-async def update_order_status(order_id: str, status: str, request: Request, notify: bool = False):
-    store_id = await get_store_id_from_header(request)
+async def update_order_status(order_id: str, status: str, request: Request, notify: bool = False, current_user: dict = Depends(get_current_user)):
+    store_id = await get_store_id_for_request(request, current_user)
     valid_statuses = ["pending", "processing", "shipped", "delivered", "cancelled", "refunded"]
     if status not in valid_statuses:
         raise HTTPException(status_code=400, detail=f"Invalid status. Must be one of: {valid_statuses}")
@@ -3325,7 +3325,7 @@ async def get_customers(
     limit: int = Query(default=50, le=100),
     skip: int = 0
 ):
-    store_id = await get_store_id_from_header(request)
+    store_id = await get_store_id_for_request(request, current_user)
     query = {"store_id": store_id}
     if status:
         query["status"] = status
@@ -3408,8 +3408,8 @@ async def get_dashboard_stats(request: Request, current_user: dict = Depends(get
 # ==================== HERO BANNERS ====================
 
 @api_router.get("/banners", response_model=List[HeroBanner])
-async def get_banners(request: Request, include_inactive: bool = False):
-    store_id = await get_store_id_from_header(request)
+async def get_banners(request: Request, include_inactive: bool = False, current_user: dict = Depends(get_current_user)):
+    store_id = await get_store_id_for_request(request, current_user)
     query = {"store_id": store_id} if not include_inactive else {"store_id": store_id}
     if not include_inactive:
         query["is_active"] = True
@@ -3459,9 +3459,9 @@ async def delete_banner(banner_id: str, request: Request, current_user: dict = D
 # ==================== CONTENT ZONES ====================
 
 @api_router.get("/content-zones", response_model=List[ContentZone])
-async def get_content_zones(request: Request, page: Optional[str] = None, include_inactive: bool = False):
+async def get_content_zones(request: Request, page: Optional[str] = None, include_inactive: bool = False, current_user: dict = Depends(get_current_user)):
     """Get all content zones, optionally filtered by page"""
-    store_id = await get_store_id_from_header(request)
+    store_id = await get_store_id_for_request(request, current_user)
     query = {"store_id": store_id}
     if page:
         query["page"] = page
@@ -3472,27 +3472,27 @@ async def get_content_zones(request: Request, page: Optional[str] = None, includ
     return [ContentZone(**zone) for zone in zones]
 
 @api_router.get("/content-zones/{zone_id}", response_model=ContentZone)
-async def get_content_zone(zone_id: str, request: Request):
+async def get_content_zone(zone_id: str, request: Request, current_user: dict = Depends(get_current_user)):
     """Get a specific content zone by ID"""
-    store_id = await get_store_id_from_header(request)
+    store_id = await get_store_id_for_request(request, current_user)
     zone = await db.content_zones.find_one({"id": zone_id, "store_id": store_id}, {"_id": 0})
     if not zone:
         raise HTTPException(status_code=404, detail="Content zone not found")
     return ContentZone(**zone)
 
 @api_router.get("/content-zones/by-name/{zone_name}")
-async def get_content_zone_by_name(zone_name: str, request: Request):
+async def get_content_zone_by_name(zone_name: str, request: Request, current_user: dict = Depends(get_current_user)):
     """Get a content zone by its unique name"""
-    store_id = await get_store_id_from_header(request)
+    store_id = await get_store_id_for_request(request, current_user)
     zone = await db.content_zones.find_one({"name": zone_name, "store_id": store_id}, {"_id": 0})
     if not zone:
         raise HTTPException(status_code=404, detail="Content zone not found")
     return ContentZone(**zone)
 
 @api_router.post("/content-zones", response_model=ContentZone)
-async def create_content_zone(zone: ContentZoneCreate, request: Request):
+async def create_content_zone(zone: ContentZoneCreate, request: Request, current_user: dict = Depends(get_current_user)):
     """Create a new content zone"""
-    store_id = await get_store_id_from_header(request)
+    store_id = await get_store_id_for_request(request, current_user)
     # Check if name already exists for this store
     existing = await db.content_zones.find_one({"name": zone.name, "store_id": store_id})
     if existing:
@@ -3509,9 +3509,9 @@ async def create_content_zone(zone: ContentZoneCreate, request: Request):
     return zone_data
 
 @api_router.put("/content-zones/{zone_id}", response_model=ContentZone)
-async def update_content_zone(zone_id: str, zone_update: ContentZoneUpdate, request: Request):
+async def update_content_zone(zone_id: str, zone_update: ContentZoneUpdate, request: Request, current_user: dict = Depends(get_current_user)):
     """Update a content zone"""
-    store_id = await get_store_id_from_header(request)
+    store_id = await get_store_id_for_request(request, current_user)
     update_data = {k: v for k, v in zone_update.dict().items() if v is not None}
     update_data["updated_at"] = datetime.now(timezone.utc)
     
@@ -3731,7 +3731,7 @@ async def get_all_reviews(
     limit: int = 100
 ):
     """Get all reviews with optional filters"""
-    store_id = await get_store_id_from_header(request)
+    store_id = await get_store_id_for_request(request, current_user)
     query = {"store_id": store_id}
     if status:
         query["status"] = status
@@ -3755,9 +3755,9 @@ async def get_all_reviews(
     return reviews
 
 @api_router.get("/reviews/stats")
-async def get_review_stats(request: Request):
+async def get_review_stats(request: Request, current_user: dict = Depends(get_current_user)):
     """Get review statistics for dashboard"""
-    store_id = await get_store_id_from_header(request)
+    store_id = await get_store_id_for_request(request, current_user)
     all_reviews = await db.reviews.find({"store_id": store_id}, {"_id": 0, "rating": 1, "status": 1}).to_list(10000)
     
     total = len(all_reviews)
@@ -4750,9 +4750,9 @@ async def get_robots_txt():
 # ==================== CMS PAGES ====================
 
 @api_router.get("/pages")
-async def get_all_pages(request: Request):
+async def get_all_pages(request: Request, current_user: dict = Depends(get_current_user)):
     """Get all CMS pages"""
-    store_id = await get_store_id_from_header(request)
+    store_id = await get_store_id_for_request(request, current_user)
     pages = await db.cms_pages.find({"store_id": store_id}, {"_id": 0}).sort("name", 1).to_list(100)
     
     # Ensure homepage exists for this store
@@ -4778,18 +4778,18 @@ async def get_all_pages(request: Request):
     return pages
 
 @api_router.get("/pages/{page_id}")
-async def get_page(page_id: str, request: Request):
+async def get_page(page_id: str, request: Request, current_user: dict = Depends(get_current_user)):
     """Get a single CMS page"""
-    store_id = await get_store_id_from_header(request)
+    store_id = await get_store_id_for_request(request, current_user)
     page = await db.cms_pages.find_one({"id": page_id, "store_id": store_id}, {"_id": 0})
     if not page:
         raise HTTPException(status_code=404, detail="Page not found")
     return page
 
 @api_router.post("/pages", response_model=CMSPage)
-async def create_page(page: CMSPageCreate, request: Request):
+async def create_page(page: CMSPageCreate, request: Request, current_user: dict = Depends(get_current_user)):
     """Create a new CMS page"""
-    store_id = await get_store_id_from_header(request)
+    store_id = await get_store_id_for_request(request, current_user)
     # Check if slug already exists for this store
     existing = await db.cms_pages.find_one({"slug": page.slug, "store_id": store_id})
     if existing:
@@ -4802,9 +4802,9 @@ async def create_page(page: CMSPageCreate, request: Request):
     return new_page
 
 @api_router.put("/pages/{page_id}")
-async def update_page(page_id: str, update: CMSPageUpdate, request: Request):
+async def update_page(page_id: str, update: CMSPageUpdate, request: Request, current_user: dict = Depends(get_current_user)):
     """Update a CMS page"""
-    store_id = await get_store_id_from_header(request)
+    store_id = await get_store_id_for_request(request, current_user)
     # Check if page exists
     page = await db.cms_pages.find_one({"id": page_id, "store_id": store_id})
     if not page:
@@ -4942,12 +4942,12 @@ async def get_store_settings(request: Request, current_user: dict = Depends(get_
     return StoreSettings(**settings)
 
 @api_router.get("/store/logo-base64")
-async def get_store_logo_base64(request: Request):
+async def get_store_logo_base64(request: Request, current_user: dict = Depends(get_current_user)):
     """Get store logo as base64 data URL to avoid CORS issues in iframe preview"""
     import httpx
     import base64
     
-    store_id = await get_store_id_from_header(request)
+    store_id = await get_store_id_for_request(request, current_user)
     settings = await db.store_settings.find_one({"store_id": store_id})
     if not settings or not settings.get("store_logo"):
         raise HTTPException(status_code=404, detail="No store logo found")
@@ -5557,12 +5557,12 @@ async def get_uploaded_file(upload_type: str, filename: str):
     return FileResponse(file_path)
 
 @api_router.get("/store/favicon")
-async def get_store_favicon(request: Request):
+async def get_store_favicon(request: Request, current_user: dict = Depends(get_current_user)):
     """Get store favicon based on subdomain/domain - returns redirect to favicon URL"""
     from fastapi.responses import RedirectResponse, FileResponse
     
     # Detect store from request
-    store_id = await get_store_id_from_header(request)
+    store_id = await get_store_id_for_request(request, current_user)
     
     if store_id:
         settings = await db.store_settings.find_one({"store_id": store_id})
