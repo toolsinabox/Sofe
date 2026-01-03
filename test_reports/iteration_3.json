@@ -1,0 +1,73 @@
+{
+  "summary": "Backend testing completed for Custom Domain Verification Token feature. All 13 tests passed (100%). Token format correctly implements: celora-site={subdomain}.getcelora.com:{unique_code}",
+  "backend_issues": {
+    "critical": [],
+    "minor": []
+  },
+  "frontend_issues": {
+    "ui_bugs": [],
+    "integration_issues": [],
+    "design_issues": []
+  },
+  "test_report_links": [
+    "/app/tests/test_domain_verification_token.py",
+    "/app/test_reports/pytest/pytest_domain_token_results.xml"
+  ],
+  "action_items": [],
+  "critical_code_review_comments": [
+    "Token generation logic in server.py lines 5084-5090 correctly implements the secure format",
+    "Token is properly regenerated when domain changes (line 5088 condition)",
+    "Token is preserved when same domain is saved again (prevents unnecessary changes)"
+  ],
+  "updated_files": [
+    "/app/tests/test_domain_verification_token.py"
+  ],
+  "success_rate": {
+    "backend": "100% (13/13 tests passed)",
+    "frontend": "Not tested (backend only request)"
+  },
+  "test_credentials": {
+    "merchant1_email": "eddie@toolsinabox.com.au",
+    "merchant1_password": "Yealink1991%",
+    "merchant1_subdomain": "toolsinabox",
+    "merchant2_email": "test@test.com",
+    "merchant2_password": "test123",
+    "merchant2_subdomain": "teststore"
+  },
+  "seed_data_creation": "No seed data created - used existing stores",
+  "retest_needed": false,
+  "main_agent_can_self_test": true,
+  "context_for_next_testing_agent": "Domain verification token feature fully tested. All backend APIs working correctly: PUT /api/store/custom-domain generates token with format celora-site={subdomain}.getcelora.com:{12_char_hex}, GET /api/store/domain-settings returns token, POST /api/store/verify-domain checks TXT record. Different stores get unique tokens with their respective subdomains.",
+  "features_tested": {
+    "token_generation": {
+      "PUT /api/store/custom-domain - generates token": "PASS - Token format: celora-site={subdomain}.getcelora.com:{unique_code}",
+      "Token returned in response": "PASS - verification_token and store_subdomain fields present",
+      "Token contains store identifier": "PASS - Full subdomain path included for security"
+    },
+    "token_retrieval": {
+      "GET /api/store/domain-settings - returns token": "PASS - domain_verification_token field present"
+    },
+    "multi_tenant_isolation": {
+      "Different stores get different tokens": "PASS - toolsinabox gets toolsinabox.getcelora.com token, teststore gets teststore.getcelora.com token",
+      "Tokens are unique per store": "PASS - Unique 12-char hex codes"
+    },
+    "token_lifecycle": {
+      "Token regenerated on domain change": "PASS - New token generated when domain changes",
+      "Token preserved on same domain save": "PASS - Token not changed if domain unchanged"
+    },
+    "verification_endpoint": {
+      "POST /api/store/verify-domain - checks token": "PASS - Returns required_txt in response when verification fails"
+    },
+    "input_validation": {
+      "Domain cleaning (http/https/trailing slash)": "PASS - All formats properly cleaned",
+      "Unauthorized access rejected": "PASS - 401/403 returned without auth"
+    },
+    "domain_removal": {
+      "DELETE /api/store/custom-domain": "PASS - Domain removed successfully"
+    }
+  },
+  "verified_token_examples": {
+    "merchant1_toolsinabox": "celora-site=toolsinabox.getcelora.com:{unique_hex}",
+    "merchant2_teststore": "celora-site=teststore.getcelora.com:{unique_hex}"
+  }
+}
