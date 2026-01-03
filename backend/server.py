@@ -6964,11 +6964,16 @@ async def render_page_v2(
     if store:
         store_id = store.get("id")
     
-    active_theme = await get_active_theme_name()
+    # Get theme - uses store-specific theme or falls back to global
+    active_theme = await get_active_theme_name(store_id)
     theme_path = THEMES_DIR / active_theme
     
     if not theme_path.exists():
-        raise HTTPException(status_code=404, detail="Active theme not found")
+        # Fall back to default theme if store's theme doesn't exist
+        active_theme = "toolsinabox"
+        theme_path = THEMES_DIR / active_theme
+        if not theme_path.exists():
+            raise HTTPException(status_code=404, detail="Theme not found")
     
     # Create engine with debug mode if requested
     debug_mode = debug or False
