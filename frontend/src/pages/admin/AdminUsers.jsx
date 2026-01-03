@@ -663,7 +663,7 @@ const AdminUsers = () => {
               
               <div className="bg-yellow-500/10 border border-yellow-500/30 rounded-lg p-3">
                 <p className="text-yellow-400 text-sm">
-                  ⚠️ This will immediately change this user's password.
+                  ⚠️ This will immediately change this user&apos;s password.
                 </p>
               </div>
               
