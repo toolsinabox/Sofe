@@ -27,10 +27,10 @@ const CopyTag = ({
   };
 
   const variants = {
-    default: 'bg-slate-800 text-cyan-400 border-slate-700 hover:bg-slate-700 hover:border-cyan-500/50',
-    success: 'bg-emerald-500/10 text-emerald-400 border-emerald-500/30 hover:bg-emerald-500/20 hover:border-emerald-500/50',
-    warning: 'bg-amber-500/10 text-amber-400 border-amber-500/30 hover:bg-amber-500/20 hover:border-amber-500/50',
-    info: 'bg-blue-500/10 text-blue-400 border-blue-500/30 hover:bg-blue-500/20 hover:border-blue-500/50',
+    default: 'bg-gray-100 text-blue-700 border-gray-300 hover:bg-gray-200 hover:border-blue-400',
+    success: 'bg-emerald-50 text-emerald-700 border-emerald-300 hover:bg-emerald-100 hover:border-emerald-400',
+    warning: 'bg-amber-50 text-amber-700 border-amber-300 hover:bg-amber-100 hover:border-amber-400',
+    info: 'bg-blue-50 text-blue-700 border-blue-300 hover:bg-blue-100 hover:border-blue-400',
   };
 
   const sizes = {
@@ -53,7 +53,7 @@ const CopyTag = ({
     >
       <span className="break-all">{value || label || 'No value'}</span>
       {copied ? (
-        <Check className="w-3.5 h-3.5 text-emerald-400 flex-shrink-0" />
+        <Check className="w-3.5 h-3.5 text-emerald-600 flex-shrink-0" />
       ) : (
         <Copy className="w-3.5 h-3.5 opacity-50 flex-shrink-0" />
       )}
