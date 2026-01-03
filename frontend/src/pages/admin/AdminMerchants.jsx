@@ -640,11 +640,27 @@ const AdminMerchants = () => {
       ) : (
         /* Merchants Grid */
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {merchants.map((merchant) => (
-            <Card key={merchant.id} className="bg-[#151b28] border-gray-800 hover:border-gray-700 transition-all duration-300 group">
+          {filteredMerchants.map((merchant) => (
+            <Card 
+              key={merchant.id} 
+              className={`bg-[#151b28] border-gray-800 hover:border-gray-700 transition-all duration-300 group ${
+                selectedStores.includes(merchant.id) ? 'ring-2 ring-cyan-500/50 border-cyan-500/30' : ''
+              }`}
+            >
               <CardContent className="p-6">
                 <div className="flex items-start justify-between mb-4">
                   <div className="flex items-center gap-3">
+                    {/* Checkbox */}
+                    <button
+                      onClick={() => toggleSelectStore(merchant.id)}
+                      className="flex-shrink-0"
+                    >
+                      {selectedStores.includes(merchant.id) ? (
+                        <CheckSquare size={20} className="text-cyan-400" />
+                      ) : (
+                        <Square size={20} className="text-gray-600 hover:text-gray-400" />
+                      )}
+                    </button>
                     {merchant.logo ? (
                       <img
                         src={merchant.logo.startsWith('/api') ? `${API_URL}${merchant.logo}` : merchant.logo}
