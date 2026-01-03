@@ -1895,8 +1895,8 @@ async def root():
     return {"message": "Maropost Clone API - Operational"}
 
 @api_router.post("/categories", response_model=Category)
-async def create_category(category: CategoryCreate, request: Request):
-    store_id = await get_store_id_from_header(request)
+async def create_category(category: CategoryCreate, request: Request, current_user: dict = Depends(get_current_user)):
+    store_id = await get_store_id_for_request(request, current_user)
     new_category = Category(**category.dict())
     cat_dict = new_category.dict()
     cat_dict["store_id"] = store_id
@@ -1904,8 +1904,8 @@ async def create_category(category: CategoryCreate, request: Request):
     return new_category
 
 @api_router.get("/categories", response_model=List[Category])
-async def get_categories(request: Request, is_active: Optional[bool] = None):
-    store_id = await get_store_id_from_header(request)
+async def get_categories(request: Request, is_active: Optional[bool] = None, current_user: dict = Depends(get_current_user)):
+    store_id = await get_store_id_for_request(request, current_user)
     query = {"store_id": store_id}
     if is_active is not None:
         query["is_active"] = is_active
@@ -1913,8 +1913,8 @@ async def get_categories(request: Request, is_active: Optional[bool] = None):
     return [Category(**cat) for cat in categories]
 
 @api_router.get("/categories/{category_id}", response_model=Category)
-async def get_category(category_id: str, request: Request):
-    store_id = await get_store_id_from_header(request)
+async def get_category(category_id: str, request: Request, current_user: dict = Depends(get_current_user)):
+    store_id = await get_store_id_for_request(request, current_user)
     category = await db.categories.find_one({"id": category_id, "store_id": store_id}, {"_id": 0})
     if not category:
         raise HTTPException(status_code=404, detail="Category not found")
