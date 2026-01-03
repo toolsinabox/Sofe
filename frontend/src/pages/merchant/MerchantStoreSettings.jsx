@@ -41,6 +41,7 @@ const MerchantStoreSettings = () => {
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [uploadingLogo, setUploadingLogo] = useState(false);
+  const [uploadingFavicon, setUploadingFavicon] = useState(false);
 
   useEffect(() => {
     fetchSettings();
