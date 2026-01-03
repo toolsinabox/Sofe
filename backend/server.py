@@ -8970,6 +8970,9 @@ app.include_router(template_tags_module.router)
 platform_module.set_db(db)
 app.include_router(platform_module.router)
 
+# Include Admin router (comprehensive admin features)
+app.include_router(admin_module.router, prefix="/api")
+
 app.add_middleware(
     CORSMiddleware,
     allow_credentials=True,
