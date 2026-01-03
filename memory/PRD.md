@@ -128,9 +128,10 @@ Collections:
 ## Pending/Future Tasks
 
 ### P0 - Immediate (Deploy to VPS)
+- [x] Self-service custom domain feature (COMPLETED)
 - [ ] Push changes to GitHub
 - [ ] Deploy to VPS: `git pull && cd frontend && yarn build && pm2 restart celora-backend`
-- [ ] Update nginx config to pass X-Subdomain header (see nginx config in PRD)
+- [ ] Update nginx config to pass X-Subdomain header
 
 ### P1 - High Priority
 - [ ] SSL Certificate setup (Certbot) - waiting for DNS propagation
