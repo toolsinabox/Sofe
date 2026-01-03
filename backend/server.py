@@ -3374,8 +3374,8 @@ async def delete_customer(customer_id: str, request: Request):
 # ==================== DASHBOARD STATS ====================
 
 @api_router.get("/stats/dashboard")
-async def get_dashboard_stats(request: Request):
-    store_id = await get_store_id_from_header(request)
+async def get_dashboard_stats(request: Request, current_user: dict = Depends(get_current_user)):
+    store_id = await get_store_id_for_request(request, current_user)
     total_products = await db.products.count_documents({"store_id": store_id})
     total_orders = await db.orders.count_documents({"store_id": store_id})
     total_customers = await db.customers.count_documents({"store_id": store_id})
