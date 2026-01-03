@@ -44,19 +44,20 @@ class TestAdminAuthentication:
         assert response.status_code in [401, 400], f"Expected 401/400, got {response.status_code}"
 
 
+@pytest.fixture(scope="module")
+def admin_token():
+    """Get admin authentication token - shared across all tests"""
+    response = requests.post(
+        f"{BASE_URL}/api/auth/login",
+        json={"email": ADMIN_EMAIL, "password": ADMIN_PASSWORD}
+    )
+    if response.status_code == 200:
+        return response.json().get("access_token")
+    pytest.skip("Admin authentication failed")
+
+
 class TestAdminImpersonation:
     """Test admin impersonate store owner functionality"""
-    
-    @pytest.fixture
-    def admin_token(self):
-        """Get admin authentication token"""
-        response = requests.post(
-            f"{BASE_URL}/api/auth/login",
-            json={"email": ADMIN_EMAIL, "password": ADMIN_PASSWORD}
-        )
-        if response.status_code == 200:
-            return response.json().get("access_token")
-        pytest.skip("Admin authentication failed")
     
     def test_impersonate_store_owner_success(self, admin_token):
         """Test admin can impersonate a store owner"""
