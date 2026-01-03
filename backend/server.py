@@ -53,6 +53,7 @@ from routes import abandoned_carts as abandoned_carts_module
 from routes import custom_fields as custom_fields_module
 from routes import template_tags as template_tags_module
 from routes import platform as platform_module
+from routes import admin as admin_module
 
 ROOT_DIR = Path(__file__).parent
 load_dotenv(ROOT_DIR / '.env')
