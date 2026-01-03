@@ -74,6 +74,17 @@ Collections:
 
 ## Recent Changes (January 2026)
 
+### January 3, 2026 - Favicon Uploader
+**New Features:**
+- **Favicon Upload:** Store owners can upload custom favicons in Store Settings
+- Drag & drop or click to upload (PNG, ICO, SVG supported)
+- Favicon immediately updates in browser tab
+- `[@store_favicon@]` template tag available for themes
+
+**Files Modified:**
+- `MerchantStoreSettings.jsx` - Added favicon upload dropzone
+- `server.py` - Added `/api/upload/favicons` endpoint and `/api/store/favicon` dynamic endpoint
+
 ### January 3, 2026 - Email Integration & SSL Setup
 **New Features:**
 - **Email Service (Resend):** Complete email infrastructure with templates for:
