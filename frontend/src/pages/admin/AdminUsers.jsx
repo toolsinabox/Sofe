@@ -632,6 +632,61 @@ const AdminUsers = () => {
           )}
         </DialogContent>
       </Dialog>
+
+      {/* Reset Password Modal */}
+      <Dialog open={isResetPasswordModalOpen} onOpenChange={setIsResetPasswordModalOpen}>
+        <DialogContent className="bg-[#151b28] border-gray-800 text-white max-w-md">
+          <DialogHeader>
+            <DialogTitle className="text-xl font-semibold text-yellow-400 flex items-center gap-2">
+              <Key size={20} /> Reset Password
+            </DialogTitle>
+          </DialogHeader>
+          {selectedUser && (
+            <div className="space-y-4 mt-4">
+              <div className="p-4 bg-gray-800/30 rounded-lg">
+                <p className="text-gray-400 text-sm">User</p>
+                <p className="text-white font-medium">{selectedUser.name}</p>
+                <p className="text-gray-400 text-sm mt-2">Email</p>
+                <p className="text-cyan-400">{selectedUser.email}</p>
+              </div>
+              
+              <div className="space-y-2">
+                <Label className="text-gray-300">New Password *</Label>
+                <Input 
+                  type="password"
+                  value={newPassword}
+                  onChange={(e) => setNewPassword(e.target.value)}
+                  className="bg-gray-800/50 border-gray-700 text-white" 
+                  placeholder="Enter new password (min 6 characters)" 
+                />
+              </div>
+              
+              <div className="bg-yellow-500/10 border border-yellow-500/30 rounded-lg p-3">
+                <p className="text-yellow-400 text-sm">
+                  ⚠️ This will immediately change this user's password.
+                </p>
+              </div>
+              
+              <div className="flex justify-end gap-3 mt-6">
+                <Button 
+                  variant="ghost" 
+                  onClick={() => { setIsResetPasswordModalOpen(false); setNewPassword(''); }} 
+                  className="text-gray-400 hover:text-white hover:bg-gray-800"
+                >
+                  Cancel
+                </Button>
+                <Button 
+                  onClick={handleResetPassword}
+                  disabled={saving || !newPassword || newPassword.length < 6}
+                  className="bg-yellow-600 hover:bg-yellow-700 text-white"
+                >
+                  {saving ? 'Resetting...' : 'Reset Password'}
+                </Button>
+              </div>
+            </div>
+          )}
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };
