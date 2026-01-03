@@ -71,7 +71,7 @@ import SubdomainCPanel from "./pages/merchant/SubdomainCPanel";
 import PlatformHome from "./pages/platform/PlatformHome";
 import PlatformSignup from "./pages/platform/PlatformSignup";
 import PlatformLogin from "./pages/platform/PlatformLogin";
-import PlatformDashboard from "./pages/platform/PlatformDashboard";
+// PlatformDashboard removed - one email, one store model now redirects directly to /merchant
 import PlatformBilling from "./pages/platform/PlatformBilling";
 
 // Auth Pages
