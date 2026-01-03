@@ -5205,13 +5205,13 @@ async def update_invoice_template(template: dict):
 
 @api_router.post("/upload/{upload_type}")
 async def upload_file(upload_type: str, file: UploadFile = File(...)):
-    """Upload a file (logo, banner, product image)"""
-    allowed_types = ["logos", "banners", "products"]
+    """Upload a file (logo, banner, product image, favicon)"""
+    allowed_types = ["logos", "banners", "products", "favicons"]
     if upload_type not in allowed_types:
         raise HTTPException(status_code=400, detail=f"Invalid upload type. Must be one of: {allowed_types}")
     
     # Validate file type
-    allowed_extensions = [".jpg", ".jpeg", ".png", ".gif", ".webp", ".svg"]
+    allowed_extensions = [".jpg", ".jpeg", ".png", ".gif", ".webp", ".svg", ".ico"]
     file_ext = Path(file.filename).suffix.lower()
     if file_ext not in allowed_extensions:
         raise HTTPException(status_code=400, detail=f"Invalid file type. Allowed: {allowed_extensions}")
