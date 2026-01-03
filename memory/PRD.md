@@ -1,30 +1,43 @@
 # Celora - Multi-Tenant E-Commerce Hosting Platform
 
 ## Overview
-Celora is a Shopify-like multi-tenant e-commerce platform that allows customers to sign up and manage their own stores. The platform operates under the `getcelora.com` domain.
+Celora is a Shopify/Maropost-style multi-tenant e-commerce platform that allows customers to sign up and manage their own stores. The platform operates under the `getcelora.com` domain.
 
 ## Core Features
 
 ### Platform Features
 - **Multi-Tenancy:** Single codebase serves multiple stores with data isolation via `store_id`
 - **Subdomain Routing:** Each store gets `storename.getcelora.com`
-- **Custom Domain Support:** Stores can connect their own domains
+- **Custom Domain Support:** Stores can connect their own domains with TXT record verification
+- **Per-Store Themes:** Each store can have its own unique theme
 - **Platform Admin Dashboard:** `/admin` for managing all stores and users
 - **Merchant Dashboard:** `/merchant` for store owners to manage products, orders, etc.
+- **Admin Impersonation:** Platform admins can log in as any store owner
 
 ### Store Features
 - Product management with categories
 - Order management
 - Customer management
 - Theme Editor for customizing storefront
+- URL Redirects (301/302) management
+- Custom Scripts (Google Analytics, GTM, Facebook Pixel, etc.)
 - Shipping options
 - Payment integration (Stripe)
 - Reviews and ratings
+- Favicon uploader
+
+### Custom Domain Verification System
+1. Store owner enters custom domain (e.g., www.mystore.com)
+2. System generates unique TXT verification token: `celora-verify={subdomain_prefix}-{random_hex}`
+3. Store owner adds TXT record to their DNS
+4. Store owner adds A record pointing to server IP (45.77.239.247)
+5. System verifies BOTH TXT (ownership) and A record (routing)
+6. Domain marked as verified only when both pass
 
 ## Technical Architecture
 
 ### Stack
-- **Frontend:** React with Tailwind CSS
+- **Frontend:** React with Tailwind CSS + Shadcn UI
 - **Backend:** FastAPI (Python)
 - **Database:** MongoDB
 - **Server:** Nginx (reverse proxy) + PM2 (process manager)
@@ -37,17 +50,21 @@ Celora is a Shopify-like multi-tenant e-commerce platform that allows customers 
 | `www.getcelora.com/merchant` | Merchant dashboard |
 | `www.getcelora.com/admin/login` | Platform admin login |
 | `*.getcelora.com` | Store storefronts |
-| `*.getcelora.com/_cpanel` | Store backend access |
+| `*.getcelora.com/cpanel` | Store backend access |
+
+### Environment Detection
+The system works in both Emergent preview and Live environments:
+- **Emergent:** Uses `?subdomain=storename` query parameter
+- **Live:** Extracts subdomain from Host header or uses X-Subdomain header from Nginx
 
 ### Key Files
-- `/app/backend/server.py` - Main API routes
-- `/app/backend/maropost_engine.py` - Storefront template rendering
+- `/app/backend/server.py` - Main API routes (8000+ lines)
+- `/app/backend/routes/platform.py` - Platform store management
 - `/app/backend/themes/` - Store themes (toolsinabox, skeletal, mytheme)
 - `/app/frontend/src/App.js` - React routes
 - `/app/frontend/src/pages/merchant/` - Merchant dashboard pages
 - `/app/frontend/src/pages/admin/` - Admin dashboard pages
-
-## VPS Deployment (Vultr)
+- `/app/frontend/src/components/layout/MerchantSidebar.jsx` - Merchant navigation
 
 ### Server Details
 - **IP:** 45.77.239.247
