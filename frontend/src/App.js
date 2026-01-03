@@ -21,6 +21,7 @@ import MerchantCategories from "./pages/merchant/MerchantCategories";
 import MerchantBanners from "./pages/merchant/MerchantBanners";
 import MerchantContentZones from "./pages/merchant/MerchantContentZones";
 import MerchantThemeEditor from "./pages/merchant/MerchantThemeEditor";
+import MerchantDomains from "./pages/merchant/MerchantDomains";
 import MerchantStoreSettings from "./pages/merchant/MerchantStoreSettings";
 import MerchantSettings from "./pages/merchant/MerchantSettings";
 import MerchantPayments from "./pages/merchant/MerchantPayments";
