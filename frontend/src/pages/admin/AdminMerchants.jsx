@@ -229,9 +229,10 @@ const AdminMerchants = () => {
       const headers = { Authorization: `Bearer ${token}` };
       const res = await axios.post(`${API_URL}/api/admin/stores/${merchant.id}/impersonate`, {}, { headers });
       
-      const impersonateToken = res.data.token;
+      // Handle both 'token' and 'access_token' responses
+      const impersonateToken = res.data.token || res.data.access_token;
       const store = res.data.store;
-      const owner = res.data.owner;
+      const owner = res.data.user || res.data.owner;
       
       // Store the impersonation token in localStorage
       localStorage.setItem('token', impersonateToken);
@@ -240,7 +241,7 @@ const AdminMerchants = () => {
         role: 'merchant',
         store_id: store.id,
         impersonated: true,
-        impersonated_by: 'admin'
+        impersonated_by: res.data.impersonated_by || 'admin'
       }));
       
       setSuccess(`Logged in as ${owner.email}. Redirecting to merchant dashboard...`);
