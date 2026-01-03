@@ -4946,6 +4946,87 @@ async def verify_custom_domain(
             "message": f"Verification failed: {str(e)}"
         }
 
+@api_router.post("/store/check-dns")
+async def check_dns_status(
+    domain_data: dict,
+    current_user: dict = Depends(get_current_user)
+):
+    """Check DNS configuration status for a domain without activating it"""
+    import socket
+    import subprocess
+    
+    domain = domain_data.get("domain", "").lower().strip()
+    if not domain:
+        raise HTTPException(status_code=400, detail="Domain is required")
+    
+    # Clean the domain
+    domain = domain.replace("http://", "").replace("https://", "").rstrip("/")
+    
+    # Our server IP
+    SERVER_IP = "45.77.239.247"
+    
+    checks = []
+    all_passed = True
+    
+    # Check root domain (remove www if present)
+    root_domain = domain.replace("www.", "") if domain.startswith("www.") else domain
+    www_domain = f"www.{root_domain}"
+    
+    # Check root domain A record
+    try:
+        resolved_ip = socket.gethostbyname(root_domain)
+        if resolved_ip == SERVER_IP:
+            checks.append({
+                "record": f"A record for {root_domain}",
+                "passed": True,
+                "message": f"Correctly points to {SERVER_IP}"
+            })
+        else:
+            checks.append({
+                "record": f"A record for {root_domain}",
+                "passed": False,
+                "message": f"Points to {resolved_ip}, should be {SERVER_IP}"
+            })
+            all_passed = False
+    except socket.gaierror:
+        checks.append({
+            "record": f"A record for {root_domain}",
+            "passed": False,
+            "message": "No A record found or not propagated yet"
+        })
+        all_passed = False
+    
+    # Check www subdomain A record
+    try:
+        resolved_ip = socket.gethostbyname(www_domain)
+        if resolved_ip == SERVER_IP:
+            checks.append({
+                "record": f"A record for {www_domain}",
+                "passed": True,
+                "message": f"Correctly points to {SERVER_IP}"
+            })
+        else:
+            checks.append({
+                "record": f"A record for {www_domain}",
+                "passed": False,
+                "message": f"Points to {resolved_ip}, should be {SERVER_IP}"
+            })
+            all_passed = False
+    except socket.gaierror:
+        checks.append({
+            "record": f"A record for {www_domain}",
+            "passed": False,
+            "message": "No A record found or not propagated yet"
+        })
+        all_passed = False
+    
+    return {
+        "domain": domain,
+        "all_passed": all_passed,
+        "checks": checks,
+        "server_ip": SERVER_IP
+    }
+
 # ==================== INVOICE SETTINGS ====================
 
 @api_router.get("/settings/invoice-template")
