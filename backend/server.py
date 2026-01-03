@@ -2256,7 +2256,8 @@ async def get_orders(
     status: Optional[str] = None,
     payment_status: Optional[str] = None,
     limit: int = Query(default=50, le=100),
-    skip: int = 0
+    skip: int = 0,
+    current_user: dict = Depends(get_current_user)
 ):
     store_id = await get_store_id_for_request(request, current_user)
     query = {"store_id": store_id}
