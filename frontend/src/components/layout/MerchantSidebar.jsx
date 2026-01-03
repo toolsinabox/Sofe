@@ -54,7 +54,7 @@ import { useAuth } from '../../context/AuthContext';
 
 const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
 
-// Grouped navigation structure
+// Grouped navigation structure - Streamlined
 const navGroups = [
   {
     id: 'main',
@@ -71,7 +71,6 @@ const navGroups = [
       { path: '/merchant/orders', icon: ShoppingCart, label: 'Orders' },
       { path: '/merchant/quotes', icon: FileText, label: 'Quotes' },
       { path: '/merchant/returns', icon: RotateCcw, label: 'Returns & Refunds' },
-      { path: '/merchant/pos/reports', icon: BarChart3, label: 'POS Reports' },
       { path: '/merchant/abandoned-carts', icon: ShoppingBag, label: 'Abandoned Carts' },
     ]
   },
@@ -84,6 +83,7 @@ const navGroups = [
       { path: '/merchant/categories', icon: FolderOpen, label: 'Categories' },
       { path: '/merchant/inventory', icon: Boxes, label: 'Inventory' },
       { path: '/merchant/reviews', icon: Star, label: 'Reviews' },
+      { path: '/merchant/bundles', icon: Package, label: 'Product Bundles' },
     ]
   },
   {
@@ -93,19 +93,6 @@ const navGroups = [
     items: [
       { path: '/merchant/customers', icon: Users, label: 'All Customers' },
       { path: '/merchant/customer-groups', icon: Users2, label: 'Customer Groups' },
-      { path: '/merchant/emails', icon: Mail, label: 'Email Campaigns' },
-    ]
-  },
-  {
-    id: 'content',
-    label: 'Content',
-    icon: FileText,
-    items: [
-      { path: '/merchant/pages', icon: FileText, label: 'Pages' },
-      { path: '/merchant/blog', icon: FileText, label: 'Blog & News' },
-      { path: '/merchant/banners', icon: Image, label: 'Banners' },
-      { path: '/merchant/content-zones', icon: LayoutGrid, label: 'Content Zones' },
-      { path: '/merchant/mega-menu', icon: Menu, label: 'Mega Menu' },
     ]
   },
   {
@@ -115,23 +102,31 @@ const navGroups = [
     items: [
       { path: '/merchant/coupons', icon: Ticket, label: 'Coupons' },
       { path: '/merchant/discounts', icon: Tag, label: 'Discounts' },
-      { path: '/merchant/loyalty', icon: Crown, label: 'Loyalty Program' },
       { path: '/merchant/gift-cards', icon: Gift, label: 'Gift Cards' },
       { path: '/merchant/flash-sales', icon: Zap, label: 'Flash Sales' },
       { path: '/merchant/email-marketing', icon: Mail, label: 'Email Marketing' },
-      { path: '/merchant/seo', icon: Search, label: 'SEO Tools' },
       { path: '/merchant/analytics', icon: BarChart3, label: 'Analytics' },
-      { path: '/merchant/advanced-analytics', icon: TrendingUp, label: 'Advanced Analytics' },
     ]
   },
   {
-    id: 'operations',
-    label: 'Operations',
-    icon: Building2,
+    id: 'content',
+    label: 'Content',
+    icon: FileText,
     items: [
-      { path: '/merchant/suppliers', icon: Truck, label: 'Suppliers & POs' },
-      { path: '/merchant/warehouses', icon: Warehouse, label: 'Warehouses' },
-      { path: '/merchant/bundles', icon: Package, label: 'Product Bundles' },
+      { path: '/merchant/pages', icon: FileText, label: 'Pages' },
+      { path: '/merchant/blog', icon: FileText, label: 'Blog' },
+      { path: '/merchant/banners', icon: Image, label: 'Banners' },
+      { path: '/merchant/mega-menu', icon: Menu, label: 'Navigation' },
+    ]
+  },
+  {
+    id: 'storefront',
+    label: 'Storefront',
+    icon: Store,
+    items: [
+      { path: '/merchant/domains', icon: Globe, label: 'Domains' },
+      { path: '/merchant/theme-editor', icon: Palette, label: 'Theme Editor' },
+      { path: '/merchant/seo', icon: Search, label: 'SEO' },
     ]
   },
   {
@@ -142,31 +137,9 @@ const navGroups = [
       { path: '/merchant/store-settings', icon: Store, label: 'Store Settings' },
       { path: '/merchant/shipping', icon: Truck, label: 'Shipping' },
       { path: '/merchant/payments', icon: CreditCard, label: 'Payments' },
-      { path: '/merchant/tax', icon: Percent, label: 'Tax Management' },
-      { path: '/merchant/invoice-settings', icon: Receipt, label: 'Invoice Settings' },
-      { path: '/merchant/theme-editor', icon: Palette, label: 'Theme Editor' },
-      { path: '/merchant/domains', icon: Globe, label: 'Domains' },
-      { path: '/merchant/settings', icon: Settings, label: 'General Settings' },
-    ]
-  },
-  {
-    id: 'system',
-    label: 'System',
-    icon: Activity,
-    items: [
-      { path: '/merchant/activity-log', icon: Activity, label: 'Activity Log' },
-      { path: '/merchant/import-export', icon: Upload, label: 'Import / Export' },
-      { path: '/merchant/custom-fields', icon: Tag, label: 'Custom Fields' },
-      { path: '/merchant/template-tags', icon: Code, label: 'Template Tags' },
+      { path: '/merchant/tax', icon: Percent, label: 'Tax' },
       { path: '/merchant/notifications', icon: Bell, label: 'Notifications' },
-    ]
-  },
-  {
-    id: 'integrations',
-    label: 'Integrations',
-    icon: Puzzle,
-    items: [
-      { path: '/merchant/addons', icon: Puzzle, label: 'Addons & Apps' },
+      { path: '/merchant/addons', icon: Puzzle, label: 'Apps & Integrations' },
     ]
   },
 ];
