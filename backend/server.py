@@ -5075,14 +5075,19 @@ async def update_custom_domain(
     
     # Get current store to check if we need a new verification token
     store = await db.platform_stores.find_one({"id": store_id})
-    current_domain = store.get("custom_domain") if store else None
+    if not store:
+        raise HTTPException(status_code=404, detail="Store not found")
+    
+    subdomain = store.get("subdomain", "store")
+    current_domain = store.get("custom_domain")
     
     # Generate new verification token if domain changed or doesn't have one
-    verification_token = store.get("domain_verification_token") if store else None
+    # Format: celora-site={subdomain}.getcelora.com:{unique_code}
+    # This makes it OBVIOUS which store the domain connects to
+    verification_token = store.get("domain_verification_token")
     if not verification_token or custom_domain != current_domain:
-        # Generate unique token: celora-verify=<store_id_prefix>-<random>
-        token_suffix = secrets.token_hex(8)
-        verification_token = f"celora-verify={store_id[:8]}-{token_suffix}"
+        unique_code = secrets.token_hex(6)  # 12 character hex code
+        verification_token = f"celora-site={subdomain}.getcelora.com:{unique_code}"
     
     await db.platform_stores.update_one(
         {"id": store_id},
@@ -5097,7 +5102,8 @@ async def update_custom_domain(
     return {
         "message": "Domain saved. Please add the TXT record to verify ownership.",
         "custom_domain": custom_domain,
-        "verification_token": verification_token
+        "verification_token": verification_token,
+        "store_subdomain": f"{subdomain}.getcelora.com"
     }
 
 @api_router.delete("/store/custom-domain")
