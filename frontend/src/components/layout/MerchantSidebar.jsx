@@ -257,7 +257,8 @@ const MerchantSidebar = ({ collapsed, setCollapsed, mobileOpen, setMobileOpen })
 
   const handleLogout = () => {
     logout();
-    navigate('/merchant/login');
+    // Force reload to clear any cached state
+    window.location.href = '/merchant/login';
   };
 
   const handleBackToPlatform = () => {
