@@ -139,34 +139,24 @@ export default function PlatformDashboard() {
     navigator.clipboard.writeText(text);
   };
 
-  const handleAddDomain = async () => {
-    if (!domainInput || !currentStore) return;
-    
-    setDomainLoading(true);
-    try {
-      const res = await axios.post(
-        `${BACKEND_URL}/api/platform/stores/${currentStore.id}/domain?domain=${encodeURIComponent(domainInput)}`
-      );
-      setDomainResult(res.data);
-    } catch (error) {
-      setDomainResult({ error: error.response?.data?.detail || 'Failed to add domain' });
-    } finally {
-      setDomainLoading(false);
-    }
-  };
-
-  const handleVerifyDomain = async () => {
-    if (!currentStore) return;
-    
-    setDomainLoading(true);
-    try {
-      const res = await axios.post(`${BACKEND_URL}/api/platform/stores/${currentStore.id}/domain/verify`);
-      setDomainResult(res.data);
-      fetchData(); // Refresh store data
-    } catch (error) {
-      setDomainResult({ error: error.response?.data?.detail || 'Verification failed' });
-    } finally {
-      setDomainLoading(false);
+  // Navigate to the merchant domains page for domain management
+  const handleDomainManagement = () => {
+    const token = localStorage.getItem('platform_token');
+    if (currentStore && owner && token) {
+      // Set up the auth context with store data
+      const merchantUser = {
+        id: owner.id,
+        email: owner.email,
+        name: owner.name,
+        role: 'merchant',
+        store_id: currentStore.id
+      };
+      
+      // Login to merchant context and navigate to domains page
+      login(token, merchantUser, currentStore);
+      setAuthStore(currentStore);
+      localStorage.setItem('token', token);
+      navigate('/merchant/domains');
     }
   };
 
