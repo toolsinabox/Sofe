@@ -446,7 +446,7 @@ const MerchantCustomScripts = () => {
                       className="bg-white border-gray-300 text-gray-900 font-mono text-sm resize-none"
                       rows={4}
                     />
-                    <p className="text-xs text-gray-500">Use for conversion tracking: fbq('track', 'Purchase');</p>
+                    <p className="text-xs text-gray-500">Use for conversion tracking: fbq(&apos;track&apos;, &apos;Purchase&apos;);</p>
                   </div>
                 </div>
               </div>
@@ -463,7 +463,7 @@ const MerchantCustomScripts = () => {
                 Custom CSS
               </CardTitle>
               <CardDescription className="text-gray-500">
-                Add custom styles to customize your store's appearance
+                Add custom styles to customize your store&apos;s appearance
               </CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
