@@ -82,14 +82,21 @@ const SubdomainCPanel = () => {
 
   useEffect(() => {
     const fetchStoreInfo = async () => {
-      if (!subdomain) {
+      if (!storeContext.type || !storeContext.value) {
         setLoadingStore(false);
         return;
       }
       
       try {
-        const response = await axios.get(`${API}/cpanel/store-info/${subdomain}`);
-        setStoreInfo(response.data);
+        let response;
+        if (storeContext.type === 'subdomain') {
+          response = await axios.get(`${API}/cpanel/store-info/${storeContext.value}`);
+        } else if (storeContext.type === 'custom_domain') {
+          response = await axios.get(`${API}/cpanel/store-info-by-domain`, {
+            params: { domain: storeContext.value }
+          });
+        }
+        setStoreInfo(response?.data);
       } catch (err) {
         console.error('Failed to fetch store info:', err);
         setError('Store not found');
@@ -98,8 +105,12 @@ const SubdomainCPanel = () => {
       }
     };
 
-    fetchStoreInfo();
-  }, [subdomain]);
+    if (storeContext.type) {
+      fetchStoreInfo();
+    } else {
+      setLoadingStore(false);
+    }
+  }, [storeContext]);
 
   // If already authenticated, redirect to merchant dashboard
   useEffect(() => {
@@ -114,11 +125,15 @@ const SubdomainCPanel = () => {
     setError('');
 
     try {
-      // Login with subdomain context
-      const response = await axios.post(`${API}/cpanel/login`, {
-        ...formData,
-        subdomain: subdomain
-      });
+      // Login with subdomain or custom domain context
+      const loginPayload = { ...formData };
+      if (storeContext.type === 'subdomain') {
+        loginPayload.subdomain = storeContext.value;
+      } else if (storeContext.type === 'custom_domain') {
+        loginPayload.custom_domain = storeContext.value;
+      }
+      
+      const response = await axios.post(`${API}/cpanel/login`, loginPayload);
       
       login(response.data.access_token, response.data.user);
       navigate('/merchant');
@@ -130,18 +145,20 @@ const SubdomainCPanel = () => {
     }
   };
 
-  // If no subdomain detected, show generic login or redirect
-  if (!subdomain && !loadingStore) {
+  // If no store context detected, show generic login or redirect
+  if (!storeContext.type && !loadingStore) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-slate-900 to-slate-800 flex items-center justify-center p-4">
         <div className="text-center">
           <Store className="w-16 h-16 text-cyan-400 mx-auto mb-4" />
           <h1 className="text-2xl font-bold text-white mb-2">Access your CPanel</h1>
           <p className="text-gray-400 mb-6">
-            Please access your store&apos;s control panel via your subdomain:
+            Please access your store&apos;s control panel via your subdomain or custom domain:
           </p>
-          <div className="bg-slate-800/50 rounded-lg p-4 border border-slate-700">
-            <code className="text-cyan-400">yourstore.getcelora.com/cpanel</code>
+          <div className="bg-slate-800/50 rounded-lg p-4 border border-slate-700 space-y-2">
+            <code className="text-cyan-400 block">yourstore.getcelora.com/cpanel</code>
+            <span className="text-gray-500 text-sm">or</span>
+            <code className="text-cyan-400 block">yourcustomdomain.com/cpanel</code>
           </div>
           <Button
             onClick={() => navigate('/login')}
