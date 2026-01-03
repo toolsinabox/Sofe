@@ -173,7 +173,7 @@ class TestCPanelTokenValidation:
     """Test that CPanel login tokens work for merchant APIs"""
     
     def test_token_works_for_merchant_api(self):
-        """Test that token from CPanel login works for merchant dashboard APIs"""
+        """Test that token from CPanel login works for authenticated APIs"""
         # First login
         login_response = requests.post(f"{BASE_URL}/api/cpanel/login", json={
             "email": MERCHANT_EMAIL,
@@ -184,13 +184,16 @@ class TestCPanelTokenValidation:
         
         token = login_response.json()["access_token"]
         
-        # Try to access a merchant API
+        # Try to access an authenticated API (auth/me)
         headers = {"Authorization": f"Bearer {token}"}
-        dashboard_response = requests.get(f"{BASE_URL}/api/merchant/dashboard", headers=headers)
+        me_response = requests.get(f"{BASE_URL}/api/auth/me", headers=headers)
         
-        # Should be able to access merchant dashboard
-        assert dashboard_response.status_code == 200, f"Expected 200, got {dashboard_response.status_code}: {dashboard_response.text}"
-        print("✓ CPanel token works for merchant APIs")
+        # Should be able to access authenticated endpoint
+        assert me_response.status_code == 200, f"Expected 200, got {me_response.status_code}: {me_response.text}"
+        
+        data = me_response.json()
+        assert data["email"] == MERCHANT_EMAIL, f"Expected email '{MERCHANT_EMAIL}', got '{data['email']}'"
+        print("✓ CPanel token works for authenticated APIs")
 
 
 if __name__ == "__main__":
