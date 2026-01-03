@@ -118,17 +118,27 @@ Auto-detects which environment/platform the app is running on:
 ---
 
 
-### January 3, 2026 - Domain Settings Page UI Fix (COMPLETED)
-**Bug Fix:**
-- **Fixed UI Styling on Domain Settings Page:** The page was built with dark mode styling but the merchant dashboard uses a light theme, causing white text on white background
-- Changed all card backgrounds from `bg-gray-900/50` to `bg-white border-gray-200`
-- Changed all text colors from dark mode (`text-white`, `text-gray-400`) to light mode (`text-gray-900`, `text-gray-500`, `text-gray-700`)
-- Updated CopyTag component to use light mode colors (`text-blue-700`, `bg-blue-50`)
-- All badges (Verified, Pending, Always Active) now use light mode styling
+### January 3, 2026 - Comprehensive UI Audit (COMPLETED)
+**Full merchant dashboard UI audit:**
+- **Domain Settings Page** - Fixed white-on-white text issue, converted to light mode
+- **URL Redirects Page** - Full rewrite from dark to light mode styling
+- **Custom Scripts Page** - Converted from dark to light mode styling
+- **Product Editor Template Tags** - Made ALL 30+ template tags BLUE and CLICKABLE
+
+**New Components Created:**
+- `/app/frontend/src/components/ui/TemplateTag.jsx` - Blue clickable tag component for template variables
+- Updated `/app/frontend/src/components/ui/CopyTag.jsx` - Light mode color variants
 
 **Files Modified:**
-- `/app/frontend/src/pages/merchant/MerchantDomains.jsx` - Full light mode styling update
-- `/app/frontend/src/components/ui/CopyTag.jsx` - Light mode color variants
+- `/app/frontend/src/pages/merchant/MerchantDomains.jsx` - Light mode styling
+- `/app/frontend/src/pages/merchant/MerchantRedirects.jsx` - Full rewrite to light mode
+- `/app/frontend/src/pages/merchant/MerchantCustomScripts.jsx` - Light mode styling
+- `/app/frontend/src/pages/merchant/MerchantProducts.jsx` - Imported TemplateTag, converted 30+ template tags
+
+**Template Tags Now Blue & Clickable:**
+- Product: [@product_name@], [@product_sku@], [@product_price@], [@product_description@], etc.
+- All tags have copy-to-clipboard functionality
+- Tags use blue styling: `bg-blue-50 text-blue-700 border-blue-200`
 
 ## Recent Changes (January 2026)
 
