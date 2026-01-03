@@ -236,10 +236,10 @@ const SubdomainCPanel = () => {
             </div>
           )}
           <h1 className="text-2xl font-bold text-white">
-            {storeInfo?.store_name || subdomain}
+            {storeInfo?.store_name || storeContext.value}
           </h1>
           <p className="text-gray-400 mt-2">Merchant Control Panel</p>
-          <p className="text-sm text-cyan-400 mt-1">{subdomain}.getcelora.com</p>
+          <p className="text-sm text-cyan-400 mt-1">{getDisplayDomain()}</p>
         </div>
 
         {/* Login Form */}
