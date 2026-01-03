@@ -163,23 +163,24 @@ Collections:
 
 ### P0 - Immediate (Deploy to VPS)
 - [x] Self-service custom domain feature (COMPLETED)
+- [x] URL Redirects feature (COMPLETED)
+- [x] Custom Scripts feature (COMPLETED)
 - [ ] Push changes to GitHub
 - [ ] Deploy to VPS: `git pull && cd frontend && yarn build && pm2 restart celora-backend`
 - [ ] Update nginx config to pass X-Subdomain header
 
 ### P1 - High Priority
 - [ ] SSL Certificate setup (Certbot) - waiting for DNS propagation
-- [ ] Self-service custom domain connection (UI complete, needs DNS setup guide)
-- [ ] Email integration for transactional emails
+- [ ] Email API key configuration (Resend) - user needs to provide API key
+- [ ] Stripe production keys (test keys currently in use)
 
 ### P2 - Medium Priority
-- [ ] Stripe production keys (test keys currently in use)
 - [ ] eBay integration fix (credential issue - user needs to verify on eBay dev portal)
-- [ ] Refactor server.py (duplicate app.include_router call)
+- [ ] Refactor server.py into smaller route files (api/routes/*.py)
+- [ ] Unify user models (platform_owners vs users with different password hashing)
 
 ### P3 - Backlog
 - [ ] Auto-deployment from GitHub (CI/CD)
-- [ ] Unify user models (platform_owners vs users with different password hashing)
 - [ ] Full API scoping audit
 
 ## Nginx Configuration (for VPS)
