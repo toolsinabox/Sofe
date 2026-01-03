@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Domain Test</title>
+    <style>
+        body { font-family: sans-serif; padding: 20px; background: #1a1a2e; color: white; }
+        .result { background: #16213e; padding: 15px; margin: 10px 0; border-radius: 8px; }
+        .error { background: #ff4444; }
+        .success { background: #00aa00; }
+        button { padding: 10px 20px; margin: 5px; cursor: pointer; }
+        pre { white-space: pre-wrap; word-break: break-all; }
+    </style>
+</head>
+<body>
+    <h1>Domain Settings Test</h1>
+    
+    <div>
+        <h3>Step 1: Login</h3>
+        <input type="email" id="email" value="eddie@toolsinabox.com.au" style="width:300px;padding:8px;">
+        <input type="password" id="password" value="Yealink1991%" style="width:200px;padding:8px;">
+        <button onclick="doLogin()">Login</button>
+        <div id="loginResult" class="result"></div>
+    </div>
+    
+    <div>
+        <h3>Step 2: Fetch Domain Settings</h3>
+        <button onclick="fetchDomains()">Fetch Domain Settings</button>
+        <div id="domainResult" class="result"></div>
+    </div>
+    
+    <div>
+        <h3>Step 3: Save Domain</h3>
+        <input type="text" id="newDomain" value="www.toolsinabox.com.au" style="width:300px;padding:8px;">
+        <button onclick="saveDomain()">Save Domain</button>
+        <div id="saveResult" class="result"></div>
+    </div>
+
+    <script>
+        const API = 'https://multi-store-ecom.preview.emergentagent.com/api';
+        let token = localStorage.getItem('token');
+        
+        async function doLogin() {
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+            
+            try {
+                const resp = await fetch(`${API}/auth/login`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ email, password })
+                });
+                const data = await resp.json();
+                
+                if (data.access_token) {
+                    token = data.access_token;
+                    localStorage.setItem('token', token);
+                    document.getElementById('loginResult').innerHTML = '<span class="success">✓ Login successful! Token saved.</span>';
+                } else {
+                    document.getElementById('loginResult').innerHTML = '<span class="error">✗ Login failed: ' + JSON.stringify(data) + '</span>';
+                }
+            } catch (e) {
+                document.getElementById('loginResult').innerHTML = '<span class="error">✗ Error: ' + e.message + '</span>';
+            }
+        }
+        
+        async function fetchDomains() {
+            if (!token) {
+                document.getElementById('domainResult').innerHTML = '<span class="error">Please login first!</span>';
+                return;
+            }
+            
+            try {
+                const resp = await fetch(`${API}/store/domain-settings`, {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+                const data = await resp.json();
+                
+                document.getElementById('domainResult').innerHTML = '<pre>' + JSON.stringify(data, null, 2) + '</pre>';
+            } catch (e) {
+                document.getElementById('domainResult').innerHTML = '<span class="error">✗ Error: ' + e.message + '</span>';
+            }
+        }
+        
+        async function saveDomain() {
+            if (!token) {
+                document.getElementById('saveResult').innerHTML = '<span class="error">Please login first!</span>';
+                return;
+            }
+            
+            const domain = document.getElementById('newDomain').value;
+            
+            try {
+                const resp = await fetch(`${API}/store/custom-domain`, {
+                    method: 'PUT',
+                    headers: { 
+                        'Authorization': `Bearer ${token}`,
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ custom_domain: domain })
+                });
+                const data = await resp.json();
+                
+                document.getElementById('saveResult').innerHTML = '<pre>' + JSON.stringify(data, null, 2) + '</pre>';
+            } catch (e) {
+                document.getElementById('saveResult').innerHTML = '<span class="error">✗ Error: ' + e.message + '</span>';
+            }
+        }
+    </script>
+</body>
+</html>
