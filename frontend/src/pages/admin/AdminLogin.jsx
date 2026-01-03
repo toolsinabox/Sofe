@@ -26,17 +26,24 @@ const AdminLogin = () => {
     setError('');
 
     try {
-      const response = await axios.post(`${API}/auth/login`, formData);
+      // Use dedicated admin auth endpoint
+      const response = await axios.post(
+        `${API}/admin/auth/login?email=${encodeURIComponent(formData.email)}&password=${encodeURIComponent(formData.password)}`
+      );
       
-      // Check if user is admin
-      if (response.data.user.role !== 'admin') {
+      // Check if user is admin or super_admin
+      const role = response.data.admin?.role;
+      if (!['admin', 'super_admin'].includes(role)) {
         setError('Access denied. Admin privileges required.');
         setLoading(false);
         return;
       }
       
       // Use context login function to update state
-      login(response.data.access_token, response.data.user);
+      login(response.data.token, {
+        ...response.data.admin,
+        role: role
+      });
       
       // Redirect to admin dashboard
       navigate('/admin');
