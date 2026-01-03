@@ -14,6 +14,7 @@ import {
 } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '../../components/ui/card';
 import { useAuth } from '../../context/AuthContext';
+import { getStoreUrl } from '../../utils/platformDetect';
 import axios from 'axios';
 
 const API_URL = process.env.REACT_APP_BACKEND_URL;
