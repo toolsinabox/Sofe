@@ -8274,8 +8274,13 @@ async def admin_login(email: str, password: str):
     if admin.get("hashed_password") != hashed_password:
         raise HTTPException(status_code=401, detail="Invalid credentials")
     
-    # Create token
-    token = create_access_token(data={"sub": admin["id"], "role": "admin", "email": admin["email"]})
+    # Create token with admin role
+    token = create_access_token(data={
+        "sub": admin["id"], 
+        "role": "admin", 
+        "email": admin["email"],
+        "is_admin": True
+    })
     
     return {
         "token": token,
