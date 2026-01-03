@@ -39,7 +39,8 @@ const AdminActivityLog = () => {
     }
   };
 
-  useEffect(() => {
+  useEffect(() => { // eslint-disable-next-line react-hooks/exhaustive-deps
+  
     if (token) fetchData();
   }, [token]);
 
