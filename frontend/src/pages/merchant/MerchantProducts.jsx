@@ -189,8 +189,8 @@ const ImageSlot = ({ index, image, onImageChange, onImageRemove, onDragStart, on
   );
 };
 
-// Template Tag Display Component
-const TemplateTag = ({ tag, description }) => {
+// Template Tag Display Component (for tags panel)
+const TagsPanelItem = ({ tag, description }) => {
   const [copied, setCopied] = useState(false);
   
   const copyTag = () => {
@@ -203,10 +203,10 @@ const TemplateTag = ({ tag, description }) => {
     <div className="flex items-center gap-2 py-1 group">
       <button
         onClick={copyTag}
-        className="flex items-center gap-1 px-2 py-1 bg-gray-100 hover:bg-gray-100 rounded text-xs font-mono text-emerald-400 transition-colors"
+        className="flex items-center gap-1 px-2 py-1 bg-blue-50 hover:bg-blue-100 rounded text-xs font-mono text-blue-700 border border-blue-200 transition-colors"
         title="Click to copy"
       >
-        {copied ? <Check size={12} /> : <Copy size={12} />}
+        {copied ? <Check size={12} className="text-emerald-600" /> : <Copy size={12} />}
         <span>{tag}</span>
       </button>
       <span className="text-gray-500 text-xs">{description}</span>
