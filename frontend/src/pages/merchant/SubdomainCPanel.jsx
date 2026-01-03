@@ -124,7 +124,7 @@ const SubdomainCPanel = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
-    setError('');
+    setLoginError('');
 
     try {
       // Login with subdomain or custom domain context
@@ -141,7 +141,7 @@ const SubdomainCPanel = () => {
       navigate('/merchant');
     } catch (err) {
       console.error('Login error:', err);
-      setError(err.response?.data?.detail || 'Invalid email or password');
+      setLoginError(err.response?.data?.detail || 'Invalid email or password');
     } finally {
       setLoading(false);
     }
