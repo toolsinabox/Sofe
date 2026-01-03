@@ -102,6 +102,12 @@ function App() {
                 Store owners manage their stores here
             ============================================ */}
             <Route path="/merchant/login" element={<MerchantLogin />} />
+            
+            {/* Subdomain CPanel - proper store-specific login */}
+            <Route path="/cpanel" element={<SubdomainCPanel />} />
+            <Route path="/cpanel/login" element={<SubdomainCPanel />} />
+            
+            {/* Legacy _cpanel routes */}
             <Route path="/_cpanel/login" element={<MerchantLogin />} />
             <Route path="/_cpanel/*" element={<Navigate to="/merchant" replace />} />
             <Route path="/_cpanel" element={
