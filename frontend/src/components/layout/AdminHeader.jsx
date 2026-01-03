@@ -1,5 +1,6 @@
 import React from 'react';
-import { Bell, Search, User, ChevronDown, Menu } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
+import { Bell, Search, User, ChevronDown, Menu, LogOut } from 'lucide-react';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -7,8 +8,17 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '../ui/dropdown-menu';
+import { useAuth } from '../../context/AuthContext';
 
 const AdminHeader = ({ title, onMenuClick }) => {
+  const { logout, user } = useAuth();
+  const navigate = useNavigate();
+
+  const handleLogout = () => {
+    logout();
+    window.location.href = '/admin/login';
+  };
+
   return (
     <header className="h-14 sm:h-16 bg-[#0d1117] border-b border-gray-800 flex items-center justify-between px-3 sm:px-6">
       <div className="flex items-center gap-2 sm:gap-4">
@@ -58,7 +68,11 @@ const AdminHeader = ({ title, onMenuClick }) => {
               Account Settings
             </DropdownMenuItem>
             <DropdownMenuSeparator className="bg-gray-700" />
-            <DropdownMenuItem className="text-red-400 hover:text-red-300 hover:bg-red-500/10 cursor-pointer">
+            <DropdownMenuItem 
+              onClick={handleLogout}
+              className="text-red-400 hover:text-red-300 hover:bg-red-500/10 cursor-pointer"
+            >
+              <LogOut size={16} className="mr-2" />
               Logout
             </DropdownMenuItem>
           </DropdownMenuContent>
