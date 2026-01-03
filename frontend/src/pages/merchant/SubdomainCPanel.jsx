@@ -99,7 +99,7 @@ const SubdomainCPanel = () => {
           <Store className="w-16 h-16 text-cyan-400 mx-auto mb-4" />
           <h1 className="text-2xl font-bold text-white mb-2">Access your CPanel</h1>
           <p className="text-gray-400 mb-6">
-            Please access your store's control panel via your subdomain:
+            Please access your store&apos;s control panel via your subdomain:
           </p>
           <div className="bg-slate-800/50 rounded-lg p-4 border border-slate-700">
             <code className="text-cyan-400">yourstore.getcelora.com/cpanel</code>
