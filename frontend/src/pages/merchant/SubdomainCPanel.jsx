@@ -98,9 +98,10 @@ const SubdomainCPanel = () => {
           });
         }
         setStoreInfo(response?.data);
+        setStoreError(false);
       } catch (err) {
         console.error('Failed to fetch store info:', err);
-        setError('Store not found');
+        setStoreError(true);
       } finally {
         setLoadingStore(false);
       }
