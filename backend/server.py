@@ -683,19 +683,50 @@ async def get_current_user(credentials: HTTPAuthorizationCredentials = Depends(s
         user_id: str = payload.get("sub")
         if user_id is None:
             raise credentials_exception
+        
+        # Check if this is an admin token
+        is_admin = payload.get("is_admin", False)
+        role = payload.get("role")
+        email = payload.get("email")
+        store_id = payload.get("store_id")
+        
     except JWTError:
         raise credentials_exception
     
-    user = await db.users.find_one({"id": user_id})
-    if user is None:
-        raise credentials_exception
+    # If admin token, check admins collection
+    if is_admin or role == "admin":
+        admin = await db.admins.find_one({"id": user_id})
+        if admin:
+            return {
+                "id": admin["id"],
+                "email": admin["email"],
+                "name": admin.get("name", "Admin"),
+                "role": "admin"
+            }
     
-    return {
-        "id": user["id"],
-        "email": user["email"],
-        "name": user["name"],
-        "role": user["role"]
-    }
+    # Try users collection
+    user = await db.users.find_one({"id": user_id})
+    if user:
+        return {
+            "id": user["id"],
+            "email": user["email"],
+            "name": user.get("name", ""),
+            "role": user.get("role", "user"),
+            "store_id": user.get("store_id") or store_id
+        }
+    
+    # Try platform_owners collection
+    owner = await db.platform_owners.find_one({"id": user_id})
+    if owner:
+        return {
+            "id": owner["id"],
+            "email": owner["email"],
+            "name": owner.get("name", ""),
+            "role": "merchant",
+            "store_id": store_id or owner.get("stores", [None])[0]
+        }
+    
+    raise credentials_exception
 
 async def get_current_active_user(current_user: dict = Depends(get_current_user)) -> dict:
     return current_user
