@@ -219,6 +219,76 @@ const AdminMerchants = () => {
     setIsDeleteModalOpen(true);
   };
 
+  // Impersonate (Login As) function
+  const handleImpersonate = async (merchant) => {
+    setSaving(true);
+    setError(null);
+    
+    try {
+      const headers = { Authorization: `Bearer ${token}` };
+      const res = await axios.post(`${API_URL}/api/admin/stores/${merchant.id}/impersonate`, {}, { headers });
+      
+      // Store the impersonation token and redirect
+      const impersonateToken = res.data.access_token;
+      
+      // Option 1: Open in new tab with token
+      const subdomain = merchant.subdomain || '';
+      const targetUrl = subdomain 
+        ? `http://${subdomain}.getcelora.com/merchant?token=${impersonateToken}`
+        : `/merchant?token=${impersonateToken}`;
+      
+      // Copy token to clipboard
+      navigator.clipboard.writeText(impersonateToken);
+      setCopiedToken(true);
+      setTimeout(() => setCopiedToken(false), 3000);
+      
+      setSuccess(`Login token copied! You can now login as ${merchant.owner_email || merchant.email}. Opening dashboard...`);
+      
+      // For local development, just copy the token
+      // window.open(targetUrl, '_blank');
+      
+    } catch (err) {
+      setError(err.response?.data?.detail || 'Failed to impersonate merchant');
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  // Reset password function
+  const handleResetPassword = async () => {
+    if (!newPassword || newPassword.length < 6) {
+      setError('Password must be at least 6 characters');
+      return;
+    }
+    
+    setSaving(true);
+    setError(null);
+    
+    try {
+      const headers = { Authorization: `Bearer ${token}` };
+      await axios.post(
+        `${API_URL}/api/admin/stores/${selectedMerchant.id}/reset-owner-password`,
+        { new_password: newPassword },
+        { headers }
+      );
+      
+      setSuccess(`Password reset successfully for ${selectedMerchant.owner_email || selectedMerchant.email}`);
+      setIsResetPasswordModalOpen(false);
+      setNewPassword('');
+      setSelectedMerchant(null);
+    } catch (err) {
+      setError(err.response?.data?.detail || 'Failed to reset password');
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  const openResetPasswordModal = (merchant) => {
+    setSelectedMerchant(merchant);
+    setNewPassword('');
+    setIsResetPasswordModalOpen(true);
+  };
+
   return (
     <div className="space-y-6">
       {/* Header */}
