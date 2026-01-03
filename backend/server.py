@@ -6323,12 +6323,25 @@ async def render_page_v2(
             "custom_domain": custom_domain_header,
             "custom_domain_verified": True
         }, {"_id": 0})
+        # If custom domain specified but store not found, return 404
+        if not store:
+            raise HTTPException(status_code=404, detail="Store not found for this domain")
     
-    # If not found, check for subdomain
+    # Check for subdomain on getcelora.com
+    subdomain_requested = None
     if not store and host and ".getcelora.com" in host:
-        subdomain = host.replace(".getcelora.com", "").strip()
-        if subdomain and subdomain not in ["www", ""]:
-            store = await db.platform_stores.find_one({"subdomain": subdomain}, {"_id": 0})
+        subdomain_requested = host.replace(".getcelora.com", "").strip()
+        if subdomain_requested and subdomain_requested not in ["www", "", "api", "admin", "app"]:
+            store = await db.platform_stores.find_one({
+                "subdomain": subdomain_requested,
+                "status": {"$in": ["active", "trial"]}  # Only active or trial stores
+            }, {"_id": 0})
+            # If subdomain specified but store not found or not active, return 404
+            if not store:
+                raise HTTPException(
+                    status_code=404, 
+                    detail=f"Store '{subdomain_requested}' not found or inactive"
+                )
     
     # If store found, get store-specific settings
     if store:
