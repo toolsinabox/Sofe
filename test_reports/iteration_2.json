@@ -1,0 +1,73 @@
+{
+  "summary": "Completed testing of CPanel feature for subdomain and custom domain access. Backend APIs all pass (13/13 tests). Frontend works correctly for valid stores but has a bug with login error display.",
+  "backend_issues": {
+    "critical": [],
+    "minor": []
+  },
+  "frontend_issues": {
+    "ui_bugs": [
+      {
+        "component": "SubdomainCPanel.jsx",
+        "issue": "Login error shows 'Store Not Found' page instead of error message in login form. The error state is shared between store loading errors and login errors, causing login failures to trigger the wrong error page.",
+        "selector": "Line 191: if (error || !storeInfo)",
+        "priority": "MEDIUM",
+        "fix_suggestion": "Use separate state variables: storeError for store loading errors and loginError for login errors. Only show 'Store Not Found' page when storeError is set, not when loginError is set."
+      }
+    ],
+    "integration_issues": [],
+    "design_issues": []
+  },
+  "test_report_links": [
+    "/app/tests/test_cpanel_feature.py",
+    "/app/test_reports/pytest/pytest_cpanel_results.xml"
+  ],
+  "action_items": [
+    "Fix SubdomainCPanel.jsx: Separate storeError and loginError states to properly display login errors in the form instead of showing 'Store Not Found' page"
+  ],
+  "critical_code_review_comments": [
+    "SubdomainCPanel.jsx line 191: The condition 'if (error || !storeInfo)' conflates store loading errors with login errors. This causes login failures to show 'Store Not Found' instead of the inline error message."
+  ],
+  "updated_files": [
+    "/app/tests/test_cpanel_feature.py"
+  ],
+  "success_rate": {
+    "backend": "100% (13/13 tests passed)",
+    "frontend": "90% - Login error display bug found"
+  },
+  "test_credentials": {
+    "merchant_email": "eddie@toolsinabox.com.au",
+    "merchant_password": "Yealink1991%",
+    "verified_subdomain": "toolsinabox",
+    "verified_custom_domain": "www.toolsinabox.com.au"
+  },
+  "seed_data_creation": "No seed data created - used existing store 'Tools In A Box'",
+  "retest_needed": true,
+  "main_agent_can_self_test": true,
+  "context_for_next_testing_agent": "CPanel feature testing completed. Backend APIs fully functional: GET /api/cpanel/store-info/{subdomain}, GET /api/cpanel/store-info-by-domain, POST /api/cpanel/login. Frontend works for valid login flows but has a bug where login errors show 'Store Not Found' page instead of inline error message. The bug is in SubdomainCPanel.jsx line 191 where error state is shared between store loading and login errors.",
+  "features_tested": {
+    "backend_apis": {
+      "GET /api/cpanel/store-info/{subdomain}": "PASS - Returns store info for valid subdomain",
+      "GET /api/cpanel/store-info/{subdomain} - nonexistent": "PASS - Returns 404 for invalid subdomain",
+      "GET /api/cpanel/store-info/{subdomain} - case insensitive": "PASS - Subdomain lookup is case insensitive",
+      "GET /api/cpanel/store-info-by-domain": "PASS - Returns store info for valid custom domain",
+      "GET /api/cpanel/store-info-by-domain - nonexistent": "PASS - Returns 404 for invalid domain",
+      "GET /api/cpanel/store-info-by-domain - with protocol": "PASS - Strips protocol from domain",
+      "POST /api/cpanel/login - subdomain context": "PASS - Login works with subdomain",
+      "POST /api/cpanel/login - custom domain context": "PASS - Login works with custom domain",
+      "POST /api/cpanel/login - invalid credentials": "PASS - Returns 401",
+      "POST /api/cpanel/login - missing email": "PASS - Returns 400",
+      "POST /api/cpanel/login - missing password": "PASS - Returns 400",
+      "POST /api/cpanel/login - no store context": "PASS - Uses default store",
+      "Token validation": "PASS - CPanel token works for authenticated APIs"
+    },
+    "frontend_pages": {
+      "CPanel with subdomain context": "PASS - Shows store name, login form, subdomain display",
+      "CPanel with custom domain context": "PASS - Shows store name, login form, custom domain display",
+      "CPanel login flow - subdomain": "PASS - Redirects to /merchant after successful login",
+      "CPanel login flow - custom domain": "PASS - Redirects to /merchant after successful login",
+      "CPanel store not found": "PASS - Shows error page with action buttons",
+      "CPanel no context": "PASS - Shows instructions to access via subdomain/domain",
+      "CPanel invalid login": "FAIL - Shows 'Store Not Found' instead of login error message"
+    }
+  }
+}
