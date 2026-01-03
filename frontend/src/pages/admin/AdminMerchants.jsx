@@ -11,7 +11,12 @@ import {
   Store,
   RefreshCw,
   X,
-  AlertCircle
+  AlertCircle,
+  LogIn,
+  Key,
+  ExternalLink,
+  Copy,
+  Check
 } from 'lucide-react';
 import { Card, CardContent } from '../../components/ui/card';
 import { Button } from '../../components/ui/button';
