@@ -7832,6 +7832,319 @@ async def delete_admin_user(user_id: str, admin: dict = Depends(get_admin_user))
         raise HTTPException(status_code=404, detail="User not found")
     return {"message": "User deleted successfully"}
 
+
+# ==================== ADMIN PASSWORD RESET ====================
+
+@api_router.post("/admin/users/{user_id}/reset-password")
+async def admin_reset_user_password(user_id: str, password_data: dict, admin: dict = Depends(get_admin_user)):
+    """Admin can reset any user's password"""
+    new_password = password_data.get("new_password")
+    if not new_password or len(new_password) < 6:
+        raise HTTPException(status_code=400, detail="Password must be at least 6 characters")
+    
+    user = await db.users.find_one({"id": user_id})
+    if not user:
+        raise HTTPException(status_code=404, detail="User not found")
+    
+    hashed = get_password_hash(new_password)
+    await db.users.update_one(
+        {"id": user_id},
+        {"$set": {"hashed_password": hashed, "updated_at": datetime.now(timezone.utc).isoformat()}}
+    )
+    
+    return {"message": f"Password reset successfully for {user.get('email')}"}
+
+
+# ==================== ADMIN IMPERSONATE / LOGIN AS ====================
+
+@api_router.post("/admin/users/{user_id}/impersonate")
+async def admin_impersonate_user(user_id: str, admin: dict = Depends(get_admin_user)):
+    """Admin can generate a login token to access any user's account"""
+    user = await db.users.find_one({"id": user_id})
+    if not user:
+        raise HTTPException(status_code=404, detail="User not found")
+    
+    # Generate token for the target user
+    access_token = create_access_token(data={"sub": user["id"], "impersonated_by": admin["id"]})
+    
+    return {
+        "access_token": access_token,
+        "token_type": "bearer",
+        "user": {
+            "id": user["id"],
+            "email": user["email"],
+            "name": user["name"],
+            "role": user["role"],
+            "store_id": user.get("store_id")
+        },
+        "impersonated_by": admin["email"],
+        "message": f"You are now logged in as {user.get('email')}"
+    }
+
+
+@api_router.post("/admin/stores/{store_id}/impersonate")
+async def admin_impersonate_store_owner(store_id: str, admin: dict = Depends(get_admin_user)):
+    """Admin can login as a store owner to access their merchant dashboard"""
+    # Find the store
+    store = await db.platform_stores.find_one({"id": store_id})
+    if not store:
+        raise HTTPException(status_code=404, detail="Store not found")
+    
+    # Find the store owner
+    owner = await db.platform_owners.find_one({"id": store.get("owner_id")})
+    if not owner:
+        # Try to find user by store_id
+        user = await db.users.find_one({"store_id": store_id})
+        if user:
+            access_token = create_access_token(data={"sub": user["id"], "impersonated_by": admin["id"]})
+            return {
+                "access_token": access_token,
+                "token_type": "bearer",
+                "user": {
+                    "id": user["id"],
+                    "email": user["email"],
+                    "name": user["name"],
+                    "role": user.get("role", "merchant"),
+                    "store_id": store_id
+                },
+                "store": {
+                    "id": store["id"],
+                    "store_name": store.get("store_name"),
+                    "subdomain": store.get("subdomain")
+                },
+                "impersonated_by": admin["email"]
+            }
+        raise HTTPException(status_code=404, detail="Store owner not found")
+    
+    # Find or create a user record for this owner
+    user = await db.users.find_one({"email": owner["email"]})
+    if not user:
+        # Create a temporary user record for impersonation
+        user = {
+            "id": owner["id"],
+            "email": owner["email"],
+            "name": owner["name"],
+            "role": "merchant",
+            "store_id": store_id
+        }
+    
+    access_token = create_access_token(data={"sub": owner["id"], "impersonated_by": admin["id"], "store_id": store_id})
+    
+    return {
+        "access_token": access_token,
+        "token_type": "bearer",
+        "user": {
+            "id": owner["id"],
+            "email": owner["email"],
+            "name": owner["name"],
+            "role": "merchant",
+            "store_id": store_id
+        },
+        "store": {
+            "id": store["id"],
+            "store_name": store.get("store_name"),
+            "subdomain": store.get("subdomain")
+        },
+        "impersonated_by": admin["email"]
+    }
+
+
+# ==================== SUBDOMAIN CPANEL ENDPOINTS ====================
+
+@api_router.get("/cpanel/store-info/{subdomain}")
+async def get_cpanel_store_info(subdomain: str):
+    """Get store info for CPanel login page branding"""
+    store = await db.platform_stores.find_one(
+        {"subdomain": subdomain.lower()},
+        {"_id": 0, "id": 1, "store_name": 1, "subdomain": 1, "logo": 1, "status": 1}
+    )
+    
+    if not store:
+        raise HTTPException(status_code=404, detail="Store not found")
+    
+    if store.get("status") == "suspended":
+        raise HTTPException(status_code=403, detail="This store has been suspended")
+    
+    return store
+
+
+@api_router.post("/cpanel/login")
+async def cpanel_login(login_data: dict):
+    """Login to merchant CPanel with subdomain context"""
+    email = login_data.get("email", "").lower()
+    password = login_data.get("password", "")
+    subdomain = login_data.get("subdomain", "").lower()
+    
+    if not email or not password:
+        raise HTTPException(status_code=400, detail="Email and password required")
+    
+    # Find the store by subdomain
+    store = None
+    if subdomain:
+        store = await db.platform_stores.find_one({"subdomain": subdomain})
+        if not store:
+            raise HTTPException(status_code=404, detail="Store not found")
+        if store.get("status") == "suspended":
+            raise HTTPException(status_code=403, detail="This store has been suspended")
+    
+    # Try to find user in users collection first
+    user = await db.users.find_one({"email": email})
+    
+    if user:
+        if not verify_password(password, user.get("hashed_password", "")):
+            raise HTTPException(status_code=401, detail="Invalid email or password")
+        
+        # If store context provided, verify user belongs to this store
+        if store and user.get("store_id") and user.get("store_id") != store["id"]:
+            raise HTTPException(status_code=403, detail="You don't have access to this store")
+        
+        access_token = create_access_token(data={"sub": user["id"], "store_id": store["id"] if store else user.get("store_id")})
+        
+        return {
+            "access_token": access_token,
+            "token_type": "bearer",
+            "user": {
+                "id": user["id"],
+                "email": user["email"],
+                "name": user.get("name", ""),
+                "role": user.get("role", "merchant"),
+                "store_id": store["id"] if store else user.get("store_id")
+            }
+        }
+    
+    # Try platform_owners collection
+    owner = await db.platform_owners.find_one({"email": email})
+    
+    if owner:
+        # Verify password - platform_owners might use different hashing
+        import hashlib
+        sha256_hash = hashlib.sha256(password.encode()).hexdigest()
+        
+        if owner.get("hashed_password") != sha256_hash:
+            # Try bcrypt verification
+            if not verify_password(password, owner.get("hashed_password", "")):
+                raise HTTPException(status_code=401, detail="Invalid email or password")
+        
+        # Check if owner has access to this store
+        if store and store["id"] not in owner.get("stores", []):
+            raise HTTPException(status_code=403, detail="You don't have access to this store")
+        
+        target_store_id = store["id"] if store else (owner.get("stores", [None])[0])
+        
+        access_token = create_access_token(data={"sub": owner["id"], "store_id": target_store_id})
+        
+        return {
+            "access_token": access_token,
+            "token_type": "bearer",
+            "user": {
+                "id": owner["id"],
+                "email": owner["email"],
+                "name": owner.get("name", ""),
+                "role": "merchant",
+                "store_id": target_store_id
+            }
+        }
+    
+    raise HTTPException(status_code=401, detail="Invalid email or password")
+
+
+# ==================== ADMIN STORE MANAGEMENT ====================
+
+@api_router.get("/admin/stores/{store_id}/details")
+async def get_admin_store_details(store_id: str, admin: dict = Depends(get_admin_user)):
+    """Get comprehensive store details for admin"""
+    store = await db.platform_stores.find_one({"id": store_id}, {"_id": 0})
+    if not store:
+        raise HTTPException(status_code=404, detail="Store not found")
+    
+    # Get owner info
+    owner = await db.platform_owners.find_one({"id": store.get("owner_id")}, {"_id": 0, "hashed_password": 0})
+    
+    # Get store statistics
+    products_count = await db.products.count_documents({"store_id": store_id})
+    orders_count = await db.orders.count_documents({"store_id": store_id})
+    customers_count = await db.customers.count_documents({"store_id": store_id})
+    
+    # Get recent orders
+    recent_orders = await db.orders.find(
+        {"store_id": store_id},
+        {"_id": 0, "id": 1, "order_number": 1, "total": 1, "status": 1, "created_at": 1}
+    ).sort("created_at", -1).limit(5).to_list(5)
+    
+    # Get total revenue
+    pipeline = [
+        {"$match": {"store_id": store_id, "payment_status": "paid"}},
+        {"$group": {"_id": None, "total": {"$sum": "$total"}}}
+    ]
+    revenue_result = await db.orders.aggregate(pipeline).to_list(1)
+    total_revenue = revenue_result[0]["total"] if revenue_result else 0
+    
+    return {
+        "store": store,
+        "owner": owner,
+        "stats": {
+            "products_count": products_count,
+            "orders_count": orders_count,
+            "customers_count": customers_count,
+            "total_revenue": total_revenue
+        },
+        "recent_orders": recent_orders
+    }
+
+
+@api_router.put("/admin/stores/{store_id}")
+async def update_admin_store(store_id: str, updates: dict, admin: dict = Depends(get_admin_user)):
+    """Admin can update any store"""
+    store = await db.platform_stores.find_one({"id": store_id})
+    if not store:
+        raise HTTPException(status_code=404, detail="Store not found")
+    
+    allowed_fields = ["store_name", "status", "plan_id", "custom_domain", "custom_domain_verified"]
+    update_data = {k: v for k, v in updates.items() if k in allowed_fields}
+    update_data["updated_at"] = datetime.now(timezone.utc).isoformat()
+    
+    await db.platform_stores.update_one({"id": store_id}, {"$set": update_data})
+    
+    updated_store = await db.platform_stores.find_one({"id": store_id}, {"_id": 0})
+    return updated_store
+
+
+@api_router.post("/admin/stores/{store_id}/reset-owner-password")
+async def admin_reset_store_owner_password(store_id: str, password_data: dict, admin: dict = Depends(get_admin_user)):
+    """Admin can reset a store owner's password"""
+    new_password = password_data.get("new_password")
+    if not new_password or len(new_password) < 6:
+        raise HTTPException(status_code=400, detail="Password must be at least 6 characters")
+    
+    store = await db.platform_stores.find_one({"id": store_id})
+    if not store:
+        raise HTTPException(status_code=404, detail="Store not found")
+    
+    owner_id = store.get("owner_id")
+    if not owner_id:
+        raise HTTPException(status_code=404, detail="Store owner not found")
+    
+    # Update password in platform_owners (using sha256 for consistency with existing data)
+    import hashlib
+    sha256_hash = hashlib.sha256(new_password.encode()).hexdigest()
+    
+    result = await db.platform_owners.update_one(
+        {"id": owner_id},
+        {"$set": {"hashed_password": sha256_hash, "updated_at": datetime.now(timezone.utc).isoformat()}}
+    )
+    
+    # Also try to update in users collection if exists
+    owner = await db.platform_owners.find_one({"id": owner_id})
+    if owner:
+        bcrypt_hash = get_password_hash(new_password)
+        await db.users.update_one(
+            {"email": owner["email"]},
+            {"$set": {"hashed_password": bcrypt_hash, "updated_at": datetime.now(timezone.utc).isoformat()}}
+        )
+    
+    return {"message": f"Password reset successfully for store owner"}
+
+
 # Include the router in the main app
 app.include_router(api_router)
 
