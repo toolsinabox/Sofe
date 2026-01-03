@@ -3730,7 +3730,8 @@ async def get_all_reviews(
     product_id: Optional[str] = None,
     rating: Optional[int] = None,
     featured: Optional[bool] = None,
-    limit: int = 100
+    limit: int = 100,
+    current_user: dict = Depends(get_current_user)
 ):
     """Get all reviews with optional filters"""
     store_id = await get_store_id_for_request(request, current_user)
