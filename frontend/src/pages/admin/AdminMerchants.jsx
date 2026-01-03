@@ -303,6 +303,110 @@ const AdminMerchants = () => {
     setIsResetPasswordModalOpen(true);
   };
 
+  // Bulk selection functions
+  const toggleSelectStore = (storeId) => {
+    setSelectedStores(prev => 
+      prev.includes(storeId) 
+        ? prev.filter(id => id !== storeId)
+        : [...prev, storeId]
+    );
+  };
+
+  const toggleSelectAll = () => {
+    if (selectedStores.length === filteredMerchants.length) {
+      setSelectedStores([]);
+    } else {
+      setSelectedStores(filteredMerchants.map(m => m.id));
+    }
+  };
+
+  // Bulk actions
+  const handleBulkSuspend = async () => {
+    if (!selectedStores.length) return;
+    setBulkActionLoading(true);
+    
+    try {
+      const headers = { Authorization: `Bearer ${token}` };
+      await Promise.all(
+        selectedStores.map(storeId =>
+          axios.post(`${API_URL}/api/admin/stores/${storeId}/suspend`, {}, { headers })
+        )
+      );
+      setSuccess(`${selectedStores.length} stores suspended`);
+      setSelectedStores([]);
+      fetchMerchants();
+    } catch (err) {
+      setError('Failed to suspend some stores');
+    } finally {
+      setBulkActionLoading(false);
+    }
+  };
+
+  const handleBulkActivate = async () => {
+    if (!selectedStores.length) return;
+    setBulkActionLoading(true);
+    
+    try {
+      const headers = { Authorization: `Bearer ${token}` };
+      await Promise.all(
+        selectedStores.map(storeId =>
+          axios.post(`${API_URL}/api/admin/stores/${storeId}/activate`, {}, { headers })
+        )
+      );
+      setSuccess(`${selectedStores.length} stores activated`);
+      setSelectedStores([]);
+      fetchMerchants();
+    } catch (err) {
+      setError('Failed to activate some stores');
+    } finally {
+      setBulkActionLoading(false);
+    }
+  };
+
+  const handleExportCSV = () => {
+    const dataToExport = selectedStores.length > 0 
+      ? filteredMerchants.filter(m => selectedStores.includes(m.id))
+      : filteredMerchants;
+    
+    const headers = ['Store Name', 'Subdomain', 'Owner Email', 'Plan', 'Status', 'Products', 'Orders', 'Revenue', 'Created'];
+    const rows = dataToExport.map(m => [
+      m.store_name || m.name,
+      m.subdomain,
+      m.owner_email || m.email,
+      m.plan_id || m.plan,
+      m.status,
+      m.product_count || 0,
+      m.order_count || 0,
+      m.revenue || 0,
+      new Date(m.created_at).toLocaleDateString()
+    ]);
+    
+    const csvContent = [headers.join(','), ...rows.map(r => r.join(','))].join('\n');
+    const blob = new Blob([csvContent], { type: 'text/csv' });
+    const url = window.URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `celora-stores-${new Date().toISOString().split('T')[0]}.csv`;
+    a.click();
+    
+    setSuccess(`Exported ${dataToExport.length} stores to CSV`);
+  };
+
+  const handleExportJSON = () => {
+    const dataToExport = selectedStores.length > 0 
+      ? filteredMerchants.filter(m => selectedStores.includes(m.id))
+      : filteredMerchants;
+    
+    const blob = new Blob([JSON.stringify(dataToExport, null, 2)], { type: 'application/json' });
+    const url = window.URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `celora-stores-${new Date().toISOString().split('T')[0]}.json`;
+    a.click();
+    
+    setSuccess(`Exported ${dataToExport.length} stores to JSON`);
+  };
+
   return (
     <div className="space-y-6">
       {/* Header */}
