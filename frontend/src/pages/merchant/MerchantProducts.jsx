@@ -926,7 +926,7 @@ const ProductEditor = ({ product, categories, onSave, onClose, templateTags }) =
                     <div className="space-y-2">
                       <Label className="text-gray-700 flex items-center gap-2">
                         Selling Price *
-                        <span className="text-xs text-gray-500 font-mono">[@product_price@]</span>
+                        <TemplateTag tag="[@product_price@]" />
                       </Label>
                       <div className="relative">
                         <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500">$</span>
@@ -944,7 +944,7 @@ const ProductEditor = ({ product, categories, onSave, onClose, templateTags }) =
                     <div className="space-y-2">
                       <Label className="text-gray-700 flex items-center gap-2">
                         Compare Price (RRP)
-                        <span className="text-xs text-gray-500 font-mono">[@product_rrp@]</span>
+                        <TemplateTag tag="[@product_rrp@]" />
                       </Label>
                       <div className="relative">
                         <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500">$</span>
@@ -965,7 +965,7 @@ const ProductEditor = ({ product, categories, onSave, onClose, templateTags }) =
                     <div className="space-y-2">
                       <Label className="text-gray-700 flex items-center gap-2">
                         Cost Price
-                        <span className="text-xs text-gray-500 font-mono">[@product_cost@]</span>
+                        <TemplateTag tag="[@product_cost@]" />
                       </Label>
                       <div className="relative">
                         <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500">$</span>
@@ -984,7 +984,7 @@ const ProductEditor = ({ product, categories, onSave, onClose, templateTags }) =
                     <div className="space-y-2">
                       <Label className="text-gray-700 flex items-center gap-2">
                         Tax Class
-                        <span className="text-xs text-gray-500 font-mono">[@product_tax_class@]</span>
+                        <TemplateTag tag="[@product_tax_class@]" />
                       </Label>
                       <Select value={formData.tax_class} onValueChange={(v) => handleChange('tax_class', v)}>
                         <SelectTrigger className="bg-gray-50 border-gray-200 text-gray-700">
@@ -1017,7 +1017,7 @@ const ProductEditor = ({ product, categories, onSave, onClose, templateTags }) =
                   <div className="space-y-2">
                     <Label className="text-gray-700 flex items-center gap-2">
                       SKU (Stock Keeping Unit) *
-                      <span className="text-xs text-gray-500 font-mono">[@product_sku@]</span>
+                      <TemplateTag tag="[@product_sku@]" />
                     </Label>
                     <Input
                       className="bg-gray-50 border-gray-200 text-gray-900"
@@ -1031,7 +1031,7 @@ const ProductEditor = ({ product, categories, onSave, onClose, templateTags }) =
                   <div className="space-y-2">
                     <Label className="text-gray-700 flex items-center gap-2">
                       Barcode / UPC / EAN
-                      <span className="text-xs text-gray-500 font-mono">[@product_barcode@]</span>
+                      <TemplateTag tag="[@product_barcode@]" />
                     </Label>
                     <Input
                       className="bg-gray-50 border-gray-200 text-gray-900"
@@ -1044,7 +1044,7 @@ const ProductEditor = ({ product, categories, onSave, onClose, templateTags }) =
                   <div className="space-y-2">
                     <Label className="text-gray-700 flex items-center gap-2">
                       MPN (Manufacturer Part Number)
-                      <span className="text-xs text-gray-500 font-mono">[@product_mpn@]</span>
+                      <TemplateTag tag="[@product_mpn@]" />
                     </Label>
                     <Input
                       className="bg-gray-50 border-gray-200 text-gray-900"
@@ -1063,7 +1063,7 @@ const ProductEditor = ({ product, categories, onSave, onClose, templateTags }) =
                   <div className="space-y-2">
                     <Label className="text-gray-700 flex items-center gap-2">
                       Categories
-                      <span className="text-xs text-gray-500 font-mono">[@product_category@]</span>
+                      <TemplateTag tag="[@product_category@]" />
                     </Label>
                     <p className="text-xs text-gray-500">Select one or more categories for this product</p>
                     
@@ -1178,7 +1178,7 @@ const ProductEditor = ({ product, categories, onSave, onClose, templateTags }) =
                   <div className="space-y-2">
                     <Label className="text-gray-700 flex items-center gap-2">
                       Brand
-                      <span className="text-xs text-gray-500 font-mono">[@product_brand@]</span>
+                      <TemplateTag tag="[@product_brand@]" />
                     </Label>
                     <Input
                       className="bg-gray-50 border-gray-200 text-gray-900"
@@ -1191,7 +1191,7 @@ const ProductEditor = ({ product, categories, onSave, onClose, templateTags }) =
                   <div className="space-y-2">
                     <Label className="text-gray-700 flex items-center gap-2">
                       Manufacturer
-                      <span className="text-xs text-gray-500 font-mono">[@product_manufacturer@]</span>
+                      <TemplateTag tag="[@product_manufacturer@]" />
                     </Label>
                     <Input
                       className="bg-gray-50 border-gray-200 text-gray-900"
@@ -1204,7 +1204,7 @@ const ProductEditor = ({ product, categories, onSave, onClose, templateTags }) =
                   <div className="space-y-2">
                     <Label className="text-gray-700 flex items-center gap-2">
                       Tags
-                      <span className="text-xs text-gray-500 font-mono">[@product_tags@]</span>
+                      <TemplateTag tag="[@product_tags@]" />
                     </Label>
                     <div className="flex gap-2">
                       <Input
@@ -1237,7 +1237,7 @@ const ProductEditor = ({ product, categories, onSave, onClose, templateTags }) =
                     <Label className="text-gray-700 flex items-center gap-2">
                       <Bookmark size={16} className="text-blue-500" />
                       Base Tags
-                      <span className="text-xs text-gray-500 font-mono">[@product_base_tags@]</span>
+                      <TemplateTag tag="[@product_base_tags@]" />
                     </Label>
                     <p className="text-xs text-gray-500">
                       Select pre-defined tags to highlight special product attributes. These appear as badges on product listings.
@@ -1446,7 +1446,7 @@ const ProductEditor = ({ product, categories, onSave, onClose, templateTags }) =
                   <div className="space-y-2">
                     <Label className="text-gray-700 flex items-center gap-2">
                       Custom Thumbnail URL
-                      <span className="text-xs text-gray-500 font-mono">[@product_thumbnail@]</span>
+                      <TemplateTag tag="[@product_thumbnail@]" />
                     </Label>
                     <Input
                       className="bg-gray-50 border-gray-200 text-gray-900"
@@ -1478,7 +1478,7 @@ const ProductEditor = ({ product, categories, onSave, onClose, templateTags }) =
                         <div className="space-y-2">
                           <Label className="text-gray-700 flex items-center gap-2">
                             Stock Quantity
-                            <span className="text-xs text-gray-500 font-mono">[@product_stock@]</span>
+                            <TemplateTag tag="[@product_stock@]" />
                           </Label>
                           <Input
                             type="number"
@@ -1492,7 +1492,7 @@ const ProductEditor = ({ product, categories, onSave, onClose, templateTags }) =
                         <div className="space-y-2">
                           <Label className="text-gray-700 flex items-center gap-2">
                             Low Stock Alert
-                            <span className="text-xs text-gray-500 font-mono">[@product_low_stock@]</span>
+                            <TemplateTag tag="[@product_low_stock@]" />
                           </Label>
                           <Input
                             type="number"
@@ -1605,7 +1605,7 @@ const ProductEditor = ({ product, categories, onSave, onClose, templateTags }) =
                           <div className="space-y-2">
                             <Label className="text-gray-700 flex items-center gap-2">
                               Pre-Order Quantity
-                              <span className="text-xs text-gray-500 font-mono">[@preorder_qty@]</span>
+                              <TemplateTag tag="[@preorder_qty@]" />
                               <TooltipProvider>
                                 <Tooltip delayDuration={0}>
                                   <TooltipTrigger asChild>
@@ -1630,7 +1630,7 @@ const ProductEditor = ({ product, categories, onSave, onClose, templateTags }) =
                           <div className="space-y-2">
                             <Label className="text-gray-700 flex items-center gap-2">
                               Arrival Date
-                              <span className="text-xs text-gray-500 font-mono">[@preorder_date@]</span>
+                              <TemplateTag tag="[@preorder_date@]" />
                               <TooltipProvider>
                                 <Tooltip delayDuration={0}>
                                   <TooltipTrigger asChild>
@@ -1654,7 +1654,7 @@ const ProductEditor = ({ product, categories, onSave, onClose, templateTags }) =
                         <div className="space-y-2">
                           <Label className="text-gray-700 flex items-center gap-2">
                             Pre-Order Message
-                            <span className="text-xs text-gray-500 font-mono">[@preorder_message@]</span>
+                            <TemplateTag tag="[@preorder_message@]" />
                           </Label>
                           <Input
                             className="bg-gray-50 border-gray-200 text-gray-900"
@@ -1699,7 +1699,7 @@ const ProductEditor = ({ product, categories, onSave, onClose, templateTags }) =
                       <div className="space-y-2">
                         <Label className="text-gray-700 flex items-center gap-2">
                           Weight (kg)
-                          <span className="text-xs text-gray-500 font-mono">[@product_weight@]</span>
+                          <TemplateTag tag="[@product_weight@]" />
                         </Label>
                         <Input
                           type="number"
@@ -1731,7 +1731,7 @@ const ProductEditor = ({ product, categories, onSave, onClose, templateTags }) =
                           <div className="space-y-2">
                             <Label className="text-gray-700 flex items-center gap-2">
                               Length (mm)
-                              <span className="text-xs text-gray-500 font-mono">[@product_length@]</span>
+                              <TemplateTag tag="[@product_length@]" />
                             </Label>
                             <Input
                               type="number"
@@ -1745,7 +1745,7 @@ const ProductEditor = ({ product, categories, onSave, onClose, templateTags }) =
                           <div className="space-y-2">
                             <Label className="text-gray-700 flex items-center gap-2">
                               Width (mm)
-                              <span className="text-xs text-gray-500 font-mono">[@product_width@]</span>
+                              <TemplateTag tag="[@product_width@]" />
                             </Label>
                             <Input
                               type="number"
@@ -1759,7 +1759,7 @@ const ProductEditor = ({ product, categories, onSave, onClose, templateTags }) =
                           <div className="space-y-2">
                             <Label className="text-gray-700 flex items-center gap-2">
                               Height (mm)
-                              <span className="text-xs text-gray-500 font-mono">[@product_height@]</span>
+                              <TemplateTag tag="[@product_height@]" />
                             </Label>
                             <Input
                               type="number"
@@ -1842,7 +1842,7 @@ const ProductEditor = ({ product, categories, onSave, onClose, templateTags }) =
                       <div className="space-y-2">
                         <Label className="text-gray-700 flex items-center gap-2">
                           Shipping Class
-                          <span className="text-xs text-gray-500 font-mono">[@product_shipping_class@]</span>
+                          <TemplateTag tag="[@product_shipping_class@]" />
                         </Label>
                         <Select value={formData.shipping_class || '_default'} onValueChange={(v) => handleChange('shipping_class', v === '_default' ? '' : v)}>
                           <SelectTrigger className="bg-gray-50 border-gray-200 text-gray-700">
@@ -1868,7 +1868,7 @@ const ProductEditor = ({ product, categories, onSave, onClose, templateTags }) =
                   <div className="space-y-2">
                     <Label className="text-gray-700 flex items-center gap-2">
                       URL Slug
-                      <span className="text-xs text-gray-500 font-mono">[@product_url@]</span>
+                      <TemplateTag tag="[@product_url@]" />
                     </Label>
                     <div className="flex items-center gap-2">
                       <span className="text-gray-500">/live/product/</span>
@@ -1885,7 +1885,7 @@ const ProductEditor = ({ product, categories, onSave, onClose, templateTags }) =
                   <div className="space-y-2">
                     <Label className="text-gray-700 flex items-center gap-2">
                       Meta Title
-                      <span className="text-xs text-gray-500 font-mono">[@product_meta_title@]</span>
+                      <TemplateTag tag="[@product_meta_title@]" />
                     </Label>
                     <Input
                       className="bg-gray-50 border-gray-200 text-gray-900"
@@ -1899,7 +1899,7 @@ const ProductEditor = ({ product, categories, onSave, onClose, templateTags }) =
                   <div className="space-y-2">
                     <Label className="text-gray-700 flex items-center gap-2">
                       Meta Description
-                      <span className="text-xs text-gray-500 font-mono">[@product_meta_description@]</span>
+                      <TemplateTag tag="[@product_meta_description@]" />
                     </Label>
                     <Textarea
                       className="bg-gray-50 border-gray-200 text-gray-900 min-h-24"
@@ -1933,7 +1933,7 @@ const ProductEditor = ({ product, categories, onSave, onClose, templateTags }) =
                     <div>
                       <Label className="text-gray-700 flex items-center gap-2">
                         Active
-                        <span className="text-xs text-gray-500 font-mono">[@product_active@]</span>
+                        <TemplateTag tag="[@product_active@]" />
                       </Label>
                       <p className="text-xs text-gray-500">Product is available for purchase</p>
                     </div>
@@ -1947,7 +1947,7 @@ const ProductEditor = ({ product, categories, onSave, onClose, templateTags }) =
                     <div>
                       <Label className="text-gray-700 flex items-center gap-2">
                         Featured
-                        <span className="text-xs text-gray-500 font-mono">[@product_featured@]</span>
+                        <TemplateTag tag="[@product_featured@]" />
                       </Label>
                       <p className="text-xs text-gray-500">Show in featured products section</p>
                     </div>
@@ -1960,7 +1960,7 @@ const ProductEditor = ({ product, categories, onSave, onClose, templateTags }) =
                   <div className="space-y-2">
                     <Label className="text-gray-700 flex items-center gap-2">
                       Visibility
-                      <span className="text-xs text-gray-500 font-mono">[@product_visibility@]</span>
+                      <TemplateTag tag="[@product_visibility@]" />
                     </Label>
                     <Select value={formData.visibility} onValueChange={(v) => handleChange('visibility', v)}>
                       <SelectTrigger className="bg-gray-50 border-gray-200 text-gray-700">
