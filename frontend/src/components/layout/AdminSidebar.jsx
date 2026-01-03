@@ -22,6 +22,8 @@ const AdminSidebar = ({ collapsed, setCollapsed, onClose }) => {
   const handleLogout = () => {
     logout();
     navigate('/admin/login');
+    // Force reload to clear any cached state
+    window.location.href = '/admin/login';
   };
 
   const handleNavClick = () => {
