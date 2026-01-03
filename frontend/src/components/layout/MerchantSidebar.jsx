@@ -19,9 +19,7 @@ import {
   ExternalLink,
   FolderOpen,
   Image,
-  Code,
   Store,
-  LayoutGrid,
   Star,
   Truck,
   ShoppingBag,
@@ -33,22 +31,14 @@ import {
   Monitor,
   Palette,
   Globe,
-  Receipt,
   Puzzle,
   Ticket,
-  Crown,
   Gift,
   Zap,
-  TrendingUp,
-  Building2,
-  Warehouse,
   Bell,
-  Heart,
   Users2,
   RotateCcw,
-  Activity,
-  Percent,
-  Upload
+  Percent
 } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
 
