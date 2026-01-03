@@ -18,6 +18,7 @@ import {
   DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger, DropdownMenuSeparator
 } from '../../components/ui/dropdown-menu';
 import { useAuth } from '../../context/AuthContext';
+import { getStoreUrl } from '../../utils/platformDetect';
 
 const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
 
