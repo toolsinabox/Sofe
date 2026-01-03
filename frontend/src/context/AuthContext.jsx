@@ -126,6 +126,8 @@ export const ProtectedRoute = ({ children, requiredRole = null }) => {
   const { isAuthenticated, user, loading } = useAuth();
   const navigate = useNavigate();
 
+  const isAdmin = user?.role === 'admin' || user?.role === 'super_admin';
+
   useEffect(() => {
     if (!loading) {
       if (!isAuthenticated) {
@@ -135,11 +137,11 @@ export const ProtectedRoute = ({ children, requiredRole = null }) => {
         } else {
           navigate('/merchant/login');
         }
-      } else if (requiredRole === 'admin' && user?.role !== 'admin') {
+      } else if (requiredRole === 'admin' && !isAdmin) {
         navigate('/merchant');
       }
     }
-  }, [isAuthenticated, user, loading, requiredRole, navigate]);
+  }, [isAuthenticated, user, loading, requiredRole, navigate, isAdmin]);
 
   if (loading) {
     return (
@@ -153,7 +155,7 @@ export const ProtectedRoute = ({ children, requiredRole = null }) => {
     return null;
   }
 
-  if (requiredRole === 'admin' && user?.role !== 'admin') {
+  if (requiredRole === 'admin' && !isAdmin) {
     return null;
   }
 
