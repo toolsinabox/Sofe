@@ -36,10 +36,20 @@ export default function PlatformLogin() {
       localStorage.setItem('platform_owner', JSON.stringify(res.data.owner));
       localStorage.setItem('platform_stores', JSON.stringify(res.data.stores));
       
-      // If user has stores, go to dashboard
+      // Each email has only 1 store - go directly to merchant dashboard
       if (res.data.stores && res.data.stores.length > 0) {
-        localStorage.setItem('platform_store', JSON.stringify(res.data.stores[0]));
-        navigate('/dashboard');
+        const store = res.data.stores[0];
+        localStorage.setItem('platform_store', JSON.stringify(store));
+        localStorage.setItem('store_id', store.id);
+        localStorage.setItem('token', res.data.token);
+        localStorage.setItem('user', JSON.stringify({
+          id: res.data.owner.id,
+          email: res.data.owner.email,
+          name: res.data.owner.name,
+          role: 'merchant',
+          store_id: store.id
+        }));
+        navigate('/merchant');
       } else {
         // No stores, redirect to create one
         navigate('/signup');
