@@ -2,8 +2,7 @@ import React, { useState, useEffect, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { 
   Globe, Check, X, AlertCircle, Copy, ExternalLink, RefreshCw, 
-  ChevronRight, Shield, CheckCircle2, Clock, HelpCircle, Trash2,
-  Link2, ArrowRight, Info, Zap, Loader2
+  Shield, CheckCircle2, Clock, Trash2, Link2, Info, Loader2
 } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '../../components/ui/card';
 import { Button } from '../../components/ui/button';
@@ -17,6 +16,7 @@ import {
   DialogDescription,
 } from '../../components/ui/dialog';
 import { useAuth } from '../../context/AuthContext';
+import CopyTag from '../../components/ui/CopyTag';
 
 const API_URL = process.env.REACT_APP_BACKEND_URL || '';
 const SERVER_IP = '45.77.239.247';
@@ -24,13 +24,13 @@ const SERVER_IP = '45.77.239.247';
 const MerchantDomains = () => {
   const navigate = useNavigate();
   const { logout } = useAuth();
+  
   const [store, setStore] = useState(null);
   const [customDomain, setCustomDomain] = useState('');
   const [loading, setLoading] = useState(true);
   const [verifying, setVerifying] = useState(false);
   const [saving, setSaving] = useState(false);
   const [message, setMessage] = useState(null);
-  const [copied, setCopied] = useState('');
   const [showRemoveConfirm, setShowRemoveConfirm] = useState(false);
   const [apiError, setApiError] = useState(null);
 
@@ -47,7 +47,6 @@ const MerchantDomains = () => {
         return;
       }
 
-      console.log('Fetching domain settings...');
       const response = await fetch(`${API_URL}/api/store/domain-settings`, {
         headers: { 
           'Authorization': `Bearer ${token}`,
@@ -55,11 +54,8 @@ const MerchantDomains = () => {
         }
       });
       
-      console.log('Response status:', response.status);
-      
       if (response.ok) {
         const data = await response.json();
-        console.log('Domain settings data:', data);
         setStore(data);
         setCustomDomain(data.custom_domain || '');
       } else if (response.status === 401) {
@@ -69,7 +65,6 @@ const MerchantDomains = () => {
         setApiError(errorData.detail || `Error loading domain settings (${response.status})`);
       }
     } catch (error) {
-      console.error('Error fetching store:', error);
       setApiError(`Network error: ${error.message}`);
     } finally {
       setLoading(false);
@@ -80,19 +75,12 @@ const MerchantDomains = () => {
     fetchStoreData();
   }, [fetchStoreData]);
 
-  const copyToClipboard = (text, label) => {
-    navigator.clipboard.writeText(text);
-    setCopied(label);
-    setTimeout(() => setCopied(''), 2000);
-  };
-
   const saveDomain = async () => {
     if (!customDomain.trim()) {
       setMessage({ type: 'error', text: 'Please enter a domain name.' });
       return;
     }
 
-    // Basic domain validation
     const domainRegex = /^([a-zA-Z0-9]([a-zA-Z0-9-]*[a-zA-Z0-9])?\.)+[a-zA-Z]{2,}$/;
     let cleanDomain = customDomain.toLowerCase().trim();
     cleanDomain = cleanDomain.replace(/^(https?:\/\/)/, '').replace(/\/$/, '');
@@ -114,8 +102,6 @@ const MerchantDomains = () => {
         return;
       }
 
-      console.log('Saving domain:', cleanDomain);
-      
       const response = await fetch(`${API_URL}/api/store/custom-domain`, {
         method: 'PUT',
         headers: {
@@ -125,14 +111,11 @@ const MerchantDomains = () => {
         body: JSON.stringify({ custom_domain: cleanDomain })
       });
       
-      console.log('Save response status:', response.status);
       const data = await response.json();
-      console.log('Save response data:', data);
       
       if (response.ok) {
         setCustomDomain(cleanDomain);
         setMessage({ type: 'success', text: 'Domain saved! Now configure your DNS records below.' });
-        // Refresh store data to get updated token
         await fetchStoreData();
       } else if (response.status === 401) {
         setMessage({ type: 'error', text: 'Session expired. Please log out and log in again.' });
@@ -140,7 +123,6 @@ const MerchantDomains = () => {
         setMessage({ type: 'error', text: data.detail || 'Error saving domain settings.' });
       }
     } catch (error) {
-      console.error('Save error:', error);
       setMessage({ type: 'error', text: `Network error: ${error.message}` });
     } finally {
       setSaving(false);
@@ -213,7 +195,7 @@ const MerchantDomains = () => {
     return (
       <div className="p-6 flex items-center justify-center min-h-[400px]">
         <div className="flex items-center gap-3">
-          <Loader2 className="w-6 h-6 animate-spin text-cyan-500" />
+          <Loader2 className="w-6 h-6 animate-spin text-blue-500" />
           <span className="text-gray-400">Loading domain settings...</span>
         </div>
       </div>
@@ -271,7 +253,7 @@ const MerchantDomains = () => {
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-2xl font-bold text-white flex items-center gap-3">
-            <Globe className="w-7 h-7 text-cyan-400" />
+            <Globe className="w-7 h-7 text-blue-500" />
             Domain Settings
           </h1>
           <p className="text-gray-400 mt-1">Configure your store's domain and custom domain</p>
@@ -303,22 +285,21 @@ const MerchantDomains = () => {
       )}
 
       {/* Default Subdomain Card */}
-      <Card className="bg-slate-800/50 border-slate-700">
-        <CardHeader>
+      <Card className="bg-gray-900/50 border-gray-800">
+        <CardHeader className="pb-3">
           <CardTitle className="text-lg text-white flex items-center gap-2">
-            <Link2 className="w-5 h-5 text-cyan-400" />
+            <Link2 className="w-5 h-5 text-blue-500" />
             Default Subdomain
           </CardTitle>
         </CardHeader>
         <CardContent>
-          <div className="flex items-center gap-4">
-            <div className="flex-1">
-              <div className="flex items-center bg-slate-900/50 rounded-lg p-3 border border-slate-700">
-                <span className="text-cyan-400 font-mono text-lg font-semibold">
-                  {subdomain || '(not set)'}
-                </span>
-                <span className="text-gray-400 font-mono text-lg">.getcelora.com</span>
-              </div>
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-1">
+              <CopyTag 
+                value={`${subdomain}.getcelora.com`} 
+                variant="info"
+                size="lg"
+              />
             </div>
             <div className="flex items-center gap-2 text-emerald-400">
               <CheckCircle2 className="w-5 h-5" />
@@ -327,25 +308,17 @@ const MerchantDomains = () => {
           </div>
           {subdomain && (
             <p className="text-gray-500 text-sm mt-3">
-              Your store is always accessible at{' '}
-              <a 
-                href={`https://${subdomain}.getcelora.com`} 
-                target="_blank" 
-                rel="noopener noreferrer"
-                className="text-cyan-400 hover:underline"
-              >
-                {subdomain}.getcelora.com
-              </a>
+              Your store is always accessible at this subdomain
             </p>
           )}
         </CardContent>
       </Card>
 
       {/* Custom Domain Card */}
-      <Card className="bg-slate-800/50 border-slate-700">
-        <CardHeader>
+      <Card className="bg-gray-900/50 border-gray-800">
+        <CardHeader className="pb-3">
           <CardTitle className="text-lg text-white flex items-center gap-2">
-            <Globe className="w-5 h-5 text-purple-400" />
+            <Globe className="w-5 h-5 text-purple-500" />
             Connect Your Own Domain
             {isVerified && (
               <span className="ml-2 px-2 py-0.5 bg-emerald-500/20 text-emerald-400 text-xs rounded-full flex items-center gap-1">
@@ -353,7 +326,7 @@ const MerchantDomains = () => {
               </span>
             )}
             {hasCustomDomain && !isVerified && (
-              <span className="ml-2 px-2 py-0.5 bg-yellow-500/20 text-yellow-400 text-xs rounded-full flex items-center gap-1">
+              <span className="ml-2 px-2 py-0.5 bg-amber-500/20 text-amber-400 text-xs rounded-full flex items-center gap-1">
                 <Clock className="w-3 h-3" /> Pending
               </span>
             )}
@@ -369,13 +342,13 @@ const MerchantDomains = () => {
                 value={customDomain}
                 onChange={(e) => setCustomDomain(e.target.value)}
                 placeholder="www.yourdomain.com"
-                className="flex-1 bg-slate-900/50 border-slate-600 text-white placeholder:text-gray-500"
+                className="flex-1 bg-gray-800/50 border-gray-700 text-white placeholder:text-gray-500 focus:border-blue-500"
               />
               <Button
                 data-testid="save-domain-btn"
                 onClick={saveDomain}
                 disabled={saving}
-                className="bg-cyan-600 hover:bg-cyan-700 text-white min-w-[100px]"
+                className="bg-blue-600 hover:bg-blue-700 text-white min-w-[100px]"
               >
                 {saving ? (
                   <>
@@ -393,16 +366,16 @@ const MerchantDomains = () => {
           </div>
 
           {hasCustomDomain && (
-            <div className="flex items-center justify-between pt-2 border-t border-slate-700">
-              <div className="flex items-center gap-2">
+            <div className="flex items-center justify-between pt-4 border-t border-gray-800">
+              <div className="flex items-center gap-3">
                 <span className="text-gray-400 text-sm">Current:</span>
-                <code className="text-cyan-400 bg-slate-900 px-2 py-1 rounded">{store?.custom_domain}</code>
+                <CopyTag value={store?.custom_domain} variant="default" />
                 {isVerified ? (
                   <span className="text-emerald-400 text-sm flex items-center gap-1">
                     <CheckCircle2 className="w-4 h-4" /> Verified & Active
                   </span>
                 ) : (
-                  <span className="text-yellow-400 text-sm flex items-center gap-1">
+                  <span className="text-amber-400 text-sm flex items-center gap-1">
                     <Clock className="w-4 h-4" /> Awaiting Verification
                   </span>
                 )}
@@ -423,10 +396,10 @@ const MerchantDomains = () => {
 
       {/* DNS Configuration - Only show when there's a domain saved */}
       {hasCustomDomain && !isVerified && (
-        <Card className="bg-slate-800/50 border-slate-700">
-          <CardHeader>
+        <Card className="bg-gray-900/50 border-gray-800">
+          <CardHeader className="pb-3">
             <CardTitle className="text-lg text-white flex items-center gap-2">
-              <Shield className="w-5 h-5 text-amber-400" />
+              <Shield className="w-5 h-5 text-amber-500" />
               DNS Configuration Required
             </CardTitle>
           </CardHeader>
@@ -438,8 +411,8 @@ const MerchantDomains = () => {
                 <div>
                   <p className="text-blue-300 font-medium">Domain Ownership Verification</p>
                   <p className="text-blue-200/70 text-sm mt-1">
-                    Add these DNS records to your domain to verify ownership and connect it to your store.
-                    Your domain will connect to: <strong className="text-cyan-400">{subdomain}.getcelora.com</strong>
+                    Add these DNS records to verify ownership. Your domain will connect to:{' '}
+                    <CopyTag value={`${subdomain}.getcelora.com`} variant="info" size="sm" className="inline-flex ml-1" />
                   </p>
                 </div>
               </div>
@@ -448,91 +421,89 @@ const MerchantDomains = () => {
             {/* Step 1: TXT Record */}
             <div className="space-y-3">
               <h3 className="text-white font-medium flex items-center gap-2">
-                <span className="w-6 h-6 bg-cyan-500 rounded-full flex items-center justify-center text-sm font-bold">1</span>
+                <span className="w-6 h-6 bg-blue-600 rounded-full flex items-center justify-center text-sm font-bold">1</span>
                 Add TXT Record (Ownership Verification)
               </h3>
-              <div className="bg-slate-900/50 rounded-lg p-4 space-y-3">
+              <div className="bg-gray-800/50 rounded-lg p-4 space-y-4 border border-gray-700">
                 <div className="grid grid-cols-3 gap-4 text-sm">
                   <div>
-                    <span className="text-gray-500">Type</span>
-                    <p className="text-white font-mono mt-1">TXT</p>
+                    <span className="text-gray-500 block mb-1">Type</span>
+                    <CopyTag value="TXT" variant="default" size="sm" />
                   </div>
                   <div>
-                    <span className="text-gray-500">Host/Name</span>
-                    <p className="text-white font-mono mt-1">@ or {store?.custom_domain}</p>
+                    <span className="text-gray-500 block mb-1">Host/Name</span>
+                    <CopyTag value="@" variant="default" size="sm" />
                   </div>
                   <div>
-                    <span className="text-gray-500">TTL</span>
-                    <p className="text-white font-mono mt-1">3600 (or Auto)</p>
+                    <span className="text-gray-500 block mb-1">TTL</span>
+                    <span className="text-gray-300 font-mono text-sm">3600 (or Auto)</span>
                   </div>
                 </div>
                 <div>
-                  <span className="text-gray-500 text-sm">Value</span>
-                  <div className="flex items-center gap-2 mt-1">
-                    <code className="flex-1 bg-slate-800 text-cyan-400 px-3 py-2 rounded font-mono text-sm break-all">
-                      {verificationToken || 'Save domain to get token'}
-                    </code>
-                    {verificationToken && (
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        onClick={() => copyToClipboard(verificationToken, 'txt')}
-                        className="text-gray-400 hover:text-white"
-                      >
-                        {copied === 'txt' ? <Check className="w-4 h-4 text-emerald-400" /> : <Copy className="w-4 h-4" />}
-                      </Button>
-                    )}
-                  </div>
+                  <span className="text-gray-500 text-sm block mb-2">Value (click to copy)</span>
+                  <CopyTag 
+                    value={verificationToken || 'Save domain to get token'} 
+                    variant="info" 
+                    size="md"
+                    className="w-full justify-start"
+                  />
                 </div>
               </div>
             </div>
 
-            {/* Step 2: A Record */}
+            {/* Step 2: A Records */}
             <div className="space-y-3">
               <h3 className="text-white font-medium flex items-center gap-2">
-                <span className="w-6 h-6 bg-cyan-500 rounded-full flex items-center justify-center text-sm font-bold">2</span>
-                Add A Record (Point to Server)
+                <span className="w-6 h-6 bg-blue-600 rounded-full flex items-center justify-center text-sm font-bold">2</span>
+                Add A Records (Point to Server)
               </h3>
-              <div className="bg-slate-900/50 rounded-lg p-4 space-y-3">
-                <div className="grid grid-cols-3 gap-4 text-sm">
-                  <div>
-                    <span className="text-gray-500">Type</span>
-                    <p className="text-white font-mono mt-1">A</p>
-                  </div>
-                  <div>
-                    <span className="text-gray-500">Host/Name</span>
-                    <p className="text-white font-mono mt-1">@ (root) or www</p>
-                  </div>
-                  <div>
-                    <span className="text-gray-500">TTL</span>
-                    <p className="text-white font-mono mt-1">3600 (or Auto)</p>
+              <div className="bg-gray-800/50 rounded-lg p-4 space-y-4 border border-gray-700">
+                {/* Root A Record */}
+                <div>
+                  <span className="text-gray-400 text-xs uppercase tracking-wide">Root Domain</span>
+                  <div className="grid grid-cols-3 gap-4 text-sm mt-2">
+                    <div>
+                      <span className="text-gray-500 block mb-1">Type</span>
+                      <CopyTag value="A" variant="default" size="sm" />
+                    </div>
+                    <div>
+                      <span className="text-gray-500 block mb-1">Host/Name</span>
+                      <CopyTag value="@" variant="default" size="sm" />
+                    </div>
+                    <div>
+                      <span className="text-gray-500 block mb-1">Value (IP)</span>
+                      <CopyTag value={SERVER_IP} variant="success" size="sm" />
+                    </div>
                   </div>
                 </div>
-                <div>
-                  <span className="text-gray-500 text-sm">Value (IP Address)</span>
-                  <div className="flex items-center gap-2 mt-1">
-                    <code className="flex-1 bg-slate-800 text-emerald-400 px-3 py-2 rounded font-mono text-sm">
-                      {SERVER_IP}
-                    </code>
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      onClick={() => copyToClipboard(SERVER_IP, 'ip')}
-                      className="text-gray-400 hover:text-white"
-                    >
-                      {copied === 'ip' ? <Check className="w-4 h-4 text-emerald-400" /> : <Copy className="w-4 h-4" />}
-                    </Button>
+                
+                {/* WWW A Record */}
+                <div className="pt-4 border-t border-gray-700">
+                  <span className="text-gray-400 text-xs uppercase tracking-wide">WWW Subdomain</span>
+                  <div className="grid grid-cols-3 gap-4 text-sm mt-2">
+                    <div>
+                      <span className="text-gray-500 block mb-1">Type</span>
+                      <CopyTag value="A" variant="default" size="sm" />
+                    </div>
+                    <div>
+                      <span className="text-gray-500 block mb-1">Host/Name</span>
+                      <CopyTag value="www" variant="default" size="sm" />
+                    </div>
+                    <div>
+                      <span className="text-gray-500 block mb-1">Value (IP)</span>
+                      <CopyTag value={SERVER_IP} variant="success" size="sm" />
+                    </div>
                   </div>
                 </div>
               </div>
             </div>
 
             {/* Verify Button */}
-            <div className="pt-4 border-t border-slate-700">
+            <div className="pt-4 border-t border-gray-800">
               <Button
                 onClick={verifyDomain}
                 disabled={verifying || !verificationToken}
-                className="w-full bg-gradient-to-r from-emerald-600 to-cyan-600 hover:from-emerald-700 hover:to-cyan-700 text-white py-6 text-lg"
+                className="w-full bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white py-6 text-lg"
               >
                 {verifying ? (
                   <>
@@ -562,25 +533,18 @@ const MerchantDomains = () => {
               <div className="w-12 h-12 bg-emerald-500/20 rounded-full flex items-center justify-center">
                 <CheckCircle2 className="w-6 h-6 text-emerald-400" />
               </div>
-              <div>
+              <div className="flex-1">
                 <h3 className="text-emerald-400 font-semibold text-lg">Domain Verified & Active</h3>
                 <p className="text-emerald-300/70 text-sm mt-1">
                   Your store is now accessible at{' '}
-                  <a 
-                    href={`https://${store?.custom_domain}`}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="text-emerald-400 hover:underline font-medium"
-                  >
-                    {store?.custom_domain}
-                  </a>
+                  <CopyTag value={store?.custom_domain} variant="success" size="sm" className="inline-flex ml-1" />
                 </p>
               </div>
               <Button
                 variant="outline"
                 size="sm"
                 onClick={() => window.open(`https://${store?.custom_domain}`, '_blank')}
-                className="ml-auto border-emerald-500/30 text-emerald-400 hover:bg-emerald-500/10"
+                className="border-emerald-500/30 text-emerald-400 hover:bg-emerald-500/10"
               >
                 <ExternalLink className="w-4 h-4 mr-2" />
                 Visit
@@ -592,11 +556,11 @@ const MerchantDomains = () => {
 
       {/* Remove Domain Confirmation Dialog */}
       <Dialog open={showRemoveConfirm} onOpenChange={setShowRemoveConfirm}>
-        <DialogContent className="bg-slate-800 border-slate-700">
+        <DialogContent className="bg-gray-900 border-gray-800">
           <DialogHeader>
             <DialogTitle className="text-white">Remove Custom Domain?</DialogTitle>
             <DialogDescription className="text-gray-400">
-              This will disconnect <strong className="text-cyan-400">{store?.custom_domain}</strong> from your store.
+              This will disconnect <strong className="text-blue-400">{store?.custom_domain}</strong> from your store.
               Visitors to this domain will no longer see your store.
             </DialogDescription>
           </DialogHeader>
@@ -604,7 +568,7 @@ const MerchantDomains = () => {
             <Button
               variant="outline"
               onClick={() => setShowRemoveConfirm(false)}
-              className="border-slate-600 text-gray-300"
+              className="border-gray-700 text-gray-300"
             >
               Cancel
             </Button>
