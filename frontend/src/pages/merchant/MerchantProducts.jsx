@@ -2015,7 +2015,7 @@ const ProductEditor = ({ product, categories, onSave, onClose, templateTags }) =
                     <h4 className="text-sm font-medium text-gray-700">{section.title}</h4>
                     <div className="space-y-1">
                       {section.tags.map((tag, idx) => (
-                        <TemplateTag key={idx} tag={tag.tag} description={tag.description} />
+                        <TagsPanelItem key={idx} tag={tag.tag} description={tag.description} />
                       ))}
                     </div>
                   </div>
