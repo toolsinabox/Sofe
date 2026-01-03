@@ -195,8 +195,8 @@ const MerchantDomains = () => {
     return (
       <div className="p-6 flex items-center justify-center min-h-[400px]">
         <div className="flex items-center gap-3">
-          <Loader2 className="w-6 h-6 animate-spin text-blue-500" />
-          <span className="text-gray-400">Loading domain settings...</span>
+          <Loader2 className="w-6 h-6 animate-spin text-blue-600" />
+          <span className="text-gray-600">Loading domain settings...</span>
         </div>
       </div>
     );
@@ -211,27 +211,27 @@ const MerchantDomains = () => {
 
     return (
       <div className="p-6">
-        <Card className="bg-red-500/10 border-red-500/30">
+        <Card className="bg-red-50 border-red-200">
           <CardContent className="p-6">
-            <div className="flex items-center gap-3 text-red-400">
+            <div className="flex items-center gap-3 text-red-600">
               <AlertCircle className="w-6 h-6" />
               <div>
                 <h3 className="font-semibold">Error Loading Domain Settings</h3>
-                <p className="text-sm mt-1">{apiError}</p>
+                <p className="text-sm mt-1 text-red-500">{apiError}</p>
               </div>
             </div>
             <div className="flex gap-3 mt-4">
               <Button 
                 onClick={fetchStoreData} 
                 variant="outline"
-                className="border-red-500/30 text-red-400 hover:bg-red-500/10"
+                className="border-red-300 text-red-600 hover:bg-red-100"
               >
                 <RefreshCw className="w-4 h-4 mr-2" />
                 Retry
               </Button>
               <Button 
                 onClick={handleRelogin} 
-                className="bg-red-500 hover:bg-red-600"
+                className="bg-red-500 hover:bg-red-600 text-white"
               >
                 Log In Again
               </Button>
@@ -248,21 +248,21 @@ const MerchantDomains = () => {
   const hasCustomDomain = !!store?.custom_domain;
 
   return (
-    <div className="p-6 space-y-6">
+    <div className="space-y-6">
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-bold text-white flex items-center gap-3">
-            <Globe className="w-7 h-7 text-blue-500" />
+          <h1 className="text-2xl font-bold text-gray-900 flex items-center gap-3">
+            <Globe className="w-7 h-7 text-blue-600" />
             Domain Settings
           </h1>
-          <p className="text-gray-400 mt-1">Configure your store's domain and custom domain</p>
+          <p className="text-gray-500 mt-1">Configure your store's domain and custom domain</p>
         </div>
         <Button 
           variant="outline" 
           size="sm" 
           onClick={fetchStoreData}
-          className="border-gray-700 text-gray-300 hover:bg-gray-800"
+          className="border-gray-300 text-gray-700 hover:bg-gray-100"
         >
           <RefreshCw className="w-4 h-4 mr-2" />
           Refresh
@@ -273,8 +273,8 @@ const MerchantDomains = () => {
       {message && (
         <div className={`p-4 rounded-lg flex items-center gap-3 ${
           message.type === 'success' 
-            ? 'bg-emerald-500/10 border border-emerald-500/30 text-emerald-400' 
-            : 'bg-red-500/10 border border-red-500/30 text-red-400'
+            ? 'bg-emerald-50 border border-emerald-200 text-emerald-700' 
+            : 'bg-red-50 border border-red-200 text-red-700'
         }`}>
           {message.type === 'success' ? <CheckCircle2 className="w-5 h-5" /> : <AlertCircle className="w-5 h-5" />}
           <span>{message.text}</span>
@@ -285,10 +285,10 @@ const MerchantDomains = () => {
       )}
 
       {/* Default Subdomain Card */}
-      <Card className="bg-gray-900/50 border-gray-800">
+      <Card className="bg-white border border-gray-200 shadow-sm">
         <CardHeader className="pb-3">
-          <CardTitle className="text-lg text-white flex items-center gap-2">
-            <Link2 className="w-5 h-5 text-blue-500" />
+          <CardTitle className="text-lg text-gray-900 flex items-center gap-2">
+            <Link2 className="w-5 h-5 text-blue-600" />
             Default Subdomain
           </CardTitle>
         </CardHeader>
@@ -301,7 +301,7 @@ const MerchantDomains = () => {
                 size="lg"
               />
             </div>
-            <div className="flex items-center gap-2 text-emerald-400">
+            <div className="flex items-center gap-2 text-emerald-600">
               <CheckCircle2 className="w-5 h-5" />
               <span className="text-sm font-medium">Always Active</span>
             </div>
@@ -315,18 +315,18 @@ const MerchantDomains = () => {
       </Card>
 
       {/* Custom Domain Card */}
-      <Card className="bg-gray-900/50 border-gray-800">
+      <Card className="bg-white border border-gray-200 shadow-sm">
         <CardHeader className="pb-3">
-          <CardTitle className="text-lg text-white flex items-center gap-2">
-            <Globe className="w-5 h-5 text-purple-500" />
+          <CardTitle className="text-lg text-gray-900 flex items-center gap-2">
+            <Globe className="w-5 h-5 text-purple-600" />
             Connect Your Own Domain
             {isVerified && (
-              <span className="ml-2 px-2 py-0.5 bg-emerald-500/20 text-emerald-400 text-xs rounded-full flex items-center gap-1">
+              <span className="ml-2 px-2 py-0.5 bg-emerald-100 text-emerald-700 text-xs rounded-full flex items-center gap-1">
                 <Check className="w-3 h-3" /> Verified
               </span>
             )}
             {hasCustomDomain && !isVerified && (
-              <span className="ml-2 px-2 py-0.5 bg-amber-500/20 text-amber-400 text-xs rounded-full flex items-center gap-1">
+              <span className="ml-2 px-2 py-0.5 bg-amber-100 text-amber-700 text-xs rounded-full flex items-center gap-1">
                 <Clock className="w-3 h-3" /> Pending
               </span>
             )}
@@ -334,7 +334,7 @@ const MerchantDomains = () => {
         </CardHeader>
         <CardContent className="space-y-4">
           <div>
-            <Label className="text-gray-300 mb-2 block">Custom Domain</Label>
+            <Label className="text-gray-700 mb-2 block">Custom Domain</Label>
             <div className="flex gap-3">
               <Input
                 data-testid="custom-domain-input"
@@ -342,7 +342,7 @@ const MerchantDomains = () => {
                 value={customDomain}
                 onChange={(e) => setCustomDomain(e.target.value)}
                 placeholder="www.yourdomain.com"
-                className="flex-1 bg-gray-800/50 border-gray-700 text-white placeholder:text-gray-500 focus:border-blue-500"
+                className="flex-1 bg-white border-gray-300 text-gray-900 placeholder:text-gray-400 focus:border-blue-500"
               />
               <Button
                 data-testid="save-domain-btn"
@@ -366,16 +366,16 @@ const MerchantDomains = () => {
           </div>
 
           {hasCustomDomain && (
-            <div className="flex items-center justify-between pt-4 border-t border-gray-800">
+            <div className="flex items-center justify-between pt-4 border-t border-gray-200">
               <div className="flex items-center gap-3">
-                <span className="text-gray-400 text-sm">Current:</span>
+                <span className="text-gray-500 text-sm">Current:</span>
                 <CopyTag value={store?.custom_domain} variant="default" />
                 {isVerified ? (
-                  <span className="text-emerald-400 text-sm flex items-center gap-1">
+                  <span className="text-emerald-600 text-sm flex items-center gap-1">
                     <CheckCircle2 className="w-4 h-4" /> Verified & Active
                   </span>
                 ) : (
-                  <span className="text-amber-400 text-sm flex items-center gap-1">
+                  <span className="text-amber-600 text-sm flex items-center gap-1">
                     <Clock className="w-4 h-4" /> Awaiting Verification
                   </span>
                 )}
@@ -384,7 +384,7 @@ const MerchantDomains = () => {
                 variant="ghost"
                 size="sm"
                 onClick={() => setShowRemoveConfirm(true)}
-                className="text-red-400 hover:text-red-300 hover:bg-red-500/10"
+                className="text-red-600 hover:text-red-700 hover:bg-red-50"
               >
                 <Trash2 className="w-4 h-4 mr-1" />
                 Remove
