@@ -222,6 +222,11 @@ const MerchantDomains = () => {
 
   // API Error state
   if (apiError) {
+    const handleRelogin = () => {
+      logout();
+      navigate('/merchant/login');
+    };
+
     return (
       <div className="p-6">
         <Card className="bg-red-500/10 border-red-500/30">
@@ -233,13 +238,22 @@ const MerchantDomains = () => {
                 <p className="text-sm mt-1">{apiError}</p>
               </div>
             </div>
-            <Button 
-              onClick={fetchStoreData} 
-              className="mt-4 bg-red-500 hover:bg-red-600"
-            >
-              <RefreshCw className="w-4 h-4 mr-2" />
-              Retry
-            </Button>
+            <div className="flex gap-3 mt-4">
+              <Button 
+                onClick={fetchStoreData} 
+                variant="outline"
+                className="border-red-500/30 text-red-400 hover:bg-red-500/10"
+              >
+                <RefreshCw className="w-4 h-4 mr-2" />
+                Retry
+              </Button>
+              <Button 
+                onClick={handleRelogin} 
+                className="bg-red-500 hover:bg-red-600"
+              >
+                Log In Again
+              </Button>
+            </div>
           </CardContent>
         </Card>
       </div>
