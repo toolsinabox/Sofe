@@ -444,6 +444,59 @@ const AdminMerchants = () => {
         </div>
       )}
 
+      {/* Bulk Action Bar */}
+      {selectedStores.length > 0 && (
+        <div className="bg-cyan-500/10 border border-cyan-500/30 rounded-lg p-3 flex items-center justify-between">
+          <div className="flex items-center gap-3">
+            <span className="text-cyan-400 font-medium">{selectedStores.length} stores selected</span>
+            <button 
+              onClick={() => setSelectedStores([])}
+              className="text-gray-400 hover:text-white text-sm"
+            >
+              Clear selection
+            </button>
+          </div>
+          <div className="flex items-center gap-2">
+            <Button
+              onClick={handleBulkActivate}
+              disabled={bulkActionLoading}
+              size="sm"
+              className="bg-emerald-600 hover:bg-emerald-700"
+            >
+              <Play size={14} className="mr-1" />
+              Activate
+            </Button>
+            <Button
+              onClick={handleBulkSuspend}
+              disabled={bulkActionLoading}
+              size="sm"
+              className="bg-yellow-600 hover:bg-yellow-700"
+            >
+              <Pause size={14} className="mr-1" />
+              Suspend
+            </Button>
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button size="sm" variant="outline" className="border-gray-700">
+                  <Download size={14} className="mr-1" />
+                  Export
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent className="bg-[#1a1f2e] border-gray-700">
+                <DropdownMenuItem onClick={handleExportCSV} className="text-gray-300 hover:text-white cursor-pointer">
+                  <FileText size={14} className="mr-2" />
+                  Export CSV
+                </DropdownMenuItem>
+                <DropdownMenuItem onClick={handleExportJSON} className="text-gray-300 hover:text-white cursor-pointer">
+                  <FileText size={14} className="mr-2" />
+                  Export JSON
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
+          </div>
+        </div>
+      )}
+
       {/* Header Actions */}
       <div className="flex flex-col gap-3 sm:gap-4">
         {/* Search and Filters */}
