@@ -130,6 +130,52 @@ const MerchantDashboard = () => {
         />
       </div>
 
+      {/* Quick Actions */}
+      <div className="bg-gradient-to-r from-blue-50 to-indigo-50 rounded-xl p-4 border border-blue-100">
+        <h3 className="font-semibold text-gray-900 text-sm mb-3 flex items-center gap-2">
+          <Zap size={16} className="text-blue-600" />
+          Quick Actions
+        </h3>
+        <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
+          <Link 
+            to="/merchant/products/new"
+            className="flex items-center gap-2 p-3 bg-white rounded-lg border border-gray-200 hover:border-blue-300 hover:shadow-sm transition-all group"
+          >
+            <div className="w-8 h-8 rounded-lg bg-blue-100 flex items-center justify-center group-hover:bg-blue-200 transition-colors">
+              <Plus size={16} className="text-blue-600" />
+            </div>
+            <span className="text-sm font-medium text-gray-700">Add Product</span>
+          </Link>
+          <Link 
+            to="/merchant/orders"
+            className="flex items-center gap-2 p-3 bg-white rounded-lg border border-gray-200 hover:border-green-300 hover:shadow-sm transition-all group"
+          >
+            <div className="w-8 h-8 rounded-lg bg-green-100 flex items-center justify-center group-hover:bg-green-200 transition-colors">
+              <ShoppingCart size={16} className="text-green-600" />
+            </div>
+            <span className="text-sm font-medium text-gray-700">View Orders</span>
+          </Link>
+          <Link 
+            to="/merchant/discounts"
+            className="flex items-center gap-2 p-3 bg-white rounded-lg border border-gray-200 hover:border-purple-300 hover:shadow-sm transition-all group"
+          >
+            <div className="w-8 h-8 rounded-lg bg-purple-100 flex items-center justify-center group-hover:bg-purple-200 transition-colors">
+              <Tag size={16} className="text-purple-600" />
+            </div>
+            <span className="text-sm font-medium text-gray-700">Discounts</span>
+          </Link>
+          <Link 
+            to="/merchant/analytics"
+            className="flex items-center gap-2 p-3 bg-white rounded-lg border border-gray-200 hover:border-orange-300 hover:shadow-sm transition-all group"
+          >
+            <div className="w-8 h-8 rounded-lg bg-orange-100 flex items-center justify-center group-hover:bg-orange-200 transition-colors">
+              <BarChart3 size={16} className="text-orange-600" />
+            </div>
+            <span className="text-sm font-medium text-gray-700">Analytics</span>
+          </Link>
+        </div>
+      </div>
+
       {/* Alerts */}
       {stats && (stats.low_stock_products > 0 || stats.out_of_stock_products > 0) && (
         <div className="bg-amber-50 border border-amber-200 rounded-lg p-3">
