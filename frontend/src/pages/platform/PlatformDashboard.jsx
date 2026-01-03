@@ -31,10 +31,6 @@ export default function PlatformDashboard() {
   const [stores, setStores] = useState([]);
   const [currentStore, setCurrentStore] = useState(null);
   const [usage, setUsage] = useState(null);
-  const [showDomainModal, setShowDomainModal] = useState(false);
-  const [domainInput, setDomainInput] = useState('');
-  const [domainLoading, setDomainLoading] = useState(false);
-  const [domainResult, setDomainResult] = useState(null);
 
   // Handle "Manage Store" click - log user into merchant dashboard
   const handleManageStore = () => {
