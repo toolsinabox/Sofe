@@ -783,6 +783,43 @@ const AdminMerchants = () => {
                 </div>
               )}
 
+              {/* Subdomain & Custom Domain Info */}
+              <div className="p-4 bg-gray-800/30 rounded-lg space-y-3">
+                <div>
+                  <p className="text-gray-400 text-sm mb-1">Subdomain</p>
+                  <p className="text-cyan-400 font-mono">{selectedMerchant.subdomain}.getcelora.com</p>
+                </div>
+                {selectedMerchant.custom_domain && (
+                  <div>
+                    <p className="text-gray-400 text-sm mb-1">Custom Domain</p>
+                    <div className="flex items-center gap-2">
+                      <p className="text-white font-mono">{selectedMerchant.custom_domain}</p>
+                      <span className={`px-2 py-0.5 rounded text-xs font-medium ${
+                        selectedMerchant.custom_domain_verified
+                          ? 'bg-emerald-500/20 text-emerald-400'
+                          : 'bg-yellow-500/20 text-yellow-400'
+                      }`}>
+                        {selectedMerchant.custom_domain_verified ? 'Verified' : 'Pending'}
+                      </span>
+                    </div>
+                  </div>
+                )}
+                {selectedMerchant.domain_verification_token && (
+                  <div>
+                    <p className="text-gray-400 text-sm mb-1">Verification Token</p>
+                    <code className="text-purple-400 bg-purple-500/10 px-2 py-1 rounded text-xs break-all">
+                      {selectedMerchant.domain_verification_token}
+                    </code>
+                  </div>
+                )}
+                {selectedMerchant.theme && (
+                  <div>
+                    <p className="text-gray-400 text-sm mb-1">Active Theme</p>
+                    <p className="text-white">{selectedMerchant.theme}</p>
+                  </div>
+                )}
+              </div>
+
               <div className="grid grid-cols-4 gap-4">
                 <div className="p-4 bg-gray-800/30 rounded-lg text-center">
                   <p className="text-gray-400 text-xs mb-1">Revenue</p>
