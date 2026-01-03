@@ -19,6 +19,7 @@ import json
 import io
 import zipfile
 import shutil
+import secrets
 from jose import JWTError, jwt
 from passlib.context import CryptContext
 from maropost_engine import MaropostTemplateEngine as NewMaropostEngine, PageType, WrapperContext, create_engine
@@ -26,6 +27,16 @@ import stripe
 
 # PDF Generation - imported from utils module
 from utils.pdf import PDFGenerator
+
+# Email Service
+from email_service import (
+    send_welcome_email,
+    send_password_reset_email,
+    send_order_confirmation_email,
+    send_shipping_notification_email,
+    send_domain_verified_email,
+    is_email_configured
+)
 
 # Import route modules
 from routes.auth import router as auth_router
