@@ -5755,9 +5755,17 @@ def get_theme_files_list(theme_name: str):
     return files
 
 # Get active theme name from database
-async def get_active_theme_name():
+async def get_active_theme_name(store_id: str = None):
+    """Get active theme - supports per-store themes or falls back to global setting"""
+    # First check if store has its own theme
+    if store_id:
+        store = await db.platform_stores.find_one({"id": store_id}, {"_id": 0, "theme": 1})
+        if store and store.get("theme"):
+            return store["theme"]
+    
+    # Fall back to global store settings
     settings = await db.store_settings.find_one({"id": "store_settings"})
-    return settings.get("active_theme", "skeletal") if settings else "skeletal"
+    return settings.get("active_theme", "toolsinabox") if settings else "toolsinabox"
 
 @api_router.get("/themes")
 async def list_themes(current_user: dict = Depends(get_current_user)):
