@@ -464,9 +464,9 @@ const AdminMerchants = () => {
                       </DropdownMenuItem>
                       <DropdownMenuItem 
                         onClick={() => handleImpersonate(merchant)}
-                        className="text-cyan-400 hover:text-cyan-300 hover:bg-cyan-500/10 cursor-pointer"
+                        className="text-cyan-400 hover:text-cyan-300 hover:bg-cyan-500/10 cursor-pointer font-medium"
                       >
-                        <LogIn size={16} className="mr-2" /> Login As Owner
+                        <LogIn size={16} className="mr-2" /> Access Store Dashboard
                       </DropdownMenuItem>
                       <DropdownMenuItem 
                         onClick={() => openResetPasswordModal(merchant)}
@@ -479,14 +479,14 @@ const AdminMerchants = () => {
                           onClick={() => window.open(getStoreUrl(merchant), '_blank')}
                           className="text-gray-300 hover:text-white hover:bg-gray-700/50 cursor-pointer"
                         >
-                          <ExternalLink size={16} className="mr-2" /> Visit Store
+                          <ExternalLink size={16} className="mr-2" /> Visit Storefront
                         </DropdownMenuItem>
                       )}
                       <DropdownMenuItem 
                         onClick={() => openEditModal(merchant)}
                         className="text-gray-300 hover:text-white hover:bg-gray-700/50 cursor-pointer"
                       >
-                        <Edit size={16} className="mr-2" /> Edit
+                        <Edit size={16} className="mr-2" /> Edit Store Info
                       </DropdownMenuItem>
                       <DropdownMenuItem className="text-gray-300 hover:text-white hover:bg-gray-700/50 cursor-pointer">
                         <Mail size={16} className="mr-2" /> Send Email
@@ -495,7 +495,7 @@ const AdminMerchants = () => {
                         onClick={() => openDeleteModal(merchant)}
                         className="text-red-400 hover:text-red-300 hover:bg-red-500/10 cursor-pointer"
                       >
-                        <Trash2 size={16} className="mr-2" /> Delete
+                        <Trash2 size={16} className="mr-2" /> Delete Store
                       </DropdownMenuItem>
                     </DropdownMenuContent>
                   </DropdownMenu>
