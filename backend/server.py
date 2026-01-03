@@ -4826,6 +4826,22 @@ async def update_store_settings(settings: StoreSettingsUpdate, request: Request)
 async def get_domain_settings(current_user: dict = Depends(get_current_user)):
     """Get store domain settings"""
     store_id = current_user.get("store_id")
+    
+    # If no store_id in token, try to find store by user email (for store owners)
+    if not store_id:
+        user_email = current_user.get("email")
+        if user_email:
+            # Check if user is a platform owner
+            owner = await db.platform_owners.find_one({"email": user_email})
+            if owner:
+                store_id = owner.get("store_id")
+            
+            # Also check platform_stores for owner_email
+            if not store_id:
+                store = await db.platform_stores.find_one({"owner_email": user_email}, {"_id": 0})
+                if store:
+                    store_id = store.get("id")
+    
     if not store_id:
         raise HTTPException(status_code=400, detail="No store associated with user")
     
@@ -4841,13 +4857,31 @@ async def get_domain_settings(current_user: dict = Depends(get_current_user)):
         "custom_domain_verified": store.get("custom_domain_verified", False)
     }
 
+async def get_store_id_for_current_user(current_user: dict) -> str:
+    """Helper to get store_id from current user context"""
+    store_id = current_user.get("store_id")
+    
+    if not store_id:
+        user_email = current_user.get("email")
+        if user_email:
+            owner = await db.platform_owners.find_one({"email": user_email})
+            if owner:
+                store_id = owner.get("store_id")
+            
+            if not store_id:
+                store = await db.platform_stores.find_one({"owner_email": user_email}, {"_id": 0})
+                if store:
+                    store_id = store.get("id")
+    
+    return store_id
+
 @api_router.put("/store/custom-domain")
 async def update_custom_domain(
     domain_data: dict,
     current_user: dict = Depends(get_current_user)
 ):
     """Update store's custom domain"""
-    store_id = current_user.get("store_id")
+    store_id = await get_store_id_for_current_user(current_user)
     if not store_id:
         raise HTTPException(status_code=400, detail="No store associated with user")
     
