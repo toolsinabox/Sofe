@@ -12,6 +12,8 @@ import AdminLogin from "./pages/admin/AdminLogin";
 import AdminAnalytics from "./pages/admin/AdminAnalytics";
 import AdminSettings from "./pages/admin/AdminSettings";
 import AdminActivityLog from "./pages/admin/AdminActivityLog";
+import AdminProfile from "./pages/admin/AdminProfile";
+import AdminAccountSettings from "./pages/admin/AdminAccountSettings";
 
 // Merchant Pages
 import MerchantLayout from "./pages/merchant/MerchantLayout";
