@@ -96,14 +96,14 @@ function App() {
             <Route path="/login" element={<PlatformLogin />} />
             <Route path="/forgot-password" element={<ForgotPassword />} />
             <Route path="/reset-password" element={<ResetPassword />} />
-            <Route path="/dashboard" element={<PlatformDashboard />} />
+            <Route path="/dashboard" element={<Navigate to="/merchant" replace />} />
             <Route path="/billing" element={<PlatformBilling />} />
             
             {/* Legacy /platform routes redirect to new paths */}
             <Route path="/platform" element={<Navigate to="/" replace />} />
             <Route path="/platform/signup" element={<Navigate to="/signup" replace />} />
             <Route path="/platform/login" element={<Navigate to="/login" replace />} />
-            <Route path="/platform/dashboard" element={<Navigate to="/dashboard" replace />} />
+            <Route path="/platform/dashboard" element={<Navigate to="/merchant" replace />} />
 
             {/* ============================================
                 MERCHANT DASHBOARD
