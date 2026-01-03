@@ -4820,6 +4820,132 @@ async def update_store_settings(settings: StoreSettingsUpdate, request: Request)
     updated = await db.store_settings.find_one({"store_id": store_id})
     return StoreSettings(**updated)
 
+# ==================== CUSTOM DOMAIN MANAGEMENT ====================
+
+@api_router.get("/store/domain-settings")
+async def get_domain_settings(current_user: dict = Depends(get_current_user)):
+    """Get store domain settings"""
+    store_id = current_user.get("store_id")
+    if not store_id:
+        raise HTTPException(status_code=400, detail="No store associated with user")
+    
+    store = await db.platform_stores.find_one({"id": store_id}, {"_id": 0})
+    if not store:
+        raise HTTPException(status_code=404, detail="Store not found")
+    
+    return {
+        "store_id": store.get("id"),
+        "store_name": store.get("store_name"),
+        "subdomain": store.get("subdomain"),
+        "custom_domain": store.get("custom_domain"),
+        "custom_domain_verified": store.get("custom_domain_verified", False)
+    }
+
+@api_router.put("/store/custom-domain")
+async def update_custom_domain(
+    domain_data: dict,
+    current_user: dict = Depends(get_current_user)
+):
+    """Update store's custom domain"""
+    store_id = current_user.get("store_id")
+    if not store_id:
+        raise HTTPException(status_code=400, detail="No store associated with user")
+    
+    custom_domain = domain_data.get("custom_domain")
+    
+    # Clean domain
+    if custom_domain:
+        custom_domain = custom_domain.lower().strip()
+        custom_domain = custom_domain.replace("http://", "").replace("https://", "")
+        custom_domain = custom_domain.rstrip("/")
+        
+        # Check if domain is already in use by another store
+        existing = await db.platform_stores.find_one({
+            "custom_domain": custom_domain,
+            "id": {"$ne": store_id}
+        })
+        if existing:
+            raise HTTPException(status_code=400, detail="Domain is already in use by another store")
+    
+    await db.platform_stores.update_one(
+        {"id": store_id},
+        {"$set": {
+            "custom_domain": custom_domain,
+            "custom_domain_verified": False,
+            "updated_at": datetime.now(timezone.utc)
+        }}
+    )
+    
+    return {"message": "Domain saved", "custom_domain": custom_domain}
+
+@api_router.delete("/store/custom-domain")
+async def remove_custom_domain(current_user: dict = Depends(get_current_user)):
+    """Remove store's custom domain"""
+    store_id = current_user.get("store_id")
+    if not store_id:
+        raise HTTPException(status_code=400, detail="No store associated with user")
+    
+    await db.platform_stores.update_one(
+        {"id": store_id},
+        {"$set": {
+            "custom_domain": None,
+            "custom_domain_verified": False,
+            "updated_at": datetime.now(timezone.utc)
+        }}
+    )
+    
+    return {"message": "Custom domain removed"}
+
+@api_router.post("/store/verify-domain")
+async def verify_custom_domain(
+    domain_data: dict,
+    current_user: dict = Depends(get_current_user)
+):
+    """Verify that custom domain points to our server"""
+    import socket
+    
+    store_id = current_user.get("store_id")
+    if not store_id:
+        raise HTTPException(status_code=400, detail="No store associated with user")
+    
+    domain = domain_data.get("domain", "").lower().strip()
+    if not domain:
+        raise HTTPException(status_code=400, detail="Domain is required")
+    
+    # Our server IP
+    SERVER_IP = "45.77.239.247"
+    
+    try:
+        # Resolve domain
+        resolved_ip = socket.gethostbyname(domain)
+        
+        if resolved_ip == SERVER_IP:
+            # Domain points to our server - mark as verified
+            await db.platform_stores.update_one(
+                {"id": store_id},
+                {"$set": {
+                    "custom_domain": domain,
+                    "custom_domain_verified": True,
+                    "updated_at": datetime.now(timezone.utc)
+                }}
+            )
+            return {"verified": True, "message": "Domain verified successfully!"}
+        else:
+            return {
+                "verified": False, 
+                "message": f"Domain points to {resolved_ip}, expected {SERVER_IP}. Please update your DNS settings."
+            }
+    except socket.gaierror:
+        return {
+            "verified": False,
+            "message": "Could not resolve domain. Please check your DNS settings and try again."
+        }
+    except Exception as e:
+        return {
+            "verified": False,
+            "message": f"Verification failed: {str(e)}"
+        }
+
 # ==================== INVOICE SETTINGS ====================
 
 @api_router.get("/settings/invoice-template")
