@@ -287,6 +287,9 @@ async def register_store(store_data: StoreCreate):
         hashed_password=hash_password(store_data.owner_password)
     )
     
+    # Generate unique domain verification token
+    verification_token = f"celora-verify={subdomain[:8]}-{secrets.token_hex(8)}"
+    
     # Create store with 14-day trial
     store = Store(
         store_name=store_data.store_name,
@@ -294,7 +297,9 @@ async def register_store(store_data: StoreCreate):
         owner_id=owner.id,
         plan_id=store_data.plan_id if store_data.plan_id in PLANS else "free",
         status="trial" if store_data.plan_id != "free" else "active",
-        trial_ends_at=datetime.now(timezone.utc) + timedelta(days=14) if store_data.plan_id != "free" else None
+        trial_ends_at=datetime.now(timezone.utc) + timedelta(days=14) if store_data.plan_id != "free" else None,
+        domain_verification_token=verification_token,
+        theme="toolsinabox"  # Default theme
     )
     
     # Link store to owner
