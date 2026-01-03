@@ -5246,6 +5246,33 @@ async def get_uploaded_file(upload_type: str, filename: str):
     
     return FileResponse(file_path)
 
+@api_router.get("/store/favicon")
+async def get_store_favicon(request: Request):
+    """Get store favicon based on subdomain/domain - returns redirect to favicon URL"""
+    from fastapi.responses import RedirectResponse, FileResponse
+    
+    # Detect store from request
+    store_id = await get_store_id_from_header(request)
+    
+    if store_id:
+        settings = await db.store_settings.find_one({"store_id": store_id})
+    else:
+        settings = await db.store_settings.find_one({})
+    
+    if settings and settings.get("store_favicon"):
+        favicon_url = settings.get("store_favicon")
+        # If it's a local URL, serve the file directly
+        if favicon_url.startswith("/api/uploads/"):
+            filename = favicon_url.split("/")[-1]
+            file_path = UPLOADS_DIR / "favicons" / filename
+            if file_path.exists():
+                return FileResponse(file_path, media_type="image/x-icon")
+        # Otherwise redirect to the URL
+        return RedirectResponse(url=favicon_url)
+    
+    # Return default favicon or 404
+    raise HTTPException(status_code=404, detail="Favicon not found")
+
 # ==================== THEME TEMPLATES ====================
 
 @api_router.get("/templates", response_model=List[ThemeTemplate])
