@@ -246,6 +246,41 @@ const MerchantSidebar = ({ collapsed, setCollapsed, mobileOpen, setMobileOpen })
     navigate('/dashboard');
   };
 
+  // Get the store URL - works in both Emergent (preview) and Live environments
+  const getStoreUrl = () => {
+    // Get store data from localStorage or context
+    const platformStore = localStorage.getItem('platform_store');
+    let storeData = null;
+    
+    try {
+      storeData = platformStore ? JSON.parse(platformStore) : store;
+    } catch (e) {
+      storeData = store;
+    }
+    
+    if (!storeData) return '#';
+    
+    const subdomain = storeData.subdomain;
+    const customDomain = storeData.custom_domain;
+    const customDomainVerified = storeData.custom_domain_verified;
+    
+    // If custom domain is verified, use it
+    if (customDomainVerified && customDomain) {
+      return `https://${customDomain}`;
+    }
+    
+    // Check if we're in Emergent preview environment
+    const isEmergent = BACKEND_URL?.includes('preview.emergentagent.com');
+    
+    if (isEmergent) {
+      // In Emergent, use the API endpoint with subdomain header simulation
+      return `${BACKEND_URL}/api/maropost/home?subdomain=${subdomain}`;
+    } else {
+      // In Live environment, use the actual subdomain URL
+      return `https://${subdomain}.getcelora.com`;
+    }
+  };
+
   const toggleGroup = (groupId) => {
     setExpandedGroups(prev => 
       prev.includes(groupId) 
