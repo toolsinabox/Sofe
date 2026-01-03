@@ -220,7 +220,7 @@ const AdminMerchants = () => {
     setIsDeleteModalOpen(true);
   };
 
-  // Impersonate (Login As) function
+  // Impersonate (Login As) function - actually logs into merchant dashboard
   const handleImpersonate = async (merchant) => {
     setSaving(true);
     setError(null);
@@ -229,24 +229,26 @@ const AdminMerchants = () => {
       const headers = { Authorization: `Bearer ${token}` };
       const res = await axios.post(`${API_URL}/api/admin/stores/${merchant.id}/impersonate`, {}, { headers });
       
-      // Store the impersonation token and redirect
-      const impersonateToken = res.data.access_token;
+      const impersonateToken = res.data.token;
+      const store = res.data.store;
+      const owner = res.data.owner;
       
-      // Option 1: Open in new tab with token
-      const subdomain = merchant.subdomain || '';
-      const targetUrl = subdomain 
-        ? `http://${subdomain}.getcelora.com/merchant?token=${impersonateToken}`
-        : `/merchant?token=${impersonateToken}`;
+      // Store the impersonation token in localStorage
+      localStorage.setItem('token', impersonateToken);
+      localStorage.setItem('user', JSON.stringify({
+        ...owner,
+        role: 'merchant',
+        store_id: store.id,
+        impersonated: true,
+        impersonated_by: 'admin'
+      }));
       
-      // Copy token to clipboard
-      navigator.clipboard.writeText(impersonateToken);
-      setCopiedToken(true);
-      setTimeout(() => setCopiedToken(false), 3000);
+      setSuccess(`Logged in as ${owner.email}. Redirecting to merchant dashboard...`);
       
-      setSuccess(`Login token copied! You can now login as ${merchant.owner_email || merchant.email}. Opening dashboard...`);
-      
-      // For local development, just copy the token
-      // window.open(targetUrl, '_blank');
+      // Redirect to merchant dashboard
+      setTimeout(() => {
+        window.location.href = '/merchant';
+      }, 1000);
       
     } catch (err) {
       setError(err.response?.data?.detail || 'Failed to impersonate merchant');
