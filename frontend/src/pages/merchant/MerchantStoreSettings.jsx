@@ -103,6 +103,57 @@ const MerchantStoreSettings = () => {
     maxFiles: 1
   });
 
+  const onFaviconDrop = useCallback(async (acceptedFiles) => {
+    if (acceptedFiles.length === 0) return;
+    
+    setUploadingFavicon(true);
+    const file = acceptedFiles[0];
+    const formData = new FormData();
+    formData.append('file', file);
+
+    try {
+      const response = await axios.post(`${API}/upload/favicons`, formData, {
+        headers: { 'Content-Type': 'multipart/form-data' }
+      });
+      const faviconUrl = `${BACKEND_URL}${response.data.url}`;
+      setSettings(prev => ({ ...prev, store_favicon: faviconUrl }));
+      
+      // Update the browser favicon immediately
+      updateBrowserFavicon(faviconUrl);
+    } catch (error) {
+      console.error('Error uploading favicon:', error);
+      alert('Failed to upload favicon');
+    } finally {
+      setUploadingFavicon(false);
+    }
+  }, []);
+
+  const updateBrowserFavicon = (url) => {
+    // Update existing favicon links or create new ones
+    let link = document.querySelector("link[rel*='icon']");
+    if (!link) {
+      link = document.createElement('link');
+      link.rel = 'icon';
+      document.head.appendChild(link);
+    }
+    link.href = url;
+    
+    // Also update apple-touch-icon
+    let appleLink = document.querySelector("link[rel='apple-touch-icon']");
+    if (!appleLink) {
+      appleLink = document.createElement('link');
+      appleLink.rel = 'apple-touch-icon';
+      document.head.appendChild(appleLink);
+    }
+    appleLink.href = url;
+  };
+
+  const { getRootProps: getFaviconRootProps, getInputProps: getFaviconInputProps, isDragActive: isFaviconDragActive } = useDropzone({
+    onDrop: onFaviconDrop,
+    accept: { 'image/*': ['.png', '.ico', '.svg', '.jpg', '.jpeg'] },
+    maxFiles: 1
+  });
+
   if (loading) {
     return (
       <div className="flex items-center justify-center h-64">
