@@ -474,7 +474,7 @@ const AdminMerchants = () => {
                       </DropdownMenuItem>
                       {merchant.subdomain && (
                         <DropdownMenuItem 
-                          onClick={() => window.open(`http://${merchant.subdomain}.getcelora.com`, '_blank')}
+                          onClick={() => window.open(getStoreUrl(merchant), '_blank')}
                           className="text-gray-300 hover:text-white hover:bg-gray-700/50 cursor-pointer"
                         >
                           <ExternalLink size={16} className="mr-2" /> Visit Store
@@ -520,9 +520,11 @@ const AdminMerchants = () => {
                   </span>
                 </div>
 
-                {/* Store URL - subdomain */}
+                {/* Store URL - shows custom domain if verified, otherwise subdomain */}
                 <p className="text-gray-500 text-sm mb-4">
-                  {merchant.subdomain}.getcelora.com
+                  {merchant.custom_domain_verified && merchant.custom_domain 
+                    ? merchant.custom_domain 
+                    : `${merchant.subdomain}.getcelora.com`}
                 </p>
 
                 <div className="grid grid-cols-3 gap-4 pt-4 border-t border-gray-800">
