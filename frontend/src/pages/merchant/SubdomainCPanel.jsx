@@ -179,6 +179,14 @@ const SubdomainCPanel = () => {
     );
   }
 
+  // Display label for the store context (subdomain or custom domain)
+  const getDisplayDomain = () => {
+    if (storeContext.type === 'subdomain') {
+      return `${storeContext.value}.getcelora.com`;
+    }
+    return storeContext.value;
+  };
+
   // If store not found or error occurred, show error page
   if (error || !storeInfo) {
     return (
@@ -189,7 +197,7 @@ const SubdomainCPanel = () => {
           </div>
           <h1 className="text-2xl font-bold text-white mb-2">Store Not Found</h1>
           <p className="text-gray-400 mb-6">
-            The store <span className="text-cyan-400 font-mono">{subdomain}.getcelora.com</span> doesn&apos;t exist or has been deactivated.
+            The store <span className="text-cyan-400 font-mono">{getDisplayDomain()}</span> doesn&apos;t exist or has been deactivated.
           </p>
           <div className="space-y-3">
             <Button
