@@ -30,12 +30,19 @@ const MerchantLogin = () => {
       const response = await axios.post(
         `${API}/platform/auth/login?email=${encodeURIComponent(formData.email)}&password=${encodeURIComponent(formData.password)}`
       );
-      // Platform login returns token and owner info
+      
+      // Each email has 1 store - set it up
+      const store = response.data.stores[0];
+      localStorage.setItem('platform_store', JSON.stringify(store));
+      localStorage.setItem('store_id', store.id);
+      
+      // Login with merchant user info
       login(response.data.token, {
         id: response.data.owner.id,
         email: response.data.owner.email,
         name: response.data.owner.name,
         role: 'merchant',
+        store_id: store.id,
         stores: response.data.stores
       });
       navigate('/merchant');
