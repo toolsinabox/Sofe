@@ -214,20 +214,28 @@ const MerchantSidebar = ({ collapsed, setCollapsed, mobileOpen, setMobileOpen })
         // Only fetch from API if no platform store was ever found
         const platformStore = localStorage.getItem('platform_store');
         if (!platformStore && isMounted) {
-          axios.get(`${BACKEND_URL}/api/store/settings`)
-            .then(response => {
-              if (response.data && isMounted) {
-                // Double-check platform store hasn't been set in the meantime
-                const recheck = localStorage.getItem('platform_store');
-                if (!recheck) {
-                  setStoreSettings({
-                    store_name: response.data.store_name || 'My Store',
-                    store_logo: response.data.store_logo || ''
-                  });
-                }
+          // Fetch both store settings and domain settings
+          const token = localStorage.getItem('token');
+          const headers = token ? { Authorization: `Bearer ${token}` } : {};
+          
+          Promise.all([
+            axios.get(`${BACKEND_URL}/api/store/settings`, { headers }).catch(() => ({ data: {} })),
+            axios.get(`${BACKEND_URL}/api/store/domain-settings`, { headers }).catch(() => ({ data: {} }))
+          ]).then(([settingsRes, domainRes]) => {
+            if (isMounted) {
+              // Double-check platform store hasn't been set in the meantime
+              const recheck = localStorage.getItem('platform_store');
+              if (!recheck) {
+                setStoreSettings({
+                  store_name: settingsRes.data?.store_name || 'My Store',
+                  store_logo: settingsRes.data?.store_logo || '',
+                  subdomain: domainRes.data?.subdomain || '',
+                  custom_domain: domainRes.data?.custom_domain || '',
+                  custom_domain_verified: domainRes.data?.custom_domain_verified || false
+                });
               }
-            })
-            .catch(() => {});
+            }
+          });
         }
       }, 500);
     }
