@@ -1,207 +1,177 @@
 <analysis>**original_problem_statement:**
-The user's primary goal is to create a multi-tenant hosting platform, Celora, similar to Shopify, allowing customers to sign up and manage their own e-commerce stores. A key requirement is a Platform Admin Dashboard for the user to oversee all customer stores. The application has been deployed to a user-managed Vultr VPS.
+The user's objective is to build a multi-tenant e-commerce platform named Celora, where customers can sign up and create their own online stores. The user requires a Platform Admin Dashboard to manage all customer stores. The primary workflow has shifted to developing and testing all features within the Emergent environment first, with the user managing deployment to a live Vultr VPS via GitHub.
 
-The most recent user requests are:
-1.  **Finish the self-service custom domain feature:** This was in progress from the last session.
-2.  **Enhance the Admin Dashboard:**
-    *   Implement a Login As (impersonate) feature for the platform admin to access merchant accounts.
-    *   Allow the platform admin to manually reset passwords for users/merchants.
-3.  **Implement Subdomain CPanel:** Change the merchant login flow from a redirect to a dedicated, branded login page at .
-4.  **Dual Deployment:** Ensure all new features are implemented in the Emergent development environment and also deployed to the live Vultr VPS.
+Recent user requests include:
+1.  **Subdomain Validation:** Fix a critical bug where any non-existent subdomain (e.g., ) renders a default store theme instead of a Not Found error.
+2.  **UI/UX Enhancements:**
+    *   Clean up the  by removing redundant items and improving organization.
+    *   Ensure the Domains link is prominently visible.
+    *   Remove the redundant Custom Domain modal from the  and link directly to the dedicated feature page.
+3.  **Feature Implementation:**
+    *   **Self-Service Custom Domains:** Build a complete, self-service feature for merchants to connect their own domains (e.g., ).
+    *   **Email Integration & Password Reset:** Integrate an email service (Resend) and implement a full Forgot Password flow for users.
+    *   **Favicon Uploader:** Allow merchants to upload a custom favicon for their store.
+    *   **Redirects & Custom Scripts:** Implement comprehensive pages for merchants to manage URL redirects and add custom scripts (e.g., Google Analytics, chat widgets), similar to Maropost.
 
 **User's preferred language**: English
 
 **what currently exists?**
-A full-stack multi-tenant e-commerce platform (React frontend, FastAPI/MongoDB backend) is live on the user's Vultr VPS (). Nginx is configured as a reverse proxy, and PM2 manages the backend service.
+The project is a full-stack multi-tenant e-commerce platform using React, FastAPI, and MongoDB. The development focus is now entirely within the Emergent environment.
 
-The agent has implemented the new admin and cPanel features in the Emergent environment. The code for these features was then provided to the user via a series of shell commands for deployment to the live server. A backend issue where new API routes were not being registered was identified and fixed by appending  to . The backend APIs for the new features are now confirmed to be working on the live server. The deployment of the frontend UI updates is currently in progress but has run into an issue.
+The following features have been fully implemented and tested in this session:
+*   A robust backend fix that returns a 404 error for invalid or inactive subdomains.
+*   A revamped merchant sidebar with a cleaner structure.
+*   A comprehensive self-service page for merchants to add, verify, and manage custom domains, including DNS checking.
+*   Full Forgot Password and Reset Password functionality, integrated with the Resend email service (pending user API key).
+*   A favicon uploader in the merchant's store settings.
+
+The initial pages and backend APIs for Redirect URLs and Custom Scripts have been created but are not yet fully integrated into the UI.
 
 **Last working item**:
--   **Last item agent was working:** Fixing a failed frontend build on the user's live VPS. The agent provided a  command to update the  file with the new impersonation and password reset features. However, the user's execution of the command resulted in a corrupted file, causing the yarn run v1.22.22
-info Visit https://yarnpkg.com/en/docs/cli/run for documentation about this command. process to fail with a . The agent has now provided a new, clean  command to overwrite the corrupted file and another command to retry the build.
+-   **Last item agent was working:** Implementing the Redirect URLs and Custom Scripts features for merchants. The agent successfully created the frontend pages (, ), added the CRUD API endpoints to , and included the new pages in the  router.
 -   **Status:** IN PROGRESS
 -   **Agent Testing Done:** N
--   **Which testing method agent to use?** Manual testing by curl/screenshot tool. Once the build succeeds, the agent must verify the UI on the live server. A screenshot of the  page would confirm the new UI elements are present.
+-   **Which testing method agent to use?** Both. The agent needs to use the frontend testing agent to verify the new pages render correctly and are usable. The backend testing agent (or ) should be used to test the new CRUD API endpoints for redirects and custom scripts.
 -   **User Testing Done:** N
 
 **All Pending/In progress Issue list**:
--   **Issue 1: Fix Corrupted  and Complete Admin UI Deployment (P0)**
--   **Issue 2: Verify All New Features on Live Server (P0)**
--   **Issue 3: Finalize and Secure VPS Deployment with SSL (P1)**
--   **Issue 4: Root Domain DNS Propagation (P1)**
--   **Issue 5: eBay Connection Authentication Failure (P2)**
+There are no outstanding bugs. The focus is on completing the features in progress.
 
 **Issues Detail:**
--   **Issue 1: Fix Corrupted  and Complete Admin UI Deployment (P0)**
-    -   **Attempted fixes:** A  command to update the file failed due to copy-paste corruption, resulting in a syntax error during the yarn run v1.22.22
-info Visit https://yarnpkg.com/en/docs/cli/run for documentation about this command..
-    -   **Next debug checklist:**
-        1.  Instruct the user to execute the latest  command provided in the last message to fix the corrupted file.
-        2.  Instruct the user to run  to rebuild the frontend.
-        3.  Confirm with the user that the build completes without errors.
-    -   **Why fix this issue and what will be achieved with this?** This is the final step to deploy the UI for the new admin features requested by the user. It is currently blocking all further progress.
-    -   **Status:** IN PROGRESS
-    -   **Is recurring issue?** Y (File corruption via  has happened multiple times).
-    -   **Should Test frontend/backend/both after fix?** Frontend
-    -   **Blocked on other issue:** None
-
--   **Issue 2: Verify All New Features on Live Server (P0)**
-    -   **Attempted fixes:** All backend code is deployed and verified. Frontend deployment is blocked.
-    -   **Next debug checklist:**
-        1.  **Subdomain CPanel:** Navigate to  and verify the branded login page appears. Attempt to log in.
-        2.  **Admin Impersonation:** Log into the admin dashboard, go to Merchants, click the ⋮ menu on a merchant card, and test the Login As Owner feature.
-        3.  **Admin Password Reset:** From the same menu, test the Reset Password feature.
-    -   **Why fix this issue and what will be achieved with this?** To confirm that the user's latest feature requests have been successfully implemented and deployed.
-    -   **Status:** BLOCKED
-    -   **Is recurring issue?** N
-    -   **Should Test frontend/backend/both after fix?** Both
-    -   **Blocked on other issue:** Issue 1
-
--   **Issue 3: Finalize and Secure VPS Deployment with SSL (P1)**
-    -   **Attempted fixes:** N/A.
-    -   **Next debug checklist:** Once the root domain propagates, guide the user to install Certbot and run .
-    -   **Why fix this issue and what will be achieved with this?** Secures the entire platform with HTTPS.
-    -   **Status:** BLOCKED
-    -   **Is recurring issue?** N
-    -   **Should Test frontend/backend/both after fix?** Both
-    -   **Blocked on other issue:** Issue 4: Root Domain DNS Propagation.
-
--   **Issue 4: Root Domain DNS Propagation (P1)**
-    -   **Attempted fixes:** DNS records have been set. Waiting for propagation.
-    -   **Next debug checklist:** Periodically check DNS propagation. No action is needed besides waiting.
-    -   **Why fix this issue and what will be achieved with this?** Prerequisite for installing a full SSL certificate.
-    -   **Status:** IN PROGRESS
-    -   **Is recurring issue?** N
-    -   **Should Test frontend/backend/both after fix?** N/A
-    -   **Blocked on other issue:** None (Time-based).
-
--   **Issue 5: eBay Connection Authentication Failure (P2)**
-    -   **Attempted fixes:** None in this session.
-    -   **Next debug checklist:** Guide the user to re-verify their API credentials and scopes on the eBay developer portal.
-    -   **Why fix this issue and what will be achieved with this?** Enables live product and order synchronization with eBay.
-    -   **Status:** BLOCKED
-    -   **Is recurring issue?** Y
-    -   **Should Test frontend/backend/both after fix?** Backend
-    -   **Blocked on other issue:** User action required.
+N/A
 
 **In progress Task List**:
--   **Task 1: Deploy and Verify New Admin Features & CPanel (P0)**
-    -   **Where to resume:** User needs to execute the  command from the agent's last message to fix the corrupted  and then run yarn run v1.22.22
-info Visit https://yarnpkg.com/en/docs/cli/run for documentation about this command..
-    -   **What will be achieved with this?** The new admin features (impersonation, password reset) and the subdomain-based cPanel will be fully deployed and testable on the live VPS.
+-   **Task 1: Complete Redirect URLs and Custom Scripts Features (P0)**
+    -   **Where to resume:**
+        1.  Edit  to add navigation links for URL Redirects and Custom Scripts. A good location would be under the Storefront or Settings group.
+        2.  Thoroughly test the full CRUD functionality for both features. This includes creating, reading, updating, and deleting redirects and scripts via the UI and verifying the changes persist through API calls.
+    -   **What will be achieved with this?** Merchants will gain the ability to manage their site's SEO with URL redirects and enhance functionality with custom third-party scripts.
     -   **Status:** IN PROGRESS
     -   **Should Test frontend/backend/both after fix?** Both
-    -   **Blocked on something:** Waiting for the user to execute the provided commands.
+    -   **Blocked on something:** Nothing.
 
 **Upcoming and Future Tasks**
-**Upcoming Tasks (P1):**
-*   **Stripe Go-Live:** Guide the user to replace test Stripe keys with live keys in .
-*   **Email Integration:** Implement an email service (e.g., Resend, SendGrid) for transactional emails.
-*   **Deploy  Updates:** The  page was also modified locally for password resets but has not been deployed to the live server yet. This should be done after the  page is fixed.
+**Upcoming Tasks:**
+*   **Finalize VPS Deployment Plan (P1):** Once all features are complete, provide the user with a consolidated set of files and commands for deployment. This includes the new  script and the updated Nginx configuration for subdomain handling.
+*   **Email API Key Configuration (P1):** Remind the user to acquire a free Resend API key and provide clear instructions on how to add it to the  file on their live server to enable email functionality.
+*   **Stripe Go-Live (P1):** Guide the user to switch from test to live Stripe keys on their production server.
 
-**Future Tasks (P2):**
-*   **Refactor :** The current fix of adding a duplicate  call is a hack. The file should be properly re-ordered.
-*   **Full API Scoping Audit:** Perform a final audit of all minor API endpoints to ensure every route is correctly scoped by .
-*   **Automated Deployments (CI/CD):** Propose setting up a GitHub Actions pipeline to automate future deployments.
-*   **Unify User Models & Auth:** Refactor the  and  tables and their respective authentication flows.
+**Future Tasks:**
+*   **Refactor  (P2):** The main backend file has become a monolith. It should be refactored into smaller, domain-specific router files (e.g., , ).
+*   **Unify User Authentication (P2):** Address the technical debt of having two separate user tables (, ) with inconsistent password hashing (bcrypt vs. sha256).
+*   **Automated Deployments (CI/CD) (P2):** Propose setting up a GitHub Actions pipeline to automate deployments to the Vultr VPS.
+*   **Fix eBay Integration (P2):** This long-standing issue is blocked on the user verifying their API credentials with eBay.
 
 **Completed work in this session**
-- **Admin & CPanel Feature Implementation:**
-  - : Created backend API () and frontend UI logic to allow admins to log in as merchants.
-  - : Created backend API () and frontend modals for admins to reset merchant passwords.
-  - : Created a new page () and backend API () to provide a branded login experience at .
-- **Live Server Deployment & Debugging:**
-  - Guided the user to deploy the new CPanel page, update Nginx, and add the new API endpoints to the live server.
-  - Diagnosed and fixed a critical bug on the live server where new API routes were not being registered due to being added after the  call in .
-- **Custom Domain Feature Progress:**
-  - Guided the user to add the Domains link to the  component on the live server, completing the UI portion of that feature.
+- **Subdomain Validation Fix:** Resolved the critical bug where invalid subdomains rendered a default store theme; they now correctly result in a 404 error (, ).
+- **Self-Service Custom Domains:** Implemented a full-featured page for merchants to add, verify, and manage their custom domains (, ).
+- **Email & Password Reset Flow:** Integrated the Resend email service and built a complete Forgot Password journey with new pages and APIs (, , ).
+- **Favicon Uploader:** Added functionality for merchants to upload a custom favicon for their store branding (, ).
+- **UI/UX Cleanup:**
+    - Reorganized and streamlined the .
+    - Removed the redundant Custom Domain modal from , replacing it with a direct navigation link.
+- **SSL Setup Script:** Created a  script to help the user automate Certbot installation on their VPS.
+- **Initial Implementation of Redirects & Scripts:** Created the foundational files and API endpoints for the URL Redirects and Custom Scripts features.
 
 **Earlier issues found/mentioned but not fixed**
 -   **Issue 1: eBay Connection Authentication Failure**
-    -   **Debug checklist:** The user needs to verify their credentials and app scopes on the eBay developer portal. The current error is .
-    -   **Why to solve this issue and what will be achieved with this?** Fixes the eBay integration, allowing for product and order sync.
+    -   **Debug checklist:** The user needs to re-verify their API credentials and application scopes on the eBay developer portal, as the current error is .
+    -   **Why to solve this issue and what will be achieved with this?** This will enable live product and order synchronization between the platform and eBay.
     -   **Should Test frontend/backend/both after fix:** Backend
     -   **Is recurring issue?** Y
 
 **Known issue recurrence from previous fork**
 -   **Issue recurrence in previous fork**: eBay Connection Authentication Failure.
 -   **Recurrence count**: 3+
--   **Status**: BLOCKED
+-   **Status**: BLOCKED (requires user action).
 
 **Code Architecture**
 
-*(Note: The user's live server at  mirrors this structure but is in a broken state pending the frontend build fix.)*
 
 **Key Technical Concepts**
--   **Self-Hosting/DevOps:** Manual deployment and management of a full-stack application on an Ubuntu VPS using Nginx, PM2, Certbot, and .
--   **Live Server Debugging:** Diagnosing and fixing issues directly on a production VPS, including file corruption from  commands and incorrect code ordering in Python causing unregistered API routes.
--   **Admin Impersonation:** Generating a JWT for a target user to allow an admin to log in without their password.
--   **Advanced Nginx Routing:** Configuring Nginx to handle subdomain-specific routes like .
+- **Emergent-First Workflow:** All development and testing are now done in the Emergent environment before providing deployment instructions.
+- **Dynamic Store Resolution:** The backend can now identify a store based on subdomain, custom domain, or a request header, with a robust fallback to a 404 error.
+- **DNS Verification:** A backend service was implemented to programmatically check DNS  records to verify custom domain ownership.
+- **Modular Email Service:** A dedicated  was created to handle all transactional emails, making the system ready for an API key.
+- **File Uploads & Serving:** Implemented favicon uploads to a persistent volume and created a dynamic endpoint () to serve the correct icon per store.
 
 **key DB schema**
-- No changes made in this session. The inconsistency between  (bcrypt) and  (sha256) password hashing remains.
+- **platform_stores:** This collection now has active usage of , , and  fields. The agent fixed data inconsistencies to link the test user to their store.
+- **redirects / custom_scripts:** New collections managed by the backend, linked to stores via .
+- **users / platform_owners:** The underlying issue of two user tables with different password hashing (bcrypt vs. sha256) persists and remains a significant piece of technical debt.
 
 **changes in tech stack**
-- None.
+- **Added:**  Python library for email integration.
 
 **All files of reference**
--   **/var/www/celora/frontend/src/pages/admin/AdminMerchants.jsx**: The file that is currently corrupted on the live VPS and needs to be fixed.
--   **/var/www/celora/backend/server.py**: Was modified to fix an API registration bug by adding a second  call at the end.
--   **/var/www/celora/frontend/src/App.js**: Updated on the live VPS to include the  route.
--   **/etc/nginx/sites-available/celora**: Updated on the live VPS to route  requests on subdomains to the React app.
+-   **/app/backend/server.py**: The monolithic backend file containing most of the business logic.
+-   **/app/frontend/src/pages/merchant/MerchantDomains.jsx**: The comprehensive UI for the self-service custom domain feature.
+-   **/app/frontend/src/components/layout/MerchantSidebar.jsx**: The primary navigation component for merchants.
+-   **/app/frontend/src/pages/merchant/MerchantRedirects.jsx**: The new, in-progress page for URL Redirects.
+-   **/app/frontend/src/pages/merchant/MerchantCustomScripts.jsx**: The new, in-progress page for Custom Scripts.
+-   **/app/backend/email_service.py**: The new module for handling emails.
+-   **/app/setup_ssl.sh**: A new utility script for automating SSL setup on the user's VPS.
 
 **Areas that need refactoring**:
--   ** Route Registration:** The file now has two  calls. This is a hack. The file should be re-ordered so all routes are defined before a single inclusion call.
--   **Unify User Models & Auth:** The system still uses two separate user tables (, ) with different password hashing algorithms (SHA256 vs. bcrypt). This is a security risk and should be unified.
+-   ** Monolith:** This file is critically large (over 8,000 lines) and should be broken into smaller, dedicated router files for better maintainability and separation of concerns.
+-   **User Authentication System:** The parallel  and  tables with different hashing algorithms is a security and maintenance liability that should be unified into a single, consistent system.
 
 **key api endpoints**
 -   
 -   
 -   
 -   
+-   
+-   
+-    (New)
+-    (New)
 
 **Critical Info for New Agent**
--   **You are working on a LIVE server.** Be extremely cautious. The user is copy-pasting commands directly into their production VPS.
--   The immediate task is to **fix the corrupted  file** on the user's VPS so the frontend can build successfully. The user has the command for this but has not executed it yet.
--   **User commands often fail due to copy-paste issues.** Provide very clear, simple, and robust copy-paste blocks (using  for  is a good practice). Be prepared to debug the results of user execution.
--   The user has requested changes to be on both Emergent and the live server. The code developed in this session for the new admin features needs to be fully synced back to the Emergent environment to maintain parity.
+-   The user's workflow is now **Emergent-first**. Complete all features and testing here before suggesting deployment steps.
+-   The immediate task is to **finish the Redirect URLs and Custom Scripts features**. This requires adding them to the merchant sidebar and performing full CRUD testing.
+-   The  file is extremely large; be cautious with edits and consider opportunities for future refactoring.
+-   The email system is implemented but non-functional until the user provides a .
 
 **documents and test reports created in this job**
 -   
+-   
+-    (Updated with new features and backlog)
 
 **Last 10 User Messages and any pending HUMAN messages**
-1.  **lets continue adding**: User wants to proceed with deploying the Admin UI updates. (Status: In Progress)
-2.  : User confirms the backend API fix worked and the cPanel endpoint is returning data. (Status: Completed)
-3.  : User provides requested debug info about . (Status: Completed)
-4.  : User reports the backend API is not working and provides logs, which helped diagnose the issue. (Status: Completed)
-5.  : User confirms running the first set of deployment commands for the new admin/cpanel features. (Status: Completed)
-6.  : User confirms the plan and adds the requirement for dual deployment. (Status: Acknowledged)
-7.  : User provides a new, high-priority request for enhanced admin features (impersonate, password reset) and a subdomain-based . (Status: In Progress)
-8.  : User provides the current state of their live server, which became the baseline for the session. (Status: Completed)
-9.   User confirms their current status. (Status: Completed)
-10.  User's approval to the plan. (Status: Completed)
+1.  **User:** Asks to add redirect URL and custom script sections, making them comprehensive like Maropost. (Status: In Progress)
+2.  **User:** Asks to add a favicon uploader that shows the icon on the live site. (Status: Completed)
+3.  **User:** Asks to add email integrations and SSL setup before deployment. (Status: Completed)
+4.  **User:** Clarifies they do not have an email API key yet. (Status: Acknowledged, agent proceeded with mock implementation)
+5.  **User:** Points out a duplicate Domains feature in the dashboard and asks to remove redundant UI elements. Also requests verification that the multi-tenant domain connection logic is correct, referencing a Maropost example image. (Status: Completed)
+6.  **User:** Repeats that *any* fake subdomain shows a live theme, not just . (Status: Completed, fix was made more robust)
+7.  **User:** After seeing the updated sidebar screenshot, expresses concern that the Domains section isn't there and that fake subdomains still work on their live server. (Status: Acknowledged, agent clarified the fix is in Emergent and not yet deployed)
+8.  **User:** Requests a 100% working, fully audited app before they deploy. (Status: Acknowledged)
+9.  **User:** Agrees with the plan to finish development on Emergent first before moving to the live server. (Status: Acknowledged)
+10. **User:** Initial report of build failure on the live server due to file corruption. (Status: Resolved earlier in session)
 
 **Project Health Check:**
--   **Broken:** The frontend on the live Vultr VPS is in a non-buildable state due to the corrupted  file. The new admin UI features are therefore inaccessible.
--   **Fixed:** The backend on the live VPS is now running and correctly registering all new API routes.
--   **Mocked:** Stripe functionality is present but still uses test keys.
+-   **Broken:** The live Vultr VPS is several versions behind the Emergent environment. No features are broken within Emergent.
+-   **Mocked:**
+    *   **Email System:** Fully implemented but requires a  to send actual emails.
+    *   **Stripe Integration:** Uses test keys.
+    *   **eBay Integration:** Remains non-functional and blocked.
 
 **3rd Party Integrations**
--   **Stripe (Payments):** UI and backend logic are complete. Requires User API Key (Live keys for production).
--   **eBay API:** Integration exists but is **BLOCKED** due to an  authentication error. Requires user to verify their eBay developer credentials.
+-   **Resend (Email):** Integrated via the  Python library. Requires a User API Key.
+-   **Stripe (Payments):** UI and backend logic are complete. Requires a User API Key for live transactions.
+-   **eBay API:** Integration exists but is **BLOCKED** due to an  authentication error. Requires user action.
 
 **Testing status**
--   Testing agent used after significant changes: NO
--   Troubleshoot agent used after agent stuck in loop: NO
--   Test files created: []
--   Known regressions: None.
+-   **Testing agent used after significant changes:** YES (used once to verify backend APIs).
+-   **Troubleshoot agent used after agent stuck in loop:** NO
+-   **Test files created:** []
+-   **Known regressions:** None.
 
 **Credentials to test flow:**
-| Role/Store | URL | Email | Password |
+| Role/Store | Login URL | Email | Password |
 | :--- | :--- | :--- | :--- |
 | **Platform Admin** |  |  |  |
 | **Merchant Login** |  or  |  |  |
 
 **What agent forgot to execute**
-- The agent has not yet provided the user with commands to update  on the live server, which was also modified in the Emergent environment to include password reset functionality. This should be the next step after  is fixed.
-- The agent has not formally synced the final, correct versions of all modified files (, , ) back into the Emergent environment workspace. This is required to fulfill the user's emergent and live request.</analysis>
+-   The agent created the pages and API endpoints for Redirect URLs and Custom Scripts but did not add the corresponding navigation links to the . As a result, these new pages are currently inaccessible through the UI. This is the immediate next step.</analysis>
