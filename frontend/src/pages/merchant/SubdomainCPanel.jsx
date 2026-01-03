@@ -247,10 +247,10 @@ const SubdomainCPanel = () => {
 
         {/* Login Form */}
         <div className="bg-slate-800/50 backdrop-blur-xl rounded-2xl shadow-2xl border border-slate-700/50 p-8">
-          {error && (
+          {loginError && (
             <div className="mb-6 p-4 bg-red-500/10 border border-red-500/30 rounded-xl flex items-center gap-3 text-red-400">
               <AlertCircle className="w-5 h-5 flex-shrink-0" />
-              <span className="text-sm">{error}</span>
+              <span className="text-sm">{loginError}</span>
             </div>
           )}
 
